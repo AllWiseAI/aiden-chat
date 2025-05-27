@@ -9,7 +9,7 @@
   },
   "package": {
     "productName": "AidenChat",
-    "version": "0.1.0"
+    "version": "0.1.1"
   },
   "tauri": {
     "allowlist": {
@@ -111,7 +111,7 @@
       "endpoints": [
         "https://github.com/AllWiseAI/aiden-chat/releases/latest/download/latest.json"
       ],
-      "dialog": true,
+      "dialog": false,
       "windows": {
         "installMode": "passive"
       },

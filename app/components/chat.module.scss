@@ -301,6 +301,13 @@
 .chat-body-main-title {
   font-size: 30px;
   color: var(--black-1);
+  display: flex;
+}
+
+.chat-body-title {
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
 @media only screen and (max-width: 600px) {
