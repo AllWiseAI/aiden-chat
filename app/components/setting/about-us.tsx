@@ -3,15 +3,28 @@ import { exportAndDownloadLog } from "../../utils/log";
 import Logo from "../../icons/aiden-logo.svg";
 import config from "@/src-tauri/tauri.conf.json";
 import RightIcon from "../../icons/right-arrow.svg";
+import { useAppUpdate } from "@/app/hooks/use-app-update";
 
 export default function AboutUs() {
+  const { isShowUpdate, handleUpdate, isUpdating } = useAppUpdate();
+
   const aboutUsArr = [
-    { name: "Export log", onClick: () => exportAndDownloadLog() },
+    { show: true, name: "Export log", onClick: () => exportAndDownloadLog() },
     {
+      show: isShowUpdate,
+      name: isUpdating ? "Updating..." : "Update to latest version",
+      onClick: () => {
+        if (isUpdating) return;
+        handleUpdate();
+      },
+    },
+    {
+      show: true,
       name: "User Agreement",
       onClick: () => shell.open("https://aidenai.io/terms-of-service.html"),
     },
     {
+      show: true,
       name: "Privacy Policy",
       onClick: () => shell.open("https://aidenai.io/privacy.html"),
     },

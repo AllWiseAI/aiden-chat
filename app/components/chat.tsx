@@ -18,6 +18,8 @@ import ReloadIcon from "../icons/reload.svg";
 import McpIcon from "../icons/mcp.svg";
 import Locale from "../locales";
 import { toast } from "sonner";
+import { useAppUpdate } from "@/app/hooks/use-app-update";
+
 import {
   ChatMessage,
   createMessage,
@@ -408,7 +410,6 @@ function _Chat() {
 
   const renderMessageMcpInfo = (message: RenderMessage) => {
     if (!message.mcpInfo) return null;
-
     return (
       <div
         className={`${styles["chat-message-mcp-info"]} ${styles["chat-message-item-mcp"]}`}
@@ -437,6 +438,7 @@ function _Chat() {
     );
   };
 
+  const { isShowUpdate, handleUpdate, isUpdating } = useAppUpdate();
   return (
     <>
       <div className={styles.chat} key={session.id}>
@@ -458,30 +460,42 @@ function _Chat() {
             >
               {!session.topic ? DEFAULT_TOPIC : session.topic}
             </div>
-          </div>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    toast(Locale.Chat.Actions.RefreshToast, {
-                      className: "w-auto max-w-max",
-                    });
-                    chatStore.summarizeSession(true, session);
-                  }}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    data-tauri-drag-region="false"
+                    variant="ghost"
+                    onClick={() => {
+                      toast(Locale.Chat.Actions.RefreshToast, {
+                        className: "w-auto max-w-max",
+                      });
+                      chatStore.summarizeSession(true, session);
+                    }}
+                  >
+                    <ReloadIcon />
+                  </Button>
+                </TooltipTrigger>
+
+                <TooltipContent
+                  hasArrow={false}
+                  className="pointer-events-none bg-[#FEFEFE] text-black border"
                 >
-                  <ReloadIcon />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent
-                hasArrow={false}
-                className="pointer-events-none bg-[#FEFEFE] text-black border"
-              >
-                {Locale.Chat.Actions.RefreshTitle}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+                  {Locale.Chat.Actions.RefreshTitle}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          {isShowUpdate && (
+            <Button
+              disabled={isUpdating}
+              data-tauri-drag-region="false"
+              className="h-9 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] rounded-xl text-xs"
+              onClick={handleUpdate}
+            >
+              {isUpdating ? "Updating..." : "Update Version"}
+            </Button>
+          )}
         </div>
         <div className={styles["chat-main"]}>
           <div className={styles["chat-body-container"]}>
