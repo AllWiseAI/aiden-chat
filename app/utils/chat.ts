@@ -15,7 +15,7 @@ import {
   showConfirm,
   ConfirmType,
 } from "@/app/components/confirm-modal/confirm";
-import { SECOND_CHAT_URL } from "@/app/constant";
+import { SECOND_CHAT_URL, DEFAULT_CHAT_URL } from "@/app/constant";
 import { useSettingStore } from "@/app/store/setting";
 
 const settingStore = useSettingStore.getState();
@@ -579,10 +579,22 @@ export function streamWithThink(
 
               let approved = false;
               if (userHasApproved) {
-                approved = true;
                 console.log(
                   "[MCP confirm] User has approved before. No need to show confirm modal. ",
                 );
+                streamWithThink(
+                  DEFAULT_CHAT_URL,
+                  {
+                    ...requestPayload,
+                    skip_confirm: true,
+                  },
+                  headers,
+                  controller,
+                  parseSSE,
+                  options,
+                  "",
+                );
+                return;
               } else {
                 console.log(
                   "[MCP confirm] No user approval before. Show confirm modal.  ",
@@ -591,7 +603,6 @@ export function streamWithThink(
                   title: "Aiden would like to use an MCP",
                   description: chunk.mcpInfo.tool,
                 });
-                console.log("result====", result);
                 approved = [ConfirmType.Always, ConfirmType.Once].includes(
                   result as ConfirmType,
                 );
@@ -610,22 +621,22 @@ export function streamWithThink(
                     result: "User rejected.",
                   });
                 }
-              }
 
-              const initTemplate = responseText + remainText;
-              streamWithThink(
-                SECOND_CHAT_URL,
-                {
-                  tool_call_id: chunk.mcpInfo.id,
-                  approved,
-                  thread_id: chunk.mcpInfo.thread_id,
-                },
-                headers,
-                controller,
-                parseSSE,
-                options,
-                initTemplate,
-              );
+                const initTemplate = responseText + remainText;
+                streamWithThink(
+                  SECOND_CHAT_URL,
+                  {
+                    tool_call_id: chunk.mcpInfo.id,
+                    approved,
+                    thread_id: chunk.mcpInfo.thread_id,
+                  },
+                  headers,
+                  controller,
+                  parseSSE,
+                  options,
+                  initTemplate,
+                );
+              }
             } else if (type === "tool_result") {
               options.onUpdate?.(responseText, {
                 result: chunk.mcpInfo.result,
