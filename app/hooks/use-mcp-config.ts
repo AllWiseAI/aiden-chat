@@ -6,7 +6,7 @@ import {
   disableMcpServers,
   searchMcpServerStatus,
 } from "@/app/services";
-
+import { delay } from "@/app/utils";
 import {
   McpItemInfo,
   TRemoteMcpInfo,
@@ -190,6 +190,8 @@ export function useMcpConfig() {
               ...m,
               [name]: McpAction.Connecting,
             }));
+            await delay(1000);
+
             const { data } = (await searchMcpServerStatus(name)) as any;
             setStatusMap((m) => ({
               ...m,

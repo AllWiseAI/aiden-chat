@@ -16,6 +16,7 @@ import { useMcpConfig } from "../hooks/use-mcp-config";
 import { McpAction } from "@/app/typing";
 import { searchMcpServerStatus } from "../services";
 import { useDebouncedCallback } from "use-debounce";
+import { delay } from "@/app/utils";
 
 function McpTooltip({ icon }: { icon: ReactElement }) {
   const navigate = useNavigate();
@@ -46,6 +47,7 @@ function McpTooltip({ icon }: { icon: ReactElement }) {
               ...m,
               [name]: McpAction.Connecting,
             }));
+            await delay(1000);
             const { data } = (await searchMcpServerStatus(name)) as any;
             setStatusMap((m) => ({
               ...m,

@@ -8,7 +8,7 @@ import BackIcon from "../../icons/back.svg";
 
 import { useMcpConfig } from "@/app/hooks/use-mcp-config";
 import { searchMcpServerStatus } from "@/app/services";
-
+import { delay } from "@/app/utils";
 // import CodeMirror from "@uiw/react-codemirror";
 import { json } from "@codemirror/lang-json";
 
@@ -126,6 +126,7 @@ const McpEditor: React.FC<Props> = ({ setMode }) => {
                   ...m,
                   [name]: McpAction.Connecting,
                 }));
+                await delay(1000);
                 const { data } = (await searchMcpServerStatus(name)) as any;
                 setStatusMap((m) => ({
                   ...m,

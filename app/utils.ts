@@ -427,6 +427,10 @@ export function semverCompare(a: string, b: string) {
   });
 }
 
+export function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export function replaceObj(
   obj: object,
   subObj: object,
