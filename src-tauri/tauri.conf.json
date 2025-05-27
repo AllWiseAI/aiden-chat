@@ -1,0 +1,132 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
+  "build": {
+    "beforeBuildCommand": "yarn export",
+    "beforeDevCommand": "yarn export:dev",
+    "devPath": "http://127.0.0.1:3000",
+    "distDir": "../out",
+    "withGlobalTauri": true
+  },
+  "package": {
+    "productName": "AidenChat",
+    "version": "0.1.0"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": false,
+      "shell": {
+        "all": false,
+        "open": ".*"
+      },
+      "dialog": {
+        "all": true,
+        "ask": true,
+        "confirm": true,
+        "message": true,
+        "open": true,
+        "save": true
+      },
+      "clipboard": {
+        "all": true,
+        "writeText": true,
+        "readText": true
+      },
+      "window": {
+        "all": false,
+        "close": true,
+        "hide": true,
+        "maximize": true,
+        "minimize": true,
+        "setIcon": true,
+        "setIgnoreCursorEvents": true,
+        "setSize": true,
+        "setResizable": true,
+        "show": true,
+        "startDragging": true,
+        "unmaximize": true,
+        "unminimize": true,
+        "center": true
+      },
+      "path": {
+        "all": true
+      },
+      "process": {
+        "relaunch": true
+      },
+      "fs": {
+        "all": true
+      },
+      "notification": {
+        "all": true
+      },
+      "http": {
+        "all": true,
+        "request": true,
+        "scope": [
+          "https://*",
+          "http://*",
+          "https://dev.aidenai.io/auth/:*"
+        ]
+      }
+    },
+    "bundle": {
+      "active": true,
+      "category": "DeveloperTool",
+      "copyright": "@2025 Aidenchat All Rights Reserved.",
+      "deb": {
+        "depends": []
+      },
+      "externalBin": [],
+      "icon": [
+        "icons/logo.icns"
+      ],
+      "identifier": "com.aiden.chat",
+      "longDescription": "AidenChat is a cross-platform ChatGPT client, including Web/Win/Linux/OSX/PWA.",
+      "macOS": {
+        "entitlements": null,
+        "exceptionDomain": "",
+        "frameworks": [],
+        "providerShortName": null,
+        "signingIdentity": null
+      },
+      "resources": [
+        "bin/*",
+        "resources/mcp.config.json",
+        "../node_modules/host_server_*/**/*"
+      ],
+      "shortDescription": "AidenChat App",
+      "targets": "all",
+      "windows": {
+        "certificateThumbprint": null,
+        "digestAlgorithm": "sha256",
+        "timestampUrl": ""
+      }
+    },
+    "security": {
+      "csp": null,
+      "dangerousUseHttpScheme": true
+    },
+    "updater": {
+      "active": true,
+      "endpoints": [
+        "https://github.com/AllWiseAI/aiden-chat/releases/latest/download/latest.json"
+      ],
+      "dialog": true,
+      "windows": {
+        "installMode": "passive"
+      },
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEJBNzc0OTY1MjgyRDc5QwpSV1NjMTRKU2xuU25DNnRQUWhIRmx5eGo0TTJRbktmbjMrWFBKajlOSE9YVUhaMGUrbzlDRTdNZAo="
+    },
+    "windows": [
+      {
+        "fullscreen": false,
+        "height": 670,
+        "resizable": true,
+        "title": "AidenChat",
+        "width": 500,
+        "hiddenTitle": true,
+        "titleBarStyle": "Overlay"
+      }
+    ]
+  }
+}
