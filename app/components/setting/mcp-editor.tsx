@@ -117,27 +117,6 @@ const McpEditor: React.FC<Props> = ({ setMode }) => {
             });
             console.error(e);
           }
-          // const configNames = Object.keys(servers);
-          // await Promise.all(
-          //   configNames.map(async (name) => {
-          //     try {
-          //       setStatusMap((m) => ({
-          //         ...m,
-          //         [name]: McpAction.Connecting,
-          //       }));
-          //       const { data } = (await searchMcpServerStatus(name)) as any;
-          //       setStatusMap((m) => ({
-          //         ...m,
-          //         [name]: data?.status || McpAction.Disconnected,
-          //       }));
-          //     } catch {
-          //       setStatusMap((m) => ({
-          //         ...m,
-          //         [name]: McpAction.Disconnected,
-          //       }));
-          //     }
-          //   }),
-          // );
         }}
       />
     </>

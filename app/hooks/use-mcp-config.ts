@@ -221,16 +221,13 @@ export function useMcpConfig() {
     const updatedMcpServers = restoreServers(newServers);
     const newConfig = { ...config, mcpServers: { ...updatedMcpServers } };
     setConfig(newConfig);
-    console.log("新配置", newConfig);
     try {
       await invoke<MCPConfig>("write_mcp_config", { newConfig });
-      // 调用更新接口
       const { version, ...noVersionConfig } = configRef.current as MCPConfig;
       // no need to await this function to back to table
       updateMcpConfig({ ...noVersionConfig });
       return true;
     } catch (e: any) {
-      console.error("Failed to save config:", e);
       throw new Error(e);
     }
   };

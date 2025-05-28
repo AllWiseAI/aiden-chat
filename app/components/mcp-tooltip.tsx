@@ -40,9 +40,13 @@ function McpTooltip({ icon }: { icon: ReactElement }) {
             ),
           );
           await delay(500);
-          const { data } = (await searchMcpServerStatus(name)) as any;
-          console.log("hover", data.status);
-          return { name, action: data.status };
+          const res = (await searchMcpServerStatus(name)) as any;
+          if (!res || !res.data) {
+            throw new Error("No data");
+          }
+          const { data } = res;
+          if (data.status) return { name, action: data.status };
+          else throw new Error("No status");
         } catch (e: any) {
           return { name, action: McpAction.Disconnected };
         }

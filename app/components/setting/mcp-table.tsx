@@ -13,7 +13,6 @@ import { McpItemInfo, McpConfigKey, TDetailInfo } from "@/app/typing";
 type ServerTableProps = {
   servers: McpItemInfo[];
   disabledList: string[];
-  // statusMap: Record<string, McpAction>;
   switchDisable: (mcp_id: string, mcp_name: string, enable: boolean) => void;
   setDetail: (detailInfo: McpItemInfo) => void;
   delMcpItem: (mcp_id: string, mcp_name: string) => void;
@@ -27,7 +26,6 @@ type Props = {
 function ServerTable({
   setDetail,
   servers,
-  // statusMap,
   switchDisable,
   delMcpItem,
 }: ServerTableProps) {
@@ -56,7 +54,6 @@ function ServerTable({
         <McpTableItem
           key={item.mcp_id + item.mcp_name}
           item={{ ...item }}
-          // status={statusMap[item.mcp_name]}
           onSwitchChange={async (enable, id, name) => {
             try {
               await switchDisable(id, name, enable);
