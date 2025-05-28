@@ -8525,6 +8525,11 @@ react-style-singleton@^2.2.2, react-style-singleton@^2.2.3:
     get-nonce "^1.0.0"
     tslib "^2.0.0"
 
+react-usestateref@^1.0.9:
+  version "1.0.9"
+  resolved "https://registry.npmmirror.com/react-usestateref/-/react-usestateref-1.0.9.tgz#d40bc54db116e786b6b2bb1cd20fe06e7f8187f3"
+  integrity sha512-t8KLsI7oje0HzfzGhxFXzuwbf1z9vhBM1ptHLUIHhYqZDKFuI5tzdhEVxSNzUkYxwF8XdpOErzHlKxvP7sTERw==
+
 react@^18.2.0:
   version "18.2.0"
   resolved "https://registry.yarnpkg.com/react/-/react-18.2.0.tgz#555bd98592883255fa00de14f1151a917b5d77d5"

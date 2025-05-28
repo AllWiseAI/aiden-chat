@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import BackIcon from "../../icons/back.svg";
 
 import { useMcpConfig } from "@/app/hooks/use-mcp-config";
-import { searchMcpServerStatus } from "@/app/services";
 
 // import CodeMirror from "@uiw/react-codemirror";
 import { json } from "@codemirror/lang-json";
@@ -87,7 +86,7 @@ function ConfigEditor({ servers, onSave }: ConfigEditorProps) {
 }
 
 const McpEditor: React.FC<Props> = ({ setMode }) => {
-  const { setStatusMap, saveConfig, filteredServers } = useMcpConfig();
+  const { saveConfig, filteredServers } = useMcpConfig();
   return (
     <>
       <div
@@ -118,27 +117,6 @@ const McpEditor: React.FC<Props> = ({ setMode }) => {
             });
             console.error(e);
           }
-          const configNames = Object.keys(servers);
-          await Promise.all(
-            configNames.map(async (name) => {
-              try {
-                setStatusMap((m) => ({
-                  ...m,
-                  [name]: McpAction.Connecting,
-                }));
-                const { data } = (await searchMcpServerStatus(name)) as any;
-                setStatusMap((m) => ({
-                  ...m,
-                  [name]: data?.status || McpAction.Disconnected,
-                }));
-              } catch {
-                setStatusMap((m) => ({
-                  ...m,
-                  [name]: McpAction.Disconnected,
-                }));
-              }
-            }),
-          );
         }}
       />
     </>

@@ -1,19 +1,17 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
+import useState from "react-usestateref";
 import { invoke } from "@tauri-apps/api/tauri";
 import {
   updateMcpConfig,
   getRemoteMcpItems,
   disableMcpServers,
-  searchMcpServerStatus,
 } from "@/app/services";
-
 import {
   McpItemInfo,
   TRemoteMcpInfo,
   MCPServer,
   CustomMCPServer,
   MCPConfig,
-  McpAction,
 } from "@/app/typing";
 
 const isEmptyObject = (obj: any) => {
@@ -21,12 +19,33 @@ const isEmptyObject = (obj: any) => {
 };
 
 export function useMcpConfig() {
-  const [config, setConfig] = useState<MCPConfig | null>(null);
+  const [config, setConfig, configRef] = useState<MCPConfig | null>(null);
   const [defaultMcpNames, setDefaultMcpNames] = useState<string[]>([]);
-  const [disabledList, setDisabledList] = useState<string[]>([]);
-  // 状态映射: 每个server的状态
-  const [statusMap, setStatusMap] = useState<Record<string, McpAction>>({});
+  const initialSortedItemsRef = useRef<McpItemInfo[]>();
   const [remoteItems, setRemoteItems] = useState<TRemoteMcpInfo[]>([]);
+
+  const disableList = useMemo(() => {
+    if (!config) return [];
+    return Object.entries(config.mcpServers)
+      .filter(
+        ([, server]) => (server as CustomMCPServer).aiden_enable === false,
+      )
+      .map(([name]) => name);
+  }, [config]);
+
+  useEffect(() => {
+    if (!configRef.current) return;
+    const fetchStatus = async () => {
+      const enabledNames = Object.keys(configRef.current!.mcpServers).filter(
+        (name) => !disableList.includes(name),
+      );
+
+      // 调用接口
+      await disableMcpServers(disableList);
+    };
+
+    fetchStatus();
+  }, [disableList]);
 
   const mcpLocalJSONIds = useMemo(() => {
     if (!config) return [];
@@ -60,15 +79,16 @@ export function useMcpConfig() {
 
   // For table list show
   // includes all the mcp servers information
+
   const mcpItemsList = useMemo(() => {
     const items: McpItemInfo[] = [];
     const addedInJSONIds: string[] = [];
+
     if (config?.mcpServers) {
       Object.entries(config.mcpServers).forEach(([name, server]) => {
         const { aiden_type, aiden_enable, aiden_id } =
           server as CustomMCPServer;
         if (!mcpRemoteItemConfig[aiden_id]) {
-          // if not in remote list, this is the one user added.
           items.push({
             mcp_id: aiden_id,
             mcp_name: name,
@@ -81,7 +101,7 @@ export function useMcpConfig() {
             tutorial_zh: "",
             mcp_logo: "",
             type: "json",
-            showDelete: aiden_type === "default" || aiden_type === "custom",
+            showDelete: aiden_type === "custom",
           });
         } else {
           addedInJSONIds.push(aiden_id);
@@ -96,6 +116,7 @@ export function useMcpConfig() {
         }
       });
     }
+
     for (let item of remoteItems) {
       if (
         !addedInJSONIds.includes(item.mcp_id) &&
@@ -110,7 +131,28 @@ export function useMcpConfig() {
         });
       }
     }
-    return items;
+    if (config && remoteItems.length) {
+      if (!initialSortedItemsRef.current) {
+        const sorted = items.sort((a, b) => {
+          // 先 checked 的排前面；相同则按 mcp_name 升序
+          if (a.checked !== b.checked) return a.checked ? -1 : 1;
+          return a.mcp_name.localeCompare(b.mcp_name);
+        });
+        initialSortedItemsRef.current = sorted;
+        return initialSortedItemsRef.current;
+      } else {
+        const latestItemsMap = new Map(
+          items.map((item) => [item.mcp_id, item]),
+        );
+
+        const reordered = initialSortedItemsRef.current
+          .map((cachedItem) => latestItemsMap.get(cachedItem.mcp_id))
+          .filter(Boolean) as McpItemInfo[];
+
+        return reordered;
+      }
+    }
+    return [];
   }, [config, mcpRemoteItemConfig, mcpRemoteItemInfo, remoteItems]);
 
   // used for editor
@@ -144,7 +186,6 @@ export function useMcpConfig() {
       server.aiden_enable === false && disabled.push(name);
     });
     setDefaultMcpNames(defaults);
-    setDisabledList(disabled);
   }
 
   // UserConfig => McpServer
@@ -153,7 +194,7 @@ export function useMcpConfig() {
     Object.entries(newConfig).forEach(([name, server]) => {
       updatedConfig[name] = {
         ...server,
-        aiden_enable: !disabledList.includes(name),
+        aiden_enable: !disableList.includes(name),
         aiden_id: config?.mcpServers[name]?.aiden_id || "",
         aiden_type: config?.mcpServers[name]?.aiden_type || "custom",
       };
@@ -161,6 +202,7 @@ export function useMcpConfig() {
     setDefaultMcpNames([]);
     return updatedConfig;
   }
+
   // 读取配置 + 初始化
   useEffect(() => {
     const init = async () => {
@@ -169,43 +211,6 @@ export function useMcpConfig() {
       // 过滤 config.mcpServer 中的 enable 与type
       filterServers(data.mcpServers);
       setConfig(data);
-
-      // 初始化 statusMap 为 Disconnected
-      const initStatus: Record<string, McpAction> = {};
-      Object.keys(data.mcpServers).forEach((n) => {
-        initStatus[n] = McpAction.Disconnected;
-      });
-      setStatusMap(initStatus);
-
-      // 基于禁用列表请求接口更新状态
-      const enabledNames = Object.keys(data.mcpServers).filter(
-        (name) => !disabledList.includes(name),
-      );
-
-      // 更新非禁用的状态
-      await Promise.all(
-        enabledNames.map(async (name) => {
-          try {
-            setStatusMap((m) => ({
-              ...m,
-              [name]: McpAction.Connecting,
-            }));
-            const { data } = (await searchMcpServerStatus(name)) as any;
-            setStatusMap((m) => ({
-              ...m,
-              [name]:
-                data?.status === "connected"
-                  ? McpAction.Connected
-                  : McpAction.Disconnected,
-            }));
-          } catch {
-            setStatusMap((m) => ({
-              ...m,
-              [name]: McpAction.Disconnected,
-            }));
-          }
-        }),
-      );
     };
     init();
   }, []);
@@ -216,35 +221,15 @@ export function useMcpConfig() {
     const updatedMcpServers = restoreServers(newServers);
     const newConfig = { ...config, mcpServers: { ...updatedMcpServers } };
     setConfig(newConfig);
-
     try {
       await invoke<MCPConfig>("write_mcp_config", { newConfig });
-      // 调用更新接口
-      const { version, ...noVersionConfig } = config;
+      const { version, ...noVersionConfig } = configRef.current as MCPConfig;
       // no need to await this function to back to table
       updateMcpConfig({ ...noVersionConfig });
       return true;
     } catch (e: any) {
-      console.error("Failed to save config:", e);
       throw new Error(e);
     }
-  };
-
-  const updateDisableStatus = async (name: string, isDel: boolean) => {
-    if (!config) return;
-    if (isDel) {
-      // delete
-      setDisabledList((list) => list.filter((item) => item !== name));
-      setStatusMap((m) => {
-        const { [name]: _, ...rest } = m;
-        return rest;
-      });
-    } else {
-      // disable
-      setStatusMap((m) => ({ ...m, [name]: McpAction.Disconnected }));
-      setDisabledList((list) => [...list, name]);
-    }
-    await disableMcpServers(disabledList);
   };
 
   const switchDisable = async (
@@ -285,28 +270,8 @@ export function useMcpConfig() {
     }
     try {
       await invoke<MCPConfig>("write_mcp_config", { newConfig });
-      if (!enable) {
-        // disable
-        updateDisableStatus(mcp_name, false);
-      } else {
-        setDisabledList((list) => list.filter((item) => item !== mcp_name));
-        await disableMcpServers(disabledList);
-        setStatusMap((m) => ({
-          ...m,
-          [mcp_name]: McpAction.Connecting,
-        }));
-        const { data } = (await searchMcpServerStatus(mcp_name)) as any;
-        setStatusMap((m) => ({
-          ...m,
-          [mcp_name]:
-            data?.status === "connected"
-              ? McpAction.Connected
-              : McpAction.Disconnected,
-        }));
-      }
       return true;
     } catch (e: any) {
-      setStatusMap((m) => ({ ...m, [mcp_name]: McpAction.Disconnected }));
       throw new Error(e);
     }
   };
@@ -322,8 +287,6 @@ export function useMcpConfig() {
     setConfig(newConfig);
     try {
       await invoke<MCPConfig>("write_mcp_config", { newConfig });
-      // delete
-      updateDisableStatus(mcp_name, true);
     } catch (e: any) {
       throw new Error(e);
     }
@@ -331,9 +294,7 @@ export function useMcpConfig() {
 
   return {
     config,
-    disabledList,
-    statusMap,
-    setStatusMap,
+    disableList,
     saveConfig,
     switchDisable,
     mcpItemsList,
