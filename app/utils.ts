@@ -475,3 +475,7 @@ export function replaceObj(
   replace(newObj);
   return newObj;
 }
+
+export function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

@@ -5,63 +5,61 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/app/components/shadcn/tooltip";
-import { useMemo, ReactElement } from "react";
+import { useEffect, useState, ReactElement } from "react";
 import AccessIcon from "../icons/access.svg";
 import LoadingIcon from "../icons/loading-spinner.svg";
 import ErrorIcon from "../icons/error.svg";
-import clsx from "clsx";
 import { useNavigate } from "react-router-dom";
 import { Path } from "../constant";
 import { useMcpConfig } from "../hooks/use-mcp-config";
 import { McpAction } from "@/app/typing";
 import { searchMcpServerStatus } from "../services";
 import { useDebouncedCallback } from "use-debounce";
+import { delay } from "@/app/utils";
+
+type McpItem = {
+  name: string;
+  action: McpAction;
+};
 
 function McpTooltip({ icon }: { icon: ReactElement }) {
   const navigate = useNavigate();
-  const { statusMap, setStatusMap } = useMcpConfig();
+  const { config, disableList } = useMcpConfig();
+  const [mcpArr, setMcpArr] = useState<McpItem[]>([]);
 
-  const mcpArr = useMemo(
-    () =>
-      Object.entries(statusMap).map(([name, action]) => {
-        let icon;
-        if (action === McpAction.Connecting) {
-          icon = LoadingIcon;
-        } else if (action === McpAction.Connected) {
-          icon = AccessIcon;
-        } else if (action === McpAction.Disconnected) {
-          icon = ErrorIcon;
+  const getMcpStatus = async (enableName: string[]) => {
+    // 更新非禁用的状态
+    await Promise.all(
+      enableName.map(async (name) => {
+        try {
+          await delay(1000);
+          const { data } = (await searchMcpServerStatus(name)) as any;
+          return { name, action: data.status };
+        } catch (e: any) {
+          return { name, action: McpAction.Disconnected };
         }
-        return { name, action, icon };
       }),
-    [statusMap],
-  );
+    );
+  };
+
+  useEffect(() => {
+    if (!config) {
+      setMcpArr([]);
+      return;
+    }
+    const result = Object.entries(config!.mcpServers)
+      .filter(([name]) => !disableList.includes(name))
+      .map(([name]) => ({
+        name,
+        action: McpAction.Disconnected,
+      }));
+    setMcpArr(result);
+  }, [disableList, config]);
 
   const updateStatus = useDebouncedCallback(
     async () => {
-      await Promise.all(
-        Object.entries(statusMap).map(async ([name]) => {
-          try {
-            setStatusMap((m) => ({
-              ...m,
-              [name]: McpAction.Connecting,
-            }));
-            const { data } = (await searchMcpServerStatus(name)) as any;
-            setStatusMap((m) => ({
-              ...m,
-              [name]:
-                data?.status === "connected"
-                  ? McpAction.Connected
-                  : McpAction.Disconnected,
-            }));
-          } catch {
-            setStatusMap((m) => ({
-              ...m,
-              [name]: McpAction.Disconnected,
-            }));
-          }
-        }),
-      );
+      const enableName = mcpArr.map((item) => item.name);
+      await getMcpStatus(enableName);
     },
     5000,
     { leading: true, trailing: false },
@@ -90,31 +88,37 @@ function McpTooltip({ icon }: { icon: ReactElement }) {
                 `,
           }}
         >
-          {mcpArr.map((item) => (
-            <div
-              key={item.name}
-              className="w-30 h-8 p-2 flex justify-between items-center"
-            >
-              <p
-                className="text-[#6C7275] h-4 text-xs"
-                style={{
-                  display: "-webkit-box",
-                  WebkitLineClamp: 1,
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
-                  maxWidth: "90px",
-                }}
+          {mcpArr.map((item) => {
+            let StatusIcon;
+            if (item.action === McpAction.Connecting)
+              StatusIcon = (
+                <LoadingIcon className="animate-spin size-4 text-[#6C7275]" />
+              );
+            else if (item.action === McpAction.Connected)
+              StatusIcon = <AccessIcon />;
+            else if (item.action === McpAction.Disconnected)
+              StatusIcon = <ErrorIcon />;
+            return (
+              <div
+                key={item.name}
+                className="w-30 h-8 p-2 flex justify-between items-center"
               >
-                {item.name}
-              </p>
-              <item.icon
-                className={clsx("", {
-                  "animate-spin size-4 text-[#6C7275]":
-                    item.action === McpAction.Connecting,
-                })}
-              />
-            </div>
-          ))}
+                <p
+                  className="text-[#6C7275] h-4 text-xs"
+                  style={{
+                    display: "-webkit-box",
+                    WebkitLineClamp: 1,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                    maxWidth: "90px",
+                  }}
+                >
+                  {item.name}
+                </p>
+                {StatusIcon}
+              </div>
+            );
+          })}
           <div
             className="w-max text-main text-center hover:opacity-80 cursor-pointer"
             onClick={() => navigate(Path.Settings + "?tab=mcp")}
