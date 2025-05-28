@@ -5,7 +5,7 @@ import {
   OnDragEndResponder,
 } from "@hello-pangea/dnd";
 
-import { useChatStore } from "../store";
+import { DEFAULT_TOPIC, useChatStore } from "../store";
 import MoreIcon from "../icons/more.svg";
 import EditIcon from "../icons/edit.svg";
 import DeleteIcon from "../icons/delete.svg";
@@ -47,7 +47,6 @@ export function ChatItem(props: {
   selected: boolean;
   id: string;
   index: number;
-  iconIndex?: number;
   narrow?: boolean;
   mask: Mask;
 }) {
@@ -111,10 +110,22 @@ export function ChatItem(props: {
                   }
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
+                      if (props.title === "") {
+                        chatStore.updateTargetSession(
+                          session,
+                          (session) => (session.topic = DEFAULT_TOPIC),
+                        );
+                      }
                       setIsEdit(false);
                     }
                   }}
                   onBlur={() => {
+                    if (props.title === "") {
+                      chatStore.updateTargetSession(
+                        session,
+                        (session) => (session.topic = DEFAULT_TOPIC),
+                      );
+                    }
                     setIsEdit(false);
                   }}
                 />
@@ -266,7 +277,6 @@ export function ChatList(props: { narrow?: boolean; searchValue?: string }) {
                   key={item.id}
                   id={item.id}
                   index={item.originIndex}
-                  iconIndex={item.iconIndex}
                   selected={item.originIndex === selectedIndex}
                   onClick={() => {
                     navigate(Path.Chat);
