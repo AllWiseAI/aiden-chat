@@ -17,99 +17,16 @@
   code {
     padding: 3px 5px;
   }
-
-  .hljs,
-  pre {
-    background: #1a1b26;
-    color: #cbd2ea;
-  }
-
-  /*!
-  Theme: Tokyo-night-Dark
-  origin: https://github.com/enkia/tokyo-night-vscode-theme
-  Description: Original highlight.js style
-  Author: (c) Henri Vandersleyen <hvandersleyen@gmail.com>
-  License: see project LICENSE
-  Touched: 2022
-*/
-  .hljs-comment,
-  .hljs-meta {
-    color: #565f89;
-  }
-
-  .hljs-deletion,
-  .hljs-doctag,
-  .hljs-regexp,
-  .hljs-selector-attr,
-  .hljs-selector-class,
-  .hljs-selector-id,
-  .hljs-selector-pseudo,
-  .hljs-tag,
-  .hljs-template-tag,
-  .hljs-variable.language_ {
-    color: #f7768e;
-  }
-
-  .hljs-link,
-  .hljs-literal,
-  .hljs-number,
-  .hljs-params,
-  .hljs-template-variable,
-  .hljs-type,
-  .hljs-variable {
-    color: #ff9e64;
-  }
-
-  .hljs-attribute,
-  .hljs-built_in {
-    color: #e0af68;
-  }
-
-  .hljs-keyword,
-  .hljs-property,
-  .hljs-subst,
-  .hljs-title,
-  .hljs-title.class_,
-  .hljs-title.class_.inherited__,
-  .hljs-title.function_ {
-    color: #7dcfff;
-  }
-
-  .hljs-selector-tag {
-    color: #73daca;
-  }
-
-  .hljs-addition,
-  .hljs-bullet,
-  .hljs-quote,
-  .hljs-string,
-  .hljs-symbol {
-    color: #9ece6a;
-  }
-
-  .hljs-code,
-  .hljs-formula,
-  .hljs-section {
-    color: #7aa2f7;
-  }
-
-  .hljs-attr,
-  .hljs-char.escape_,
-  .hljs-keyword,
-  .hljs-name,
-  .hljs-operator {
-    color: #bb9af7;
-  }
-
-  .hljs-punctuation {
-    color: #c0caf5;
-  }
-
-  .hljs-emphasis {
-    font-style: italic;
-  }
-
-  .hljs-strong {
-    font-weight: 700;
-  }
 }
+pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}/*!
+  Theme: GitHub
+  Description: Light theme as seen on github.com
+  Author: github.com
+  Maintainer: @Hirse
+  Updated: 2021-05-15
+
+  Outdated base version: https://github.com/primer/github-syntax-light
+  Current colors taken from GitHub's CSS
+*/.hljs{color:#24292e;background:#fff}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#d73a49}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#6f42c1}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id,.hljs-variable{color:#005cc5}.hljs-meta .hljs-string,.hljs-regexp,.hljs-string{color:#032f62}.hljs-built_in,.hljs-symbol{color:#e36209}.hljs-code,.hljs-comment,.hljs-formula{color:#6a737d}.hljs-name,.hljs-quote,.hljs-selector-pseudo,.hljs-selector-tag{color:#22863a}.hljs-subst{color:#24292e}.hljs-section{color:#005cc5;font-weight:700}.hljs-bullet{color:#735c0f}.hljs-emphasis{color:#24292e;font-style:italic}.hljs-strong{color:#24292e;font-weight:700}.hljs-addition{color:#22863a;background-color:#f0fff4}.hljs-deletion{color:#b31d28;background-color:#ffeef0}
+
+  

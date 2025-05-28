@@ -405,7 +405,7 @@ function _Chat() {
 
   const renderCallResult = (result: string | undefined) => {
     if (!result) return <LoadingIcon />;
-    if (result.includes("rejected")) {
+    if (result.includes("declined")) {
       return <ErrorIcon />;
     } else {
       return <SuccessIcon />;
@@ -435,10 +435,14 @@ function _Chat() {
             <AccordionContent
               className={styles["chat-message-item-mcp-result"]}
             >
-              <div className="mb-2 font-medium">Request: </div>
-              <div>{renderCallRequest(message.mcpInfo.request)}</div>
-              <div className="mt-2 mb-2 font-medium">Response: </div>
-              <div>{message.mcpInfo.response}</div>
+              <div className="mb-4 rounded-2xl bg-white border p-4">
+                <div className="mb-2 font-medium">Request </div>
+                <div>{renderCallRequest(message.mcpInfo.request)}</div>
+              </div>
+              <div className="rounded-2xl bg-white border p-4">
+                <div className="mt-2 mb-2 font-medium">Response </div>
+                <div>{message.mcpInfo.response}</div>
+              </div>
             </AccordionContent>
           </AccordionItem>
         </Accordion>

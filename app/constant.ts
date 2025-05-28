@@ -160,3 +160,5 @@ export const BASE_URL = "http://127.0.0.1:6888";
 export const DEFAULT_CHAT_URL = "http://127.0.0.1:6888/agent/chat";
 export const SECOND_CHAT_URL = "http://localhost:6888/agent/continue-tool-call";
 export const HOST_SERVER_READY_EVENT = "host_server_ready";
+
+export const DEFAULT_USER_DELINETED = "User declined the tool call.";
