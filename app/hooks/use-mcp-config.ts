@@ -1,4 +1,5 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import useState from "react-usestateref";
 import { invoke } from "@tauri-apps/api/tauri";
 import {
   updateMcpConfig,
@@ -21,9 +22,14 @@ const isEmptyObject = (obj: any) => {
 };
 
 export function useMcpConfig() {
-  const [config, setConfig] = useState<MCPConfig | null>(null);
+  const [config, setConfig, configRef] = useState<MCPConfig | null>(null);
   const [defaultMcpNames, setDefaultMcpNames] = useState<string[]>([]);
-  const [disabledList, setDisabledList] = useState<string[]>([]);
+  const disableList = useMemo(() => {
+    if (!config) return [];
+    return Object.entries(config.mcpServers)
+      .filter(([, server]) => server.aiden_enable === false)
+      .map(([name]) => name);
+  }, [config]);
   // 状态映射: 每个server的状态
   const [statusMap, setStatusMap] = useState<Record<string, McpAction>>({});
   const [remoteItems, setRemoteItems] = useState<TRemoteMcpInfo[]>([]);
@@ -81,7 +87,7 @@ export function useMcpConfig() {
             tutorial_zh: "",
             mcp_logo: "",
             type: "json",
-            showDelete: aiden_type === "default" || aiden_type === "custom",
+            showDelete: aiden_type === "custom",
           });
         } else {
           addedInJSONIds.push(aiden_id);
@@ -144,7 +150,6 @@ export function useMcpConfig() {
       server.aiden_enable === false && disabled.push(name);
     });
     setDefaultMcpNames(defaults);
-    setDisabledList(disabled);
   }
 
   // UserConfig => McpServer
@@ -153,7 +158,7 @@ export function useMcpConfig() {
     Object.entries(newConfig).forEach(([name, server]) => {
       updatedConfig[name] = {
         ...server,
-        aiden_enable: !disabledList.includes(name),
+        aiden_enable: !disableList.includes(name),
         aiden_id: config?.mcpServers[name]?.aiden_id || "",
         aiden_type: config?.mcpServers[name]?.aiden_type || "custom",
       };
@@ -179,7 +184,7 @@ export function useMcpConfig() {
 
       // 基于禁用列表请求接口更新状态
       const enabledNames = Object.keys(data.mcpServers).filter(
-        (name) => !disabledList.includes(name),
+        (name) => !disableList.includes(name),
       );
 
       // 更新非禁用的状态
@@ -220,7 +225,7 @@ export function useMcpConfig() {
     try {
       await invoke<MCPConfig>("write_mcp_config", { newConfig });
       // 调用更新接口
-      const { version, ...noVersionConfig } = config;
+      const { version, ...noVersionConfig } = configRef.current as MCPConfig;
       // no need to await this function to back to table
       updateMcpConfig({ ...noVersionConfig });
       return true;
@@ -229,6 +234,14 @@ export function useMcpConfig() {
       throw new Error(e);
     }
   };
+
+  useEffect(() => {
+    if (!configRef.current) return;
+    const enabledNames = Object.keys(configRef.current.mcpServers).filter(
+      (name) => !disableList.includes(name),
+    );
+    // 查询状态
+  }, [disableList]);
 
   const updateDisableStatus = async (name: string, isDel: boolean) => {
     if (!config) return;
