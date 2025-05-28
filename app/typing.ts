@@ -39,6 +39,7 @@ export enum McpAction {
   Connecting = "connecting",
   Connected = "connected",
   Disconnected = "disconnected",
+  Failed = "failed",
 }
 
 export type MCPServer = {

@@ -33,7 +33,8 @@ export function McpTableItem({
   const StatusIcon = useMemo(() => {
     if (status === McpAction.Connecting) return LoadingIcon;
     else if (status === McpAction.Connected) return SuccessIcon;
-    else if (status === McpAction.Disconnected) return ErrorIcon;
+    else if (status === McpAction.Disconnected || status === McpAction.Failed)
+      return ErrorIcon;
     else return null;
   }, [status]);
 
@@ -52,13 +53,16 @@ export function McpTableItem({
       setStatus(null);
       return;
     }
-    console.log("更改状态", mcp_name);
     setStatus(McpAction.Connecting);
     async function fetchStatus() {
       await delay(500);
       try {
-        console.log("请求接口", mcp_name);
-        const { data } = (await searchMcpServerStatus(mcp_name)) as any;
+        const res = (await searchMcpServerStatus(mcp_name)) as any;
+        if (!res || !res.data) {
+          throw new Error("No data");
+        }
+
+        const { data } = res;
         if (data.status) {
           setStatus(data.status);
         } else throw new Error("No status");
