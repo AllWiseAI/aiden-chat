@@ -2,6 +2,7 @@ import {
   CACHE_URL_PREFIX,
   UPLOAD_URL,
   REQUEST_TIMEOUT_MS,
+  DEFAULT_USER_DELINETED,
 } from "@/app/constant";
 import { MultimodalContent, RequestMessage } from "@/app/client/api";
 import Locale from "@/app/locales";
@@ -628,7 +629,7 @@ export function streamWithThink(
                 if (result === ConfirmType.Decline) {
                   console.log("[MCP confirm] User rejected.");
                   options.onUpdate?.(responseText, {
-                    response: "User rejected.",
+                    response: DEFAULT_USER_DELINETED,
                   });
                 }
 
