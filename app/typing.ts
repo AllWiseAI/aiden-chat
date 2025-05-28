@@ -104,3 +104,8 @@ export type MCPConfig = {
   mcpServers: Record<string, CustomMCPServer>;
   a2aServers: A2AConfig;
 };
+
+export enum McpStepsAction {
+  ToolCallConfirm = "tool_call_confirm",
+  ToolResult = "tool_result",
+}

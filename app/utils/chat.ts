@@ -17,6 +17,7 @@ import {
 } from "@/app/components/confirm-modal/confirm";
 import { SECOND_CHAT_URL, DEFAULT_CHAT_URL } from "@/app/constant";
 import { useSettingStore } from "@/app/store/setting";
+import { McpStepsAction } from "../typing";
 
 const settingStore = useSettingStore.getState();
 
@@ -40,14 +41,22 @@ export function parseSSE(text: string): TParseSSEResult {
   const choices = json.choices;
   const extra = json.extra;
   if (!choices?.length) {
-    if (extra && extra.mcp && extra.mcp.type === "tool_call_confirm") {
+    if (
+      extra &&
+      extra.mcp &&
+      extra.mcp.type === McpStepsAction.ToolCallConfirm
+    ) {
       console.log("tool_call_confirm: ", extra.mcp);
       return {
         isMcpInfo: true,
         mcpInfo: extra.mcp,
         content: `\r\n${extra.mcp.tool}\r\n::loading[]\r\n`,
       };
-    } else if (extra && extra.mcp && extra.mcp.type === "tool_result") {
+    } else if (
+      extra &&
+      extra.mcp &&
+      extra.mcp.type === McpStepsAction.ToolResult
+    ) {
       console.log("tool_result: ", extra.mcp);
       return {
         isMcpInfo: true,
@@ -570,6 +579,7 @@ export function streamWithThink(
             if (type === "tool_call_confirm") {
               options.onUpdate?.(responseText, {
                 title: chunk.mcpInfo.tool,
+                request: prettyObject(chunk.mcpInfo) + "\n\n",
               });
 
               // should check if user has approved the MCP
@@ -618,7 +628,7 @@ export function streamWithThink(
                 if (result === ConfirmType.Decline) {
                   console.log("[MCP confirm] User rejected.");
                   options.onUpdate?.(responseText, {
-                    result: "User rejected.",
+                    response: "User rejected.",
                   });
                 }
 
@@ -639,7 +649,7 @@ export function streamWithThink(
               }
             } else if (type === "tool_result") {
               options.onUpdate?.(responseText, {
-                result: chunk.mcpInfo.result,
+                response: chunk.mcpInfo.result,
               });
             }
           } else {

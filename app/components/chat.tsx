@@ -399,6 +399,10 @@ function _Chat() {
     };
   }, []);
 
+  const renderCallRequest = (request: string | undefined) => {
+    return <Markdown content={prettyObject(request) || ""} />;
+  };
+
   const renderCallResult = (result: string | undefined) => {
     if (!result) return <LoadingIcon />;
     if (result.includes("rejected")) {
@@ -421,16 +425,20 @@ function _Chat() {
           >
             <AccordionTrigger>
               <div className="flex flex-row items-center gap-2">
-                {`${message.mcpInfo.result ? "Called" : "Call"} ${
+                {`${message.mcpInfo.response ? "Called" : "Call"} ${
                   message.mcpInfo.title
                 } Tool`}
-                {renderCallResult(message.mcpInfo.result)}
+
+                {renderCallResult(message.mcpInfo.response)}
               </div>
             </AccordionTrigger>
             <AccordionContent
               className={styles["chat-message-item-mcp-result"]}
             >
-              {message.mcpInfo.result}
+              <div className="mb-2 font-medium">Request: </div>
+              <div>{renderCallRequest(message.mcpInfo.request)}</div>
+              <div className="mt-2 mb-2 font-medium">Response: </div>
+              <div>{message.mcpInfo.response}</div>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
