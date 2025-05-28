@@ -59,10 +59,12 @@ export function McpTableItem({
       try {
         console.log("请求接口", mcp_name);
         const { data } = (await searchMcpServerStatus(mcp_name)) as any;
-        setStatus(data.status);
-        console.log("更改状态", mcp_name, status);
+        if (data.status) {
+          setStatus(data.status);
+        } else throw new Error("No status");
       } catch (error) {
         console.error("Failed to fetch MCP server status", error);
+        setStatus(McpAction.Disconnected);
       }
     }
     fetchStatus();
