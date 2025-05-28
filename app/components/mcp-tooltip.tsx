@@ -29,17 +29,26 @@ function McpTooltip({ icon }: { icon: ReactElement }) {
 
   const getMcpStatus = async (enableName: string[]) => {
     // 更新非禁用的状态
-    await Promise.all(
+    const result = await Promise.all(
       enableName.map(async (name) => {
         try {
-          await delay(1000);
+          setMcpArr((preArr) =>
+            preArr.map((item) =>
+              item.name === name
+                ? { ...item, action: McpAction.Connecting }
+                : item,
+            ),
+          );
+          await delay(500);
           const { data } = (await searchMcpServerStatus(name)) as any;
+          console.log("hover", data.status);
           return { name, action: data.status };
         } catch (e: any) {
           return { name, action: McpAction.Disconnected };
         }
       }),
     );
+    setMcpArr(result);
   };
 
   useEffect(() => {

@@ -39,11 +39,9 @@ export function useMcpConfig() {
       const enabledNames = Object.keys(configRef.current!.mcpServers).filter(
         (name) => !disableList.includes(name),
       );
-      console.log("禁用列表：", disableList, "更新状态:", enabledNames);
+
       // 调用接口
       await disableMcpServers(disableList);
-      // 更新状态
-      // await getMcpStatus(enabledNames);
     };
 
     fetchStatus();
@@ -190,21 +188,6 @@ export function useMcpConfig() {
       // 过滤 config.mcpServer 中的 enable 与type
       filterServers(data.mcpServers);
       setConfig(data);
-
-      // // 初始化 statusMap 为 Disconnected
-      // const initStatus: Record<string, McpAction> = {};
-      // Object.keys(data.mcpServers).forEach((n) => {
-      //   initStatus[n] = McpAction.Disconnected;
-      // });
-      // setStatusMap(initStatus);
-
-      // // 基于禁用列表请求接口更新状态
-      // const enabledNames = Object.keys(data.mcpServers).filter(
-      //   (name) => !disableList.includes(name),
-      // );
-
-      // // 更新非禁用的状态
-      // await getMcpStatus(enabledNames);
     };
     init();
   }, []);

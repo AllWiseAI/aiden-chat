@@ -7,7 +7,7 @@ import SuccessIcon from "../../icons/access.svg";
 import LoadingIcon from "../../icons/loading-spinner.svg";
 import ErrorIcon from "../../icons/error.svg";
 import clsx from "clsx";
-import { useRef, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { McpItemInfo, McpAction } from "@/app/typing";
 import { searchMcpServerStatus } from "@/app/services";
 import { delay } from "@/app/utils";
@@ -29,11 +29,11 @@ export function McpTableItem({
   onDelete,
   onSelect,
 }: McpItemProps) {
-  const status = useRef<McpAction | null>(null);
+  const [status, setStatus] = useState<McpAction | null>(null);
   const StatusIcon = useMemo(() => {
-    if (status.current === McpAction.Connecting) return LoadingIcon;
-    else if (status.current === McpAction.Connected) return SuccessIcon;
-    else if (status.current === McpAction.Disconnected) return ErrorIcon;
+    if (status === McpAction.Connecting) return LoadingIcon;
+    else if (status === McpAction.Connected) return SuccessIcon;
+    else if (status === McpAction.Disconnected) return ErrorIcon;
     else return null;
   }, [status]);
 
@@ -48,19 +48,25 @@ export function McpTableItem({
   } = item;
 
   useEffect(() => {
-    if (!checked) false;
-    status.current = McpAction.Connecting;
+    if (!checked) {
+      setStatus(null);
+      return;
+    }
+    console.log("更改状态", mcp_name);
+    setStatus(McpAction.Connecting);
     async function fetchStatus() {
-      await delay(1000);
+      await delay(500);
       try {
+        console.log("请求接口", mcp_name);
         const { data } = (await searchMcpServerStatus(mcp_name)) as any;
-        status.current = data.status;
+        setStatus(data.status);
+        console.log("更改状态", mcp_name, status);
       } catch (error) {
         console.error("Failed to fetch MCP server status", error);
       }
     }
     fetchStatus();
-  }, []);
+  }, [checked]);
 
   return (
     <div
@@ -79,8 +85,7 @@ export function McpTableItem({
           {type === "json" && StatusIcon && (
             <StatusIcon
               className={clsx("absolute right-0 bottom-0 size-4", {
-                "animate-spin text-main":
-                  status.current === McpAction.Connecting,
+                "animate-spin text-main": status === McpAction.Connecting,
               })}
             />
           )}
