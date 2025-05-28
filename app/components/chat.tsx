@@ -405,7 +405,7 @@ function _Chat() {
 
   const renderCallResult = (result: string | undefined) => {
     if (!result) return <LoadingIcon />;
-    if (result.includes("rejected")) {
+    if (result.includes("declined")) {
       return <ErrorIcon />;
     } else {
       return <SuccessIcon />;
