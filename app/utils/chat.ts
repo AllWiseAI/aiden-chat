@@ -648,7 +648,7 @@ export function streamWithThink(
                   initTemplate,
                 );
               }
-            } else if (type === "tool_result") {
+            } else if (type === McpStepsAction.ToolResult) {
               options.onUpdate?.(responseText, {
                 response: chunk.mcpInfo.result,
               });
