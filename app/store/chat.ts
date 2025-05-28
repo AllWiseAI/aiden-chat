@@ -72,7 +72,6 @@ export interface ChatSession {
   lastUpdate: number;
   lastSummarizeIndex: number;
   clearContextIndex?: number;
-  iconIndex?: number;
 
   mask: Mask;
 }
@@ -224,8 +223,6 @@ export const useChatStore = createPersistStore(
 
       newSession(mask?: Mask) {
         const session = createEmptySession();
-        // 4 is the icon list length we used to randomly select a icon for the session
-        session.iconIndex = Math.floor(Math.random() * 4);
         if (mask) {
           const config = useAppConfig.getState();
           const globalModelConfig = config.modelConfig;
@@ -375,14 +372,18 @@ export const useChatStore = createPersistStore(
               if (!botMessage.mcpInfo) {
                 botMessage.mcpInfo = {
                   title: mcpInfo.title ?? "",
-                  result: mcpInfo.result ?? "",
+                  request: mcpInfo.request ?? "",
+                  response: mcpInfo.response ?? "",
                 };
               } else {
                 if (mcpInfo.title) {
                   botMessage.mcpInfo.title = mcpInfo.title;
                 }
-                if (mcpInfo.result) {
-                  botMessage.mcpInfo.result = mcpInfo.result;
+                if (mcpInfo.request) {
+                  botMessage.mcpInfo.request = mcpInfo.request;
+                }
+                if (mcpInfo.response) {
+                  botMessage.mcpInfo.response = mcpInfo.response;
                 }
               }
             }
@@ -397,14 +398,18 @@ export const useChatStore = createPersistStore(
               if (!botMessage.mcpInfo) {
                 botMessage.mcpInfo = {
                   title: mcpInfo.title ?? "",
-                  result: mcpInfo.result ?? "",
+                  request: mcpInfo.request ?? "",
+                  response: mcpInfo.response ?? "",
                 };
               } else {
                 if (mcpInfo.title) {
                   botMessage.mcpInfo.title = mcpInfo.title;
                 }
-                if (mcpInfo.result) {
-                  botMessage.mcpInfo.result = mcpInfo.result;
+                if (mcpInfo.request) {
+                  botMessage.mcpInfo.request = mcpInfo.request;
+                }
+                if (mcpInfo.response) {
+                  botMessage.mcpInfo.response = mcpInfo.response;
                 }
               }
               get().onNewMessage(botMessage, session);
@@ -726,10 +731,11 @@ export const useChatStore = createPersistStore(
         updater: (session: ChatSession) => void,
       ) {
         const sessions = get().sessions;
-        const index = sessions.findIndex((s) => s.id === targetSession.id);
+        const newSession = [...sessions];
+        const index = newSession.findIndex((s) => s.id === targetSession.id);
         if (index < 0) return;
-        updater(sessions[index]);
-        set(() => ({ sessions }));
+        updater(newSession[index]);
+        set(() => ({ sessions: [...newSession] }));
       },
       async clearAllData() {
         await indexedDBStorage.clear();

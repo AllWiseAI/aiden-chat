@@ -26,7 +26,8 @@ export interface RequestMessage {
   content: string | MultimodalContent[];
   mcpInfo?: {
     title: string;
-    result: string;
+    request: string;
+    response: string;
   };
 }
 
@@ -58,12 +59,12 @@ export interface ChatOptions {
 
   onUpdate?: (
     message: string,
-    mcpInfo?: { title: string; result: string },
+    mcpInfo?: { title: string; request: string; response: string },
   ) => void;
   onFinish: (
     message: string,
     response: Response,
-    mcpInfo?: { title: string; result: string },
+    mcpInfo?: { title: string; request: string; response: string },
   ) => void;
   onError?: (err: Error, shouldStream: boolean) => void;
   onController?: (controller: AbortController) => void;
