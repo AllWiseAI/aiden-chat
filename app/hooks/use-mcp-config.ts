@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import useState from "react-usestateref";
 import { invoke } from "@tauri-apps/api/tauri";
 import {
@@ -21,6 +21,8 @@ const isEmptyObject = (obj: any) => {
 export function useMcpConfig() {
   const [config, setConfig, configRef] = useState<MCPConfig | null>(null);
   const [defaultMcpNames, setDefaultMcpNames] = useState<string[]>([]);
+  const initialSortedItemsRef = useRef<McpItemInfo[]>();
+  const [remoteItems, setRemoteItems] = useState<TRemoteMcpInfo[]>([]);
 
   const disableList = useMemo(() => {
     if (!config) return [];
@@ -30,8 +32,6 @@ export function useMcpConfig() {
       )
       .map(([name]) => name);
   }, [config]);
-
-  const [remoteItems, setRemoteItems] = useState<TRemoteMcpInfo[]>([]);
 
   useEffect(() => {
     if (!configRef.current) return;
@@ -79,15 +79,16 @@ export function useMcpConfig() {
 
   // For table list show
   // includes all the mcp servers information
+
   const mcpItemsList = useMemo(() => {
     const items: McpItemInfo[] = [];
     const addedInJSONIds: string[] = [];
+
     if (config?.mcpServers) {
       Object.entries(config.mcpServers).forEach(([name, server]) => {
         const { aiden_type, aiden_enable, aiden_id } =
           server as CustomMCPServer;
         if (!mcpRemoteItemConfig[aiden_id]) {
-          // if not in remote list, this is the one user added.
           items.push({
             mcp_id: aiden_id,
             mcp_name: name,
@@ -115,6 +116,7 @@ export function useMcpConfig() {
         }
       });
     }
+
     for (let item of remoteItems) {
       if (
         !addedInJSONIds.includes(item.mcp_id) &&
@@ -129,7 +131,28 @@ export function useMcpConfig() {
         });
       }
     }
-    return items;
+    if (config && remoteItems.length) {
+      if (!initialSortedItemsRef.current) {
+        const sorted = items.sort((a, b) => {
+          // 先 checked 的排前面；相同则按 mcp_name 升序
+          if (a.checked !== b.checked) return a.checked ? -1 : 1;
+          return a.mcp_name.localeCompare(b.mcp_name);
+        });
+        initialSortedItemsRef.current = sorted;
+        return initialSortedItemsRef.current;
+      } else {
+        const latestItemsMap = new Map(
+          items.map((item) => [item.mcp_id, item]),
+        );
+
+        const reordered = initialSortedItemsRef.current
+          .map((cachedItem) => latestItemsMap.get(cachedItem.mcp_id))
+          .filter(Boolean) as McpItemInfo[];
+
+        return reordered;
+      }
+    }
+    return [];
   }, [config, mcpRemoteItemConfig, mcpRemoteItemInfo, remoteItems]);
 
   // used for editor
