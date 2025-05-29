@@ -36,9 +36,8 @@ export type TDetailInfo = {
 };
 
 export enum McpAction {
-  Connecting = "connecting",
+  Loading = "loading",
   Connected = "connected",
-  Disconnected = "disconnected",
   Failed = "failed",
 }
 
