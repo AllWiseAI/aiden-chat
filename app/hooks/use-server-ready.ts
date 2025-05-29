@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { HOST_SERVER_READY_EVENT } from "../constant";
 
-const LOADING_TIMEOUT = 20000;
+const LOADING_TIMEOUT = 40000;
 let resolved = false;
 export function useHostServerReady(onReady: (ready: boolean) => void) {
   useEffect(() => {
