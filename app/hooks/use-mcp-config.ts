@@ -31,10 +31,12 @@ export function useMcpConfig() {
 
   useEffect(() => {
     if (!configRef.current) return;
+    const newConfig = { ...config, mcpServers: { ...filteredServers } };
     const updateConfig = async () => {
       // 调用接口
-      const { version, ...noVersionConfig } = configRef.current as MCPConfig;
-      await updateMcpConfig({ ...noVersionConfig });
+      console.log(111111);
+      await updateMcpConfig(newConfig);
+      console.log(222222);
     };
 
     updateConfig();
@@ -216,9 +218,9 @@ export function useMcpConfig() {
     setConfig(newConfig);
     try {
       await invoke<MCPConfig>("write_mcp_config", { newConfig });
-      const { version, ...noVersionConfig } = configRef.current as MCPConfig;
       // no need to await this function to back to table
-      updateMcpConfig({ ...noVersionConfig });
+      const fetchConfig = { ...config, mcpServers: { ...filteredServers } };
+      updateMcpConfig(fetchConfig);
       return true;
     } catch (e: any) {
       throw new Error(e);

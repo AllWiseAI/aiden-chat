@@ -57,11 +57,13 @@ export function McpTableItem({
     async function fetchStatus() {
       await delay(500);
       try {
+        console.log(33333);
         const res = (await searchMcpServerStatus(mcp_name)) as any;
+        console.log(44444);
         if (!res || !res.data) {
           throw new Error("No data");
         }
-
+        console.log("test", res);
         const { data } = res;
         if (data.status) {
           setStatus(data.status);

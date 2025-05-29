@@ -101,37 +101,44 @@ function McpTooltip({ icon }: { icon: ReactElement }) {
                 `,
           }}
         >
-          {mcpArr.map((item) => {
-            let StatusIcon;
-            if (item.action === McpAction.Connecting)
-              StatusIcon = (
-                <LoadingIcon className="animate-spin size-4 text-[#6C7275]" />
-              );
-            else if (item.action === McpAction.Connected)
-              StatusIcon = <AccessIcon />;
-            else if (item.action === McpAction.Disconnected)
-              StatusIcon = <ErrorIcon />;
-            return (
-              <div
-                key={item.name}
-                className="w-30 h-8 p-2 flex justify-between items-center"
-              >
-                <p
-                  className="text-[#6C7275] h-4 text-xs"
-                  style={{
-                    display: "-webkit-box",
-                    WebkitLineClamp: 1,
-                    WebkitBoxOrient: "vertical",
-                    overflow: "hidden",
-                    maxWidth: "90px",
-                  }}
+          {mcpArr.length ? (
+            mcpArr.map((item) => {
+              let StatusIcon;
+              if (item.action === McpAction.Connecting)
+                StatusIcon = (
+                  <LoadingIcon className="animate-spin size-4 text-[#6C7275]" />
+                );
+              else if (item.action === McpAction.Connected)
+                StatusIcon = <AccessIcon />;
+              else if (
+                item.action === McpAction.Disconnected ||
+                item.action === McpAction.Failed
+              )
+                StatusIcon = <ErrorIcon />;
+              return (
+                <div
+                  key={item.name}
+                  className="w-30 h-8 p-2 flex justify-between items-center"
                 >
-                  {item.name}
-                </p>
-                {StatusIcon}
-              </div>
-            );
-          })}
+                  <p
+                    className="text-[#6C7275] h-4 text-xs"
+                    style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 1,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                      maxWidth: "90px",
+                    }}
+                  >
+                    {item.name}
+                  </p>
+                  {StatusIcon}
+                </div>
+              );
+            })
+          ) : (
+            <div className="p-5 text-gray-500">No Mcp</div>
+          )}
           <div
             className="w-max text-main text-center hover:opacity-80 cursor-pointer"
             onClick={() => navigate(Path.Settings + "?tab=mcp")}
