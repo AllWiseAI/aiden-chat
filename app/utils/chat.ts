@@ -580,7 +580,7 @@ export function streamWithThink(
             if (type === "tool_call_confirm") {
               options.onUpdate?.(responseText, {
                 title: chunk.mcpInfo.tool,
-                request: prettyObject(chunk.mcpInfo) + "\n\n",
+                request: prettyObject(chunk.mcpInfo || "") + "\n\n",
               });
 
               // should check if user has approved the MCP

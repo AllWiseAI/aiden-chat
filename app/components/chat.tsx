@@ -400,7 +400,7 @@ function _Chat() {
   }, []);
 
   const renderCallRequest = (request: string | undefined) => {
-    return <Markdown content={prettyObject(request) || ""} />;
+    return <Markdown content={prettyObject(request || "")} />;
   };
 
   const renderCallResult = (result: string | undefined) => {
