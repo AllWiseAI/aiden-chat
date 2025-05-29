@@ -82,6 +82,8 @@ export function ChatItem(props: {
             props.selected &&
               (currentPath === Path.Chat || currentPath === Path.Home)
               ? "bg-gray-200"
+              : openMenu
+              ? "bg-gray-100"
               : "hover:bg-gray-100",
           )}
           onClick={props.onClick}
@@ -142,7 +144,12 @@ export function ChatItem(props: {
                       className="size-6 flex-center cursor-pointer "
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <MoreIcon className="hidden group-hover:block" />
+                      <MoreIcon
+                        className={clsx(
+                          "transition-opacity",
+                          openMenu ? "block" : "hidden group-hover:block",
+                        )}
+                      />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                       asChild

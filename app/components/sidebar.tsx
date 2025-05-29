@@ -277,7 +277,7 @@ export function SideBarBody(props: {
 
   return (
     !shouldNarrow && (
-      <div className="flex-1 overflow-y-auto flex flex-col scrollbar-hover">
+      <div className="flex-1 overflow-y-auto flex flex-col">
         <div className="flex flex-col gap-1 px-2.5 pt-2.5">{children}</div>
       </div>
     )
