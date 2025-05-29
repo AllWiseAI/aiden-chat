@@ -12,11 +12,42 @@ import {
   MCPServer,
   CustomMCPServer,
   MCPConfig,
+  EnvItem,
 } from "@/app/typing";
 
 const isEmptyObject = (obj: any) => {
   return Object.keys(obj).length === 0;
 };
+
+function parseConfig(
+  base_config: Record<string, { args: string[]; env: Record<string, string> }>,
+) {
+  const templateRegex = /<([^<>]+)>/g;
+  const templates = new Set<Record<string, string>>();
+  const envs: EnvItem[] = [];
+
+  for (const key in base_config) {
+    const { args = [], env = {} } = base_config[key];
+
+    // 提取 args 中的模板变量
+    for (const arg of args) {
+      let match;
+      while ((match = templateRegex.exec(arg)) !== null) {
+        templates.add({ key: match[1], value: "" });
+      }
+    }
+
+    // 提取 env 中的键值对
+    for (const [envKey, envValue] of Object.entries(env)) {
+      envs.push({ key: envKey, value: envValue });
+    }
+  }
+
+  return {
+    templates: Array.from(templates),
+    envs,
+  };
+}
 
 export function useMcpConfig() {
   const [config, setConfig, configRef] = useState<MCPConfig | null>(null);
@@ -45,7 +76,7 @@ export function useMcpConfig() {
     };
 
     fetchStatus();
-  }, [disableList]);
+  }, [disableList, configRef]);
 
   const mcpLocalJSONIds = useMemo(() => {
     if (!config) return [];
@@ -102,6 +133,7 @@ export function useMcpConfig() {
             mcp_logo: "",
             type: "json",
             showDelete: aiden_type === "custom",
+            settingInfo: null,
           });
         } else {
           addedInJSONIds.push(aiden_id);
@@ -112,6 +144,9 @@ export function useMcpConfig() {
             checked: aiden_enable,
             type: "json",
             showDelete: false,
+            settingInfo: parseConfig(
+              mcpRemoteItemConfig[aiden_id]?.base_config || {},
+            ),
           });
         }
       });
@@ -128,9 +163,17 @@ export function useMcpConfig() {
           type: "remote",
           checked: false,
           showDelete: false,
+          settingInfo: parseConfig(item.basic_config || {}),
         });
       }
     }
+    console.log(
+      "items",
+      items.map((item) => ({
+        mcp_name: item.mcp_name,
+        settingInfo: item.settingInfo,
+      })),
+    );
     if (config && remoteItems.length) {
       if (!initialSortedItemsRef.current) {
         const sorted = items.sort((a, b) => {

@@ -73,6 +73,13 @@ export type TRemoteMcpInfo = {
   type: string;
 };
 
+export type EnvItem = { key: string; value: string };
+
+export type TSettingInfo = {
+  templates: Record<string, string>[];
+  envs: EnvItem[];
+};
+
 export type McpItemInfo = Omit<
   TRemoteMcpInfo,
   | "basic_config"
@@ -89,6 +96,7 @@ export type McpItemInfo = Omit<
   description_zh?: string;
   tutorial_zh?: string;
   tutorial_en?: string;
+  settingInfo: TSettingInfo;
 };
 
 export type A2AServer = {

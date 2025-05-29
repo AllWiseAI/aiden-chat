@@ -7,10 +7,11 @@ import SuccessIcon from "../../icons/access.svg";
 import LoadingIcon from "../../icons/loading-spinner.svg";
 import ErrorIcon from "../../icons/error.svg";
 import clsx from "clsx";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { McpItemInfo, McpAction } from "@/app/typing";
 import { searchMcpServerStatus } from "@/app/services";
 import { delay } from "@/app/utils";
+import { showConfirm } from "@/app/components/confirm-modal/confirm";
 
 type McpItemProps = {
   item: McpItemInfo;
@@ -30,6 +31,7 @@ export function McpTableItem({
   onSelect,
 }: McpItemProps) {
   const [status, setStatus] = useState<McpAction | null>(null);
+  const [showSetting, setShowSetting] = useState(false);
   const StatusIcon = useMemo(() => {
     if (status === McpAction.Connecting) return LoadingIcon;
     else if (status === McpAction.Connected) return SuccessIcon;
@@ -37,6 +39,25 @@ export function McpTableItem({
       return ErrorIcon;
     else return null;
   }, [status]);
+
+  useEffect(() => {
+    const { envs, templates } = item.settingInfo || {};
+    if (envs?.length || templates?.length) {
+      setShowSetting(true);
+    }
+  }, [item]);
+
+  const handleShowSettingModal = useCallback((e) => {
+    e.stopPropagation();
+    console.log("Show setting modal");
+    showConfirm({
+      title: "",
+      noClose: true,
+      description: "Coming soon",
+      type: "setting",
+      settingInfo: item.settingInfo,
+    });
+  }, []);
 
   const {
     mcp_id,
@@ -72,7 +93,7 @@ export function McpTableItem({
       }
     }
     fetchStatus();
-  }, [checked]);
+  }, [checked, mcp_name]);
 
   return (
     <div
@@ -110,21 +131,27 @@ export function McpTableItem({
       >
         {description || "No description"}
       </div>
-      <div
-        className={`flex items-center ${
-          showDelete ? "justify-between" : "justify-end"
-        }`}
-      >
-        {showDelete && (
-          <Button
-            className="bg-[#EF466F]/6 hover:bg-[#EF466F]/20 text-[#EF466F]"
-            onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
-              onDelete(e, mcp_id, mcp_name)
-            }
-          >
-            Remove
-          </Button>
-        )}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          {showSetting && (
+            <Button
+              className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E]"
+              onClick={handleShowSettingModal}
+            >
+              Setting
+            </Button>
+          )}
+          {showDelete && (
+            <Button
+              className="bg-[#EF466F]/6 hover:bg-[#EF466F]/20 text-[#EF466F]"
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
+                onDelete(e, mcp_id, mcp_name)
+              }
+            >
+              Remove
+            </Button>
+          )}
+        </div>
         <Switch
           id={mcp_id}
           checked={checked}
