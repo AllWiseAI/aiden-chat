@@ -1,11 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import useState from "react-usestateref";
 import { invoke } from "@tauri-apps/api/tauri";
-import {
-  updateMcpConfig,
-  getRemoteMcpItems,
-  disableMcpServers,
-} from "@/app/services";
+import { updateMcpConfig, getRemoteMcpItems } from "@/app/services";
 import {
   McpItemInfo,
   TRemoteMcpInfo,
@@ -35,16 +31,13 @@ export function useMcpConfig() {
 
   useEffect(() => {
     if (!configRef.current) return;
-    const fetchStatus = async () => {
-      const enabledNames = Object.keys(configRef.current!.mcpServers).filter(
-        (name) => !disableList.includes(name),
-      );
-
+    const updateConfig = async () => {
       // 调用接口
-      await disableMcpServers(disableList);
+      const { version, ...noVersionConfig } = configRef.current as MCPConfig;
+      await updateMcpConfig({ ...noVersionConfig });
     };
 
-    fetchStatus();
+    updateConfig();
   }, [disableList]);
 
   const mcpLocalJSONIds = useMemo(() => {

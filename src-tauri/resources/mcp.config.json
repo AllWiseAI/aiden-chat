@@ -1,54 +1,46 @@
 {
-    "version": "0.0.7",
-    "mcpServers": {
-        "search": {
-            "url": "https://dev.aidenai.io/sse",
-            "transport": "sse",
-            "aiden_type": "default",
-            "aiden_enable": true,
-            "aiden_id": "internal-search"
-        },
-        "desktop-commander": {
-            "command": "npx",
-            "args": [
-                "-y",
-                "@wonderwhy-er/desktop-commander"
-            ],
-            "transport": "stdio",
-            "aiden_type": "default",
-            "aiden_enable": true,
-            "aiden_id": "internal-desktop-commander"
-        },
-        "fetch": {
-            "command": "uvx",
-            "args": [
-                "mcp-server-fetch"
-            ],
-            "transport": "stdio",
-            "aiden_type": "default",
-            "aiden_enable": true,
-            "aiden_id": "internal-search"
-        },
-        "aiden-time": {
-            "command": "uv",
-            "args": [
-                "run",
-                "time_server.py"
-            ],
-            "transport": "stdio",
-            "aiden_type": "default",
-            "aiden_enable": true,
-            "aiden_id": "internal-time"
-        }
+  "version": "0.0.7",
+  "mcpServers": {
+    "search": {
+      "url": "https://dev.aidenai.io/sse",
+      "transport": "sse",
+      "aiden_type": "default",
+      "aiden_enable": true,
+      "aiden_id": "internal-search"
     },
-    "a2aServers": [
-        {
-            "name": "Travel Agent",
-            "url": "http://127.0.0.1:5001"
-        },
-        {
-            "name": "Currency Exchange Agent",
-            "url": "https://prod.aidenai.io/agents/langgraph/"
-        }
-    ]
+    "desktop-commander": {
+      "command": "npx",
+      "args": ["-y", "@wonderwhy-er/desktop-commander"],
+      "transport": "stdio",
+      "aiden_type": "default",
+      "aiden_enable": true,
+      "aiden_id": "internal-desktop-commander"
+    },
+    "fetch": {
+      "command": "uvx",
+      "args": ["mcp-server-fetch"],
+      "transport": "stdio",
+      "aiden_type": "default",
+      "aiden_enable": true,
+      "aiden_id": "internal-fetch"
+    },
+    "aiden-time": {
+      "command": "uv",
+      "args": ["run", "time_server.py"],
+      "transport": "stdio",
+      "aiden_type": "default",
+      "aiden_enable": true,
+      "aiden_id": "internal-time"
+    }
+  },
+  "a2aServers": [
+    {
+      "name": "Travel Agent",
+      "url": "http://127.0.0.1:5001"
+    },
+    {
+      "name": "Currency Exchange Agent",
+      "url": "https://prod.aidenai.io/agents/langgraph/"
+    }
+  ]
 }
