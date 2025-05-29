@@ -9,7 +9,7 @@
   },
   "package": {
     "productName": "AidenChat",
-    "version": "0.1.3"
+    "version": "0.1.4"
   },
   "tauri": {
     "allowlist": {
@@ -92,7 +92,7 @@
       "resources": [
         "bin/*",
         "resources/mcp.config.json",
-        "../node_modules/host_server_*/**/*"
+        "resources/host_server_*/**/*"
       ],
       "shortDescription": "AidenChat App",
       "targets": "all",

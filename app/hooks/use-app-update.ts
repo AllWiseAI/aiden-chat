@@ -4,6 +4,7 @@ import {
   installUpdate,
   onUpdaterEvent,
 } from "@tauri-apps/api/updater";
+import { relaunch } from "@tauri-apps/api/process";
 
 type UpdateStatus =
   | "PENDING"
@@ -21,6 +22,7 @@ interface UpdaterEventPayload {
 export function useAppUpdate() {
   const [isShowUpdate, setIsShowUpdate] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isLatest, setIsLatest] = useState(false);
 
   useEffect(() => {
     let unlisten: (() => void) | undefined;
@@ -43,6 +45,15 @@ export function useAppUpdate() {
 
           if (status === "INSTALLING") {
             setIsUpdating(true);
+          }
+          if (status === "UPTODATE") {
+            setIsLatest(true);
+            console.log("Already latest version");
+          }
+          if (status === "DONE") {
+            setIsUpdating(false);
+            console.log("Install update success, relaunching...");
+            relaunch();
           }
         });
 
@@ -77,6 +88,7 @@ export function useAppUpdate() {
   return {
     isShowUpdate,
     isUpdating,
+    isLatest,
     handleUpdate,
   };
 }
