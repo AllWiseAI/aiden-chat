@@ -34,9 +34,7 @@ export function useMcpConfig() {
     const newConfig = { ...config, mcpServers: { ...filteredServers } };
     const updateConfig = async () => {
       // 调用接口
-      console.log(111111);
       await updateMcpConfig(newConfig);
-      console.log(222222);
     };
 
     updateConfig();
