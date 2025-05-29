@@ -31,10 +31,9 @@ export function McpTableItem({
 }: McpItemProps) {
   const [status, setStatus] = useState<McpAction | null>(null);
   const StatusIcon = useMemo(() => {
-    if (status === McpAction.Connecting) return LoadingIcon;
+    if (status === McpAction.Loading) return LoadingIcon;
     else if (status === McpAction.Connected) return SuccessIcon;
-    else if (status === McpAction.Disconnected || status === McpAction.Failed)
-      return ErrorIcon;
+    else if (status === McpAction.Failed) return ErrorIcon;
     else return null;
   }, [status]);
 
@@ -48,12 +47,13 @@ export function McpTableItem({
     showDelete,
   } = item;
 
+  // 切换时尝试更新状态
   useEffect(() => {
     if (!checked) {
       setStatus(null);
       return;
     }
-    setStatus(McpAction.Connecting);
+    setStatus(McpAction.Loading);
     async function fetchStatus() {
       await delay(500);
       try {
@@ -61,18 +61,38 @@ export function McpTableItem({
         if (!res || !res.data) {
           throw new Error("No data");
         }
-
         const { data } = res;
         if (data.status) {
           setStatus(data.status);
         } else throw new Error("No status");
       } catch (error) {
         console.error("Failed to fetch MCP server status", error);
-        setStatus(McpAction.Disconnected);
+        setStatus(McpAction.Failed);
       }
     }
     fetchStatus();
   }, [checked]);
+
+  // loading 状态轮询
+  useEffect(() => {
+    if (status !== McpAction.Loading) return;
+    const interval = setInterval(async () => {
+      try {
+        const res = (await searchMcpServerStatus(mcp_name)) as any;
+        if (!res || !res.data) {
+          throw new Error("No data");
+        }
+        const { data } = res;
+        if (data.status) {
+          setStatus(data.status);
+        } else throw new Error("No status");
+      } catch (error) {
+        console.error("Failed to fetch MCP server status", error);
+        setStatus(McpAction.Failed);
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [status]);
 
   return (
     <div
@@ -91,7 +111,7 @@ export function McpTableItem({
           {type === "json" && StatusIcon && (
             <StatusIcon
               className={clsx("absolute right-0 bottom-0 size-4", {
-                "animate-spin text-main": status === McpAction.Connecting,
+                "animate-spin text-main": status === McpAction.Loading,
               })}
             />
           )}
@@ -111,8 +131,8 @@ export function McpTableItem({
         {description || "No description"}
       </div>
       <div
-        className={`flex items-center ${
-          showDelete ? "justify-between" : "justify-end"
+        className={`flex mt-auto ${
+          showDelete ? "justify-between items-end" : "justify-end items-center"
         }`}
       >
         {showDelete && (

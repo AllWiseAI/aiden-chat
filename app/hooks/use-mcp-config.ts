@@ -1,11 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import useState from "react-usestateref";
 import { invoke } from "@tauri-apps/api/tauri";
-import {
-  updateMcpConfig,
-  getRemoteMcpItems,
-  disableMcpServers,
-} from "@/app/services";
+import { updateMcpConfig, getRemoteMcpItems } from "@/app/services";
 import {
   McpItemInfo,
   TRemoteMcpInfo,
@@ -35,16 +31,13 @@ export function useMcpConfig() {
 
   useEffect(() => {
     if (!configRef.current) return;
-    const fetchStatus = async () => {
-      const enabledNames = Object.keys(configRef.current!.mcpServers).filter(
-        (name) => !disableList.includes(name),
-      );
-
+    const newConfig = { ...config, mcpServers: { ...filteredServers } };
+    const updateConfig = async () => {
       // 调用接口
-      await disableMcpServers(disableList);
+      await updateMcpConfig(newConfig);
     };
 
-    fetchStatus();
+    updateConfig();
   }, [disableList]);
 
   const mcpLocalJSONIds = useMemo(() => {
@@ -223,9 +216,9 @@ export function useMcpConfig() {
     setConfig(newConfig);
     try {
       await invoke<MCPConfig>("write_mcp_config", { newConfig });
-      const { version, ...noVersionConfig } = configRef.current as MCPConfig;
       // no need to await this function to back to table
-      updateMcpConfig({ ...noVersionConfig });
+      const fetchConfig = { ...config, mcpServers: { ...filteredServers } };
+      updateMcpConfig(fetchConfig);
       return true;
     } catch (e: any) {
       throw new Error(e);
