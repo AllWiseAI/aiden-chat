@@ -1,5 +1,5 @@
 {
-  "version": "0.0.8",
+  "version": "0.0.9",
   "mcpServers": {
     "search": {
       "url": "https://dev.aidenai.io/sse",
@@ -31,6 +31,53 @@
       "aiden_type": "default",
       "aiden_enable": true,
       "aiden_id": "internal-time"
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking@0.6.2"
+      ],
+      "transport": "stdio",
+      "aiden_type": "default",
+      "aiden_enable": true,
+      "aiden_id": "sequential-thinking"
+    },
+    "excel": {
+      "command": "npx",
+      "args": [
+        "--yes",
+        "@negokaz/excel-mcp-server@0.9.2"
+      ],
+      "env": {
+        "EXCEL_MCP_PAGING_CELLS_LIMIT": "4000"
+      },
+      "transport": "stdio",
+      "aiden_type": "default",
+      "aiden_enable": true,
+      "aiden_id": "internal-excel"
+    },
+    "ppt": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "office-powerpoint-mcp-server",
+        "ppt_mcp_server"
+      ],
+      "transport": "stdio",
+      "aiden_type": "default",
+      "aiden_enable": true,
+      "aiden_id": "internal-ppt"
+    },
+    "markitdown": {
+      "command": "uvx",
+      "args": [
+        "markitdown-mcp"
+      ],
+      "transport": "stdio",
+      "aiden_type": "default",
+      "aiden_enable": true,
+      "aiden_id": "markitdown"
     }
   },
   "a2aServers": [
