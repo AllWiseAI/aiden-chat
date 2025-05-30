@@ -9,7 +9,7 @@
   },
   "package": {
     "productName": "AidenChat",
-    "version": "0.1.4"
+    "version": "0.1.5"
   },
   "tauri": {
     "allowlist": {
@@ -62,11 +62,7 @@
       "http": {
         "all": true,
         "request": true,
-        "scope": [
-          "https://*",
-          "http://*",
-          "https://dev.aidenai.io/auth/:*"
-        ]
+        "scope": ["https://*", "http://*", "https://dev.aidenai.io/auth/:*"]
       }
     },
     "bundle": {
@@ -77,9 +73,7 @@
         "depends": []
       },
       "externalBin": [],
-      "icon": [
-        "icons/logo.icns"
-      ],
+      "icon": ["icons/logo.icns"],
       "identifier": "com.aiden.chat",
       "longDescription": "AidenChat is a cross-platform ChatGPT client, including Web/Win/Linux/OSX/PWA.",
       "macOS": {
@@ -92,7 +86,7 @@
       "resources": [
         "bin/*",
         "resources/mcp.config.json",
-        "resources/host_server_*/**/*"
+        "../node_modules/host_server_*/**/*"
       ],
       "shortDescription": "AidenChat App",
       "targets": "all",
