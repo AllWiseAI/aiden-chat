@@ -22,7 +22,7 @@ export async function fetchNoProxy(
       url,
       method,
       headers,
-      body: JSON.stringify(body.payload),
+      body: JSON.stringify(body?.payload),
     },
   });
 
