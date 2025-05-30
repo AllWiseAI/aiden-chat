@@ -8,6 +8,7 @@ import {
   ConfirmType,
 } from "@/app/components/confirm-modal/confirm";
 import { McpTableItem } from "./mcp-table-item";
+import LoadingIcon from "../../icons/loading-spinner.svg";
 import { McpItemInfo, McpConfigKey, TDetailInfo } from "@/app/typing";
 
 type ServerTableProps = {
@@ -49,28 +50,36 @@ function ServerTable({
     }
   };
   return (
-    <div className="grid grid-cols-2 gap-5">
-      {servers.map((item) => (
-        <McpTableItem
-          key={item.mcp_id + item.mcp_name}
-          item={{ ...item }}
-          onSwitchChange={async (enable, id, name) => {
-            try {
-              await switchDisable(id, name, enable);
-              toast.success("切换成功", {
-                className: "w-auto max-w-max",
-              });
-            } catch (e: any) {
-              toast.error(e, {
-                className: "w-auto max-w-max",
-              });
-            }
-          }}
-          onDelete={handleDeleteMcp}
-          onSelect={() => setDetail({ ...item })}
-        />
-      ))}
-    </div>
+    <>
+      {servers.length ? (
+        <div className="grid grid-cols-2 gap-5">
+          {servers.map((item) => (
+            <McpTableItem
+              key={item.mcp_id + item.mcp_name}
+              item={{ ...item }}
+              onSwitchChange={async (enable, id, name) => {
+                try {
+                  await switchDisable(id, name, enable);
+                  toast.success("切换成功", {
+                    className: "w-auto max-w-max",
+                  });
+                } catch (e: any) {
+                  toast.error(e, {
+                    className: "w-auto max-w-max",
+                  });
+                }
+              }}
+              onDelete={handleDeleteMcp}
+              onSelect={() => setDetail({ ...item })}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="w-full h-full flex-center">
+          <LoadingIcon className="size-6 animate-spin text-main" />
+        </div>
+      )}
+    </>
   );
 }
 
@@ -90,7 +99,7 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
         </Button>
       </div>
       <div
-        className="overflow-y-auto"
+        className="overflow-y-auto h-full"
         style={{ maxHeight: "calc(100% - 80px)" }}
       >
         <ServerTable

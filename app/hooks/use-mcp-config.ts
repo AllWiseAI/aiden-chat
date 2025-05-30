@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from "react";
 import useState from "react-usestateref";
 import { invoke } from "@tauri-apps/api/tauri";
 import { updateMcpConfig, getRemoteMcpItems } from "@/app/services";
+import lodash from "lodash";
 import {
   McpItemInfo,
   TRemoteMcpInfo,
@@ -31,6 +32,10 @@ export function useMcpConfig() {
 
   useEffect(() => {
     if (!configRef.current) return;
+    const filteredConfig = restoreServers({ ...filteredServers });
+    const isEqual = lodash.isEqual(config?.mcpServers, filteredConfig);
+    // 相等说明启动触发，不应该调用接口
+    if (isEqual) return;
     const newConfig = { ...config, mcpServers: { ...filteredServers } };
     const updateConfig = async () => {
       // 调用接口
