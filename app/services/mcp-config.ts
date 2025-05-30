@@ -1,4 +1,5 @@
 import { fetch, Body } from "@tauri-apps/api/http";
+import { fetchNoProxy } from "@/app/utils/fetch-no-proxy";
 
 const baseURL = "http://localhost:6888";
 
@@ -19,35 +20,37 @@ export async function getRemoteMcpItems() {
 }
 
 export async function updateMcpConfig(configJson: object) {
-  const result = await fetch(`${baseURL}/config/update`, {
+  const result = await fetchNoProxy(`${baseURL}/config/update`, {
     method: "POST",
     headers: { ...getCommonHeaders() },
     body: Body.json(configJson),
   });
-
-  return result.data;
+  const jsonResult = await result.json();
+  return jsonResult;
 }
 
 export async function disableMcpServers(servers: string | string[]) {
   const payload = {
     servers: Array.isArray(servers) ? servers : [servers],
   };
-  const result = await fetch(`${baseURL}/mcp_servers/disable`, {
+  const result = await fetchNoProxy(`${baseURL}/mcp_servers/disable`, {
     method: "POST",
     headers: { ...getCommonHeaders() },
     body: Body.json(payload),
   });
 
-  return result.data;
+  const jsonResult = await result.json();
+  return jsonResult;
 }
 
 export async function searchMcpServerStatus(name: string) {
   const url = `${baseURL}/mcp_servers/status/${name}`;
 
-  const result = await fetch(url, {
+  const result = await fetchNoProxy(url, {
     method: "GET",
     headers: { ...getCommonHeaders() },
   });
+  const jsonResult = await result.json();
 
-  return result.data;
+  return jsonResult;
 }

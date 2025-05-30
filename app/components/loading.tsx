@@ -44,10 +44,10 @@ export function LoadingPage() {
     const ok = init();
     setIsAuthed(true);
     if (!ok || !isLogin) {
-      // navigate(Path.Login, { replace: true });
+      navigate(Path.Login, { replace: true });
     } else {
       if (!isServerReady) return;
-      // navigate(Path.Chat, { replace: true });
+      navigate(Path.Chat, { replace: true });
     }
   }, [hydrated, isLogin, init, navigate, isServerReady]);
 
