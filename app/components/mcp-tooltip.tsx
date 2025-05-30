@@ -147,7 +147,7 @@ function McpTooltip({ icon }: { icon: ReactElement }) {
                         WebkitLineClamp: 1,
                         WebkitBoxOrient: "vertical",
                         overflow: "hidden",
-                        maxWidth: "90px",
+                        maxWidth: "110px",
                       }}
                     >
                       {item.name}

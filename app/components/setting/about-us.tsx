@@ -17,7 +17,7 @@ export default function AboutUs() {
         if (isLatest || !isShowUpdate) {
           showConfirm({
             title: "",
-            description: `The current v ${config.package.version} is already the latest version.`,
+            description: `The current v${config.package.version} is already the latest version.`,
             type: "latestVersion",
             noClose: true,
             withLogo: true,
@@ -42,7 +42,7 @@ export default function AboutUs() {
       <div className="flex gap-4">
         <Logo className="size-20" />
         <div className="flex flex-col gap-2 justify-center font-medium">
-          <div>{"v " + config.package.version}</div>
+          <div>{"v" + config.package.version}</div>
           <div className="text-xs text-[#6C7275]">
             Contact us: contact@allwise.com
           </div>
