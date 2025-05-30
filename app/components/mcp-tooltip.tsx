@@ -35,7 +35,7 @@ function McpTooltip({ icon }: { icon: ReactElement }) {
           setMcpArr((preArr) =>
             preArr.map((item) =>
               item.name === name
-                ? { ...item, action: McpAction.Connecting }
+                ? { ...item, action: McpAction.Loading }
                 : item,
             ),
           );
@@ -48,11 +48,17 @@ function McpTooltip({ icon }: { icon: ReactElement }) {
           if (data.status) return { name, action: data.status };
           else throw new Error("No status");
         } catch (e: any) {
-          return { name, action: McpAction.Disconnected };
+          return { name, action: McpAction.Failed };
         }
       }),
     );
-    setMcpArr(result);
+    // 只修改loading的item状态
+    setMcpArr((prevArr) =>
+      prevArr.map((item) => {
+        const updated = result.find((r) => r.name === item.name);
+        return updated ? { ...item, action: updated.action } : item;
+      }),
+    );
   };
 
   useEffect(() => {
@@ -64,14 +70,30 @@ function McpTooltip({ icon }: { icon: ReactElement }) {
       .filter(([name]) => !disableList.includes(name))
       .map(([name]) => ({
         name,
-        action: McpAction.Disconnected,
+        action: McpAction.Loading,
       }));
     setMcpArr(result);
   }, [disableList, config]);
 
+  useEffect(() => {
+    const hasLoading = mcpArr.some((item) => item.action === McpAction.Loading);
+    if (!hasLoading) return;
+    // 轮询
+    const interval = setInterval(async () => {
+      const enableName = mcpArr
+        .filter((item) => item.action === McpAction.Loading)
+        .map((item) => item.name);
+      await getMcpStatus(enableName);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [mcpArr]);
+
   const updateStatus = useDebouncedCallback(
     async () => {
-      const enableName = mcpArr.map((item) => item.name);
+      const enableName = mcpArr
+        .filter((item) => item.action === McpAction.Loading)
+        .map((item) => item.name);
       await getMcpStatus(enableName);
     },
     5000,
@@ -93,7 +115,7 @@ function McpTooltip({ icon }: { icon: ReactElement }) {
         </TooltipTrigger>
         <TooltipContent
           hasArrow={false}
-          className="flex flex-col items-center bg-white text-black dark:bg-[#232627] dark:text-white p-2 mb-2 text-sm font-medium"
+          className="flex flex-col gap-2 items-center bg-white text-black dark:bg-[#232627] dark:text-white p-2 mb-2 text-sm font-medium"
           style={{
             boxShadow: `
                     0px 0px 24px 4px rgba(0,0,0,0.05),
@@ -101,37 +123,43 @@ function McpTooltip({ icon }: { icon: ReactElement }) {
                 `,
           }}
         >
-          {mcpArr.map((item) => {
-            let StatusIcon;
-            if (item.action === McpAction.Connecting)
-              StatusIcon = (
-                <LoadingIcon className="animate-spin size-4 text-[#6C7275]" />
-              );
-            else if (item.action === McpAction.Connected)
-              StatusIcon = <AccessIcon />;
-            else if (item.action === McpAction.Disconnected)
-              StatusIcon = <ErrorIcon />;
-            return (
-              <div
-                key={item.name}
-                className="w-30 h-8 p-2 flex justify-between items-center"
-              >
-                <p
-                  className="text-[#6C7275] h-4 text-xs"
-                  style={{
-                    display: "-webkit-box",
-                    WebkitLineClamp: 1,
-                    WebkitBoxOrient: "vertical",
-                    overflow: "hidden",
-                    maxWidth: "90px",
-                  }}
-                >
-                  {item.name}
-                </p>
-                {StatusIcon}
-              </div>
-            );
-          })}
+          {mcpArr.length ? (
+            <div className="w-40 max-h-[300px] overflow-y-auto">
+              {mcpArr.map((item) => {
+                let StatusIcon;
+                if (item.action === McpAction.Loading)
+                  StatusIcon = (
+                    <LoadingIcon className="animate-spin size-4 text-[#6C7275]" />
+                  );
+                else if (item.action === McpAction.Connected)
+                  StatusIcon = <AccessIcon />;
+                else if (item.action === McpAction.Failed)
+                  StatusIcon = <ErrorIcon />;
+                return (
+                  <div
+                    key={item.name}
+                    className="h-8 p-2 flex justify-between items-center"
+                  >
+                    <p
+                      className="text-[#6C7275] h-4 text-xs"
+                      style={{
+                        display: "-webkit-box",
+                        WebkitLineClamp: 1,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                        maxWidth: "90px",
+                      }}
+                    >
+                      {item.name}
+                    </p>
+                    {StatusIcon}
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="p-5 text-gray-500">No Mcp</div>
+          )}
           <div
             className="w-max text-main text-center hover:opacity-80 cursor-pointer"
             onClick={() => navigate(Path.Settings + "?tab=mcp")}
