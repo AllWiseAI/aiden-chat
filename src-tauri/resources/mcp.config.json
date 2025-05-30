@@ -10,7 +10,7 @@
     },
     "desktop-commander": {
       "command": "npx",
-      "args": ["-y", "@wonderwhy-er/desktop-commander"],
+      "args": ["-y", "@wonderwhy-er/desktop-commander@0.2.2"],
       "transport": "stdio",
       "aiden_type": "default",
       "aiden_enable": true,
@@ -18,7 +18,7 @@
     },
     "fetch": {
       "command": "uvx",
-      "args": ["mcp-server-fetch"],
+      "args": ["mcp-server-fetch@2025.4.7"],
       "transport": "stdio",
       "aiden_type": "default",
       "aiden_enable": true,
@@ -61,7 +61,7 @@
       "command": "uvx",
       "args": [
         "--from",
-        "office-powerpoint-mcp-server",
+        "office-powerpoint-mcp-server@1.0.0",
         "ppt_mcp_server"
       ],
       "transport": "stdio",
@@ -72,7 +72,7 @@
     "markitdown": {
       "command": "uvx",
       "args": [
-        "markitdown-mcp"
+        "markitdown-mcp@0.0.1a4"
       ],
       "transport": "stdio",
       "aiden_type": "default",
