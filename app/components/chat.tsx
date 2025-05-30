@@ -605,7 +605,10 @@ function _Chat() {
             )}
             <div className={styles["chat-input-panel"]}>
               <label
-                className={clsx(styles["chat-input-panel-inner"])}
+                className={clsx(
+                  styles["chat-input-panel-inner"],
+                  "overflow-hidden",
+                )}
                 htmlFor="chat-input"
               >
                 <textarea

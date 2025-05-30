@@ -676,7 +676,8 @@
   resize: none;
   outline: none;
   box-sizing: border-box;
-  min-height: 100px;
+  overflow-y: scroll;
+  height: 100px;
 }
 
 .chat-input:focus {
