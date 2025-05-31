@@ -17,7 +17,7 @@ export default function WindowSize() {
         await appWindow.setSize(new LogicalSize(500, 670));
         await appWindow.setResizable(false);
       } else {
-        await appWindow.setSize(new LogicalSize(1080, 670));
+        await appWindow.setSize(new LogicalSize(1440, 1024));
         await appWindow.setResizable(true);
       }
       await appWindow.center();

@@ -57,7 +57,6 @@ const McpEditor: React.FC<Props> = ({ setMode }) => {
     try {
       const parsed = JSON.parse(jsonStr);
       const res = await saveEditorConfig(parsed);
-      console.log("===save res", res);
       if (res) {
         toast.success("配置成功", {
           className: "w-auto max-w-max",

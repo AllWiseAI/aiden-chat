@@ -7,14 +7,13 @@ import SuccessIcon from "../../icons/access.svg";
 import LoadingIcon from "../../icons/loading-spinner.svg";
 import ErrorIcon from "../../icons/error.svg";
 import clsx from "clsx";
-import { useMemo, useCallback } from "react";
+import { useEffect, useMemo, useCallback, useState } from "react";
 import { McpItemInfo, McpAction } from "@/app/typing";
 import { useMcpStore } from "@/app/store/mcp";
 import { fetchMcpStatus } from "@/app/utils/mcp";
 import { toast } from "sonner";
 
 type McpItemProps = {
-  isLocal: boolean;
   item: McpItemInfo;
   onSwitchChange: (
     enable: boolean,
@@ -30,7 +29,6 @@ type McpItemProps = {
 };
 
 export function McpTableItem({
-  isLocal,
   item,
   onSwitchChange,
   onDelete,
@@ -47,16 +45,15 @@ export function McpTableItem({
 
   const { updateMcpStatusList } = useMcpStore();
   const mcpStatusList = useMcpStore((state) => state.mcpStatusList);
-  const mcpStatusCurrent = useMemo(() => {
-    return mcpStatusList.find((item) => item.name === mcp_name);
-  }, [mcpStatusList]);
 
-  const status = useMemo(() => {
-    if (mcpStatusCurrent) {
-      return mcpStatusCurrent.action;
+  const [status, setStatus] = useState<McpAction | null>(null);
+
+  useEffect(() => {
+    const current = mcpStatusList.find((item) => item.name === mcp_name);
+    if (current) {
+      setStatus(current.action);
     }
-    return null;
-  }, [mcpStatusCurrent]);
+  }, [mcpStatusList]);
 
   const StatusIcon = useMemo(() => {
     if (status === McpAction.Loading) return LoadingIcon;
@@ -66,20 +63,32 @@ export function McpTableItem({
   }, [status]);
 
   const handleUpdateStatus = useCallback(async (enable: boolean) => {
-    const status = await fetchMcpStatus(mcp_name);
     const type = enable ? "update" : "delete";
-    updateMcpStatusList(
-      {
-        name: item.mcp_name,
-        action: status,
-      },
-      type,
-    );
+    if (enable) {
+      const status = await fetchMcpStatus(mcp_name);
+      setStatus(status);
+      updateMcpStatusList(
+        {
+          name: item.mcp_name,
+          action: status,
+        },
+        type,
+      );
+    }
   }, []);
 
   const handleCheckedChange = useCallback(async (enable: boolean) => {
     try {
+      setStatus(McpAction.Loading);
+      updateMcpStatusList(
+        {
+          name: item.mcp_name,
+          action: McpAction.Loading,
+        },
+        "update",
+      );
       await onSwitchChange(enable, mcp_id, mcp_name, type);
+      console.log("[Mcp status change]: update remote config done");
       handleUpdateStatus(enable);
     } catch (e: any) {
       toast.error(e, {
@@ -107,7 +116,7 @@ export function McpTableItem({
             <FetchIcon />
           )}
 
-          {isLocal && checked && StatusIcon && (
+          {checked && StatusIcon && (
             <StatusIcon
               className={clsx("absolute right-0 bottom-0 size-4", {
                 "animate-spin text-main": status === McpAction.Loading,

@@ -1,13 +1,6 @@
 import { StoreKey } from "../constant";
 import { createPersistStore } from "../utils/store";
 import {
-  updateMcpConfig as updateRemoteMcpConfig,
-  getRemoteMcpItems,
-  searchMcpServerStatus,
-} from "@/app/services";
-import { invoke } from "@tauri-apps/api/tauri";
-
-import {
   McpItemInfo,
   TRemoteMcpInfo,
   CustomMCPServer,
@@ -16,6 +9,16 @@ import {
   McpStatusItem,
   McpAction,
 } from "@/app/typing";
+import {
+  getFirstValue,
+  fetchMcpStatus,
+  getMcpStatusList,
+  readMcpConfig,
+  getRemoteMcpList,
+  getRenderMcpList,
+  updateConfig,
+  restoreServers,
+} from "@/app/utils/mcp";
 
 let pollingTimer: NodeJS.Timeout | null = null;
 
@@ -25,168 +28,6 @@ const DEFAULT_MCP_STATE = {
   renderMcpList: [] as McpItemInfo[],
   mcpRemoteInfoMap: new Map(),
   mcpStatusList: [] as McpStatusItem[],
-};
-
-const isEmptyObject = (obj: any) => {
-  return Object.keys(obj).length === 0;
-};
-
-const getFirstValue = <T extends Record<string, any>>(
-  obj: T,
-): T[keyof T] | undefined => {
-  const firstKey = Object.keys(obj)[0];
-  return firstKey ? obj[firstKey] : undefined;
-};
-
-const fetchMcpStatus = async (name: string): Promise<McpAction> => {
-  try {
-    const res = (await searchMcpServerStatus(name)) as any;
-    if (!res || !res.data) {
-      throw new Error("No data");
-    }
-    const { data } = res;
-    if (data.status) return data.status;
-    else throw new Error("No status");
-  } catch (e) {
-    return McpAction.Failed;
-  }
-};
-
-const getMcpStatusList = async (config: MCPConfig) => {
-  if (!config) return;
-  const enableList = Object.keys(config.mcpServers || {}).filter((name) => {
-    const item = config.mcpServers[name];
-    return item.aiden_enable;
-  });
-  console.log("enableList===", enableList);
-  const mcpStatusList = await Promise.all(
-    enableList.map(async (name) => {
-      const status = await fetchMcpStatus(name);
-      return { name, action: status };
-    }),
-  );
-  console.log("mcpStatusList===", mcpStatusList);
-  return mcpStatusList;
-};
-
-const readMcpConfig = async () => {
-  console.log("[Mcp store] readMcpConfig");
-  const data = await invoke<MCPConfig>("read_mcp_config");
-  return data;
-};
-
-const getRemoteMcpList = async () => {
-  console.log("[Mcp store] getRemoteMcpList");
-  const remoteMcpItems = (await getRemoteMcpItems()) as TRemoteMcpInfo[];
-  return remoteMcpItems || [];
-};
-
-const getRenderMcpList: any = async (
-  config: any,
-  remoteMcpList: TRemoteMcpInfo[],
-) => {
-  console.log("[Mcp store] getRenderMcpList");
-  if (!config)
-    return {
-      mcpRemoteInfoMap: new Map(),
-      renderMcpList: [],
-    };
-  const items: McpItemInfo[] = [];
-  const addedInJSONIds: string[] = [];
-  const mcpRemoteInfoMap = new Map();
-  for (let item of remoteMcpList) {
-    mcpRemoteInfoMap.set(item.mcp_id, item);
-  }
-  if (config?.mcpServers) {
-    Object.entries(config.mcpServers).forEach(([name, server]) => {
-      const { aiden_type, aiden_enable, aiden_id } = server as CustomMCPServer;
-      if (!mcpRemoteInfoMap.has(aiden_id)) {
-        items.push({
-          mcp_id: aiden_id,
-          mcp_name: name,
-          checked: aiden_enable,
-          description: "",
-          description_en: "",
-          description_zh: "",
-          tutorial: "",
-          tutorial_en: "",
-          tutorial_zh: "",
-          mcp_logo: "",
-          type: aiden_type,
-        });
-      } else {
-        addedInJSONIds.push(aiden_id);
-        items.push({
-          ...mcpRemoteInfoMap.get(aiden_id),
-          mcp_id: aiden_id,
-          mcp_name: name,
-          checked: aiden_enable,
-          type: "remote",
-          showDelete: false,
-        });
-      }
-    });
-  }
-
-  for (let item of remoteMcpList) {
-    if (
-      !addedInJSONIds.includes(item.mcp_id) &&
-      item.mcp_id &&
-      !isEmptyObject(item.basic_config)
-    ) {
-      items.push({
-        ...item,
-        type: "remote",
-        checked: false,
-      });
-    }
-  }
-
-  return {
-    mcpRemoteInfoMap,
-    renderMcpList: items,
-  };
-};
-
-const updateLocalConfig = async (config: any) => {
-  console.log("[Mcp store] updateLocalConfig");
-  try {
-    await invoke<MCPConfig>("write_mcp_config", { newConfig: config });
-    return true;
-  } catch (e: any) {
-    throw new Error(e);
-  }
-};
-
-const updateConfig = async (newConfig: any) => {
-  try {
-    let res = await updateLocalConfig(newConfig);
-    if (res) {
-      console.log("[Mcp store] updateRemoteMcpConfig");
-      updateRemoteMcpConfig(newConfig);
-    } else {
-      console.log("Failed to write local mcp.config.json", res);
-    }
-  } catch (e: any) {
-    console.log("Failed to write local mcp.config.json", e);
-  }
-};
-
-const restoreServers = (
-  newConfig: Record<string, MCPServer>,
-  config: MCPConfig,
-) => {
-  console.log("[Mcp store] restoreServers");
-  const updatedConfig: Record<string, CustomMCPServer> = {};
-  Object.entries(newConfig).forEach(([name, server]) => {
-    updatedConfig[name] = {
-      ...server,
-      aiden_enable: config?.mcpServers[name]?.aiden_enable || true,
-      aiden_id: config?.mcpServers[name]?.aiden_id || "",
-      aiden_type: config?.mcpServers[name]?.aiden_type || "custom",
-    };
-  });
-  return updatedConfig;
 };
 
 export const useMcpStore = createPersistStore(
@@ -232,7 +73,7 @@ export const useMcpStore = createPersistStore(
         { name, action }: McpStatusItem,
         type: "update" | "delete",
       ) => {
-        console.log("[Mcp store] updateMcpStatusList", name, action);
+        console.log("[Mcp store] updateMcpStatusList", type, name, action);
         const { mcpStatusList } = get();
         if (type === "delete") {
           const newMcpStatusList = [...mcpStatusList].filter(
@@ -301,7 +142,7 @@ export const useMcpStore = createPersistStore(
         type: string;
         enable: boolean;
       }) => {
-        console.log("[Mcp store] switchMcpStatus");
+        console.log("[Mcp store] switchMcpStatus: ", name, enable);
         const { config, mcpRemoteInfoMap, renderMcpList } = get();
         if (!config) return;
         let newConfig;
@@ -335,8 +176,6 @@ export const useMcpStore = createPersistStore(
         }
 
         set({ config: newConfig });
-        await updateConfig(newConfig);
-
         const newList = renderMcpList.map((item) => {
           if (item.mcp_id === id) {
             return {
@@ -347,10 +186,11 @@ export const useMcpStore = createPersistStore(
           return item;
         });
         set({ renderMcpList: newList });
+        await updateConfig(newConfig);
       },
 
       removeMcpItem: async (name: string) => {
-        console.log("[Mcp store] removeMcpItem");
+        console.log("[Mcp store] removeMcpItem: ", name);
         const { config, renderMcpList, updateMcpStatusList } = _get();
         if (!config) return;
         let beforeMcpServers = { ...config.mcpServers };

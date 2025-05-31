@@ -7,16 +7,10 @@ import {
 } from "@/app/components/confirm-modal/confirm";
 import { McpTableItem } from "./mcp-table-item";
 import LoadingIcon from "../../icons/loading-spinner.svg";
-import {
-  CustomMCPServer,
-  McpItemInfo,
-  McpConfigKey,
-  TDetailInfo,
-} from "@/app/typing";
+import { McpItemInfo, McpConfigKey, TDetailInfo } from "@/app/typing";
 import { useMcpStore } from "@/app/store/mcp";
 
 type ServerTableProps = {
-  localConfig: Record<string, CustomMCPServer> | undefined;
   servers: McpItemInfo[];
   switchMcpStatus: ({
     id,
@@ -43,7 +37,6 @@ function ServerTable({
   servers,
   removeMcpItem,
   switchMcpStatus,
-  localConfig,
 }: ServerTableProps) {
   const handleDeleteMcp = async (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -74,9 +67,6 @@ function ServerTable({
               onSwitchChange={async (enable, id, name, type) => {
                 try {
                   await switchMcpStatus({ id, name, enable, type });
-                  toast.success("切换成功", {
-                    className: "w-auto max-w-max",
-                  });
                 } catch (e: any) {
                   toast.error(e, {
                     className: "w-auto max-w-max",
@@ -85,7 +75,6 @@ function ServerTable({
               }}
               onDelete={handleDeleteMcp}
               onSelect={() => setDetail({ ...item })}
-              isLocal={!!localConfig?.[item.mcp_name]}
             />
           ))}
         </div>
@@ -102,7 +91,6 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
   const mcpStore = useMcpStore();
   const { switchMcpStatus, removeMcpItem } = mcpStore;
   const renderMcpList = useMcpStore((state) => state.renderMcpList);
-  const config = useMcpStore((state) => state.config);
 
   return (
     <>
@@ -124,7 +112,6 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
           switchMcpStatus={switchMcpStatus}
           setDetail={setDetail}
           removeMcpItem={removeMcpItem}
-          localConfig={config?.mcpServers}
         />
       </div>
     </>
