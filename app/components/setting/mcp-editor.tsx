@@ -24,11 +24,11 @@ type Props = {
 
 function ConfigEditor({ jsonStr, setJsonStr, error }: ConfigEditorProps) {
   return (
-    <div className="space-y-4 mb-4 h-9/10">
+    <div className="space-y-4">
       <CodeMirror
-        className="border"
+        className="rounded-lg bg-gray"
         value={jsonStr}
-        height="400px"
+        height="calc(100vh - 200px)"
         extensions={[json()]}
         theme="light"
         basicSetup={{
@@ -37,7 +37,7 @@ function ConfigEditor({ jsonStr, setJsonStr, error }: ConfigEditorProps) {
         }}
         onChange={setJsonStr}
       />
-      {error && <p className="text-red-500">{error}</p>}
+      {error && <p className="text-[#EF466F]">{error}</p>}
     </div>
   );
 }
@@ -73,18 +73,24 @@ const McpEditor: React.FC<Props> = ({ setMode }) => {
   };
   return (
     <>
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mb-4">
         <div
           className="flex justify-between items-center cursor-pointer w-max"
           onClick={() => setMode("table")}
         >
           <div className="flex items-center gap-2">
             <BackIcon className="size-6" />
-            <span className="text-lg font-bold">Edit Config</span>
+            <span className="text-lg font-medium">Edit Config</span>
           </div>
         </div>
         <div className="flex">
-          <Button onClick={handleSave}>Save</Button>
+          <Button
+            onClick={handleSave}
+            className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] !w-[54px]"
+            style={{ width: "54px" }}
+          >
+            Save
+          </Button>
         </div>
       </div>
 

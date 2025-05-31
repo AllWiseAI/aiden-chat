@@ -104,16 +104,21 @@ export function McpTableItem({
 
   return (
     <div
-      className="flex flex-col gap-5 rounded-xl border p-4 cursor-pointer hover:bg-[#F3F5F74D] transition-colors"
+      className="flex flex-col gap-5 rounded-xl border p-5 cursor-pointer hover:bg-[#F3F5F74D] transition-colors"
       key={mcp_id + mcp_name}
       onClick={onSelect}
     >
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 flex-shrink-0 flex-center bg-gray-200 rounded-lg relative">
+      <div className="flex items-top gap-4">
+        <div
+          className="h-12 flex-shrink-0 flex-center bg-[#E8ECEF] rounded-lg relative"
+          style={{
+            width: "48px",
+          }}
+        >
           {mcp_logo ? (
-            <img src={mcp_logo} className="size-6"></img>
+            <img src={mcp_logo} width="30" height="30"></img>
           ) : (
-            <FetchIcon />
+            <FetchIcon style={{ width: "30px", height: "30px" }} />
           )}
 
           {checked && StatusIcon && (
@@ -124,27 +129,38 @@ export function McpTableItem({
             />
           )}
         </div>
-        <div className="text-base">{mcp_name}</div>
-      </div>
-      <div
-        className="text-xs text-[#6C7275]"
-        style={{
-          display: "-webkit-box",
-          WebkitLineClamp: 3,
-          WebkitBoxOrient: "vertical",
-          overflow: "hidden",
-          height: "48px",
-        }}
-      >
-        {description || "No description"}
+        <div className="flex flex-col">
+          <div
+            className="text-base font-medium"
+            style={{ marginBottom: "4px" }}
+          >
+            {mcp_name}
+          </div>
+          <div
+            className="text-sm text-[#6C7275]"
+            style={{
+              display: "-webkit-box",
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              lineHeight: "24px",
+              height: "72px",
+            }}
+          >
+            {description || "No description"}
+          </div>
+        </div>
       </div>
       <div
         className={`flex mt-auto ${
-          showDelete ? "justify-between items-end" : "justify-end items-center"
+          showDelete
+            ? "justify-between items-center"
+            : "justify-end items-center"
         }`}
       >
         {showDelete && (
           <Button
+            style={{ padding: "0 10px" }}
             className="bg-[#EF466F]/6 hover:bg-[#EF466F]/20 text-[#EF466F]"
             onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
               onDelete(e, mcp_name)

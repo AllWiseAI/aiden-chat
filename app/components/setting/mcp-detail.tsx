@@ -28,28 +28,30 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
       >
         <div className="flex items-center gap-2">
           <BackIcon className="size-6" />
-          <span className="text-lg font-bold">MCP Details</span>
+          <span className="text-lg font-medium">MCP Details</span>
         </div>
       </div>
 
       <div
-        className="border rounded-2xl px-5 py-4 mt-6 overflow-y-auto"
-        style={{ maxHeight: "calc(100% - 80px)" }}
+        className="border rounded-xl mt-6 overflow-y-auto"
+        style={{ maxHeight: "calc(100% - 80px)", padding: "24px 20px" }}
       >
         <div className="header flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="bg-[#E8ECEF] rounded-sm w-10 h-10 flex items-center justify-center">
+          <div className="flex items-center gap-4">
+            <div
+              className="bg-[#E8ECEF] rounded-sm flex items-center justify-center"
+              style={{ height: "48px", width: "48px" }}
+            >
               {detailInfo.mcp_logo ? (
-                <img className="size-6" src={detailInfo.mcp_logo}></img>
+                <img width="30" height="30" src={detailInfo.mcp_logo}></img>
               ) : (
                 <FetchIcon className="size-6" />
               )}
             </div>
-            <div className="font-medium">{detailInfo.mcp_name}</div>
+            <div className="font-medium text-xl">{detailInfo.mcp_name}</div>
           </div>
           <div className="mt-4">
             <Switch
-              id={"test"}
               checked={checked}
               onCheckedChange={async (enable) => {
                 try {
@@ -73,7 +75,10 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
             />
           </div>
         </div>
-        <div className="mt-4 text-[#6C7275] text-xs">
+        <div
+          className="mt-4 text-[#6C7275] text-sm"
+          style={{ lineHeight: "24px" }}
+        >
           {detailInfo.description}
         </div>
         {detailInfo.tutorial && (
