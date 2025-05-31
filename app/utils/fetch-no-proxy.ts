@@ -6,7 +6,7 @@ interface FetchNoProxyOptions {
 
 interface FetchNoProxyResponse {
   status: number;
-  statusText: string;
+  status_text: string;
   body: string;
   headers?: Record<string, string>;
 }
@@ -29,7 +29,7 @@ export async function fetchNoProxy(
   return {
     ok: response.status >= 200 && response.status < 300,
     status: response.status,
-    statusText: response.statusText,
+    statusText: response.status_text,
     headers: response.headers,
     text: async () => response.body,
     json: async () => {

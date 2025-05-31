@@ -12,6 +12,7 @@ import LoadingIcon from "../icons/three-dots.svg";
 import ResultIcon from "../icons/result.svg";
 // import LoadingIcon from "../icons/loading-host.svg";
 import { useAuthStore } from "../store";
+import { useMcpStore } from "../store/mcp";
 import { exportAndDownloadLog } from "../utils/log";
 
 export function LoadingPage() {
@@ -23,6 +24,7 @@ export function LoadingPage() {
   const [isServerReady, setIsServerReady] = useState(false);
   const [isServerTimeout, setIsServerTimeout] = useState(false);
 
+  const mcpStore = useMcpStore();
   const handleReload = () => {
     relaunch();
   };
@@ -30,6 +32,7 @@ export function LoadingPage() {
   useHostServerReady((ready) => {
     if (ready || process.env.NODE_ENV === "development") {
       setIsServerReady(true);
+      mcpStore.init();
       if (!isAuthed) return;
       navigate(Path.Chat, { replace: true });
     } else {

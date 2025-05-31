@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useMcpConfig } from "@/app/hooks/use-mcp-config";
+import { useMcpStore } from "@/app/store/mcp";
 
 import McpTable from "./mcp-table";
 import McpDetail from "./mcp-detail";
@@ -10,7 +10,7 @@ import McpEditor from "./mcp-editor";
 import { McpConfigKey, TDetailInfo } from "@/app/typing";
 
 export default function McpConfig() {
-  const { config } = useMcpConfig();
+  const config = useMcpStore((state) => state.config);
   const [mode, setMode] = useState<McpConfigKey>("table");
   const [detailInfo, setDetailInfo] = useState<TDetailInfo>();
   const handleSetDetail = (detailInfo: TDetailInfo) => {
