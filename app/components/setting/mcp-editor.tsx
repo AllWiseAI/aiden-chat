@@ -5,11 +5,8 @@ import { Button } from "@/app/components/shadcn/button";
 import { toast } from "sonner";
 import { McpConfigKey } from "@/app/components/setting/type";
 import BackIcon from "../../icons/back.svg";
-
-import { useMcpConfig } from "@/app/hooks/use-mcp-config";
-
+import { useMcpStore } from "@/app/store/mcp";
 import { json } from "@codemirror/lang-json";
-
 import dynamic from "next/dynamic";
 
 const CodeMirror = dynamic(() => import("@uiw/react-codemirror"), {
@@ -46,20 +43,21 @@ function ConfigEditor({ jsonStr, setJsonStr, error }: ConfigEditorProps) {
 }
 
 const McpEditor: React.FC<Props> = ({ setMode }) => {
-  const { saveConfig, filteredServers } = useMcpConfig();
-  const [jsonStr, setJsonStr] = useState<string>(
-    JSON.stringify(filteredServers, null, 2),
-  );
-  const [error, setError] = useState<string>("");
-
+  const mcpStore = useMcpStore();
+  const { saveEditorConfig, getCleanedConfig } = mcpStore;
+  const [jsonStr, setJsonStr] = useState<string>(JSON.stringify({}, null, 2));
   useEffect(() => {
-    setJsonStr(JSON.stringify(filteredServers, null, 2));
-  }, [filteredServers]);
+    const cleanedConfig = getCleanedConfig();
+    setJsonStr(JSON.stringify(cleanedConfig, null, 2));
+  }, []);
+
+  const [error, setError] = useState<string>("");
 
   const handleSave = async () => {
     try {
       const parsed = JSON.parse(jsonStr);
-      const res = await saveConfig(parsed);
+      const res = await saveEditorConfig(parsed);
+      console.log("===save res", res);
       if (res) {
         toast.success("配置成功", {
           className: "w-auto max-w-max",

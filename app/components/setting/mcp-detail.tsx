@@ -4,9 +4,9 @@ import BackIcon from "../../icons/back.svg";
 import FetchIcon from "../../icons/fetch.svg";
 import { Switch } from "@/app/components/shadcn/switch";
 import { toast } from "sonner";
-import { useMcpConfig } from "@/app/hooks/use-mcp-config";
 import { Markdown } from "@/app/components/markdown";
 import { useState } from "react";
+import { useMcpStore } from "@/app/store/mcp";
 
 import { McpConfigKey, TDetailInfo } from "@/app/typing";
 
@@ -16,7 +16,8 @@ type Props = {
 };
 
 const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
-  const { switchDisable } = useMcpConfig();
+  const mcpStore = useMcpStore();
+  const { switchMcpStatus } = mcpStore;
   const [checked, setChecked] = useState(detailInfo.checked);
 
   return (
@@ -53,11 +54,12 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
               onCheckedChange={async (enable) => {
                 try {
                   setChecked(enable);
-                  await switchDisable(
-                    detailInfo.mcp_id,
-                    detailInfo.mcp_name,
-                    enable,
-                  );
+                  await switchMcpStatus({
+                    id: detailInfo.mcp_id,
+                    name: detailInfo.mcp_name,
+                    enable: enable,
+                    type: detailInfo.type,
+                  });
                   toast.success("切换成功", {
                     className: "w-auto max-w-max",
                   });

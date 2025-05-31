@@ -1,22 +1,36 @@
 "use client";
-
 import { Button } from "@/app/components/shadcn/button";
 import { toast } from "sonner";
-import { useMcpConfig } from "@/app/hooks/use-mcp-config";
 import {
   showConfirm,
   ConfirmType,
 } from "@/app/components/confirm-modal/confirm";
 import { McpTableItem } from "./mcp-table-item";
 import LoadingIcon from "../../icons/loading-spinner.svg";
-import { McpItemInfo, McpConfigKey, TDetailInfo } from "@/app/typing";
+import {
+  CustomMCPServer,
+  McpItemInfo,
+  McpConfigKey,
+  TDetailInfo,
+} from "@/app/typing";
+import { useMcpStore } from "@/app/store/mcp";
 
 type ServerTableProps = {
+  localConfig: Record<string, CustomMCPServer> | undefined;
   servers: McpItemInfo[];
-  disabledList: string[];
-  switchDisable: (mcp_id: string, mcp_name: string, enable: boolean) => void;
+  switchMcpStatus: ({
+    id,
+    name,
+    enable,
+    type,
+  }: {
+    id: string;
+    name: string;
+    type: string;
+    enable: boolean;
+  }) => void;
   setDetail: (detailInfo: McpItemInfo) => void;
-  delMcpItem: (mcp_id: string, mcp_name: string) => void;
+  removeMcpItem: (name: string) => void;
 };
 
 type Props = {
@@ -27,12 +41,12 @@ type Props = {
 function ServerTable({
   setDetail,
   servers,
-  switchDisable,
-  delMcpItem,
+  removeMcpItem,
+  switchMcpStatus,
+  localConfig,
 }: ServerTableProps) {
   const handleDeleteMcp = async (
     e: React.MouseEvent<HTMLButtonElement>,
-    mcp_id: string,
     mcp_name: string,
   ) => {
     e.stopPropagation();
@@ -43,7 +57,7 @@ function ServerTable({
     });
     if (result !== ConfirmType.Confirm) return;
     try {
-      await delMcpItem(mcp_id, mcp_name);
+      await removeMcpItem(mcp_name);
       toast.success("Delete Successfully");
     } catch (e) {
       toast.error("Delete Failed");
@@ -57,9 +71,9 @@ function ServerTable({
             <McpTableItem
               key={item.mcp_id + item.mcp_name}
               item={{ ...item }}
-              onSwitchChange={async (enable, id, name) => {
+              onSwitchChange={async (enable, id, name, type) => {
                 try {
-                  await switchDisable(id, name, enable);
+                  await switchMcpStatus({ id, name, enable, type });
                   toast.success("切换成功", {
                     className: "w-auto max-w-max",
                   });
@@ -71,6 +85,7 @@ function ServerTable({
               }}
               onDelete={handleDeleteMcp}
               onSelect={() => setDetail({ ...item })}
+              isLocal={!!localConfig?.[item.mcp_name]}
             />
           ))}
         </div>
@@ -84,8 +99,10 @@ function ServerTable({
 }
 
 const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
-  const { disableList, switchDisable, mcpItemsList, delMcpItem } =
-    useMcpConfig();
+  const mcpStore = useMcpStore();
+  const { switchMcpStatus, removeMcpItem } = mcpStore;
+  const renderMcpList = useMcpStore((state) => state.renderMcpList);
+  const config = useMcpStore((state) => state.config);
 
   return (
     <>
@@ -103,11 +120,11 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
         style={{ maxHeight: "calc(100% - 80px)" }}
       >
         <ServerTable
-          servers={mcpItemsList}
-          disabledList={disableList}
-          switchDisable={switchDisable}
+          servers={renderMcpList}
+          switchMcpStatus={switchMcpStatus}
           setDetail={setDetail}
-          delMcpItem={delMcpItem}
+          removeMcpItem={removeMcpItem}
+          localConfig={config?.mcpServers}
         />
       </div>
     </>
