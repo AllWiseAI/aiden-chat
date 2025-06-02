@@ -25,7 +25,7 @@ export function Password({
       <Button
         type="button"
         variant="ghost"
-        className="absolute right-2 size-10 top-1/2 transform -translate-y-1/2 bg-transparent rounded-lg hover:bg-gray-200 transition-colors"
+        className="absolute right-2 size-10 top-1/2 transform -translate-y-1/2 bg-transparent rounded-lg hover:bg-gray-200 transition-colors dark:text-[#6C7275]"
         onClick={handleClick}
       >
         {showPassword ? (

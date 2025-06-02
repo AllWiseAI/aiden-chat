@@ -96,16 +96,16 @@ export function McpTableItem({
 
   return (
     <div
-      className="flex flex-col gap-5 rounded-xl border p-4 cursor-pointer hover:bg-[#F3F5F74D] transition-colors"
+      className="flex flex-col gap-5 rounded-xl border p-4 cursor-pointer hover:bg-[#F3F5F74D] dark:hover:bg-[#232627]/30 transition-colors"
       key={mcp_id + mcp_name}
       onClick={onSelect}
     >
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 flex-shrink-0 flex-center bg-gray-200 rounded-lg relative">
+        <div className="w-10 h-10 flex-shrink-0 flex-center bg-[#E8ECEF] dark:bg-[#343839] rounded-lg relative">
           {mcp_logo ? (
             <img src={mcp_logo} className="size-6"></img>
           ) : (
-            <FetchIcon />
+            <FetchIcon className="text-[#343839] dark:text-[#6C7275]" />
           )}
 
           {type === "json" && StatusIcon && (

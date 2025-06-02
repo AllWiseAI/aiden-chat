@@ -73,33 +73,61 @@ export function useSwitchTheme() {
   const config = useAppConfig();
 
   useEffect(() => {
-    document.body.classList.remove("light");
-    document.body.classList.remove("dark");
-    document.body.classList.add("light");
+    const root = document.documentElement;
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
-    // if (config.theme === "dark") {
-    //   document.body.classList.add("dark");
-    // } else if (config.theme === "light") {
-    //   document.body.classList.add("light");
-    // }
-    document.body.classList.add("light");
-    // const metaDescriptionDark = document.querySelector(
-    //   'meta[name="theme-color"][media*="dark"]',
-    // );
-    const metaDescriptionLight = document.querySelector(
-      'meta[name="theme-color"][media*="light"]',
-    );
+    const applyTheme = () => {
+      root.classList.remove("light", "dark");
+      document.body.classList.remove("light");
+      document.body.classList.remove("dark");
 
-    // if (config.theme === "auto") {
-    //   metaDescriptionDark?.setAttribute("content", "#151515");
-    //   metaDescriptionLight?.setAttribute("content", "#fafafa");
-    // } else {
-    //   const themeColor = getCSSVar("--theme-color");
-    //   metaDescriptionDark?.setAttribute("content", themeColor);
-    //   metaDescriptionLight?.setAttribute("content", themeColor);
-    // }
-    const themeColor = getCSSVar("--theme-color");
-    metaDescriptionLight?.setAttribute("content", themeColor);
+      if (config.theme === "dark") {
+        root.classList.add("dark");
+        document.body.classList.add("dark");
+      } else if (config.theme === "light") {
+        root.classList.add("light");
+        document.body.classList.add("light");
+      } else if (config.theme === "auto") {
+        if (mediaQuery.matches) {
+          root.classList.add("dark");
+          document.body.classList.add("dark");
+        } else {
+          root.classList.add("light");
+          document.body.classList.add("light");
+        }
+      }
+
+      const metaDescriptionDark = document.querySelector(
+        'meta[name="theme-color"][media*="dark"]',
+      );
+      const metaDescriptionLight = document.querySelector(
+        'meta[name="theme-color"][media*="light"]',
+      );
+
+      if (config.theme === "auto") {
+        metaDescriptionDark?.setAttribute("content", "#151515");
+        metaDescriptionLight?.setAttribute("content", "#fafafa");
+      } else {
+        const themeColor = getCSSVar("--theme-color");
+        metaDescriptionDark?.setAttribute("content", themeColor);
+        metaDescriptionLight?.setAttribute("content", themeColor);
+      }
+
+      const themeColor = getCSSVar("--theme-color");
+      const metaAll = document.querySelector(
+        'meta[name="theme-color"]:not([media])',
+      );
+      metaAll?.setAttribute("content", themeColor);
+    };
+
+    applyTheme();
+
+    if (config.theme === "auto") {
+      mediaQuery.addEventListener("change", applyTheme);
+      return () => {
+        mediaQuery.removeEventListener("change", applyTheme);
+      };
+    }
   }, [config.theme]);
 }
 

@@ -106,7 +106,7 @@ function McpTooltip({ icon }: { icon: ReactElement }) {
         <TooltipTrigger asChild>
           <Button
             variant="outline"
-            className="border border-[#E8ECEF] text-sm font-semibold p-2"
+            className="border border-[#E8ECEF] text-black dark:text-white dark:bg-[#141416] dark:border-[#6C7275] text-sm font-semibold p-2"
             onMouseEnter={updateStatus}
           >
             {icon}

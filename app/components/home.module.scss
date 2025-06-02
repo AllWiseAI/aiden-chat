@@ -4,7 +4,6 @@
   border-radius: 20px;
   box-shadow: var(--shadow);
   color: var(--black);
-  background-color: var(--white);
   min-width: 600px;
   min-height: 370px;
   max-width: 1200px;
@@ -41,7 +40,6 @@
   top: 0;
   width: var(--sidebar-width);
   box-sizing: border-box;
-  background-color: #FFFFFF;
   display: flex;
   flex-direction: column;
   box-shadow: inset -2px 0px 2px 0px rgb(0, 0, 0, 0.05);
@@ -341,7 +339,7 @@
   align-items: center;
   height: 100%;
   width: 100%;
-  background: white;
+  background: var(--white);
 }
 
 .rtl-screen {

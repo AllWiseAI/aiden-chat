@@ -76,10 +76,9 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
             id="email"
             type="email"
             placeholder="mail@aiden.com"
-            className={clsx(
-              "w-full h-13 bg-[#F3F5F7] !text-left px-4 py-3.5 rounded-xl placeholder:text-[#6C7275] placeholder:opacity-50",
-              { "border-2 border-[#EF466F]": emailError },
-            )}
+            className={clsx("w-full h-13 !text-left px-4 py-3.5 rounded-xl", {
+              "border-2 border-[#EF466F]": emailError,
+            })}
             value={formData.email}
             onChange={onFormChange}
             onBlur={handleBlur}
@@ -102,7 +101,7 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
             id="password"
             type="password"
             placeholder="Enter password"
-            className="!w-full h-13 !max-w-130 !bg-[#F3F5F7] !text-left !px-4 !py-3.5 !rounded-xl placeholder:text-[#6C7275] placeholder:opacity-50"
+            className="!w-full h-13 !max-w-130 !text-left !px-4 !py-3.5 !rounded-xl"
             value={formData.password}
             onChange={onFormChange}
             required
@@ -121,7 +120,7 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
             type="password"
             placeholder="Confirm password"
             className={clsx(
-              "!w-full h-12 !max-w-130 !bg-[#F3F5F7] !text-left !px-4 !py-3.5 !rounded-xl placeholder:text-[#6C7275] placeholder:opacity-50",
+              "!w-full h-12 !max-w-130 !text-left !px-4 !py-3.5 !rounded-xl",
               { "border-2 border-[#EF466F]": passwordError },
             )}
             value={confirmPassword}
@@ -321,7 +320,7 @@ export function SignUpPage() {
     }));
   };
   return (
-    <div className="w-full h-full p-10 my-10 bg-white mx-auto flex flex-col justify-start items-center gap-8 rounded-2xl">
+    <div className="w-full h-full p-10 my-10 bg-white dark:bg-[#141416] mx-auto flex flex-col justify-start items-center gap-8 rounded-2xl">
       {isSignUp ? (
         <SignUpForm
           formData={formData}

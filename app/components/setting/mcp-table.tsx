@@ -9,6 +9,7 @@ import {
 } from "@/app/components/confirm-modal/confirm";
 import { McpTableItem } from "./mcp-table-item";
 import LoadingIcon from "../../icons/loading-spinner.svg";
+import EditIcon from "../../icons/edit.svg";
 import { McpItemInfo, McpConfigKey, TDetailInfo } from "@/app/typing";
 
 type ServerTableProps = {
@@ -92,9 +93,10 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-bold">MCP Management</h2>
         <Button
-          className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] dark:text-black border border-[#00D47E]/10 font-medium text-sm rounded-xl"
+          className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main border border-[#00D47E]/10 font-medium text-sm rounded-xl"
           onClick={() => setMode("edit")}
         >
+          <EditIcon className="size-4" />
           Edit Config
         </Button>
       </div>
