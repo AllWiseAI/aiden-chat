@@ -1,3 +1,19 @@
+.cm-editor {
+  border-radius: 12px;
+  border: 1px solid #E8ECEF;
+  background-color: #F3F5F7;
+  padding: 16px 8px;
+}
+.cm-editor.cm-focused {
+  outline: none;
+}
+.cm-editor .cm-gutters {
+  background-color: transparent;
+  color: #343839;
+  border-right: none;
+  margin-right: 20px;
+  opacity: 25%;
+}
 .window-header {
   padding: 14px 20px;
   position: relative;
