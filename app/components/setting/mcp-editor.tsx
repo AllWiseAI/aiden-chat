@@ -86,8 +86,7 @@ const McpEditor: React.FC<Props> = ({ setMode }) => {
         <div className="flex">
           <Button
             onClick={handleSave}
-            className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] !w-[54px]"
-            style={{ width: "54px" }}
+            className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] w-[54px]"
           >
             Save
           </Button>

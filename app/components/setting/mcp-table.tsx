@@ -1,5 +1,7 @@
 "use client";
 import { Button } from "@/app/components/shadcn/button";
+import { Input } from "@/app/components/shadcn/input";
+import { useState } from "react";
 import { toast } from "sonner";
 import {
   showConfirm,
@@ -9,8 +11,10 @@ import { McpTableItem } from "./mcp-table-item";
 import LoadingIcon from "../../icons/loading-spinner.svg";
 import { McpItemInfo, McpConfigKey, TDetailInfo } from "@/app/typing";
 import { useMcpStore } from "@/app/store/mcp";
+import SearchIcon from "../../icons/search.svg";
 
 type ServerTableProps = {
+  keyword: string;
   servers: McpItemInfo[];
   switchMcpStatus: ({
     id,
@@ -33,6 +37,7 @@ type Props = {
 };
 
 function ServerTable({
+  keyword,
   setDetail,
   servers,
   removeMcpItem,
@@ -64,6 +69,7 @@ function ServerTable({
             <McpTableItem
               key={item.mcp_id + item.mcp_name}
               item={{ ...item }}
+              keyword={keyword}
               onSwitchChange={async (enable, id, name, type) => {
                 try {
                   await switchMcpStatus({ id, name, enable, type });
@@ -80,7 +86,11 @@ function ServerTable({
         </div>
       ) : (
         <div className="w-full h-full flex-center">
-          <LoadingIcon className="size-6 animate-spin text-main" />
+          {keyword ? (
+            <div>No matches found</div>
+          ) : (
+            <LoadingIcon className="size-6 animate-spin text-main" />
+          )}
         </div>
       )}
     </>
@@ -90,25 +100,42 @@ function ServerTable({
 const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
   const mcpStore = useMcpStore();
   const { switchMcpStatus, removeMcpItem } = mcpStore;
+  const [searchValue, setSearchValue] = useState("");
   const renderMcpList = useMcpStore((state) => state.renderMcpList);
 
   return (
     <>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-bold">MCP Management</h2>
-        <Button
-          className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] dark:text-black border border-[#00D47E]/10 font-medium text-sm rounded-xl"
-          onClick={() => setMode("edit")}
-        >
-          Edit Config
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] dark:text-black border border-[#00D47E]/10 font-medium text-sm rounded-xl"
+            onClick={() => setMode("edit")}
+          >
+            Edit Config
+          </Button>
+          <div className="flex-center relative w-[200px]">
+            <Input
+              className="h-9 !text-left !placeholder:text-[#6C7275]/50 placeholder:text-sm px-12 py-3.5 rounded-xl"
+              clearable
+              value={searchValue}
+              placeholder="Search"
+              onChange={(e) => setSearchValue(e.target.value)}
+            />
+
+            <SearchIcon className="absolute top-1/2 left-4 transform -translate-y-1/2 size-6 text-[#6C7275]/50" />
+          </div>
+        </div>
       </div>
       <div
         className="overflow-y-auto h-full"
         style={{ maxHeight: "calc(100% - 80px)" }}
       >
         <ServerTable
-          servers={renderMcpList}
+          servers={renderMcpList.filter((item) =>
+            item.mcp_name.toLowerCase().includes(searchValue.toLowerCase()),
+          )}
+          keyword={searchValue}
           switchMcpStatus={switchMcpStatus}
           setDetail={setDetail}
           removeMcpItem={removeMcpItem}

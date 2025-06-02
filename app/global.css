@@ -132,9 +132,6 @@
 }
 
 @layer utilities {
-  .w-12 {
-    width: 48px;
-  }
   .bg-main {
     background-color: var(--main-color);
   }

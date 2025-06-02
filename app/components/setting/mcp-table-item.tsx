@@ -14,6 +14,7 @@ import { fetchMcpStatus } from "@/app/utils/mcp";
 import { toast } from "sonner";
 
 type McpItemProps = {
+  keyword: string;
   item: McpItemInfo;
   onSwitchChange: (
     enable: boolean,
@@ -28,7 +29,16 @@ type McpItemProps = {
   onSelect: () => void;
 };
 
+function Highlight({ text, keyword }: { text: string; keyword: string }) {
+  return text
+    .split(new RegExp(`(${keyword})`, "gi"))
+    .map((c, i) =>
+      c.toLowerCase() === keyword.toLowerCase() ? <mark key={i}>{c}</mark> : c,
+    );
+}
+
 export function McpTableItem({
+  keyword,
   item,
   onSwitchChange,
   onDelete,
@@ -109,16 +119,11 @@ export function McpTableItem({
       onClick={onSelect}
     >
       <div className="flex items-top gap-4">
-        <div
-          className="h-12 flex-shrink-0 flex-center bg-[#E8ECEF] rounded-lg relative"
-          style={{
-            width: "48px",
-          }}
-        >
+        <div className="w-12 h-12 flex-shrink-0 flex-center bg-[#E8ECEF] rounded-lg relative">
           {mcp_logo ? (
             <img src={mcp_logo} width="30" height="30"></img>
           ) : (
-            <FetchIcon style={{ width: "30px", height: "30px" }} />
+            <FetchIcon className="w-[30px] h-[30px]" />
           )}
 
           {checked && StatusIcon && (
@@ -130,11 +135,8 @@ export function McpTableItem({
           )}
         </div>
         <div className="flex flex-col">
-          <div
-            className="text-base font-medium"
-            style={{ marginBottom: "4px" }}
-          >
-            {mcp_name}
+          <div className="text-base font-medium mb-1">
+            {Highlight({ text: mcp_name, keyword })}
           </div>
           <div
             className="text-sm text-[#6C7275]"
@@ -160,8 +162,7 @@ export function McpTableItem({
       >
         {showDelete && (
           <Button
-            style={{ padding: "0 10px" }}
-            className="bg-[#EF466F]/6 hover:bg-[#EF466F]/20 text-[#EF466F]"
+            className="bg-[#EF466F]/6 hover:bg-[#EF466F]/20 text-[#EF466F] px-2.5"
             onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
               onDelete(e, mcp_name)
             }
