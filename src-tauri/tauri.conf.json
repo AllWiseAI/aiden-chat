@@ -9,7 +9,7 @@
   },
   "package": {
     "productName": "AidenChat",
-    "version": "0.1.7"
+    "version": "0.1.8"
   },
   "tauri": {
     "allowlist": {
@@ -120,7 +120,7 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 670,
+        "height": 780,
         "resizable": true,
         "title": "AidenChat",
         "width": 500,

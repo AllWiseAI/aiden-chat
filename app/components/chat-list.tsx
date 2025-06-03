@@ -81,10 +81,10 @@ export function ChatItem(props: {
             "p-2.5 rounded-xl group my-1",
             props.selected &&
               (currentPath === Path.Chat || currentPath === Path.Home)
-              ? "bg-gray-200"
+              ? "bg-gray-200 dark:bg-[#232323]"
               : openMenu
-              ? "bg-gray-100"
-              : "hover:bg-gray-100",
+              ? "bg-gray-100 dark:bg-[#2F2F2F]"
+              : "hover:bg-gray-100 dark:hover:bg-[#2F2F2F]",
           )}
           onClick={props.onClick}
           ref={(ele) => {
@@ -102,7 +102,7 @@ export function ChatItem(props: {
               {isEdit ? (
                 <Input
                   ref={inputRef}
-                  className="!text-start text-[#232627] text-sm font-semibold"
+                  className="!text-start text-[#232627] dark:text-white text-sm font-semibold"
                   value={props.title}
                   onChange={(e) =>
                     chatStore.updateTargetSession(
@@ -134,14 +134,14 @@ export function ChatItem(props: {
               ) : (
                 <div className="flex justify-between items-center">
                   <div className="flex justify-start items-center gap-4 leading-6">
-                    <div className="text-[#232627] cursor-default text-sm font-semibold w-full line-clamp-1">
+                    <div className="text-[#232627] dark:text-white cursor-default text-sm font-semibold w-full line-clamp-1">
                       {props.title}
                     </div>
                   </div>
 
                   <DropdownMenu open={openMenu} onOpenChange={setOpenMenu}>
                     <DropdownMenuTrigger
-                      className="size-6 flex-center cursor-pointer "
+                      className="size-6 flex-center cursor-pointer"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <MoreIcon
@@ -192,7 +192,7 @@ export function ChatItem(props: {
                   open={showDeleteDialog}
                   onOpenChange={setShowDeleteDialog}
                 >
-                  <AlertDialogContent className="!rounded-[18px] w-120">
+                  <AlertDialogContent className="!rounded-[18px] w-120 dark:text-white">
                     <div className="flex justify-between">
                       <AlertDialogHeader>
                         <AlertDialogTitle className="!text-[21px]">
@@ -200,18 +200,20 @@ export function ChatItem(props: {
                         </AlertDialogTitle>
                       </AlertDialogHeader>
 
-                      <AlertDialogCancel className="size-9 rounded-4xl border-0 hover:cursor-pointer hover:opacity-75 bg-[#F3F5F7] hover:bg-[#F3F5F7]/75">
+                      <AlertDialogCancel className="size-9 rounded-4xl border-0 hover:cursor-pointer hover:opacity-75 bg-[#F3F5F7] dark:bg-[#6C7275] hover:bg-[#F3F5F7]/75 dark:hover:bg-[#6C7275]/75">
                         <CloseIcon className="size-6" />
                       </AlertDialogCancel>
                     </div>
-                    <AlertDialogDescription className="text-lg font-normal text-[#141718]">
+                    <AlertDialogDescription className="text-lg font-normal text-[#141718] dark:text-white">
                       Are you sure you want to delete chat?
                     </AlertDialogDescription>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogCancel className="rounded-xl">
+                        Cancel
+                      </AlertDialogCancel>
                       <AlertDialogAction
                         onClick={props.onDelete}
-                        className="bg-[#EF466F] hover:bg-[#EF466F]/75"
+                        className="bg-[#EF466F] hover:bg-[#EF466F]/75 rounded-full"
                       >
                         Delete
                       </AlertDialogAction>

@@ -28,23 +28,26 @@
   --card-shadow: 0px 2px 4px 0px rgb(0, 0, 0, 0.05);
 
   /* stroke */
-  --border-in-light: 1px solid rgb(222, 222, 222);
+  --border-in-light: 1px solid rgb(232, 236, 239);
 }
 
 @mixin dark {
   --theme: dark;
 
   /* color */
-  --white: rgb(30, 30, 30);
+  --white: rgb(20, 20, 22);
   --black: rgb(187, 187, 187);
+  --black-1: rgba(255, 255, 255, 1);
   --gray: rgb(21, 21, 21);
+  --gray-1: #232627;
+  --gray-2: #343839;
   --primary: rgba(0, 212, 126, 1);
   --second: rgb(27 38 42);
   --hover-color: #323232;
   
   --bar-color: rgb(186, 187, 188);
   --bar-active-color: rgb(119, 122, 125);
-  --border-in-light: 1px solid rgba(255, 255, 255, 0.192);
+  --border-in-light: 1px solid rgb(35, 38, 39);
 
   --theme-color: var(--gray);
 

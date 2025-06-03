@@ -54,7 +54,7 @@ export default function AboutUs() {
             <div
               key={item.name}
               onClick={item.onClick}
-              className="group h-14 flex justify-between items-center hover:bg-[#E8ECEF] dark:hover:bg-[#34383980] px-5 py-4 cursor-pointer text-black dark:text-white text-sm font-medium border-t border-[#E8ECEF]"
+              className="group h-14 flex justify-between items-center hover:bg-[#E8ECEF] dark:hover:bg-[#232627]/50 px-5 py-4 cursor-pointer text-black dark:text-white text-sm font-medium border-t border-[#E8ECEF] dark:border-[#343839]/50"
             >
               {item.name}
               <RightIcon className="hidden group-hover:inline-block" />

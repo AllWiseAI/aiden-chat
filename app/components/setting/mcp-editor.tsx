@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Button } from "@/app/components/shadcn/button";
 import { toast } from "sonner";
 import { McpConfigKey } from "@/app/components/setting/type";
@@ -8,6 +8,7 @@ import BackIcon from "../../icons/back.svg";
 import { useMcpStore } from "@/app/store/mcp";
 import { json } from "@codemirror/lang-json";
 import dynamic from "next/dynamic";
+import { useAppConfig, Theme } from "@/app/store";
 
 const CodeMirror = dynamic(() => import("@uiw/react-codemirror"), {
   ssr: false,
@@ -23,6 +24,14 @@ type Props = {
 };
 
 function ConfigEditor({ jsonStr, setJsonStr, error }: ConfigEditorProps) {
+  const config = useAppConfig();
+  const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  const theme = useMemo(() => {
+    if (config.theme === Theme.Auto) {
+      return mediaQuery.matches ? Theme.Dark : Theme.Light;
+    } else return config.theme;
+  }, [config.theme, mediaQuery]);
+
   return (
     <div className="space-y-4">
       <CodeMirror
@@ -30,7 +39,7 @@ function ConfigEditor({ jsonStr, setJsonStr, error }: ConfigEditorProps) {
         value={jsonStr}
         height="calc(100vh - 200px)"
         extensions={[json()]}
-        theme="light"
+        theme={theme}
         basicSetup={{
           lineNumbers: true,
           foldGutter: false,

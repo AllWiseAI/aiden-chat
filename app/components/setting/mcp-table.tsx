@@ -15,6 +15,7 @@ import {
   TDetailInfo,
   TSettingInfo,
 } from "@/app/typing";
+import EditIcon from "../../icons/edit.svg";
 import { useMcpStore } from "@/app/store/mcp";
 import SearchIcon from "../../icons/search.svg";
 import { McpSettingModal } from "./mcp-setting-modal";
@@ -35,7 +36,10 @@ type ServerTableProps = {
   }) => void;
   setDetail: (detailInfo: McpItemInfo) => void;
   removeMcpItem: (name: string) => void;
-  setCurrentSetting: (settingInfo: TSettingInfo, mcpName: string) => void;
+  setCurrentSetting: (
+    settingInfo: TSettingInfo | null,
+    mcpName: string,
+  ) => void;
 };
 
 type Props = {
@@ -114,10 +118,9 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
   const [searchValue, setSearchValue] = useState("");
   const [showSettingModal, setShowSettingModal] = useState(false);
   const renderMcpList = useMcpStore((state) => state.renderMcpList);
-  const [currentSetting, setCurrentSetting] = useState<TSettingInfo>({
-    args: [],
-    envs: [],
-  });
+  const [currentSetting, setCurrentSetting] = useState<TSettingInfo | null>(
+    null,
+  );
   const [currentMcpName, setCurrentMcpName] = useState<string>("");
   const handleSettingConfirm = (update: TSettingInfo) => {
     setShowSettingModal(false);
@@ -130,9 +133,10 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
         <h2 className="text-lg font-bold">MCP Management</h2>
         <div className="flex items-center gap-2">
           <Button
-            className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] dark:text-black border border-[#00D47E]/10 font-medium text-sm rounded-xl"
+            className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main border border-[#00D47E]/10 font-medium text-sm rounded-xl"
             onClick={() => setMode("edit")}
           >
+            <EditIcon className="size-4" />
             Edit Config
           </Button>
           <div className="flex-center relative w-[200px]">
@@ -168,7 +172,7 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
           }}
         />
       </div>
-      {showSettingModal && (
+      {showSettingModal && currentSetting && (
         <McpSettingModal
           onOpenChange={setShowSettingModal}
           open={showSettingModal}
