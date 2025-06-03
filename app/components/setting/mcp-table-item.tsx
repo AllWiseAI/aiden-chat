@@ -72,20 +72,23 @@ export function McpTableItem({
     else return null;
   }, [status]);
 
-  const handleUpdateStatus = useCallback(async (enable: boolean) => {
-    const type = enable ? "update" : "delete";
-    if (enable) {
-      const status = await fetchMcpStatus(mcp_name);
-      setStatus(status);
-      updateMcpStatusList(
-        {
-          name: item.mcp_name,
-          action: status,
-        },
-        type,
-      );
-    }
-  }, []);
+  const handleUpdateStatus = useCallback(
+    async (enable: boolean) => {
+      const type = enable ? "update" : "delete";
+      if (enable) {
+        const status = await fetchMcpStatus(mcp_name);
+        setStatus(status);
+        updateMcpStatusList(
+          {
+            name: item.mcp_name,
+            action: status,
+          },
+          type,
+        );
+      }
+    },
+    [item.mcp_name],
+  );
 
   const handleCheckedChange = useCallback(async (enable: boolean) => {
     try {
@@ -95,7 +98,7 @@ export function McpTableItem({
           name: item.mcp_name,
           action: McpAction.Loading,
         },
-        "update",
+        enable ? "update" : "delete",
       );
       await onSwitchChange(enable, mcp_id, mcp_name, type);
       console.log("[Mcp status change]: update remote config done");
