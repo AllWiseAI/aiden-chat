@@ -439,11 +439,11 @@ function _Chat() {
             <AccordionContent
               className={styles["chat-message-item-mcp-result"]}
             >
-              <div className="mb-4 rounded-2xl bg-white border p-4">
+              <div className="mb-4 rounded-2xl bg-white dark:bg-[#141718] border p-4">
                 <div className="mb-2 font-medium">Request </div>
                 <div>{renderCallRequest(message.mcpInfo.request)}</div>
               </div>
-              <div className="rounded-2xl bg-white border p-4">
+              <div className="rounded-2xl bg-white dark:bg-[#141718] border p-4">
                 <div className="mt-2 mb-2 font-medium">Response </div>
                 <div>
                   {typeof message.mcpInfo.response === "string"
