@@ -89,7 +89,7 @@ export const ConfirmProvider = ({
       return (
         <div className="flex items-center justify-center">
           <Button
-            className="h-10 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] dark:text-black flex-center gap-3 px-5 py-3 rounded-xl"
+            className="h-10 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main flex-center gap-3 px-5 py-3 rounded-xl"
             onClick={() => {
               handleClose("confirm");
             }}
