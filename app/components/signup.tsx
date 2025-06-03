@@ -234,19 +234,23 @@ const VerifyCodeForm = ({
   };
   return (
     <form
-      className="w-full h-full flex-center flex-col gap-8"
+      className="w-full h-full flex flex-col justify-start items-center gap-8"
       onSubmit={onSubmit}
     >
-      <div className="w-full h-full flex-center flex-col gap-4">
+      <div className=" flex-center flex-col gap-4">
         <LogoTextIcon className="text-black dark:text-white" />
         <span className="text-2xl font-medium">Verify your email address</span>
       </div>
       <div className="w-full flex flex-col gap-4">
-        <div className="w-full flex flex-col gap-2 bg-[#F3F5F7] border-2 border-[#E8ECEF] px-4 py-3.5 rounded-xl font-bold">
-          <span className="text-[#777E90] text-sm">Email</span>
-          <span className="text-[#141416]">{formData.email}</span>
+        <div className="w-full flex flex-col gap-2 bg-[#F3F5F7] dark:bg-[#141718] border-2 border-[#E8ECEF] dark:border-[#232627] px-4 py-3.5 rounded-xl font-bold">
+          <span className="text-[#777E90] dark:text-[#6C7275] text-sm">
+            Email
+          </span>
+          <span className="text-[#141416] dark:text-white">
+            {formData.email}
+          </span>
         </div>
-        <span className="text-center text-sm font-medium text-[#777E90]">
+        <span className="text-center text-sm font-medium text-[#777E90] dark:text-[#6C7275]">
           Please enter the 6-digit verification code sent to your email.
         </span>
       </div>

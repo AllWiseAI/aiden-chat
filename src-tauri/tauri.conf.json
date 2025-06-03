@@ -62,11 +62,7 @@
       "http": {
         "all": true,
         "request": true,
-        "scope": [
-          "https://*",
-          "http://*",
-          "https://dev.aidenai.io/auth/:*"
-        ]
+        "scope": ["https://*", "http://*", "https://dev.aidenai.io/auth/:*"]
       }
     },
     "bundle": {
@@ -77,9 +73,7 @@
         "depends": []
       },
       "externalBin": [],
-      "icon": [
-        "icons/logo.icns"
-      ],
+      "icon": ["icons/logo.icns"],
       "identifier": "com.aiden.chat",
       "longDescription": "AidenChat is a cross-platform ChatGPT client, including Web/Win/Linux/OSX/PWA.",
       "macOS": {
@@ -120,7 +114,7 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 670,
+        "height": 780,
         "resizable": true,
         "title": "AidenChat",
         "width": 500,
