@@ -205,7 +205,9 @@ export function SideBarHeader(props: {
                 <DropdownMenuTrigger>
                   <Avatar className="size-10 cursor-pointer">
                     <AvatarImage src={authStore.user.profile} />
-                    <AvatarFallback>{authStore.user.name?.[0]}</AvatarFallback>
+                    <AvatarFallback>
+                      {authStore.user.email?.[0] + authStore.user.email?.[1]}
+                    </AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
 

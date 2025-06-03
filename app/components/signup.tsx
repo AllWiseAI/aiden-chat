@@ -14,7 +14,6 @@ import { shell } from "@tauri-apps/api";
 import LoadingIcon from "../icons/loading-spinner.svg";
 
 interface FormData {
-  name: string;
   email: string;
   password: string;
   code: string;
@@ -278,7 +277,6 @@ export function SignUpPage() {
   const authStore = useAuthStore();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
     password: "",
     code: "",
@@ -292,7 +290,6 @@ export function SignUpPage() {
       const success = await authStore.signup(
         formData.code,
         formData.email,
-        formData.name,
         formData.password,
         "",
       );

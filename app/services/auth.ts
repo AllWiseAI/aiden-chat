@@ -32,14 +32,12 @@ export async function apiGetSignUpCode(payload: { email: string }) {
 }
 
 export async function apiCompleteSignUp(payload: {
-  name: string;
   email: string;
   password: string;
   code: string;
   profile_image_url: string;
 }) {
   const params = {
-    name: payload.name,
     email: payload.email,
     password: payload.password,
     code: payload.code,
