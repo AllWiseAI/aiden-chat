@@ -16,7 +16,7 @@ import {
   showConfirm,
   ConfirmType,
 } from "@/app/components/confirm-modal/confirm";
-import { SECOND_CHAT_URL, DEFAULT_CHAT_URL } from "@/app/constant";
+import { SECOND_CHAT_URL } from "@/app/constant";
 import { useSettingStore } from "@/app/store/setting";
 import { McpStepsAction } from "../typing";
 
@@ -577,7 +577,7 @@ export function streamWithThink(
 
           if (chunk.mcpInfo) {
             const { type } = chunk.mcpInfo;
-            if (type === "tool_call_confirm") {
+            if (type === McpStepsAction.ToolCallConfirm) {
               options.onUpdate?.(responseText, {
                 title: chunk.mcpInfo.tool,
                 request: prettyObject(chunk.mcpInfo || "") + "\n\n",
@@ -593,19 +593,7 @@ export function streamWithThink(
                 console.log(
                   "[MCP confirm] User has approved before. No need to show confirm modal. ",
                 );
-                streamWithThink(
-                  DEFAULT_CHAT_URL,
-                  {
-                    ...requestPayload,
-                    skip_confirm: true,
-                  },
-                  headers,
-                  controller,
-                  parseSSE,
-                  options,
-                  "",
-                );
-                return;
+                approved = true;
               } else {
                 console.log(
                   "[MCP confirm] No user approval before. Show confirm modal.  ",
@@ -632,22 +620,21 @@ export function streamWithThink(
                     response: DEFAULT_USER_DELINETED,
                   });
                 }
-
-                const initTemplate = responseText + remainText;
-                streamWithThink(
-                  SECOND_CHAT_URL,
-                  {
-                    tool_call_id: chunk.mcpInfo.id,
-                    approved,
-                    thread_id: chunk.mcpInfo.thread_id,
-                  },
-                  headers,
-                  controller,
-                  parseSSE,
-                  options,
-                  initTemplate,
-                );
               }
+              const initTemplate = responseText + remainText;
+              streamWithThink(
+                SECOND_CHAT_URL,
+                {
+                  tool_call_id: chunk.mcpInfo.id,
+                  approved,
+                  thread_id: chunk.mcpInfo.thread_id,
+                },
+                headers,
+                controller,
+                parseSSE,
+                options,
+                initTemplate,
+              );
             } else if (type === McpStepsAction.ToolResult) {
               options.onUpdate?.(responseText, {
                 response: chunk.mcpInfo.result,

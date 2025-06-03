@@ -27,7 +27,7 @@ export interface RequestMessage {
   mcpInfo?: {
     title: string;
     request: string;
-    response: string;
+    response: string[];
   };
 }
 

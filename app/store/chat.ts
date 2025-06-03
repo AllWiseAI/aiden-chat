@@ -373,7 +373,7 @@ export const useChatStore = createPersistStore(
                 botMessage.mcpInfo = {
                   title: mcpInfo.title ?? "",
                   request: mcpInfo.request ?? "",
-                  response: mcpInfo.response ?? "",
+                  response: mcpInfo.response ? [mcpInfo.response] : [],
                 };
               } else {
                 if (mcpInfo.title) {
@@ -383,7 +383,7 @@ export const useChatStore = createPersistStore(
                   botMessage.mcpInfo.request = mcpInfo.request;
                 }
                 if (mcpInfo.response) {
-                  botMessage.mcpInfo.response = mcpInfo.response;
+                  botMessage.mcpInfo.response.push(mcpInfo.response);
                 }
               }
             }
@@ -399,7 +399,7 @@ export const useChatStore = createPersistStore(
                 botMessage.mcpInfo = {
                   title: mcpInfo.title ?? "",
                   request: mcpInfo.request ?? "",
-                  response: mcpInfo.response ?? "",
+                  response: mcpInfo.response ? [mcpInfo.response] : [],
                 };
               } else {
                 if (mcpInfo.title) {
@@ -409,7 +409,7 @@ export const useChatStore = createPersistStore(
                   botMessage.mcpInfo.request = mcpInfo.request;
                 }
                 if (mcpInfo.response) {
-                  botMessage.mcpInfo.response = mcpInfo.response;
+                  botMessage.mcpInfo.response.push(mcpInfo.response);
                 }
               }
               get().onNewMessage(botMessage, session);
