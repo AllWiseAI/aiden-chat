@@ -8,6 +8,7 @@ import {
   MCPServer,
   McpStatusItem,
   McpAction,
+  TSettingInfo,
 } from "@/app/typing";
 import {
   getFirstValue,
@@ -18,6 +19,7 @@ import {
   getRenderMcpList,
   updateConfig,
   restoreServers,
+  replaceArgsPlaceholders,
 } from "@/app/utils/mcp";
 
 let pollingTimer: NodeJS.Timeout | null = null;
@@ -129,6 +131,43 @@ export const useMcpStore = createPersistStore(
         );
         set({ renderMcpList, mcpRemoteInfoMap });
         return true;
+      },
+
+      updateMcpArgsEnvs: async (name: string, settingInfo: TSettingInfo) => {
+        console.log("[Mcp store] updateMcpArgsEnvs", name, settingInfo);
+        const { config, renderMcpList } = get();
+        if (!config) return;
+        const newConfig = {
+          ...config,
+          mcpServers: {
+            ...config.mcpServers,
+            [name]: {
+              ...config.mcpServers[name],
+              args: replaceArgsPlaceholders(
+                config.mcpServers[name].args || [],
+                settingInfo.templates,
+              ),
+              env: Object.fromEntries(
+                settingInfo.envs.map((item) => [item.key, item.value]),
+              ),
+            },
+          },
+        };
+        console.log("newConfig===", newConfig);
+        set({ config: newConfig });
+
+        const newList = renderMcpList.map((item) => {
+          if (item.mcp_name === name) {
+            return {
+              ...item,
+              settingInfo,
+            };
+          }
+          return item;
+        });
+
+        set({ renderMcpList: newList });
+        await updateConfig(newConfig);
       },
 
       switchMcpStatus: async ({

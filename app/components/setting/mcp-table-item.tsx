@@ -8,11 +8,10 @@ import LoadingIcon from "../../icons/loading-spinner.svg";
 import ErrorIcon from "../../icons/error.svg";
 import clsx from "clsx";
 import { useEffect, useMemo, useCallback, useState } from "react";
-import { McpItemInfo, McpAction } from "@/app/typing";
+import { McpItemInfo, McpAction, TSettingInfo } from "@/app/typing";
 import { useMcpStore } from "@/app/store/mcp";
 import { fetchMcpStatus } from "@/app/utils/mcp";
 import { toast } from "sonner";
-import { showConfirm } from "@/app/components/confirm-modal/confirm";
 
 type McpItemProps = {
   keyword: string;
@@ -28,6 +27,7 @@ type McpItemProps = {
     mcp_name: string,
   ) => Promise<void>;
   onSelect: () => void;
+  onSetting: (settingInfo: TSettingInfo, name: string) => void;
 };
 
 function Highlight({ text, keyword }: { text: string; keyword: string }) {
@@ -44,14 +44,14 @@ export function McpTableItem({
   onSwitchChange,
   onDelete,
   onSelect,
+  onSetting,
 }: McpItemProps) {
   const [status, setStatus] = useState<McpAction | null>(null);
   const [showSetting, setShowSetting] = useState(false);
   const StatusIcon = useMemo(() => {
-    if (status === McpAction.Connecting) return LoadingIcon;
+    if (status === McpAction.Loading) return LoadingIcon;
     else if (status === McpAction.Connected) return SuccessIcon;
-    else if (status === McpAction.Disconnected || status === McpAction.Failed)
-      return ErrorIcon;
+    else if (status === McpAction.Failed) return ErrorIcon;
     else return null;
   }, [status]);
 
@@ -62,17 +62,14 @@ export function McpTableItem({
     }
   }, [item]);
 
-  const handleShowSettingModal = useCallback((e) => {
-    e.stopPropagation();
-    console.log("Show setting modal");
-    showConfirm({
-      title: "",
-      noClose: true,
-      description: "Coming soon",
-      type: "setting",
-      settingInfo: item.settingInfo,
-    });
-  }, []);
+  const handleShowSettingModal = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      console.log("Show setting modal");
+      onSetting(item.settingInfo, item.mcp_name);
+    },
+    [item.settingInfo, item.mcp_name, onSetting],
+  );
 
   const {
     mcp_id,
@@ -176,17 +173,15 @@ export function McpTableItem({
       </div>
       <div
         className={`flex mt-auto ${
-          showDelete
+          showDelete || showSetting
             ? "justify-between items-center"
             : "justify-end items-center"
         }`}
       >
         {showSetting && (
           <Button
-            className="bg-[#EF466F]/6 hover:bg-[#EF466F]/20 text-[#EF466F] px-2.5"
-            onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
-              handleShowSettingModal(e)
-            }
+            className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] px-2.5"
+            onClick={handleShowSettingModal}
           >
             Setting
           </Button>

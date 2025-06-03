@@ -101,7 +101,7 @@ export type McpItemInfo = Omit<
   description_zh?: string;
   tutorial_zh?: string;
   tutorial_en?: string;
-  settingInfo: TSettingInfo;
+  settingInfo: TSettingInfo | null;
 };
 
 export type A2AServer = {

@@ -10,8 +10,88 @@ import {
   MCPConfig,
   MCPServer,
   McpAction,
+  EnvItem,
 } from "@/app/typing";
 import { invoke } from "@tauri-apps/api/tauri";
+
+export function replaceArgsPlaceholders(
+  args: string[],
+  templates: Record<string, string>[],
+): string[] {
+  return args.map((arg) => {
+    const match = arg.match(/<([^>]+)>/);
+    if (match) {
+      const placeholderKey = match[1];
+      const replacement = templates.find((r) => r.key === placeholderKey);
+      if (replacement) {
+        return arg.replace(`<${placeholderKey}>`, replacement.value);
+      }
+    }
+    return arg;
+  });
+}
+
+export interface EnvItem {
+  key: string;
+  value: string;
+}
+
+export interface TemplateItem {
+  key: string;
+  value: string;
+}
+
+export interface MultiArgItem {
+  key: string;
+  value: string[];
+}
+
+export const parseConfig = (
+  base_config: Record<string, { args: string[]; env: Record<string, string> }>,
+) => {
+  const templateKeys = new Set<string>();
+  const multiArgKeys = new Set<string>();
+  const envs: EnvItem[] = [];
+
+  for (const key in base_config) {
+    const { args = [], env = {} } = base_config[key];
+
+    for (const arg of args) {
+      // 检查是否为 multi args 格式：[]<KEY>
+      const multiArgMatch = arg.match(/\[\]<([^<>]+)>/);
+      if (multiArgMatch) {
+        multiArgKeys.add(multiArgMatch[1]);
+        continue;
+      }
+
+      // 普通模板格式：<KEY>
+      const templateMatches = arg.matchAll(/<([^<>]+)>/g);
+      for (const match of templateMatches) {
+        templateKeys.add(match[1]);
+      }
+    }
+
+    for (const [envKey, envValue] of Object.entries(env)) {
+      envs.push({ key: envKey, value: envValue });
+    }
+  }
+
+  const templates: TemplateItem[] = Array.from(templateKeys).map((key) => ({
+    key,
+    value: "",
+  }));
+
+  const multiArgs: MultiArgItem[] = Array.from(multiArgKeys).map((key) => ({
+    key,
+    value: [],
+  }));
+
+  return {
+    templates,
+    multiArgs,
+    envs,
+  };
+};
 
 export const fetchMcpStatus = async (name: string): Promise<McpAction> => {
   try {
@@ -98,6 +178,7 @@ export const getRenderMcpList: any = async (
           tutorial_zh: "",
           mcp_logo: "",
           type: aiden_type,
+          settingInfo: null,
         });
       } else {
         addedInJSONIds.push(aiden_id);
@@ -107,7 +188,9 @@ export const getRenderMcpList: any = async (
           mcp_name: name,
           checked: aiden_enable,
           type: "remote",
-          showDelete: false,
+          settingInfo: parseConfig(
+            mcpRemoteInfoMap.get(aiden_id)?.basic_config || {},
+          ),
         });
       }
     });
@@ -123,6 +206,9 @@ export const getRenderMcpList: any = async (
         ...item,
         type: "remote",
         checked: false,
+        settingInfo: parseConfig(
+          mcpRemoteInfoMap.get(item.mcp_id)?.basic_config || {},
+        ),
       });
     }
   }
