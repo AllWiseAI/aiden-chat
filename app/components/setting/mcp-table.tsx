@@ -115,12 +115,11 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
   const [showSettingModal, setShowSettingModal] = useState(false);
   const renderMcpList = useMcpStore((state) => state.renderMcpList);
   const [currentSetting, setCurrentSetting] = useState<TSettingInfo>({
-    templates: [],
+    args: [],
     envs: [],
   });
   const [currentMcpName, setCurrentMcpName] = useState<string>("");
   const handleSettingConfirm = (update: TSettingInfo) => {
-    console.log("update===", update);
     setShowSettingModal(false);
     updateMcpArgsEnvs(currentMcpName, update);
   };

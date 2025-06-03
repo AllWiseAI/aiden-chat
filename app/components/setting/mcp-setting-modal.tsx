@@ -9,7 +9,6 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/app/components/shadcn/dialog";
-import { Input } from "@/app/components/shadcn/input";
 import { Button } from "@/app/components/shadcn/button";
 
 interface SettingItem {
@@ -18,7 +17,7 @@ interface SettingItem {
 }
 
 interface SettingInfo {
-  templates: SettingItem[];
+  args: string[];
   envs: SettingItem[];
 }
 
@@ -35,11 +34,11 @@ export function McpSettingModal({
   onConfirm,
   onOpenChange,
 }: McpSettingModalProps) {
-  const [templates, setTemplates] = useState(settingInfo.templates);
+  const [args, setArgs] = useState(settingInfo.args);
   const [envs, setEnvs] = useState(settingInfo.envs);
   const [envsText, setEnvsText] = useState<string>("");
   useEffect(() => {
-    setTemplates(settingInfo.templates);
+    setArgs(settingInfo.args);
     setEnvs(settingInfo.envs);
   }, [settingInfo]);
 
@@ -48,14 +47,12 @@ export function McpSettingModal({
     setEnvsText(text);
   }, [envs]);
 
-  const updateTemplate = (index: number, key: string, value: string) => {
-    const newTemplates = [...templates];
-    newTemplates[index] = { key, value };
-    setTemplates(newTemplates);
+  const updateArgs = (value: string) => {
+    const newArgs = value.split("\n");
+    setArgs(newArgs);
   };
 
   const updateEnvs = useCallback((envsText: string) => {
-    console.log("envsText===", envsText);
     const lines = envsText.split("\n");
     const parsed = lines
       .map((line) => {
@@ -63,17 +60,15 @@ export function McpSettingModal({
         return { key: key.trim(), value: rest.join("=").trim() };
       })
       .filter((e) => e.key !== "");
-
-    console.log("parsed===", parsed);
     setEnvs(parsed);
     return parsed;
   }, []);
 
   const handleConfirm = useCallback(() => {
     const parsedEnvs = updateEnvs(envsText);
-    onConfirm({ templates, envs: parsedEnvs });
+    onConfirm({ args, envs: parsedEnvs });
     onOpenChange?.(false);
-  }, [templates, envs, onConfirm, onOpenChange, envsText]);
+  }, [args, envs, onConfirm, onOpenChange, envsText]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -88,35 +83,27 @@ export function McpSettingModal({
         </DialogHeader>
 
         <div className="space-y-4">
-          {!!templates.length && (
+          {!!args.length && (
             <div>
-              <h3 className="text-sm font-medium mb-2">Templates</h3>
-              {templates.map((item, idx) => (
-                <div key={idx} className="mb-4">
-                  <label className="block text-sm text-muted-foreground mb-1">
-                    {item.key}
-                  </label>
-                  <Input
-                    className="!text-left w-full"
-                    placeholder="Value"
-                    value={item.value}
-                    onChange={(e) =>
-                      updateTemplate(idx, item.key, e.target.value)
-                    }
-                  />
-                </div>
-              ))}
+              <h3 className="text-base font-medium mb-2">args</h3>
+
+              <div className="mb-4">
+                <textarea
+                  className="w-full text-left whitespace-pre font-mono text-sm bg-background border border-input rounded-md px-3 py-2 focus:!border-primary resize-none"
+                  rows={5}
+                  value={args.join("\n")}
+                  onChange={(e) => updateArgs(e.target.value)}
+                />
+              </div>
             </div>
           )}
 
           {!!envs.length && (
             <div>
-              <h3 className="text-sm font-medium mb-2">
-                Environment Variables
-              </h3>
+              <h3 className="text-base font-medium mb-2">env</h3>
               <div className="flex space-x-2 mb-2">
                 <textarea
-                  className="w-full text-left whitespace-pre font-mono text-sm bg-background border border-input rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                  className="w-full text-left whitespace-pre font-mono text-sm bg-background border border-input rounded-md px-3 py-2 focus:!border-primary resize-none"
                   rows={5}
                   value={envsText}
                   onChange={(e) => setEnvsText(e.target.value)}

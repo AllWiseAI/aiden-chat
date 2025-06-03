@@ -53,6 +53,7 @@ export type MCPServer = {
   transport?: string;
   command?: string;
   args?: string[];
+  env?: Record<string, string>;
 };
 
 export type CustomMCPServer = {
@@ -60,6 +61,7 @@ export type CustomMCPServer = {
   transport?: string;
   command?: string;
   args?: string[];
+  env?: Record<string, string>;
   aiden_type: McpItemType;
   aiden_enable: boolean;
   aiden_id: string;
@@ -82,7 +84,7 @@ export type TRemoteMcpInfo = {
 export type EnvItem = { key: string; value: string };
 
 export type TSettingInfo = {
-  templates: Record<string, string>[];
+  args: string[];
   envs: EnvItem[];
 };
 

@@ -27,7 +27,7 @@ type McpItemProps = {
     mcp_name: string,
   ) => Promise<void>;
   onSelect: () => void;
-  onSetting: (settingInfo: TSettingInfo, name: string) => void;
+  onSetting: (settingInfo: TSettingInfo | null, name: string) => void;
 };
 
 function Highlight({ text, keyword }: { text: string; keyword: string }) {
@@ -56,8 +56,8 @@ export function McpTableItem({
   }, [status]);
 
   useEffect(() => {
-    const { envs, templates } = item.settingInfo || {};
-    if (envs?.length || templates?.length) {
+    const { envs, args } = item.settingInfo || {};
+    if (envs?.length || args?.length) {
       setShowSetting(true);
     }
   }, [item]);

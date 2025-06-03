@@ -19,8 +19,9 @@ import {
   getRenderMcpList,
   updateConfig,
   restoreServers,
-  replaceArgsPlaceholders,
+  parseConfig,
 } from "@/app/utils/mcp";
+import { delay } from "@/app/utils";
 
 let pollingTimer: NodeJS.Timeout | null = null;
 
@@ -135,7 +136,7 @@ export const useMcpStore = createPersistStore(
 
       updateMcpArgsEnvs: async (name: string, settingInfo: TSettingInfo) => {
         console.log("[Mcp store] updateMcpArgsEnvs", name, settingInfo);
-        const { config, renderMcpList } = get();
+        const { config, renderMcpList, updateMcpStatusList } = _get();
         if (!config) return;
         const newConfig = {
           ...config,
@@ -143,17 +144,13 @@ export const useMcpStore = createPersistStore(
             ...config.mcpServers,
             [name]: {
               ...config.mcpServers[name],
-              args: replaceArgsPlaceholders(
-                config.mcpServers[name].args || [],
-                settingInfo.templates,
-              ),
+              args: [...settingInfo.args],
               env: Object.fromEntries(
                 settingInfo.envs.map((item) => [item.key, item.value]),
               ),
             },
           },
         };
-        console.log("newConfig===", newConfig);
         set({ config: newConfig });
 
         const newList = renderMcpList.map((item) => {
@@ -168,6 +165,16 @@ export const useMcpStore = createPersistStore(
 
         set({ renderMcpList: newList });
         await updateConfig(newConfig);
+        if (config.mcpServers[name].aiden_enable) {
+          updateMcpStatusList({ name, action: McpAction.Loading }, "update");
+          await delay(500);
+          try {
+            const newAction = await fetchMcpStatus(name);
+            updateMcpStatusList({ name: name, action: newAction }, "update");
+          } catch (err) {
+            console.error(err);
+          }
+        }
       },
 
       switchMcpStatus: async ({
@@ -217,9 +224,12 @@ export const useMcpStore = createPersistStore(
         set({ config: newConfig });
         const newList = renderMcpList.map((item) => {
           if (item.mcp_id === id) {
+            const serverKey = Object.keys(item.basic_config || {})[0];
+            const server = item.basic_config?.[serverKey];
             return {
               ...item,
               checked: enable,
+              settingInfo: parseConfig(server as CustomMCPServer),
             };
           }
           return item;
