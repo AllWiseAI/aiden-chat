@@ -9,7 +9,6 @@ interface TokenType {
 
 interface User {
   id: number;
-  name: string;
   email: string;
   profile: string;
 }
@@ -23,7 +22,6 @@ const DEFAULT_AUTH_STATE = {
 type LoginSuccessResponse = {
   token: string;
   expires_at: number;
-  name: string;
   profile_image_url: string;
   id: number;
 };
@@ -44,7 +42,6 @@ export const useAuthStore = createPersistStore(
     signup: async (
       code: string,
       email: string,
-      name: string,
       password: string,
       profile: string,
     ) => {
@@ -52,7 +49,6 @@ export const useAuthStore = createPersistStore(
         const res = (await apiCompleteSignUp({
           code,
           email,
-          name,
           password,
           profile_image_url: profile,
         }).catch((err) => {
@@ -60,7 +56,6 @@ export const useAuthStore = createPersistStore(
         })) as {
           id: number;
           email: string;
-          name: string;
           profile_image_url: string;
           token: string;
           expires_at: number;
@@ -71,7 +66,6 @@ export const useAuthStore = createPersistStore(
           const {
             id,
             email: _email,
-            name: _name,
             profile_image_url,
             token,
             expires_at: expires,
@@ -80,7 +74,6 @@ export const useAuthStore = createPersistStore(
             isLogin: true,
             user: {
               id,
-              name: _name,
               email: _email,
               profile: profile_image_url,
             },
@@ -123,13 +116,11 @@ export const useAuthStore = createPersistStore(
         const {
           token,
           expires_at: expires,
-          name,
           profile_image_url,
           id,
         } = response as {
           token: string;
           expires_at: number;
-          name: string;
           profile_image_url: string;
           id: number;
         };
@@ -138,7 +129,6 @@ export const useAuthStore = createPersistStore(
             isLogin: true,
             user: {
               id,
-              name,
               email,
               profile: profile_image_url,
             },
