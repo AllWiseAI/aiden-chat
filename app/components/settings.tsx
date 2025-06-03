@@ -89,12 +89,12 @@ export function Settings() {
                     : "hover:bg-[#E8ECEF4D]"
                 }`}
               >
-                <item.icon className="size-4" />
+                <item.icon className="size-4 flex-shrink-0" />
                 <p className="font-normal text-sm">{item.name}</p>
               </li>
             ))}
           </ul>
-          <div className="flex-1 p-4 h-full">{renderPanel()}</div>
+          <div className="flex-1 p-4 h-full min-w-100">{renderPanel()}</div>
         </div>
       </div>
     </div>

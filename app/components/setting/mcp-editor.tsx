@@ -3,72 +3,32 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/app/components/shadcn/button";
 import { toast } from "sonner";
-
+import { McpConfigKey } from "@/app/components/setting/type";
 import BackIcon from "../../icons/back.svg";
-
-import { useMcpConfig } from "@/app/hooks/use-mcp-config";
-
-// import CodeMirror from "@uiw/react-codemirror";
+import { useMcpStore } from "@/app/store/mcp";
 import { json } from "@codemirror/lang-json";
-
 import dynamic from "next/dynamic";
 
 const CodeMirror = dynamic(() => import("@uiw/react-codemirror"), {
   ssr: false,
 });
 
-enum McpAction {
-  Connecting = "connecting",
-  Connected = "connected",
-  Disconnected = "disconnected",
-}
-
-type MCPServer = {
-  url?: string;
-  transport?: string;
-  command?: string;
-  args?: string[];
-  aiden_type?: string;
-  aiden_enable?: boolean;
-};
-
-type McpConfigKey = "table" | "edit" | "detail";
 type ConfigEditorProps = {
-  servers: Record<string, MCPServer>;
-  onSave: (newServers: Record<string, MCPServer>) => void;
+  jsonStr: string;
+  setJsonStr: (val: string) => void;
+  error: string;
 };
 type Props = {
   setMode: (mode: McpConfigKey) => void;
 };
 
-function ConfigEditor({ servers, onSave }: ConfigEditorProps) {
-  const [jsonStr, setJsonStr] = useState(() =>
-    JSON.stringify(servers, null, 2),
-  );
-
-  useEffect(() => {
-    if (servers) {
-      setJsonStr(JSON.stringify(servers, null, 2));
-    }
-  }, [servers]);
-
-  const [error, setError] = useState("");
-
-  const handleSave = () => {
-    try {
-      const parsed = JSON.parse(jsonStr);
-      onSave(parsed);
-    } catch (e: any) {
-      setError("JSON 解析错误：" + e.message);
-    }
-  };
-
+function ConfigEditor({ jsonStr, setJsonStr, error }: ConfigEditorProps) {
   return (
-    <div className="space-y-4 mb-4 h-9/10">
+    <div className="space-y-4">
       <CodeMirror
-        className="border"
+        className="rounded-lg bg-gray"
         value={jsonStr}
-        height="400px"
+        height="calc(100vh - 200px)"
         extensions={[json()]}
         theme="light"
         basicSetup={{
@@ -77,48 +37,63 @@ function ConfigEditor({ servers, onSave }: ConfigEditorProps) {
         }}
         onChange={setJsonStr}
       />
-      {error && <p className="text-red-500">{error}</p>}
-      <div className="flex justify-end">
-        <Button onClick={handleSave}>Save</Button>
-      </div>
+      {error && <p className="text-[#EF466F]">{error}</p>}
     </div>
   );
 }
 
 const McpEditor: React.FC<Props> = ({ setMode }) => {
-  const { saveConfig, filteredServers } = useMcpConfig();
+  const mcpStore = useMcpStore();
+  const { saveEditorConfig, getCleanedConfig } = mcpStore;
+  const [jsonStr, setJsonStr] = useState<string>(JSON.stringify({}, null, 2));
+  useEffect(() => {
+    const cleanedConfig = getCleanedConfig();
+    setJsonStr(JSON.stringify(cleanedConfig, null, 2));
+  }, []);
+
+  const [error, setError] = useState<string>("");
+
+  const handleSave = async () => {
+    try {
+      const parsed = JSON.parse(jsonStr);
+      const res = await saveEditorConfig(parsed);
+      if (res) {
+        toast.success("配置成功", {
+          className: "w-auto max-w-max",
+        });
+        setMode("table");
+      }
+    } catch (e: any) {
+      setError("JSON 解析错误：" + (e.message || e));
+      toast.error("配置失败", {
+        className: "w-auto max-w-max",
+      });
+      console.error(e);
+    }
+  };
   return (
     <>
-      <div
-        className="flex justify-between items-center mb-4 cursor-pointer w-max"
-        onClick={() => setMode("table")}
-      >
-        <div className="flex items-center gap-2">
-          <BackIcon className="size-6" />
-          <span className="text-lg font-bold">Edit Config</span>
+      <div className="flex justify-between items-center mb-4">
+        <div
+          className="flex justify-between items-center cursor-pointer w-max"
+          onClick={() => setMode("table")}
+        >
+          <div className="flex items-center gap-2">
+            <BackIcon className="size-6" />
+            <span className="text-lg font-medium">Edit Config</span>
+          </div>
+        </div>
+        <div className="flex">
+          <Button
+            onClick={handleSave}
+            className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] w-[54px]"
+          >
+            Save
+          </Button>
         </div>
       </div>
-      <ConfigEditor
-        servers={filteredServers}
-        onSave={async (servers) => {
-          try {
-            JSON.stringify(servers, null, 2);
-            const res = await saveConfig(servers);
-            console.log("===res", res);
-            if (res) {
-              toast.success("配置成功", {
-                className: "w-auto max-w-max",
-              });
-              setMode("table");
-            }
-          } catch (e) {
-            toast.error("配置失败", {
-              className: "w-auto max-w-max",
-            });
-            console.error(e);
-          }
-        }}
-      />
+
+      <ConfigEditor jsonStr={jsonStr} setJsonStr={setJsonStr} error={error} />
     </>
   );
 };

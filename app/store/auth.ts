@@ -157,7 +157,9 @@ export const useAuthStore = createPersistStore(
         set({ _hasHydrated: get()._hasHydrated, ...DEFAULT_AUTH_STATE });
         if (e.message.includes("Network Error")) {
           throw new Error("Error: Connection Error");
-        } else throw new Error(`Login Failed: ${e.message}`);
+        } else if (e.message === "Invalid Credentials")
+          throw new Error("密码错误");
+        else throw new Error(`Login Failed: ${e.message}`);
       }
     },
 

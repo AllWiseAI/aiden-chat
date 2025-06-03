@@ -4,9 +4,9 @@ import BackIcon from "../../icons/back.svg";
 import FetchIcon from "../../icons/fetch.svg";
 import { Switch } from "@/app/components/shadcn/switch";
 import { toast } from "sonner";
-import { useMcpConfig } from "@/app/hooks/use-mcp-config";
 import { Markdown } from "@/app/components/markdown";
 import { useState } from "react";
+import { useMcpStore } from "@/app/store/mcp";
 
 import { McpConfigKey, TDetailInfo } from "@/app/typing";
 
@@ -16,7 +16,8 @@ type Props = {
 };
 
 const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
-  const { switchDisable } = useMcpConfig();
+  const mcpStore = useMcpStore();
+  const { switchMcpStatus } = mcpStore;
   const [checked, setChecked] = useState(detailInfo.checked);
 
   return (
@@ -27,37 +28,34 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
       >
         <div className="flex items-center gap-2">
           <BackIcon className="size-6" />
-          <span className="text-lg font-bold">MCP Details</span>
+          <span className="text-lg font-medium">MCP Details</span>
         </div>
       </div>
 
-      <div
-        className="border rounded-2xl px-5 py-4 mt-6 overflow-y-auto"
-        style={{ maxHeight: "calc(100% - 80px)" }}
-      >
+      <div className="border rounded-xl mt-6 overflow-y-auto max-h-[calc(100%-80px)] px-[20px] py-[24px]">
         <div className="header flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="bg-[#E8ECEF] rounded-sm w-10 h-10 flex items-center justify-center">
+          <div className="flex items-center gap-4">
+            <div className="bg-[#E8ECEF] rounded-sm flex items-center justify-center w-12 h-12">
               {detailInfo.mcp_logo ? (
-                <img className="size-6" src={detailInfo.mcp_logo}></img>
+                <img width="30" height="30" src={detailInfo.mcp_logo}></img>
               ) : (
-                <FetchIcon className="size-6" />
+                <FetchIcon className="w-[30px] h-[30px]" />
               )}
             </div>
-            <div className="font-medium">{detailInfo.mcp_name}</div>
+            <div className="font-medium text-xl">{detailInfo.mcp_name}</div>
           </div>
           <div className="mt-4">
             <Switch
-              id={"test"}
               checked={checked}
               onCheckedChange={async (enable) => {
                 try {
                   setChecked(enable);
-                  await switchDisable(
-                    detailInfo.mcp_id,
-                    detailInfo.mcp_name,
-                    enable,
-                  );
+                  await switchMcpStatus({
+                    id: detailInfo.mcp_id,
+                    name: detailInfo.mcp_name,
+                    enable: enable,
+                    type: detailInfo.type,
+                  });
                   toast.success("切换成功", {
                     className: "w-auto max-w-max",
                   });
@@ -71,14 +69,11 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
             />
           </div>
         </div>
-        <div className="mt-4 text-[#6C7275] text-xs">
+        <div className="mt-4 text-[#6C7275] text-sm leading-[24px]">
           {detailInfo.description}
         </div>
         {detailInfo.tutorial && (
-          <div
-            className="tutorial mt-6 border-t border-[#E8ECEF80]"
-            style={{ paddingTop: "32px" }}
-          >
+          <div className="tutorial mt-6 border-t border-[#E8ECEF80] pt-8">
             <Markdown content={detailInfo.tutorial || ""} />
           </div>
         )}

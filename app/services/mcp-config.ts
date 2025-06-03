@@ -1,7 +1,7 @@
 import { fetch, Body } from "@tauri-apps/api/http";
+import { fetchNoProxy } from "@/app/utils/fetch-no-proxy";
 
 const baseURL = "http://localhost:6888";
-
 const remoteMcpURL = "https://prod-hk.aidenai.io/api/config/mcp";
 
 const getCommonHeaders = () => {
@@ -19,35 +19,31 @@ export async function getRemoteMcpItems() {
 }
 
 export async function updateMcpConfig(configJson: object) {
-  const result = await fetch(`${baseURL}/config/update`, {
+  const result = await fetchNoProxy(`${baseURL}/config/update`, {
     method: "POST",
     headers: { ...getCommonHeaders() },
     body: Body.json(configJson),
   });
-
-  return result.data;
-}
-
-export async function disableMcpServers(servers: string | string[]) {
-  const payload = {
-    servers: Array.isArray(servers) ? servers : [servers],
-  };
-  const result = await fetch(`${baseURL}/mcp_servers/disable`, {
-    method: "POST",
-    headers: { ...getCommonHeaders() },
-    body: Body.json(payload),
-  });
-
-  return result.data;
+  if (result.status !== 200) {
+    throw new Error("update failed: " + result.statusText);
+  } else {
+    const jsonResult = await result.json();
+    return jsonResult;
+  }
 }
 
 export async function searchMcpServerStatus(name: string) {
   const url = `${baseURL}/mcp_servers/status/${name}`;
 
-  const result = await fetch(url, {
+  const result = await fetchNoProxy(url, {
     method: "GET",
     headers: { ...getCommonHeaders() },
   });
+  if (result.status !== 200) {
+    throw new Error("search status failed: " + result.statusText);
+  }
 
-  return result.data;
+  const jsonResult = await result.json();
+  console.log("[Mcp tools] searchMcpServerStatus", name, jsonResult);
+  return jsonResult;
 }

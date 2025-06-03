@@ -216,7 +216,7 @@ export const ConfirmProvider = ({
 
     if (options?.type === "latestVersion") {
       return (
-        <AlertDialogDescription className="text-center gap-2 text-lg font-normal text-[#141718] mb-4">
+        <AlertDialogDescription className="text-center gap-2 text-lg font-normal text-[#141718] mb-2">
           {options.description}
         </AlertDialogDescription>
       );
@@ -301,8 +301,8 @@ export const ConfirmProvider = ({
                 )}
               </div>
               {options.withLogo && (
-                <div className="flex items-center justify-center p-2 w-full mb-4">
-                  <AidenIcon />
+                <div className="flex items-center justify-center w-full mb-2 -mt-[16px]">
+                  <AidenIcon className="scale-75" />
                 </div>
               )}
               {renderDescription()}

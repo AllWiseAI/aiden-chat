@@ -1,54 +1,93 @@
 {
-    "version": "0.0.7",
-    "mcpServers": {
-        "search": {
-            "url": "https://dev.aidenai.io/sse",
-            "transport": "sse",
-            "aiden_type": "default",
-            "aiden_enable": true,
-            "aiden_id": "internal-search"
-        },
-        "desktop-commander": {
-            "command": "npx",
-            "args": [
-                "-y",
-                "@wonderwhy-er/desktop-commander"
-            ],
-            "transport": "stdio",
-            "aiden_type": "default",
-            "aiden_enable": true,
-            "aiden_id": "internal-desktop-commander"
-        },
-        "fetch": {
-            "command": "uvx",
-            "args": [
-                "mcp-server-fetch"
-            ],
-            "transport": "stdio",
-            "aiden_type": "default",
-            "aiden_enable": true,
-            "aiden_id": "internal-search"
-        },
-        "aiden-time": {
-            "command": "uv",
-            "args": [
-                "run",
-                "time_server.py"
-            ],
-            "transport": "stdio",
-            "aiden_type": "default",
-            "aiden_enable": true,
-            "aiden_id": "internal-time"
-        }
+  "version": "0.0.9",
+  "mcpServers": {
+    "search": {
+      "url": "https://dev.aidenai.io/sse",
+      "transport": "sse",
+      "aiden_type": "default",
+      "aiden_enable": true,
+      "aiden_id": "internal-search"
     },
-    "a2aServers": [
-        {
-            "name": "Travel Agent",
-            "url": "http://127.0.0.1:5001"
-        },
-        {
-            "name": "Currency Exchange Agent",
-            "url": "https://prod.aidenai.io/agents/langgraph/"
-        }
-    ]
+    "desktop-commander": {
+      "command": "npx",
+      "args": ["-y", "@wonderwhy-er/desktop-commander@0.2.2"],
+      "transport": "stdio",
+      "aiden_type": "default",
+      "aiden_enable": true,
+      "aiden_id": "internal-desktop-commander"
+    },
+    "fetch": {
+      "command": "uvx",
+      "args": ["mcp-server-fetch@2025.4.7"],
+      "transport": "stdio",
+      "aiden_type": "default",
+      "aiden_enable": true,
+      "aiden_id": "internal-fetch"
+    },
+    "aiden-time": {
+      "command": "uv",
+      "args": ["run", "time_server.py"],
+      "transport": "stdio",
+      "aiden_type": "default",
+      "aiden_enable": true,
+      "aiden_id": "internal-time"
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking@0.6.2"
+      ],
+      "transport": "stdio",
+      "aiden_type": "default",
+      "aiden_enable": true,
+      "aiden_id": "sequential-thinking"
+    },
+    "excel": {
+      "command": "npx",
+      "args": [
+        "--yes",
+        "@negokaz/excel-mcp-server@0.9.2"
+      ],
+      "env": {
+        "EXCEL_MCP_PAGING_CELLS_LIMIT": "4000"
+      },
+      "transport": "stdio",
+      "aiden_type": "default",
+      "aiden_enable": true,
+      "aiden_id": "internal-excel"
+    },
+    "ppt": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "office-powerpoint-mcp-server@1.0.0",
+        "ppt_mcp_server"
+      ],
+      "transport": "stdio",
+      "aiden_type": "default",
+      "aiden_enable": true,
+      "aiden_id": "internal-ppt"
+    },
+    "markitdown": {
+      "command": "uvx",
+      "args": [
+        "markitdown-mcp@0.0.1a4"
+      ],
+      "transport": "stdio",
+      "aiden_type": "default",
+      "aiden_enable": true,
+      "aiden_id": "markitdown"
+    }
+  },
+  "a2aServers": [
+    {
+      "name": "Travel Agent",
+      "url": "http://127.0.0.1:5001"
+    },
+    {
+      "name": "Currency Exchange Agent",
+      "url": "https://prod.aidenai.io/agents/langgraph/"
+    }
+  ]
 }

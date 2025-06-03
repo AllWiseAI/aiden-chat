@@ -25,10 +25,21 @@ const tailwindConfig = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
+      screens: {
+        xss: "350px", // zFold
+        sm: "640px",
+        headerMd: "850px",
+        xl: "1350px",
+        "2xl": "1500px",
+        "3xl": "1620px",
+        "4xl": "1800px",
+      },
     },
-
   },
   plugins: [],
+  experimental: {
+    disableLayerVariables: true
+  }
 };
 
 export default tailwindConfig;

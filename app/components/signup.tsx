@@ -33,9 +33,16 @@ interface VerifyCodeFormProps {
 
 const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
   const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
   const validateEmail = (email: string) => {
     const reg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return reg.test(email);
+  };
+  const verifyPassword = () => {
+    if (formData.password === confirmPassword) {
+      setPasswordError("");
+    } else setPasswordError("Passwords do not match.");
   };
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -51,23 +58,13 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
         <LogoTextIcon className="text-black dark:text-white" />
         <span className="text-2xl font-medium">Sign up</span>
       </div>
-      <form className="flex-center flex-col gap-8 w-full" onSubmit={onSubmit}>
-        <div className="flex flex-col gap-2 w-full">
-          <Label
-            htmlFor="name"
-            className="font-bold after:content['*'] after:content-['*'] after:text-red-500 !gap-1"
-          >
-            Full name
-          </Label>
-          <Input
-            id="name"
-            placeholder="your name"
-            className="w-full h-13 bg-[#F3F5F7] !text-left px-4 py-3.5 rounded-xl placeholder:text-[#6C7275] placeholder:opacity-50"
-            value={formData.name}
-            onChange={onFormChange}
-            required
-          />
-        </div>
+      <form
+        className="flex-center flex-col gap-8 w-full"
+        onSubmit={(e) => {
+          verifyPassword();
+          if (!passwordError) onSubmit(e);
+        }}
+      >
         <div className="flex flex-col gap-2 w-full">
           <Label
             htmlFor="email"
@@ -111,10 +108,42 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
             required
           />
         </div>
+        <div className="flex flex-col gap-2 w-full">
+          <Label
+            htmlFor="password"
+            className="font-bold after:content['*'] after:content-['*'] after:text-red-500 !gap-1"
+          >
+            Confirm Password
+          </Label>
+
+          <Password
+            id="confirm-password"
+            type="password"
+            placeholder="Confirm password"
+            className={clsx(
+              "!w-full h-12 !max-w-130 !bg-[#F3F5F7] !text-left !px-4 !py-3.5 !rounded-xl placeholder:text-[#6C7275] placeholder:opacity-50",
+              { "border-2 border-[#EF466F]": passwordError },
+            )}
+            value={confirmPassword}
+            onChange={(e) => {
+              setConfirmPassword(e.target.value);
+            }}
+            onBlur={verifyPassword}
+            required
+          />
+          {passwordError && (
+            <span className="text-xs text-red-500">{passwordError}</span>
+          )}
+        </div>
+
         <Button
           type="submit"
           className="w-full h-12 !px-6 !py-3 bg-main text-white dark:text-black hover:bg-[#02C174]/90 rounded-full"
-          disabled={!(formData.email && formData.password) || !!emailError}
+          disabled={
+            !(formData.email && formData.password && confirmPassword) ||
+            !!emailError ||
+            !!passwordError
+          }
         >
           Sign up
         </Button>
