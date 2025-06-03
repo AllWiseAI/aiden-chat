@@ -114,16 +114,16 @@ export function McpTableItem({
 
   return (
     <div
-      className="flex flex-col gap-5 rounded-xl border p-5 cursor-pointer hover:bg-[#F3F5F74D] transition-colors"
+      className="flex flex-col gap-5 rounded-xl border p-4 cursor-pointer hover:bg-[#F3F5F74D] dark:hover:bg-[#232627]/30 transition-colors"
       key={mcp_id + mcp_name}
       onClick={onSelect}
     >
       <div className="flex items-top gap-4">
-        <div className="w-12 h-12 flex-shrink-0 flex-center bg-[#E8ECEF] rounded-lg relative">
+        <div className="w-12 h-12 flex-shrink-0 flex-center bg-[#E8ECEF] dark:bg-[#343839] rounded-lg relative">
           {mcp_logo ? (
             <img src={mcp_logo} width="30" height="30"></img>
           ) : (
-            <FetchIcon className="w-[30px] h-[30px]" />
+            <FetchIcon className="w-[30px] h-[30px] text-[#343839] dark:text-[#6C7275]" />
           )}
 
           {checked && StatusIcon && (

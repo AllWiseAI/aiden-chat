@@ -163,7 +163,7 @@ export function SideBarContainer(props: {
     >
       {children}
       <div
-        className="absolute w-[2px] h-full top-0 right-0 transition-all ease-in-out duration-300 hover:bg-[#00D47E] cursor-ew-resize"
+        className="absolute w-[2px] h-full top-0 right-0 transition-all ease-in-out duration-300 dark:bg-[#23262F] hover:bg-[#00D47E] dark:hover:bg-[#00D47E] cursor-ew-resize"
         onPointerDown={(e) => onDragStart(e as any)}
       ></div>
     </div>
@@ -206,7 +206,7 @@ export function SideBarHeader(props: {
                   <Avatar className="size-10 cursor-pointer">
                     <AvatarImage src={authStore.user.profile} />
                     <AvatarFallback>
-                      {authStore.user.email?.[0] + authStore.user.email?.[1]}
+                      {authStore.user.email[0].toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
@@ -261,7 +261,7 @@ export function SideBarHeader(props: {
             </Button>
           )}
           <Button variant="ghost" className="size-8" onClick={toggleSideBar}>
-            <CollapseIcon className="size-6" />
+            <CollapseIcon className="size-6 text-white dark:text-[#141718]" />
           </Button>
         </div>
       </div>
@@ -332,7 +332,7 @@ export function SideBar(props: { className?: string }) {
       >
         {!shouldNarrow && (
           <>
-            <div className="flex flex-col gap-2 sticky top-0 bg-white">
+            <div className="flex flex-col gap-2 sticky top-0 bg-white dark:bg-[#141416]">
               {isSearchVisible && (
                 <div className="flex-center relative">
                   <Input
@@ -348,7 +348,7 @@ export function SideBar(props: { className?: string }) {
               )}
               <Button
                 variant="ghost"
-                className="h-10 text-[#00D47E] hover:text-[#00D47E] dark:text-black flex justify-start items-center gap-3 px-5 py-3 rounded-full"
+                className="h-10 text-main hover:text-[#00D47E] flex justify-start items-center gap-3 px-5 py-3 rounded-full"
                 onClick={() => {
                   chatStore.newSession();
                   navigate(Path.Chat);

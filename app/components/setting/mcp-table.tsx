@@ -9,6 +9,7 @@ import {
 } from "@/app/components/confirm-modal/confirm";
 import { McpTableItem } from "./mcp-table-item";
 import LoadingIcon from "../../icons/loading-spinner.svg";
+import EditIcon from "../../icons/edit.svg";
 import { McpItemInfo, McpConfigKey, TDetailInfo } from "@/app/typing";
 import { useMcpStore } from "@/app/store/mcp";
 import SearchIcon from "../../icons/search.svg";
@@ -109,9 +110,10 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
         <h2 className="text-lg font-bold">MCP Management</h2>
         <div className="flex items-center gap-2">
           <Button
-            className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] dark:text-black border border-[#00D47E]/10 font-medium text-sm rounded-xl"
+            className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main border border-[#00D47E]/10 font-medium text-sm rounded-xl"
             onClick={() => setMode("edit")}
           >
+            <EditIcon className="size-4" />
             Edit Config
           </Button>
           <div className="flex-center relative w-[200px]">

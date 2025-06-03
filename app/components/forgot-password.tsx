@@ -89,7 +89,7 @@ function EmailInput({ formData, onEmailChange, onSubmit }: EmailFormProps) {
       <Button
         type="button"
         variant="outline"
-        className="w-full h-12 font-semibold rounded-full px-6 py-4"
+        className="w-full h-12 font-semibold rounded-full px-6 py-4 dark:border-[#777E90]"
         onClick={() => navigate(-1)}
       >
         Back
@@ -280,7 +280,7 @@ export const ForgotPasswordPage = () => {
   };
 
   return (
-    <div className="w-full h-full p-10 my-10 bg-white mx-auto flex flex-col justify-start items-center gap-8 rounded-2xl">
+    <div className="w-full h-full p-10 my-10 bg-white dark:bg-[#141416] mx-auto flex flex-col justify-start items-center gap-8 rounded-2xl">
       <div className="flex-center flex-col gap-4">
         <LogoTextIcon className="text-black dark:text-white" />
         <span className="text-2xl font-medium">Forgot Password</span>

@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { Path } from "../constant";
 import { Button } from "./shadcn/button";
 import { relaunch } from "@tauri-apps/api/process";
-
+import ReturnIcon from "../icons/return.svg";
 import AidenIcon from "../icons/logo-text.svg";
 // TODO decide which loading icon to use
 import LoadingIcon from "../icons/three-dots.svg";
@@ -55,7 +55,7 @@ export function LoadingPage() {
   }, [hydrated, isLogin, init, navigate, isServerReady]);
 
   return (
-    <div className="relative bg-white flex flex-col items-center justify-center w-full h-full">
+    <div className="relative bg-white dark:bg-[#141416] flex flex-col items-center justify-center w-full h-full">
       <div className="absolute top-15">
         <AidenIcon />
       </div>
@@ -66,16 +66,17 @@ export function LoadingPage() {
               <ResultIcon />
             </div>
             <div
-              className="text-[#6C7275] text-sm text-center border rounded-2xl p-4 bg-[#F3F5F7]"
+              className="text-[#6C7275] text-sm text-center border dark:border-[#232627] rounded-2xl p-4 bg-[#F3F5F7] dark:bg-[#141718]/30"
               style={{ marginBottom: "102px" }}
             >
               App is not ready, please reload later.
             </div>
             <Button
-              className="w-30 h-12 bg-main rounded-full hover:bg-[#00D47E]/90 p-0"
+              className="w-30 h-12 rounded-full p-0 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main"
               onClick={() => handleReload()}
             >
-              Reload
+              <ReturnIcon />
+              Restart
             </Button>
             <Button
               className="w-30 h-12 p-0 !text-sm"
