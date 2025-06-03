@@ -403,9 +403,13 @@ function _Chat() {
     return <Markdown content={prettyObject(request || "")} />;
   };
 
-  const renderCallResult = (result: string | undefined) => {
-    if (!result) return <LoadingIcon />;
-    if (result.includes("declined")) {
+  const renderCallResult = (result: string[] | undefined) => {
+    if (!result?.length) return <LoadingIcon />;
+    if (
+      result.includes("declined") ||
+      (Array.isArray(result) &&
+        result.some((item) => item.includes("declined")))
+    ) {
       return <ErrorIcon />;
     } else {
       return <SuccessIcon />;
@@ -425,7 +429,7 @@ function _Chat() {
           >
             <AccordionTrigger>
               <div className="flex flex-row items-center gap-2">
-                {`${message.mcpInfo.response ? "Called" : "Call"} ${
+                {`${message.mcpInfo.response.length ? "Called" : "Call"} ${
                   message.mcpInfo.title
                 } Tool`}
 
@@ -441,7 +445,13 @@ function _Chat() {
               </div>
               <div className="rounded-2xl bg-white border p-4">
                 <div className="mt-2 mb-2 font-medium">Response </div>
-                <div>{message.mcpInfo.response}</div>
+                <div>
+                  {typeof message.mcpInfo.response === "string"
+                    ? message.mcpInfo.response
+                    : message.mcpInfo.response.map((item, index) => (
+                        <div key={index}>{item}</div>
+                      ))}
+                </div>
               </div>
             </AccordionContent>
           </AccordionItem>
