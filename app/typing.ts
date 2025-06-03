@@ -25,6 +25,8 @@ export type ModelSize =
 
 export type McpConfigKey = "table" | "edit" | "detail";
 
+export type McpItemType = "default" | "custom" | "remote";
+
 export type TDetailInfo = {
   mcp_id: string;
   mcp_name: string;
@@ -32,7 +34,7 @@ export type TDetailInfo = {
   description: string;
   tutorial: string;
   checked: boolean;
-  type: "json" | "remote";
+  type: McpItemType;
 };
 
 export enum McpAction {
@@ -40,6 +42,11 @@ export enum McpAction {
   Connected = "connected",
   Failed = "failed",
 }
+
+export type McpStatusItem = {
+  name: string;
+  action: McpAction;
+};
 
 export type MCPServer = {
   url?: string;
@@ -53,7 +60,7 @@ export type CustomMCPServer = {
   transport?: string;
   command?: string;
   args?: string[];
-  aiden_type: string;
+  aiden_type: McpItemType;
   aiden_enable: boolean;
   aiden_id: string;
 };
@@ -81,8 +88,7 @@ export type McpItemInfo = Omit<
   | "tutorial_en"
 > & {
   basic_config?: Record<string, MCPServer>;
-  showDelete: boolean;
-  type: "json" | "remote";
+  type: McpItemType;
   checked: boolean;
   description_en?: string;
   description_zh?: string;

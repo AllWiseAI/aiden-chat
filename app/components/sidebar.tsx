@@ -334,14 +334,14 @@ export function SideBar(props: { className?: string }) {
               {isSearchVisible && (
                 <div className="flex-center relative">
                   <Input
-                    className="h-10 !text-left placeholder:text-sm placeholder:font-medium placeholder:text-opacity-30 px-12 py-3.5 rounded-xl"
+                    className="h-10 !text-left placeholder:text-sm !placeholder:text-[#6C7275]/50 px-12 py-3.5 rounded-xl"
                     clearable
                     value={searchValue}
                     placeholder="Search"
                     onChange={(e) => setSearchValue(e.target.value)}
                   />
 
-                  <SearchIcon className="absolute top-1/2 left-4 transform -translate-y-1/2 size-6 text-[#6C7275]/30" />
+                  <SearchIcon className="absolute top-1/2 left-4 transform -translate-y-1/2 size-6 text-[#6C7275]/50" />
                 </div>
               )}
               <Button

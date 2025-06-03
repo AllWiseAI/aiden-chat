@@ -37,6 +37,9 @@ const tailwindConfig = {
     },
   },
   plugins: [],
+  experimental: {
+    disableLayerVariables: true
+  }
 };
 
 export default tailwindConfig;

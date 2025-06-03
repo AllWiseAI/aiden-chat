@@ -5,10 +5,8 @@ import { Button } from "@/app/components/shadcn/button";
 import { toast } from "sonner";
 import { McpConfigKey } from "@/app/components/setting/type";
 import BackIcon from "../../icons/back.svg";
-import { useMcpConfig } from "@/app/hooks/use-mcp-config";
-
+import { useMcpStore } from "@/app/store/mcp";
 import { json } from "@codemirror/lang-json";
-
 import dynamic from "next/dynamic";
 import { useAppConfig, Theme } from "@/app/store";
 
@@ -35,11 +33,11 @@ function ConfigEditor({ jsonStr, setJsonStr, error }: ConfigEditorProps) {
   }, [config.theme, mediaQuery]);
 
   return (
-    <div className="space-y-4 mb-4 h-9/10">
+    <div className="space-y-4">
       <CodeMirror
-        className="border"
+        className="rounded-lg bg-gray"
         value={jsonStr}
-        height="400px"
+        height="calc(100vh - 200px)"
         extensions={[json()]}
         theme={theme}
         basicSetup={{
@@ -48,26 +46,26 @@ function ConfigEditor({ jsonStr, setJsonStr, error }: ConfigEditorProps) {
         }}
         onChange={setJsonStr}
       />
-      {error && <p className="text-red-500">{error}</p>}
+      {error && <p className="text-[#EF466F]">{error}</p>}
     </div>
   );
 }
 
 const McpEditor: React.FC<Props> = ({ setMode }) => {
-  const { saveConfig, filteredServers } = useMcpConfig();
-  const [jsonStr, setJsonStr] = useState<string>(
-    JSON.stringify(filteredServers, null, 2),
-  );
-  const [error, setError] = useState<string>("");
-
+  const mcpStore = useMcpStore();
+  const { saveEditorConfig, getCleanedConfig } = mcpStore;
+  const [jsonStr, setJsonStr] = useState<string>(JSON.stringify({}, null, 2));
   useEffect(() => {
-    setJsonStr(JSON.stringify(filteredServers, null, 2));
-  }, [filteredServers]);
+    const cleanedConfig = getCleanedConfig();
+    setJsonStr(JSON.stringify(cleanedConfig, null, 2));
+  }, []);
+
+  const [error, setError] = useState<string>("");
 
   const handleSave = async () => {
     try {
       const parsed = JSON.parse(jsonStr);
-      const res = await saveConfig(parsed);
+      const res = await saveEditorConfig(parsed);
       if (res) {
         toast.success("配置成功", {
           className: "w-auto max-w-max",
@@ -91,11 +89,16 @@ const McpEditor: React.FC<Props> = ({ setMode }) => {
         >
           <div className="flex items-center gap-2">
             <BackIcon className="size-6" />
-            <span className="text-lg font-bold">Edit Config</span>
+            <span className="text-lg font-medium">Edit Config</span>
           </div>
         </div>
         <div className="flex">
-          <Button onClick={handleSave}>Save</Button>
+          <Button
+            onClick={handleSave}
+            className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] w-[54px]"
+          >
+            Save
+          </Button>
         </div>
       </div>
 
