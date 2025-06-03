@@ -28,7 +28,7 @@
   --card-shadow: 0px 2px 4px 0px rgb(0, 0, 0, 0.05);
 
   /* stroke */
-  --border-in-light: 1px solid rgb(222, 222, 222);
+  --border-in-light: 1px solid rgb(232, 236, 239);
 }
 
 @mixin dark {
@@ -46,7 +46,7 @@
   
   --bar-color: rgb(186, 187, 188);
   --bar-active-color: rgb(119, 122, 125);
-  --border-in-light: 1px solid rgba(255, 255, 255, 0.192);
+  --border-in-light: 1px solid rgb(35, 38, 39);
 
   --theme-color: var(--gray);
 

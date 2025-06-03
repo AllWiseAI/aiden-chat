@@ -32,6 +32,7 @@ interface VerifyCodeFormProps {
 }
 
 const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
+  const [checked, setChecked] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -54,9 +55,9 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
   };
   return (
     <>
-      <div className="flex-center flex-col gap-4">
-        <LogoTextIcon className="text-black dark:text-white" />
-        <span className="text-2xl font-medium">Sign up</span>
+      <div className="flex-center flex-col gap-4 text-black dark:text-white">
+        <LogoTextIcon />
+        <span className="text-2xl font-medium">Sign up to Aiden.ai</span>
       </div>
       <form
         className="flex-center flex-col gap-8 w-full"
@@ -134,12 +135,42 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
             <span className="text-xs text-red-500">{passwordError}</span>
           )}
         </div>
-
+        <div className="self-start flex items-center gap-2 text-xs">
+          <input
+            type="checkbox"
+            className="!size-[18px]"
+            checked={checked}
+            onChange={(e) => setChecked(e.target.checked)}
+          />
+          <div>
+            I agree to Aiden&apos;s{" "}
+            <span
+              className="cursor-pointer text-main underline"
+              onClick={() =>
+                shell.open("https://aidenai.io/terms-of-service.html")
+              }
+            >
+              Terms of Service
+            </span>
+            {" and "}
+            <span
+              className="cursor-pointer text-main underline"
+              onClick={() => shell.open("https://aidenai.io/privacy.html")}
+            >
+              Privacy Policy
+            </span>
+          </div>
+        </div>
         <Button
           type="submit"
           className="w-full h-12 !px-6 !py-3 bg-main text-white dark:text-black hover:bg-[#02C174]/90 rounded-full"
           disabled={
-            !(formData.email && formData.password && confirmPassword) ||
+            !(
+              formData.email &&
+              formData.password &&
+              confirmPassword &&
+              checked
+            ) ||
             !!emailError ||
             !!passwordError
           }
@@ -153,20 +184,6 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
           Sign in
         </Link>
       </span>
-      <div className="flex gap-10 text-xs text-main font-medium underline">
-        <span
-          className="cursor-pointer"
-          onClick={() => shell.open("https://aidenai.io/terms-of-service.html")}
-        >
-          Terms of Service
-        </span>
-        <span
-          className="cursor-pointer"
-          onClick={() => shell.open("https://aidenai.io/privacy.html")}
-        >
-          Privacy Policy
-        </span>
-      </div>
     </>
   );
 };

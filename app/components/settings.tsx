@@ -79,7 +79,7 @@ export function Settings() {
         <div className="w-full h-[1px] bg-[#E8ECEF] dark:bg-[#232627]"></div>
         <div className="flex h-full">
           <ul
-            className="w-max flex flex-col gap-2 min-w-40 border-r pt-5 pr-5"
+            className="w-max flex flex-col gap-2 min-w-40 border-r pt-8 pr-5"
             onClick={handleClick}
           >
             {settingList.map((item) => (

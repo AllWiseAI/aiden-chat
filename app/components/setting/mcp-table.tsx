@@ -110,7 +110,7 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
         <h2 className="text-lg font-bold">MCP Management</h2>
         <div className="flex items-center gap-2">
           <Button
-            className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] dark:text-black border border-[#00D47E]/10 font-medium text-sm rounded-xl"
+            className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main border border-[#00D47E]/10 font-medium text-sm rounded-xl"
             onClick={() => setMode("edit")}
           >
             <EditIcon className="size-4" />

@@ -19,6 +19,7 @@ export function LoginPage() {
     email: localStorage.getItem("user-email") || "",
     password: "",
   });
+  const [checked, setChecked] = useState(false);
   const [loading, setLoading] = useState(false);
   const [emailError, setEmailError] = useState("");
   const handleSubmit = async (e: React.FormEvent) => {
@@ -127,11 +128,39 @@ export function LoginPage() {
             required
           />
         </div>
+        <div className="self-start flex items-center gap-2 text-xs">
+          <input
+            type="checkbox"
+            className="!size-[18px]"
+            checked={checked}
+            onChange={(e) => setChecked(e.target.checked)}
+          />
+          <div>
+            I agree to Aiden&apos;s{" "}
+            <span
+              className="cursor-pointer text-main underline"
+              onClick={() =>
+                shell.open("https://aidenai.io/terms-of-service.html")
+              }
+            >
+              Terms of Service
+            </span>
+            {" and "}
+            <span
+              className="cursor-pointer text-main underline"
+              onClick={() => shell.open("https://aidenai.io/privacy.html")}
+            >
+              Privacy Policy
+            </span>
+          </div>
+        </div>
         <Button
           className="w-full h-12 !px-6 !py-3 bg-main hover:bg-[#02C174]/90 disabled:bg-[#02C174] text-white dark:text-black font-semibold rounded-full"
           type="submit"
           disabled={
-            !(formData.email && formData.password) || loading || !!emailError
+            !(formData.email && formData.password && checked) ||
+            loading ||
+            !!emailError
           }
         >
           {loading && <LoadingIcon className="size-4 animate-spin" />}
@@ -144,20 +173,6 @@ export function LoginPage() {
           Sign up
         </Link>
       </span>
-      <div className="flex gap-10 text-xs text-main font-medium underline">
-        <span
-          className="cursor-pointer"
-          onClick={() => shell.open("https://aidenai.io/terms-of-service.html")}
-        >
-          Terms of Service
-        </span>
-        <span
-          className="cursor-pointer"
-          onClick={() => shell.open("https://aidenai.io/privacy.html")}
-        >
-          Privacy Policy
-        </span>
-      </div>
     </div>
   );
 }
