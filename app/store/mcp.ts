@@ -283,7 +283,7 @@ export const useMcpStore = createPersistStore(
         });
         set({ renderMcpList: newList as McpItemInfo[] });
 
-        if (config.mcpServers[name].aiden_enable) {
+        if (newConfig.mcpServers[name].aiden_enable) {
           updateMcpStatusList({ name, action: McpAction.Loading }, "update");
           await delay(500);
           try {
