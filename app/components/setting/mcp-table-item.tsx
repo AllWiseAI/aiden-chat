@@ -8,10 +8,17 @@ import LoadingIcon from "../../icons/loading-spinner.svg";
 import ErrorIcon from "../../icons/error.svg";
 import clsx from "clsx";
 import { useEffect, useMemo, useCallback, useState } from "react";
-import { McpItemInfo, McpAction, TSettingInfo } from "@/app/typing";
+import {
+  McpItemInfo,
+  McpAction,
+  TSettingInfo,
+  TTemplateInfo,
+  CustomMCPServer,
+} from "@/app/typing";
 import { useMcpStore } from "@/app/store/mcp";
-import { fetchMcpStatus } from "@/app/utils/mcp";
+import { fetchMcpStatus, getFirstValue, parseTemplate } from "@/app/utils/mcp";
 import { toast } from "sonner";
+import { McpTemplateModal } from "./mcp-template-modal";
 
 type McpItemProps = {
   keyword: string;
@@ -47,7 +54,8 @@ export function McpTableItem({
   onSetting,
 }: McpItemProps) {
   const [status, setStatus] = useState<McpAction | null>(null);
-  const [showSetting, setShowSetting] = useState(false);
+  const [templateModal, setTemplateModal] = useState(false);
+  const [templateInfo, setTemplateInfo] = useState<TTemplateInfo | null>(null);
   const StatusIcon = useMemo(() => {
     if (status === McpAction.Loading) return LoadingIcon;
     else if (status === McpAction.Connected) return SuccessIcon;
@@ -55,11 +63,12 @@ export function McpTableItem({
     else return null;
   }, [status]);
 
-  useEffect(() => {
+  const showSetting = useMemo(() => {
     const { envs, args } = item.settingInfo || {};
     if (envs?.length || args?.length) {
-      setShowSetting(true);
+      return true;
     }
+    return false;
   }, [item]);
 
   const handleShowSettingModal = useCallback(
@@ -80,8 +89,9 @@ export function McpTableItem({
     type,
   } = item;
 
-  const { updateMcpStatusList } = useMcpStore();
+  const { updateMcpStatusList, updateTemplate } = useMcpStore();
   const mcpStatusList = useMcpStore((state) => state.mcpStatusList);
+  const config = useMcpStore((state) => state.config);
 
   useEffect(() => {
     const current = mcpStatusList.find((item) => item.name === mcp_name);
@@ -90,9 +100,36 @@ export function McpTableItem({
     }
   }, [mcpStatusList]);
 
+  const checkShowTemplateModal = useCallback(
+    (enable: boolean) => {
+      if (enable) {
+        let templateInfo = null;
+        if (config?.mcpServers[item.mcp_name]) {
+          templateInfo = parseTemplate(config.mcpServers[item.mcp_name]);
+        } else {
+          const server = getFirstValue(item.basic_config || {});
+          if (server) {
+            templateInfo = parseTemplate(server as CustomMCPServer);
+          }
+        }
+        setTemplateInfo(templateInfo);
+        if (templateInfo) {
+          const { templates, envs, multiArgs } = templateInfo;
+          if (templates?.length || envs?.length || multiArgs?.length) {
+            setTemplateModal(true);
+            return true;
+          }
+        }
+      }
+      return false;
+    },
+    [item, config],
+  );
+  ``;
   const handleUpdateStatus = useCallback(
     async (enable: boolean) => {
       const type = enable ? "update" : "delete";
+
       if (enable) {
         const status = await fetchMcpStatus(mcp_name);
         setStatus(status);
@@ -120,6 +157,7 @@ export function McpTableItem({
       );
       await onSwitchChange(enable, mcp_id, mcp_name, type);
       console.log("[Mcp status change]: update remote config done");
+      checkShowTemplateModal(enable);
       handleUpdateStatus(enable);
     } catch (e: any) {
       toast.error(e, {
@@ -127,6 +165,20 @@ export function McpTableItem({
       });
     }
   }, []);
+
+  const handleSettingConfirm = async (templateInfo: TTemplateInfo) => {
+    setStatus(McpAction.Loading);
+    updateMcpStatusList(
+      {
+        name: item.mcp_name,
+        action: McpAction.Loading,
+      },
+      "update",
+    );
+    await updateTemplate(item.mcp_name, templateInfo);
+    console.log("[Mcp status change]: update remote config done");
+    handleUpdateStatus(true);
+  };
 
   const showDelete = useMemo(() => {
     const { type } = item;
@@ -181,24 +233,26 @@ export function McpTableItem({
             : "justify-end items-center"
         }`}
       >
-        {showSetting && (
-          <Button
-            className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] px-2.5"
-            onClick={handleShowSettingModal}
-          >
-            Setting
-          </Button>
-        )}
-        {showDelete && (
-          <Button
-            className="bg-[#EF466F]/6 hover:bg-[#EF466F]/20 text-[#EF466F] px-2.5"
-            onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
-              onDelete(e, mcp_name)
-            }
-          >
-            Remove
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          {showSetting && (
+            <Button
+              className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] px-2.5"
+              onClick={handleShowSettingModal}
+            >
+              Setting
+            </Button>
+          )}
+          {showDelete && (
+            <Button
+              className="bg-[#EF466F]/6 hover:bg-[#EF466F]/20 text-[#EF466F] px-2.5"
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
+                onDelete(e, mcp_name)
+              }
+            >
+              Remove
+            </Button>
+          )}
+        </div>
         <Switch
           id={mcp_id}
           checked={checked}
@@ -208,6 +262,14 @@ export function McpTableItem({
           }}
         />
       </div>
+      {templateModal && templateInfo && (
+        <McpTemplateModal
+          onOpenChange={setTemplateModal}
+          open={templateModal}
+          templateInfo={templateInfo || {}}
+          onConfirm={handleSettingConfirm}
+        ></McpTemplateModal>
+      )}
     </div>
   );
 }

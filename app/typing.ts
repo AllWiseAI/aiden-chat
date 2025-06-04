@@ -82,9 +82,17 @@ export type TRemoteMcpInfo = {
 };
 
 export type EnvItem = { key: string; value: string };
+export type TemplateItem = { key: string; value: string };
+export type MultiArgItem = { key: string; value: string[] };
 
 export type TSettingInfo = {
   args: string[];
+  envs: EnvItem[];
+};
+
+export type TTemplateInfo = {
+  templates: TemplateItem[];
+  multiArgs: MultiArgItem[];
   envs: EnvItem[];
 };
 

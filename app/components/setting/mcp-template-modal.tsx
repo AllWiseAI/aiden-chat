@@ -10,46 +10,35 @@ import {
   DialogClose,
 } from "@/app/components/shadcn/dialog";
 import { Button } from "@/app/components/shadcn/button";
+import { TTemplateInfo } from "@/app/typing";
 
-interface SettingItem {
-  key: string;
-  value: string;
-}
-
-interface SettingInfo {
-  args: string[];
-  envs: SettingItem[];
-}
-
-interface McpSettingModalProps {
+interface McpTemplateModalProps {
   open: boolean;
-  settingInfo: SettingInfo;
-  onConfirm: (updated: SettingInfo) => void;
+  templateInfo: TTemplateInfo;
+  onConfirm: (updated: TTemplateInfo) => void;
   onOpenChange?: (open: boolean) => void;
 }
 
-export function McpSettingModal({
+export function McpTemplateModal({
   open,
-  settingInfo,
+  templateInfo,
   onConfirm,
   onOpenChange,
-}: McpSettingModalProps) {
-  const [args, setArgs] = useState(settingInfo.args);
-  const [envs, setEnvs] = useState(settingInfo.envs);
+}: McpTemplateModalProps) {
+  const [templates, setTemplates] = useState(templateInfo.templates);
+  const [envs, setEnvs] = useState(templateInfo.envs);
+  const [multiArgs, setMultiArgs] = useState(templateInfo.multiArgs);
   const [envsText, setEnvsText] = useState<string>("");
-  useEffect(() => {
-    setArgs(settingInfo.args);
-    setEnvs(settingInfo.envs);
-  }, [settingInfo]);
 
   useEffect(() => {
     const text = envs.map((item) => `${item.key}=${item.value}`).join("\n");
     setEnvsText(text);
   }, [envs]);
 
-  const updateArgs = (value: string) => {
-    const newArgs = value.split("\n");
-    setArgs(newArgs);
+  const updateTemplate = (index: number, value: string) => {
+    const newTemplates = [...templates];
+    newTemplates[index] = { ...newTemplates[index], value };
+    setTemplates(newTemplates);
   };
 
   const updateEnvs = useCallback((envsText: string) => {
@@ -64,11 +53,17 @@ export function McpSettingModal({
     return parsed;
   }, []);
 
+  const updateMultiArgs = (index: number, value: string) => {
+    const newMultiArgs = [...multiArgs];
+    newMultiArgs[index] = { ...newMultiArgs[index], value: value.split("\n") };
+    setMultiArgs(newMultiArgs);
+  };
+
   const handleConfirm = useCallback(() => {
     const parsedEnvs = updateEnvs(envsText);
-    onConfirm({ args, envs: parsedEnvs });
+    onConfirm({ templates, envs: parsedEnvs, multiArgs });
     onOpenChange?.(false);
-  }, [args, envs, onConfirm, onOpenChange, envsText]);
+  }, [templates, envs, onConfirm, onOpenChange, envsText, multiArgs]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -83,17 +78,39 @@ export function McpSettingModal({
         </DialogHeader>
 
         <div className="space-y-4 px-2">
-          {!!args.length && (
+          {!!templates?.length && (
             <div>
-              <h3 className="text-base mb-2 text-[#6C7275]">args</h3>
-              <div className="mb-4">
-                <textarea
-                  className="w-full text-left whitespace-pre font-mono text-sm bg-background border border-input rounded-md px-3 py-2 focus:!border-primary resize-none"
-                  rows={5}
-                  value={args.join("\n")}
-                  onChange={(e) => updateArgs(e.target.value)}
-                />
-              </div>
+              {templates.map((template, index) => {
+                return (
+                  <div className="mb-4" key={index}>
+                    <div className="mb-2 text-[#6C7275]">{template.key}</div>
+                    <textarea
+                      className="w-full text-left whitespace-pre font-mono text-sm bg-background border border-input rounded-md px-3 py-2 focus:!border-primary resize-none"
+                      rows={5}
+                      value={template.value}
+                      onChange={(e) => updateTemplate(index, e.target.value)}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {!!multiArgs?.length && (
+            <div>
+              {multiArgs?.map((arg, index) => {
+                return (
+                  <div className="flex flex-col space-x-2 mb-2" key={index}>
+                    <div className="mb-2text-[#6C7275]">{arg.key}</div>
+                    <textarea
+                      className="w-full text-left whitespace-pre font-mono text-sm bg-background border border-input rounded-md px-3 py-2 focus:!border-primary resize-none"
+                      rows={5}
+                      value={arg.value.join("\n")}
+                      onChange={(e) => updateMultiArgs(index, e.target.value)}
+                    />
+                  </div>
+                );
+              })}
             </div>
           )}
 
@@ -116,7 +133,7 @@ export function McpSettingModal({
         <DialogFooter className="mt-6">
           <DialogClose asChild>
             <Button
-              className=" bg-white hover:bg-[#F3F5F74D]   text-[#6C7275] border border-[#6C7275]/10 "
+              className=" bg-white hover:bg-[#F3F5F74D]  text-[#6C7275] border border-[#6C7275]/10 "
               type="button"
               onClick={() => onOpenChange?.(false)}
             >
