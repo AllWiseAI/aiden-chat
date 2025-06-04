@@ -9,6 +9,8 @@ import { useMcpStore } from "@/app/store/mcp";
 import { json } from "@codemirror/lang-json";
 import dynamic from "next/dynamic";
 import { useAppConfig, Theme } from "@/app/store";
+import { vscodeLight, vscodeDark } from "@uiw/codemirror-theme-vscode";
+import { foldGutter, indentOnInput } from "@codemirror/language";
 
 const CodeMirror = dynamic(() => import("@uiw/react-codemirror"), {
   ssr: false,
@@ -28,17 +30,18 @@ function ConfigEditor({ jsonStr, setJsonStr, error }: ConfigEditorProps) {
   const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
   const theme = useMemo(() => {
     if (config.theme === Theme.Auto) {
-      return mediaQuery.matches ? Theme.Dark : Theme.Light;
-    } else return config.theme;
+      return mediaQuery.matches ? vscodeDark : vscodeLight;
+    } else if (config.theme === Theme.Light) return vscodeLight;
+    else if (config.theme === Theme.Dark) return vscodeDark;
   }, [config.theme, mediaQuery]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 rounded-lg overflow-hidden">
       <CodeMirror
-        className="rounded-lg bg-gray"
+        className=""
         value={jsonStr}
         height="calc(100vh - 200px)"
-        extensions={[json()]}
+        extensions={[json(), foldGutter(), indentOnInput()]}
         theme={theme}
         basicSetup={{
           lineNumbers: true,

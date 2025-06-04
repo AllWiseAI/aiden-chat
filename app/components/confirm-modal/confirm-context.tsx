@@ -64,7 +64,7 @@ export const ConfirmProvider = ({
       return (
         <AlertDialogFooter className="flex justify-start">
           <Button
-            className="h-10 bg-white hover:bg-[#F3F5F74D]  text-[#6C7275] dark:text-black border border-[#6C7275]/10 flex-center gap-3 px-5 py-3 rounded-xl"
+            className="h-10 bg-white hover:bg-[#F3F5F74D] dark:bg-[#141718] dark:hover:bg-[#141718]/8 text-[#6C7275] dark:text-white border border-[#6C7275]/10 dark:border-[#6C7275] flex-center gap-3 px-5 py-3 rounded-xl"
             onClick={() => {
               handleClose("cancel");
             }}
@@ -73,7 +73,7 @@ export const ConfirmProvider = ({
           </Button>
           <div className="flex gap-2">
             <Button
-              className="h-10 bg-[#EF466F]/6 hover:bg-[#EF466F]/20 text-[#EF466F] dark:text-black flex-center gap-3 px-5 py-3 rounded-xl"
+              className="h-10 bg-[#EF466F]/6 hover:bg-[#EF466F]/20 text-[#EF466F] dark:text-white dark:bg-[#EF466F] dark:hover:bg-[#EF466F]/70 flex-center gap-3 px-5 py-3 rounded-xl"
               onClick={() => {
                 handleClose("confirm");
               }}
@@ -89,7 +89,7 @@ export const ConfirmProvider = ({
       return (
         <div className="flex items-center justify-center">
           <Button
-            className="h-10 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] dark:text-black flex-center gap-3 px-5 py-3 rounded-xl"
+            className="h-10 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main flex-center gap-3 px-5 py-3 rounded-xl"
             onClick={() => {
               handleClose("confirm");
             }}
@@ -101,9 +101,9 @@ export const ConfirmProvider = ({
     }
 
     return (
-      <AlertDialogFooter className="flex justify-start">
+      <AlertDialogFooter className="flex !justify-between">
         <Button
-          className="h-10 bg-white hover:bg-[#F3F5F74D] text-[#6C7275] dark:text-black border border-[#6C7275]/10 flex-center gap-3 px-5 py-3 rounded-xl"
+          className="h-10 bg-white hover:bg-[#F3F5F74D] dark:bg-[#141718] text-[#6C7275] border border-[#E8ECEF] dark:border-[#343839] flex-center gap-3 px-5 py-3 rounded-xl"
           onClick={() => {
             handleClose("decline");
           }}
@@ -112,7 +112,7 @@ export const ConfirmProvider = ({
         </Button>
         <div className="flex gap-2">
           <Button
-            className="h-10 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] dark:text-black flex-center gap-3 px-5 py-3 rounded-xl"
+            className="h-10 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main flex-center gap-3 px-5 py-3 rounded-xl"
             onClick={() => {
               handleClose("always");
             }}
@@ -120,7 +120,7 @@ export const ConfirmProvider = ({
             Allow always
           </Button>
           <Button
-            className="h-10 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] dark:text-black flex-center gap-3 px-5 py-3 rounded-xl"
+            className="h-10 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main flex-center gap-3 px-5 py-3 rounded-xl"
             onClick={() => {
               handleClose("once");
             }}
@@ -136,7 +136,7 @@ export const ConfirmProvider = ({
     if (!options) return null;
     if (options?.type === "delete") {
       return (
-        <AlertDialogDescription className="flex items-center text-lg font-normal text-[#141718]">
+        <AlertDialogDescription className="flex items-center text-lg font-normal text-[#141718] dark:text-white">
           {options.description}
         </AlertDialogDescription>
       );
@@ -144,14 +144,14 @@ export const ConfirmProvider = ({
 
     if (options?.type === "latestVersion") {
       return (
-        <AlertDialogDescription className="text-center gap-2 text-lg font-normal text-[#141718] mb-2">
+        <AlertDialogDescription className="text-center gap-2 text-lg font-normal text-[#141718] dark:text-white mb-2">
           {options.description}
         </AlertDialogDescription>
       );
     }
 
     return (
-      <AlertDialogDescription className="flex items-center gap-2 text-lg font-normal text-[#141718] border border-[#E8ECEF]  rounded-sm px-4 py-3">
+      <AlertDialogDescription className="flex items-center gap-2 text-lg font-normal text-[#141718] dark:text-white border border-[#E8ECEF] dark:border-[#232627] rounded-xl px-4 py-3">
         <MapIcon />
         {options.description}
       </AlertDialogDescription>
@@ -170,13 +170,13 @@ export const ConfirmProvider = ({
             <AlertDialogContent className="!rounded-[18px] w-120">
               <div className="flex justify-between">
                 <AlertDialogHeader>
-                  <AlertDialogTitle className="!text-[21px]">
+                  <AlertDialogTitle className="!text-[21px] text-black dark:text-white">
                     {options.title}
                   </AlertDialogTitle>
                 </AlertDialogHeader>
                 {!options.noClose && (
                   <AlertDialogCancel
-                    className="size-9 rounded-4xl border-0 hover:cursor-pointer hover:opacity-75 bg-[#F3F5F7] hover:bg-[#F3F5F7]/75"
+                    className="size-9 rounded-4xl border-0 hover:cursor-pointer hover:opacity-75 bg-[#F3F5F7] dark:bg-[#6C7275] hover:bg-[#F3F5F7]/75 dark:hover:bg-[#6C7275]/75"
                     onClick={() => handleClose("decline")}
                   >
                     <CloseIcon className="size-6" />
