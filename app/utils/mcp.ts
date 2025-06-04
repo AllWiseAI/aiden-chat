@@ -51,7 +51,6 @@ export function replaceTemplate(
     );
     replacedArgs.push(replaced);
   }
-  console.log("replacedArgs====", replacedArgs);
   return replacedArgs;
 }
 
@@ -188,6 +187,7 @@ export const getRenderMcpList: any = async (
         items.push({
           mcp_id: aiden_id,
           mcp_name: name,
+          mcp_key: name,
           checked: aiden_enable,
           description: "",
           description_en: "",
@@ -204,7 +204,7 @@ export const getRenderMcpList: any = async (
         items.push({
           ...mcpRemoteInfoMap.get(aiden_id),
           mcp_id: aiden_id,
-          mcp_name: name,
+          mcp_key: name,
           checked: aiden_enable,
           type: "remote",
           settingInfo: parseConfig(server as CustomMCPServer),
@@ -222,6 +222,7 @@ export const getRenderMcpList: any = async (
       items.push({
         ...item,
         type: "remote",
+        mcp_key: Object.keys(item.basic_config)[0],
         checked: false,
         settingInfo: null,
       });

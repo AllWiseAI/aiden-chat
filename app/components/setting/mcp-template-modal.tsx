@@ -16,6 +16,7 @@ interface McpTemplateModalProps {
   open: boolean;
   templateInfo: TTemplateInfo;
   onConfirm: (updated: TTemplateInfo) => void;
+  onCancel: () => void;
   onOpenChange?: (open: boolean) => void;
 }
 
@@ -23,6 +24,7 @@ export function McpTemplateModal({
   open,
   templateInfo,
   onConfirm,
+  onCancel,
   onOpenChange,
 }: McpTemplateModalProps) {
   const [templates, setTemplates] = useState(templateInfo.templates);
@@ -58,6 +60,11 @@ export function McpTemplateModal({
     newMultiArgs[index] = { ...newMultiArgs[index], value: value.split("\n") };
     setMultiArgs(newMultiArgs);
   };
+
+  const handleCancel = useCallback(() => {
+    onCancel();
+    onOpenChange?.(false);
+  }, [onOpenChange]);
 
   const handleConfirm = useCallback(() => {
     const parsedEnvs = updateEnvs(envsText);
@@ -141,7 +148,7 @@ export function McpTemplateModal({
             <Button
               className=" bg-white hover:bg-[#F3F5F74D] dark:bg-[#141718] dark:border-[#6C7275] dark:hover:bg-[#141718]/8 text-[#6C7275] dark:text-[#FEFEFE] border border-[#6C7275]/10 "
               type="button"
-              onClick={() => onOpenChange?.(false)}
+              onClick={handleCancel}
             >
               Cancel
             </Button>

@@ -137,34 +137,76 @@ export const useMcpStore = createPersistStore(
         return true;
       },
 
-      updateTemplate: async (name: string, templateInfo: TTemplateInfo) => {
+      getRemoteMcpStatus: async (name: string) => {
+        const { updateMcpStatusList } = _get();
+        updateMcpStatusList({ name, action: McpAction.Loading }, "update");
+        await delay(500);
+        try {
+          const newAction = await fetchMcpStatus(name);
+          updateMcpStatusList({ name: name, action: newAction }, "update");
+        } catch (err) {
+          updateMcpStatusList(
+            { name: name, action: McpAction.Failed },
+            "update",
+          );
+          console.error(err);
+        }
+      },
+
+      updateTemplate: async (
+        name: string,
+        id: string,
+        templateInfo: TTemplateInfo,
+      ) => {
         console.log("[Mcp store] updateTemplate", name, templateInfo);
-        const { config, renderMcpList } = _get();
+        const { config, renderMcpList, mcpRemoteInfoMap, getRemoteMcpStatus } =
+          _get();
         if (!config) return;
+        let previousConfig = {};
+        if (config.mcpServers[name]) {
+          previousConfig = {
+            ...config.mcpServers[name],
+          };
+        } else {
+          previousConfig = {
+            ...getFirstValue(mcpRemoteInfoMap.get(id)?.basic_config),
+          };
+        }
+
+        const newServer = {
+          ...previousConfig,
+          aiden_enable: true,
+        } as MCPServer;
+
+        if (templateInfo.envs.length) {
+          newServer.env = Object.fromEntries(
+            templateInfo.envs.map((item) => [item.key, item.value]),
+          );
+        }
+        if (templateInfo.templates.length) {
+          newServer.args = replaceTemplate(
+            newServer.args,
+            templateInfo.templates,
+            templateInfo.multiArgs,
+          );
+        }
         const newConfig = {
           ...config,
           mcpServers: {
             ...config.mcpServers,
-            [name]: {
-              ...config.mcpServers[name],
-              args: replaceTemplate(
-                config.mcpServers[name].args,
-                templateInfo.templates,
-                templateInfo.multiArgs,
-              ),
-              env: Object.fromEntries(
-                templateInfo.envs.map((item) => [item.key, item.value]),
-              ),
-            },
+            [name]: { ...newServer },
           },
         };
-        set({ config: newConfig });
+        set({ config: newConfig as MCPConfig });
 
         const newList = renderMcpList.map((item) => {
-          if (item.mcp_name === name) {
+          if (item.mcp_key === name) {
             return {
               ...item,
-              settingInfo: parseConfig(newConfig.mcpServers[name]),
+              checked: true,
+              settingInfo: parseConfig(
+                newConfig.mcpServers[name] as CustomMCPServer,
+              ),
               templateInfo,
             };
           }
@@ -173,29 +215,37 @@ export const useMcpStore = createPersistStore(
 
         set({ renderMcpList: newList });
         await updateConfig(newConfig);
+        getRemoteMcpStatus(name);
       },
 
       updateMcpArgsEnvs: async (name: string, settingInfo: TSettingInfo) => {
         console.log("[Mcp store] updateMcpArgsEnvs", name, settingInfo);
-        const { config, renderMcpList, updateMcpStatusList } = _get();
+        const { config, renderMcpList, getRemoteMcpStatus } = _get();
         if (!config) return;
+        const newServer = {
+          [name]: {
+            ...config.mcpServers[name],
+          },
+        };
+        if (settingInfo.envs.length) {
+          newServer[name].env = Object.fromEntries(
+            settingInfo.envs.map((item) => [item.key, item.value]),
+          );
+        }
+        if (settingInfo.args.length) {
+          newServer[name].args = [...settingInfo.args];
+        }
         const newConfig = {
           ...config,
           mcpServers: {
             ...config.mcpServers,
-            [name]: {
-              ...config.mcpServers[name],
-              args: [...settingInfo.args],
-              env: Object.fromEntries(
-                settingInfo.envs.map((item) => [item.key, item.value]),
-              ),
-            },
+            ...newServer,
           },
         };
         set({ config: newConfig });
 
         const newList = renderMcpList.map((item) => {
-          if (item.mcp_name === name) {
+          if (item.mcp_key === name) {
             return {
               ...item,
               settingInfo,
@@ -207,14 +257,7 @@ export const useMcpStore = createPersistStore(
         set({ renderMcpList: newList });
         await updateConfig(newConfig);
         if (config.mcpServers[name].aiden_enable) {
-          updateMcpStatusList({ name, action: McpAction.Loading }, "update");
-          await delay(500);
-          try {
-            const newAction = await fetchMcpStatus(name);
-            updateMcpStatusList({ name: name, action: newAction }, "update");
-          } catch (err) {
-            console.error(err);
-          }
+          getRemoteMcpStatus(name);
         }
       },
 
@@ -230,7 +273,7 @@ export const useMcpStore = createPersistStore(
         enable: boolean;
       }) => {
         console.log("[Mcp store] switchMcpStatus: ", name, enable);
-        const { config, mcpRemoteInfoMap, renderMcpList, updateMcpStatusList } =
+        const { config, mcpRemoteInfoMap, renderMcpList, getRemoteMcpStatus } =
           _get();
         if (!config) return;
         let newConfig;
@@ -282,19 +325,10 @@ export const useMcpStore = createPersistStore(
           return item;
         });
         set({ renderMcpList: newList as McpItemInfo[] });
-
-        if (newConfig.mcpServers[name].aiden_enable) {
-          updateMcpStatusList({ name, action: McpAction.Loading }, "update");
-          await delay(500);
-          try {
-            const newAction = await fetchMcpStatus(name);
-            updateMcpStatusList({ name: name, action: newAction }, "update");
-          } catch (err) {
-            console.error(err);
-          }
-        }
-
         await updateConfig(newConfig);
+        if (newConfig.mcpServers[name].aiden_enable) {
+          getRemoteMcpStatus(name);
+        }
       },
 
       removeMcpItem: async (name: string) => {
@@ -308,7 +342,7 @@ export const useMcpStore = createPersistStore(
           mcpServers: { ...beforeMcpServers },
         };
         set({ config: newConfig });
-        const newList = renderMcpList.filter((item) => item.mcp_name !== name);
+        const newList = renderMcpList.filter((item) => item.mcp_key !== name);
         set({ renderMcpList: newList });
         await updateConfig(newConfig);
         updateMcpStatusList({ name, action: McpAction.Loading }, "delete");

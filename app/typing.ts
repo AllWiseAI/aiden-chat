@@ -30,6 +30,7 @@ export type McpItemType = "default" | "custom" | "remote";
 export type TDetailInfo = {
   mcp_id: string;
   mcp_name: string;
+  mcp_key: string;
   mcp_logo: string;
   description: string;
   tutorial: string;
@@ -73,6 +74,7 @@ export type TRemoteMcpInfo = {
   tutorial: string;
   mcp_logo: string;
   mcp_name: string;
+  mcp_key: string;
   mcp_id: string;
   description_en: string;
   description_zh: string;

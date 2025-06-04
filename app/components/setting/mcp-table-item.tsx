@@ -16,7 +16,7 @@ import {
   CustomMCPServer,
 } from "@/app/typing";
 import { useMcpStore } from "@/app/store/mcp";
-import { fetchMcpStatus, getFirstValue, parseTemplate } from "@/app/utils/mcp";
+import { getFirstValue, parseTemplate } from "@/app/utils/mcp";
 import { toast } from "sonner";
 import { McpTemplateModal } from "./mcp-template-modal";
 
@@ -74,8 +74,7 @@ export function McpTableItem({
   const handleShowSettingModal = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
-      console.log("Show setting modal");
-      onSetting(item.settingInfo, item.mcp_name);
+      onSetting(item.settingInfo, item.mcp_key);
     },
     [item.settingInfo, item.mcp_name, onSetting],
   );
@@ -83,6 +82,7 @@ export function McpTableItem({
   const {
     mcp_id,
     mcp_name,
+    mcp_key,
     mcp_logo,
     description,
     checked = false,
@@ -94,7 +94,7 @@ export function McpTableItem({
   const config = useMcpStore((state) => state.config);
 
   useEffect(() => {
-    const current = mcpStatusList.find((item) => item.name === mcp_name);
+    const current = mcpStatusList.find((item) => item.name === mcp_key);
     if (current) {
       setStatus(current.action);
     }
@@ -104,16 +104,16 @@ export function McpTableItem({
     (enable: boolean) => {
       if (enable) {
         let templateInfo = null;
-        if (config?.mcpServers[item.mcp_name]) {
-          templateInfo = parseTemplate(config.mcpServers[item.mcp_name]);
+        if (config?.mcpServers[item.mcp_key]) {
+          templateInfo = parseTemplate(config.mcpServers[item.mcp_key]);
         } else {
           const server = getFirstValue(item.basic_config || {});
           if (server) {
             templateInfo = parseTemplate(server as CustomMCPServer);
           }
         }
-        setTemplateInfo(templateInfo);
         if (templateInfo) {
+          setTemplateInfo(templateInfo);
           const { templates, envs, multiArgs } = templateInfo;
           if (templates?.length || envs?.length || multiArgs?.length) {
             setTemplateModal(true);
@@ -125,39 +125,27 @@ export function McpTableItem({
     },
     [item, config],
   );
-  ``;
-  const handleUpdateStatus = useCallback(
-    async (enable: boolean) => {
-      const type = enable ? "update" : "delete";
 
-      if (enable) {
-        const status = await fetchMcpStatus(mcp_name);
-        setStatus(status);
-        updateMcpStatusList(
-          {
-            name: item.mcp_name,
-            action: status,
-          },
-          type,
-        );
-      }
-    },
-    [item.mcp_name],
-  );
+  const initLoading = () => {
+    setStatus(McpAction.Loading);
+    updateMcpStatusList(
+      {
+        name: item.mcp_key,
+        action: McpAction.Loading,
+      },
+      "update",
+    );
+  };
 
   const handleCheckedChange = useCallback(async (enable: boolean) => {
     try {
-      setStatus(McpAction.Loading);
-      updateMcpStatusList(
-        {
-          name: item.mcp_name,
-          action: McpAction.Loading,
-        },
-        enable ? "update" : "delete",
-      );
-      await onSwitchChange(enable, mcp_id, mcp_name, type);
+      if (enable) {
+        initLoading();
+      }
+      const needShowTemplateModal = checkShowTemplateModal(enable);
+      if (needShowTemplateModal) return;
+      await onSwitchChange(enable, mcp_id, mcp_key, type);
       console.log("[Mcp status change]: update remote config done");
-      checkShowTemplateModal(enable);
     } catch (e: any) {
       toast.error(e, {
         className: "w-auto max-w-max",
@@ -165,18 +153,15 @@ export function McpTableItem({
     }
   }, []);
 
-  const handleSettingConfirm = async (templateInfo: TTemplateInfo) => {
-    setStatus(McpAction.Loading);
-    updateMcpStatusList(
-      {
-        name: item.mcp_name,
-        action: McpAction.Loading,
-      },
-      "update",
-    );
-    await updateTemplate(item.mcp_name, templateInfo);
+  const handleCancelTemplateSetting = useCallback(async () => {
+    initLoading();
+    await onSwitchChange(true, mcp_id, mcp_key, type);
     console.log("[Mcp status change]: update remote config done");
-    handleUpdateStatus(true);
+  }, []);
+
+  const handleSettingConfirm = async (templateInfo: TTemplateInfo) => {
+    await updateTemplate(item.mcp_key, item.mcp_id, templateInfo);
+    console.log("[Mcp status change]: update remote config done");
   };
 
   const showDelete = useMemo(() => {
@@ -187,7 +172,7 @@ export function McpTableItem({
   return (
     <div
       className="flex flex-col gap-5 rounded-xl border p-4 cursor-pointer hover:bg-[#F3F5F74D] dark:hover:bg-[#232627]/30 transition-colors"
-      key={mcp_id + mcp_name}
+      key={mcp_id + mcp_key}
       onClick={onSelect}
     >
       <div className="flex items-top gap-4">
@@ -245,7 +230,7 @@ export function McpTableItem({
             <Button
               className="bg-[#EF466F]/6 hover:bg-[#EF466F]/20 text-[#EF466F] px-2.5"
               onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
-                onDelete(e, mcp_name)
+                onDelete(e, mcp_key)
               }
             >
               Remove
@@ -266,6 +251,7 @@ export function McpTableItem({
           onOpenChange={setTemplateModal}
           open={templateModal}
           templateInfo={templateInfo || {}}
+          onCancel={handleCancelTemplateSetting}
           onConfirm={handleSettingConfirm}
         ></McpTemplateModal>
       )}
