@@ -10,7 +10,10 @@
     },
     "desktop-commander": {
       "command": "npx",
-      "args": ["-y", "@wonderwhy-er/desktop-commander@0.2.2"],
+      "args": [
+        "-y",
+        "@wonderwhy-er/desktop-commander@0.2.2"
+      ],
       "transport": "stdio",
       "aiden_type": "default",
       "aiden_enable": true,
@@ -18,7 +21,9 @@
     },
     "fetch": {
       "command": "uvx",
-      "args": ["mcp-server-fetch@2025.4.7"],
+      "args": [
+        "mcp-server-fetch@2025.4.7"
+      ],
       "transport": "stdio",
       "aiden_type": "default",
       "aiden_enable": true,
@@ -26,7 +31,10 @@
     },
     "aiden-time": {
       "command": "uv",
-      "args": ["run", "time_server.py"],
+      "args": [
+        "run",
+        "time_server.py"
+      ],
       "transport": "stdio",
       "aiden_type": "default",
       "aiden_enable": true,

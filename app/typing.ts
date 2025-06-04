@@ -53,6 +53,7 @@ export type MCPServer = {
   transport?: string;
   command?: string;
   args?: string[];
+  env?: Record<string, string>;
 };
 
 export type CustomMCPServer = {
@@ -60,6 +61,7 @@ export type CustomMCPServer = {
   transport?: string;
   command?: string;
   args?: string[];
+  env?: Record<string, string>;
   aiden_type: McpItemType;
   aiden_enable: boolean;
   aiden_id: string;
@@ -79,6 +81,21 @@ export type TRemoteMcpInfo = {
   type: string;
 };
 
+export type EnvItem = { key: string; value: string };
+export type TemplateItem = { key: string; value: string };
+export type MultiArgItem = { key: string; value: string[] };
+
+export type TSettingInfo = {
+  args: string[];
+  envs: EnvItem[];
+};
+
+export type TTemplateInfo = {
+  templates: TemplateItem[];
+  multiArgs: MultiArgItem[];
+  envs: EnvItem[];
+};
+
 export type McpItemInfo = Omit<
   TRemoteMcpInfo,
   | "basic_config"
@@ -94,6 +111,7 @@ export type McpItemInfo = Omit<
   description_zh?: string;
   tutorial_zh?: string;
   tutorial_en?: string;
+  settingInfo: TSettingInfo | null;
 };
 
 export type A2AServer = {

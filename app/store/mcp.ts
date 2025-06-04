@@ -8,6 +8,8 @@ import {
   MCPServer,
   McpStatusItem,
   McpAction,
+  TSettingInfo,
+  TTemplateInfo,
 } from "@/app/typing";
 import {
   getFirstValue,
@@ -18,7 +20,11 @@ import {
   getRenderMcpList,
   updateConfig,
   restoreServers,
+  parseConfig,
+  parseTemplate,
+  replaceTemplate,
 } from "@/app/utils/mcp";
+import { delay } from "@/app/utils";
 
 let pollingTimer: NodeJS.Timeout | null = null;
 
@@ -131,6 +137,87 @@ export const useMcpStore = createPersistStore(
         return true;
       },
 
+      updateTemplate: async (name: string, templateInfo: TTemplateInfo) => {
+        console.log("[Mcp store] updateTemplate", name, templateInfo);
+        const { config, renderMcpList } = _get();
+        if (!config) return;
+        const newConfig = {
+          ...config,
+          mcpServers: {
+            ...config.mcpServers,
+            [name]: {
+              ...config.mcpServers[name],
+              args: replaceTemplate(
+                config.mcpServers[name].args,
+                templateInfo.templates,
+                templateInfo.multiArgs,
+              ),
+              env: Object.fromEntries(
+                templateInfo.envs.map((item) => [item.key, item.value]),
+              ),
+            },
+          },
+        };
+        set({ config: newConfig });
+
+        const newList = renderMcpList.map((item) => {
+          if (item.mcp_name === name) {
+            return {
+              ...item,
+              settingInfo: parseConfig(newConfig.mcpServers[name]),
+              templateInfo,
+            };
+          }
+          return item;
+        });
+
+        set({ renderMcpList: newList });
+        await updateConfig(newConfig);
+      },
+
+      updateMcpArgsEnvs: async (name: string, settingInfo: TSettingInfo) => {
+        console.log("[Mcp store] updateMcpArgsEnvs", name, settingInfo);
+        const { config, renderMcpList, updateMcpStatusList } = _get();
+        if (!config) return;
+        const newConfig = {
+          ...config,
+          mcpServers: {
+            ...config.mcpServers,
+            [name]: {
+              ...config.mcpServers[name],
+              args: [...settingInfo.args],
+              env: Object.fromEntries(
+                settingInfo.envs.map((item) => [item.key, item.value]),
+              ),
+            },
+          },
+        };
+        set({ config: newConfig });
+
+        const newList = renderMcpList.map((item) => {
+          if (item.mcp_name === name) {
+            return {
+              ...item,
+              settingInfo,
+            };
+          }
+          return item;
+        });
+
+        set({ renderMcpList: newList });
+        await updateConfig(newConfig);
+        if (config.mcpServers[name].aiden_enable) {
+          updateMcpStatusList({ name, action: McpAction.Loading }, "update");
+          await delay(500);
+          try {
+            const newAction = await fetchMcpStatus(name);
+            updateMcpStatusList({ name: name, action: newAction }, "update");
+          } catch (err) {
+            console.error(err);
+          }
+        }
+      },
+
       switchMcpStatus: async ({
         id,
         name,
@@ -143,9 +230,12 @@ export const useMcpStore = createPersistStore(
         enable: boolean;
       }) => {
         console.log("[Mcp store] switchMcpStatus: ", name, enable);
-        const { config, mcpRemoteInfoMap, renderMcpList } = get();
+        const { config, mcpRemoteInfoMap, renderMcpList, updateMcpStatusList } =
+          _get();
         if (!config) return;
         let newConfig;
+        let settingInfo: TSettingInfo | null = null;
+        let templateInfo: TTemplateInfo | null = null;
         if (config.mcpServers[name]) {
           // enable or disable a local item
           newConfig = {
@@ -158,6 +248,8 @@ export const useMcpStore = createPersistStore(
               },
             },
           };
+          settingInfo = parseConfig(config.mcpServers[name]);
+          templateInfo = parseTemplate(config.mcpServers[name]);
         } else {
           // enable -> add item "remote"
           newConfig = {
@@ -173,6 +265,8 @@ export const useMcpStore = createPersistStore(
               },
             },
           };
+          settingInfo = parseConfig(newConfig.mcpServers[name]);
+          templateInfo = parseTemplate(newConfig.mcpServers[name]);
         }
 
         set({ config: newConfig });
@@ -181,11 +275,25 @@ export const useMcpStore = createPersistStore(
             return {
               ...item,
               checked: enable,
+              settingInfo: settingInfo as TSettingInfo | null,
+              templateInfo: templateInfo as TTemplateInfo | null,
             };
           }
           return item;
         });
-        set({ renderMcpList: newList });
+        set({ renderMcpList: newList as McpItemInfo[] });
+
+        if (config.mcpServers[name].aiden_enable) {
+          updateMcpStatusList({ name, action: McpAction.Loading }, "update");
+          await delay(500);
+          try {
+            const newAction = await fetchMcpStatus(name);
+            updateMcpStatusList({ name: name, action: newAction }, "update");
+          } catch (err) {
+            console.error(err);
+          }
+        }
+
         await updateConfig(newConfig);
       },
 
@@ -200,9 +308,9 @@ export const useMcpStore = createPersistStore(
           mcpServers: { ...beforeMcpServers },
         };
         set({ config: newConfig });
-        await updateConfig(newConfig);
         const newList = renderMcpList.filter((item) => item.mcp_name !== name);
         set({ renderMcpList: newList });
+        await updateConfig(newConfig);
         updateMcpStatusList({ name, action: McpAction.Loading }, "delete");
       },
 

@@ -10,8 +10,107 @@ import {
   MCPConfig,
   MCPServer,
   McpAction,
+  EnvItem,
 } from "@/app/typing";
 import { invoke } from "@tauri-apps/api/tauri";
+
+export type TemplateItem = { key: string; value: string };
+export type MultiArgItem = { key: string; value: string[] };
+
+export function replaceTemplate(
+  args: string[] | undefined,
+  templates: TemplateItem[],
+  multiArgs: MultiArgItem[],
+): string[] {
+  if (!args) return [];
+  const templateMap = Object.fromEntries(
+    templates.map((item) => [item.key, item.value]),
+  );
+  const multiArgMap = Object.fromEntries(
+    multiArgs.map((item) => [item.key, item.value]),
+  );
+
+  const replacedArgs: string[] = [];
+
+  for (const arg of args) {
+    // 处理 multiArgs 格式：完全匹配 []<KEY>
+    const multiMatch = arg.match(/^\[\]<([^<>]+)>$/);
+    if (multiMatch) {
+      const key = multiMatch[1];
+      const values = multiArgMap[key];
+      if (Array.isArray(values)) {
+        replacedArgs.push(...values);
+      }
+      continue;
+    }
+
+    // 替换 <KEY> 模板
+    const replaced = arg.replace(
+      /<([^<>]+)>/g,
+      (_, key) => templateMap[key] ?? "",
+    );
+    replacedArgs.push(replaced);
+  }
+  console.log("replacedArgs====", replacedArgs);
+  return replacedArgs;
+}
+
+export const parseTemplate = (server: CustomMCPServer) => {
+  const templateSet = new Map<string, TemplateItem>();
+  const multiArgSet = new Map<string, MultiArgItem>();
+  const envs: EnvItem[] = [];
+
+  const { args = [], env = {} } = server;
+
+  // 提取 args 中的模板变量 <KEY>
+  for (const arg of args) {
+    // 普通模板变量，如 "--flag=<SOME_KEY>"
+    const matches = arg.matchAll(/<([^<>]+)>/g);
+    for (const match of matches) {
+      const templateKey = match[1];
+      // 跳过 multiArg 语法
+      if (/^\[\]/.test(arg)) continue;
+      if (!templateSet.has(templateKey)) {
+        templateSet.set(templateKey, { key: templateKey, value: "" });
+      }
+    }
+
+    // 多参数变量：完整形如 "[]<ALLOWED_PATHS>"
+    const multiArgMatch = arg.match(/^\[\]<([^<>]+)>$/);
+    if (multiArgMatch) {
+      const multiArgKey = multiArgMatch[1];
+      if (!multiArgSet.has(multiArgKey)) {
+        multiArgSet.set(multiArgKey, { key: multiArgKey, value: [] });
+      }
+    }
+  }
+
+  // 提取 env 中的键值对
+  for (const [envKey, envValue] of Object.entries(env)) {
+    envs.push({ key: envKey, value: envValue });
+  }
+
+  return {
+    templates: Array.from(templateSet.values()),
+    multiArgs: Array.from(multiArgSet.values()),
+    envs,
+  };
+};
+
+export const parseConfig = (server: CustomMCPServer) => {
+  let finalArgs: string[] = [];
+  const envs: EnvItem[] = [];
+
+  const { args = [], env = {} } = server;
+  finalArgs = [...args];
+  for (const [envKey, envValue] of Object.entries(env)) {
+    envs.push({ key: envKey, value: envValue });
+  }
+  return {
+    args: finalArgs,
+    envs,
+  };
+};
 
 export const fetchMcpStatus = async (name: string): Promise<McpAction> => {
   try {
@@ -98,16 +197,16 @@ export const getRenderMcpList: any = async (
           tutorial_zh: "",
           mcp_logo: "",
           type: aiden_type,
+          settingInfo: parseConfig(server as CustomMCPServer),
         });
       } else {
         addedInJSONIds.push(aiden_id);
         items.push({
           ...mcpRemoteInfoMap.get(aiden_id),
           mcp_id: aiden_id,
-          mcp_name: name,
           checked: aiden_enable,
           type: "remote",
-          showDelete: false,
+          settingInfo: parseConfig(server as CustomMCPServer),
         });
       }
     });
@@ -123,6 +222,7 @@ export const getRenderMcpList: any = async (
         ...item,
         type: "remote",
         checked: false,
+        settingInfo: null,
       });
     }
   }

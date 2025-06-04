@@ -17,7 +17,7 @@ import AidenIcon from "../../icons/logo-text.svg";
 export type ConfirmOptions = {
   title: string;
   description?: string;
-  type?: "delete" | "latestVersion";
+  type?: "delete" | "latestVersion" | "setting";
   noClose?: boolean;
   withLogo?: boolean;
 };

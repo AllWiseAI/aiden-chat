@@ -9,10 +9,16 @@ import {
 } from "@/app/components/confirm-modal/confirm";
 import { McpTableItem } from "./mcp-table-item";
 import LoadingIcon from "../../icons/loading-spinner.svg";
+import {
+  McpItemInfo,
+  McpConfigKey,
+  TDetailInfo,
+  TSettingInfo,
+} from "@/app/typing";
 import EditIcon from "../../icons/edit.svg";
-import { McpItemInfo, McpConfigKey, TDetailInfo } from "@/app/typing";
 import { useMcpStore } from "@/app/store/mcp";
 import SearchIcon from "../../icons/search.svg";
+import { McpSettingModal } from "./mcp-setting-modal";
 
 type ServerTableProps = {
   keyword: string;
@@ -30,6 +36,10 @@ type ServerTableProps = {
   }) => void;
   setDetail: (detailInfo: McpItemInfo) => void;
   removeMcpItem: (name: string) => void;
+  setCurrentSetting: (
+    settingInfo: TSettingInfo | null,
+    mcpName: string,
+  ) => void;
 };
 
 type Props = {
@@ -43,6 +53,7 @@ function ServerTable({
   servers,
   removeMcpItem,
   switchMcpStatus,
+  setCurrentSetting,
 }: ServerTableProps) {
   const handleDeleteMcp = async (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -57,9 +68,9 @@ function ServerTable({
     if (result !== ConfirmType.Confirm) return;
     try {
       await removeMcpItem(mcp_name);
-      toast.success("Delete Successfully");
+      toast.success("Deleted successfully");
     } catch (e) {
-      toast.error("Delete Failed");
+      toast.error("Failed to delete, please try again");
     }
   };
   return (
@@ -82,6 +93,9 @@ function ServerTable({
               }}
               onDelete={handleDeleteMcp}
               onSelect={() => setDetail({ ...item })}
+              onSetting={(settingInfo, name) =>
+                setCurrentSetting(settingInfo, name)
+              }
             />
           ))}
         </div>
@@ -100,9 +114,18 @@ function ServerTable({
 
 const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
   const mcpStore = useMcpStore();
-  const { switchMcpStatus, removeMcpItem } = mcpStore;
+  const { switchMcpStatus, removeMcpItem, updateMcpArgsEnvs } = mcpStore;
   const [searchValue, setSearchValue] = useState("");
+  const [showSettingModal, setShowSettingModal] = useState(false);
   const renderMcpList = useMcpStore((state) => state.renderMcpList);
+  const [currentSetting, setCurrentSetting] = useState<TSettingInfo | null>(
+    null,
+  );
+  const [currentMcpName, setCurrentMcpName] = useState<string>("");
+  const handleSettingConfirm = (update: TSettingInfo) => {
+    setShowSettingModal(false);
+    updateMcpArgsEnvs(currentMcpName, update);
+  };
 
   return (
     <>
@@ -141,8 +164,22 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
           switchMcpStatus={switchMcpStatus}
           setDetail={setDetail}
           removeMcpItem={removeMcpItem}
+          setCurrentSetting={(settingInfo, mcpName) => {
+            console.log("settingInfo in table ===", settingInfo);
+            setCurrentSetting(settingInfo);
+            setCurrentMcpName(mcpName);
+            setShowSettingModal(true);
+          }}
         />
       </div>
+      {showSettingModal && currentSetting && (
+        <McpSettingModal
+          onOpenChange={setShowSettingModal}
+          open={showSettingModal}
+          settingInfo={currentSetting}
+          onConfirm={handleSettingConfirm}
+        ></McpSettingModal>
+      )}
     </>
   );
 };
