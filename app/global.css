@@ -3,10 +3,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 :root {
   --main-color: #02c174;
   --bar-color: rgba(0, 0, 0, 0.1);
@@ -171,4 +167,22 @@
     background-clip: content-box;
     border: 1px solid transparent;
   }
+}
+
+@theme {
+  --container-xss: 350px;
+  --container-sm: 640px;
+  --container-headerMd: 850px;
+  --container-xl: 1350px;
+  --container-2xl: 1500px;
+  --container-3xl: 1620px;
+  --container-4xl: 1800px;
+
+  --breakpoint-xss: 350px;
+  --breakpoint-sm: 640px;
+  --breakpoint-headerMd: 850px;
+  --breakpoint-xl: 1350px;
+  --breakpoint-2xl: 1500px;
+  --breakpoint-3xl: 1620px;
+  --breakpoint-4xl: 1800px;
 }
