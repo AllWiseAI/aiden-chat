@@ -230,11 +230,12 @@ export const useMcpStore = createPersistStore(
         enable: boolean;
       }) => {
         console.log("[Mcp store] switchMcpStatus: ", name, enable);
-        const { config, mcpRemoteInfoMap, renderMcpList } = get();
+        const { config, mcpRemoteInfoMap, renderMcpList, updateMcpStatusList } =
+          _get();
         if (!config) return;
         let newConfig;
-        let settingInfo = null;
-        let templateInfo = null;
+        let settingInfo: TSettingInfo | null = null;
+        let templateInfo: TTemplateInfo | null = null;
         if (config.mcpServers[name]) {
           // enable or disable a local item
           newConfig = {
@@ -265,7 +266,7 @@ export const useMcpStore = createPersistStore(
             },
           };
           settingInfo = parseConfig(newConfig.mcpServers[name]);
-          templateInfo = parseConfig(newConfig.mcpServers[name]);
+          templateInfo = parseTemplate(newConfig.mcpServers[name]);
         }
 
         set({ config: newConfig });
@@ -274,13 +275,24 @@ export const useMcpStore = createPersistStore(
             return {
               ...item,
               checked: enable,
-              settingInfo: settingInfo,
-              templateInfo: templateInfo,
+              settingInfo: settingInfo as TSettingInfo | null,
+              templateInfo: templateInfo as TTemplateInfo | null,
             };
           }
           return item;
         });
         set({ renderMcpList: newList as McpItemInfo[] });
+
+        if (config.mcpServers[name].aiden_enable) {
+          updateMcpStatusList({ name, action: McpAction.Loading }, "update");
+          await delay(500);
+          try {
+            const newAction = await fetchMcpStatus(name);
+            updateMcpStatusList({ name: name, action: newAction }, "update");
+          } catch (err) {
+            console.error(err);
+          }
+        }
 
         await updateConfig(newConfig);
       },

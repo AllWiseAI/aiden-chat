@@ -204,7 +204,6 @@ export const getRenderMcpList: any = async (
         items.push({
           ...mcpRemoteInfoMap.get(aiden_id),
           mcp_id: aiden_id,
-          mcp_name: name,
           checked: aiden_enable,
           type: "remote",
           settingInfo: parseConfig(server as CustomMCPServer),

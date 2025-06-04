@@ -158,7 +158,6 @@ export function McpTableItem({
       await onSwitchChange(enable, mcp_id, mcp_name, type);
       console.log("[Mcp status change]: update remote config done");
       checkShowTemplateModal(enable);
-      handleUpdateStatus(enable);
     } catch (e: any) {
       toast.error(e, {
         className: "w-auto max-w-max",
