@@ -79,16 +79,18 @@ export function McpSettingModal({
         }}
       >
         <DialogHeader>
-          <DialogTitle>MCP Setting</DialogTitle>
+          <DialogTitle className="dark:text-[#FEFEFE]">MCP Setting</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 px-2">
+        <div className="space-y-4 px-2 max-h-[500px] overflow-y-auto">
           {!!args.length && (
             <div>
-              <h3 className="text-base mb-2 text-[#6C7275]">args</h3>
+              <h3 className="text-base mb-2 text-[#6C7275] dark:text-[#FEFEFE]">
+                args
+              </h3>
               <div className="mb-4">
                 <textarea
-                  className="w-full text-left whitespace-pre font-mono text-sm bg-background border border-input rounded-md px-3 py-2 focus:!border-primary resize-none"
+                  className="w-full text-left whitespace-pre font-mono text-sm bg-background border border-input dark:border-[#6C7275] rounded-md px-3 py-2 focus:!border-primary resize-y"
                   rows={5}
                   value={args.join("\n")}
                   onChange={(e) => updateArgs(e.target.value)}
@@ -99,10 +101,12 @@ export function McpSettingModal({
 
           {!!envs.length && (
             <div>
-              <h3 className="text-base mb-2 text-[#6C7275]">env</h3>
+              <h3 className="text-base mb-2 text-[#6C7275] dark:text-[#FEFEFE]">
+                env
+              </h3>
               <div className="flex space-x-2 mb-2">
                 <textarea
-                  className="w-full text-left whitespace-pre font-mono text-sm bg-background border border-input rounded-md px-3 py-2 focus:!border-primary resize-none"
+                  className="w-full text-left whitespace-pre font-mono text-sm bg-background border border-input dark:border-[#6C7275] rounded-md px-3 py-2 focus:!border-primary resize-y"
                   rows={5}
                   value={envsText}
                   onChange={(e) => setEnvsText(e.target.value)}
@@ -116,7 +120,7 @@ export function McpSettingModal({
         <DialogFooter className="mt-6">
           <DialogClose asChild>
             <Button
-              className=" bg-white hover:bg-[#F3F5F74D]   text-[#6C7275] border border-[#6C7275]/10 "
+              className=" bg-white hover:bg-[#F3F5F74D] dark:bg-[#141718] dark:border-[#6C7275] dark:hover:bg-[#141718]/8 text-[#6C7275] dark:text-[#FEFEFE] border border-[#6C7275]/10 "
               type="button"
               onClick={() => onOpenChange?.(false)}
             >

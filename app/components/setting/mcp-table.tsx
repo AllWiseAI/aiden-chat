@@ -68,9 +68,9 @@ function ServerTable({
     if (result !== ConfirmType.Confirm) return;
     try {
       await removeMcpItem(mcp_name);
-      toast.success("Delete Successfully");
+      toast.success("Deleted successfully");
     } catch (e) {
-      toast.error("Delete Failed");
+      toast.error("Failed to delete, please try again");
     }
   };
   return (

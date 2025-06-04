@@ -74,18 +74,20 @@ export function McpTemplateModal({
         }}
       >
         <DialogHeader>
-          <DialogTitle>MCP Setting</DialogTitle>
+          <DialogTitle className="dark:text-[#FEFEFE]">MCP Setting</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 px-2">
+        <div className="space-y-4 px-2 max-h-[500px] overflow-y-auto">
           {!!templates?.length && (
             <div>
               {templates.map((template, index) => {
                 return (
                   <div className="mb-4" key={index}>
-                    <div className="mb-2 text-[#6C7275]">{template.key}</div>
+                    <div className="mb-2 text-[#6C7275] dark:text-[#FEFEFE]">
+                      {template.key}
+                    </div>
                     <textarea
-                      className="w-full text-left whitespace-pre font-mono text-sm bg-background border border-input rounded-md px-3 py-2 focus:!border-primary resize-none"
+                      className="w-full text-left whitespace-pre font-mono text-smdark:border-[#6C7275] bg-background border border-input rounded-md px-3 py-2 focus:!border-primary resize-y"
                       rows={5}
                       value={template.value}
                       onChange={(e) => updateTemplate(index, e.target.value)}
@@ -101,9 +103,11 @@ export function McpTemplateModal({
               {multiArgs?.map((arg, index) => {
                 return (
                   <div className="flex flex-col space-x-2 mb-2" key={index}>
-                    <div className="mb-2text-[#6C7275]">{arg.key}</div>
+                    <div className="mb-2 text-[#6C7275] dark:text-[#FEFEFE]">
+                      {arg.key}
+                    </div>
                     <textarea
-                      className="w-full text-left whitespace-pre font-mono text-sm bg-background border border-input rounded-md px-3 py-2 focus:!border-primary resize-none"
+                      className="w-full text-left whitespace-pre font-mono text-sm dark:border-[#6C7275] bg-background border border-input rounded-md px-3 py-2 focus:!border-primary resize-y"
                       rows={5}
                       value={arg.value.join("\n")}
                       onChange={(e) => updateMultiArgs(index, e.target.value)}
@@ -116,10 +120,12 @@ export function McpTemplateModal({
 
           {!!envs.length && (
             <div>
-              <h3 className="text-base mb-2 text-[#6C7275]">env</h3>
+              <h3 className="text-base mb-2 text-[#6C7275] dark:text-[#FEFEFE]">
+                env
+              </h3>
               <div className="flex space-x-2 mb-2">
                 <textarea
-                  className="w-full text-left whitespace-pre font-mono text-sm bg-background border border-input rounded-md px-3 py-2 focus:!border-primary resize-none"
+                  className="w-full text-left whitespace-pre font-mono text-sm dark:border-[#6C7275] bg-background border border-input rounded-md px-3 py-2 focus:!border-primary resize-y"
                   rows={5}
                   value={envsText}
                   onChange={(e) => setEnvsText(e.target.value)}
@@ -133,7 +139,7 @@ export function McpTemplateModal({
         <DialogFooter className="mt-6">
           <DialogClose asChild>
             <Button
-              className=" bg-white hover:bg-[#F3F5F74D]  text-[#6C7275] border border-[#6C7275]/10 "
+              className=" bg-white hover:bg-[#F3F5F74D] dark:bg-[#141718] dark:border-[#6C7275] dark:hover:bg-[#141718]/8 text-[#6C7275] dark:text-[#FEFEFE] border border-[#6C7275]/10 "
               type="button"
               onClick={() => onOpenChange?.(false)}
             >

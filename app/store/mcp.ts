@@ -296,9 +296,9 @@ export const useMcpStore = createPersistStore(
           mcpServers: { ...beforeMcpServers },
         };
         set({ config: newConfig });
-        await updateConfig(newConfig);
         const newList = renderMcpList.filter((item) => item.mcp_name !== name);
         set({ renderMcpList: newList });
+        await updateConfig(newConfig);
         updateMcpStatusList({ name, action: McpAction.Loading }, "delete");
       },
 

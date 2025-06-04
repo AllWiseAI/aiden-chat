@@ -399,6 +399,13 @@ function _Chat() {
     return <Markdown content={prettyObject(request || "")} />;
   };
 
+  const renderMcpToolResponse = (response: string[] | undefined) => {
+    if (!response?.length) return null;
+    return typeof response === "string"
+      ? response
+      : response.map((item, index) => <div key={index}>{item}</div>);
+  };
+
   const renderCallResult = (result: string[] | undefined) => {
     if (!result?.length) return <LoadingIcon />;
     if (
@@ -425,7 +432,7 @@ function _Chat() {
           >
             <AccordionTrigger>
               <div className="flex flex-row items-center gap-2">
-                {`${message.mcpInfo.response.length ? "Called" : "Call"} ${
+                {`${message.mcpInfo.response?.length ? "Called" : "Call"} ${
                   message.mcpInfo.title
                 } Tool`}
 
@@ -441,13 +448,7 @@ function _Chat() {
               </div>
               <div className="rounded-2xl bg-white dark:bg-[#141718] border p-4">
                 <div className="mt-2 mb-2 font-medium">Response </div>
-                <div>
-                  {typeof message.mcpInfo.response === "string"
-                    ? message.mcpInfo.response
-                    : message.mcpInfo.response.map((item, index) => (
-                        <div key={index}>{item}</div>
-                      ))}
-                </div>
+                <div>{renderMcpToolResponse(message.mcpInfo.response)}</div>
               </div>
             </AccordionContent>
           </AccordionItem>
