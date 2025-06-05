@@ -206,7 +206,7 @@ export function SideBarHeader(props: {
                   <Avatar className="size-10 cursor-pointer">
                     <AvatarImage src={authStore.user.profile} />
                     <AvatarFallback>
-                      {authStore.user.email[0].toUpperCase()}
+                      {authStore.user.email?.[0].toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
