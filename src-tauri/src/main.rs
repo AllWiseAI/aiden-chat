@@ -293,7 +293,7 @@ fn main() {
 
                     log::info!("AidenAI started successfully!");
                     kill_ports(PORTS_TO_KILL);
-                    let app_handle = app.handle();
+                    let app_handle: AppHandle = app.handle();
                     let env_path: PathBuf = get_env_path(&app_handle).expect("Cannot find .env");
                     log::info!("Loading env from: {:?}", env_path);
                     dotenvy::from_path(env_path).ok();
@@ -302,6 +302,7 @@ fn main() {
                         "UV_INDEX",
                         "UV_DEFAULT_INDEX",
                         "UV_EXTRA_INDEX_URL",
+                        "HOST_SERVER_VERSION",
                     ] {
                         match env::var(key) {
                             Ok(value) => log::info!("{key} = {value}"),
