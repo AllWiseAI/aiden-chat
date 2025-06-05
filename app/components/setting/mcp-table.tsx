@@ -57,7 +57,7 @@ function ServerTable({
 }: ServerTableProps) {
   const handleDeleteMcp = async (
     e: React.MouseEvent<HTMLButtonElement>,
-    mcp_name: string,
+    mcp_key: string,
   ) => {
     e.stopPropagation();
     let result = await showConfirm({
@@ -67,7 +67,7 @@ function ServerTable({
     });
     if (result !== ConfirmType.Confirm) return;
     try {
-      await removeMcpItem(mcp_name);
+      await removeMcpItem(mcp_key);
       toast.success("Deleted successfully");
     } catch (e) {
       toast.error("Failed to delete, please try again");

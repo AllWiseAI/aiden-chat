@@ -52,7 +52,7 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
                   setChecked(enable);
                   await switchMcpStatus({
                     id: detailInfo.mcp_id,
-                    name: detailInfo.mcp_name,
+                    name: detailInfo.mcp_key,
                     enable: enable,
                     type: detailInfo.type,
                   });
