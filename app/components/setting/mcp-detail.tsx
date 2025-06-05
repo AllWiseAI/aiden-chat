@@ -73,7 +73,7 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
           {detailInfo.description}
         </div>
         {detailInfo.tutorial && (
-          <div className="tutorial mt-6 border-t border-[#E8ECEF80] pt-8">
+          <div className="tutorial mt-6 border-t border-[#E8ECEF80] dark:border-[#2326274D] text-black dark:text-[#FFFFFF] pt-8">
             <Markdown content={detailInfo.tutorial || ""} />
           </div>
         )}
