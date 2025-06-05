@@ -126,19 +126,23 @@ export function McpTemplateModal({
           )}
 
           {!!envs.length && (
-            <div>
-              <h3 className="text-base mb-2 text-[#6C7275] dark:text-[#FEFEFE]">
-                env
-              </h3>
-              <div className="flex space-x-2 mb-2">
-                <textarea
-                  className="w-full text-left whitespace-pre font-mono text-sm dark:border-[#6C7275] bg-background border border-input rounded-md px-3 py-2 focus:!border-primary resize-y"
-                  rows={5}
-                  value={envsText}
-                  onChange={(e) => setEnvsText(e.target.value)}
-                  placeholder="ENV=VALUE"
-                />
-              </div>
+            <div className="space-y-4">
+              {envs.map((item, idx) => (
+                <div key={idx}>
+                  <label className="block text-sm font-medium text-[#6C7275] dark:text-white mb-1">
+                    {item.key}
+                  </label>
+                  <input
+                    className="w-full !text-left font-mono text-sm dark:border-[#6C7275] bg-background border border-input rounded-md px-3 py-2 focus:border-primary focus:outline-none"
+                    value={item.value}
+                    onChange={(e) => {
+                      const newEnvs = [...envs];
+                      newEnvs[idx].value = e.target.value;
+                      setEnvs(newEnvs);
+                    }}
+                  />
+                </div>
+              ))}
             </div>
           )}
         </div>

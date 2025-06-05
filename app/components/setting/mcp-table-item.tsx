@@ -115,7 +115,9 @@ export function McpTableItem({
         if (templateInfo) {
           setTemplateInfo(templateInfo);
           const { templates, envs, multiArgs } = templateInfo;
-          if (templates?.length || envs?.length || multiArgs?.length) {
+          const emptyEnvs = envs.filter((env) => env.value === "");
+
+          if (templates?.length || emptyEnvs?.length || multiArgs?.length) {
             setTemplateModal(true);
             return true;
           }
@@ -137,21 +139,24 @@ export function McpTableItem({
     );
   };
 
-  const handleCheckedChange = useCallback(async (enable: boolean) => {
-    try {
-      if (enable) {
-        initLoading();
+  const handleCheckedChange = useCallback(
+    async (enable: boolean) => {
+      try {
+        if (enable) {
+          initLoading();
+        }
+        const needShowTemplateModal = checkShowTemplateModal(enable);
+        if (needShowTemplateModal) return;
+        await onSwitchChange(enable, mcp_id, mcp_key, type);
+        console.log("[Mcp status change]: update remote config done");
+      } catch (e: any) {
+        toast.error(e, {
+          className: "w-auto max-w-max",
+        });
       }
-      const needShowTemplateModal = checkShowTemplateModal(enable);
-      if (needShowTemplateModal) return;
-      await onSwitchChange(enable, mcp_id, mcp_key, type);
-      console.log("[Mcp status change]: update remote config done");
-    } catch (e: any) {
-      toast.error(e, {
-        className: "w-auto max-w-max",
-      });
-    }
-  }, []);
+    },
+    [checkShowTemplateModal],
+  );
 
   const handleCancelTemplateSetting = useCallback(async () => {
     initLoading();
