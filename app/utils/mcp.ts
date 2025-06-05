@@ -271,7 +271,7 @@ export const restoreServers = (
     updatedConfig[name] = {
       ...server,
       aiden_enable: config?.mcpServers[name]?.aiden_enable || true,
-      aiden_id: config?.mcpServers[name]?.aiden_id || "",
+      aiden_id: config?.mcpServers[name]?.aiden_id || name,
       aiden_type: config?.mcpServers[name]?.aiden_type || "custom",
     };
   });
