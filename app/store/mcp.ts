@@ -314,7 +314,7 @@ export const useMcpStore = createPersistStore(
 
         set({ config: newConfig });
         const newList = renderMcpList.map((item) => {
-          if (item.mcp_id === id) {
+          if (item.mcp_key === name) {
             return {
               ...item,
               checked: enable,
