@@ -76,7 +76,7 @@ function ServerTable({
   return (
     <>
       {servers.length ? (
-        <div className="grid grid-cols-2 gap-5">
+        <div className="grid @xss:grid-cols-2 @sm:grid-cols-3 @headerMd:grid-cols-4 gap-5">
           {servers.map((item) => (
             <McpTableItem
               key={item.mcp_id + item.mcp_name}
@@ -129,9 +129,9 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between @lg:items-center mb-4 @max-lg:flex-col @max-lg:gap-2">
         <h2 className="text-lg font-bold">MCP Management</h2>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-end">
           <Button
             className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main border border-[#00D47E]/10 font-medium text-sm rounded-xl"
             onClick={() => setMode("edit")}
