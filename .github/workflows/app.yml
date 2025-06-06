@@ -166,78 +166,20 @@ jobs:
           UV_EXTRA_INDEX_URL=${{ secrets.UV_EXTRA_INDEX_URL }}
           HOST_SERVER_VERSION=$(cat .host_server_version)
           EOF
-      - name: Setup macOS code signing certificate
-        if: matrix.config.os == 'macos-latest'
-        run: |
-          CERT_PATH="$RUNNER_TEMP/certificate.p12"
-          KEYCHAIN_PASSWORD="build_password"
-
-          # 解码证书
-          echo "$APPLE_CERTIFICATE" | base64 --decode > "$CERT_PATH"
-
-          # 创建和配置 keychain
-          security create-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
-          security default-keychain -s build.keychain
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
-          security list-keychains -s build.keychain
-
-          # 导入 p12 到 keychain
-          security import "$CERT_PATH" -k build.keychain -P "$APPLE_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
-
-          # 设置 codesign 权限
-          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" build.keychain
-
-          # 检查是否导入成功
-          echo "Available signing identities:"
-          security find-identity -v -p codesigning
-        env:
-          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         with:
           releaseId: ${{ needs.create-release.outputs.release_id }}
           args: ${{ matrix.config.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
-      - name: Sign and Notarize DMG (macOS)
-        if: matrix.config.os == 'macos-latest'
-        env:
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
-          APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
-        run: |
-          echo "开始签名和公证流程"
-
-          # 签名路径，例如你 build 出来的 dmg 在 dist/your-app.dmg
-          DMG_PATH=$(find src-tauri/target/universal-apple-darwin/release/bundle/dmg -name "*.dmg")
-
-          echo "找到 DMG 文件: $DMG_PATH"
-
-          # 签名 DMG
-          echo "正在签名 DMG 文件..."
-          codesign --deep --force --options runtime --sign "$APPLE_SIGN_IDENTITY" --verbose=4 "$DMG_PATH" || exit 1
-
-          # 验证签名
-          echo "验证签名..."
-          codesign --verify --verbose "$DMG_PATH" || exit 1
-
-          # 上传到 Apple Notarization 服务
-          echo "上传到 Apple Notarization 服务..."
-          xcrun notarytool submit "$DMG_PATH" \
-            --apple-id "$APPLE_ID" \
-            --password "$APPLE_APP_PASSWORD" \
-            --team-id "$APPLE_TEAM_ID" \
-            --wait
-
-          echo "公证完成 ✅"
-
-          # Staple（附加 notarization ticket）
-          xcrun stapler staple "$DMG_PATH"
-
-          echo "✅ DMG 签名和公证完成: $DMG_PATH"
       - name: List build artifacts
         run: ls -R src-tauri/target/
   publish-release:
