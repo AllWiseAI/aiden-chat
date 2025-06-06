@@ -164,6 +164,7 @@ jobs:
           UV_INDEX=${{ secrets.UV_INDEX }}
           UV_DEFAULT_INDEX=${{ secrets.UV_DEFAULT_INDEX }}
           UV_EXTRA_INDEX_URL=${{ secrets.UV_EXTRA_INDEX_URL }}
+          HOST_SERVER_VERSION=$(cat .host_server_version)
           EOF
       - uses: tauri-apps/tauri-action@v0
         env:
