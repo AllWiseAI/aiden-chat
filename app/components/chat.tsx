@@ -138,7 +138,7 @@ function useScrollToBottom(
 
   // auto scroll
   useEffect(() => {
-    if (autoScroll && !detach) {
+    if (autoScroll && detach) {
       scrollDomToBottom();
     }
   });
@@ -189,6 +189,7 @@ function _Chat() {
       ) <= 1
     : false;
   const isAttachWithTop = useMemo(() => {
+    if (!isScrolledToBottom) return false;
     const lastMessage = scrollRef.current?.lastElementChild as HTMLElement;
     // if scrolllRef is not ready or no message, return false
     if (!scrollRef?.current || !lastMessage) return false;
@@ -197,13 +198,13 @@ function _Chat() {
       scrollRef.current.getBoundingClientRect().top;
     // leave some space for user question
     return topDistance < 100;
-  }, [scrollRef?.current?.scrollHeight]);
+  }, [scrollRef?.current?.scrollHeight, isScrolledToBottom]);
 
   const isTyping = userInput !== "";
 
   // if user is typing, should auto scroll to bottom
   // if user is not typing, should auto scroll to bottom only if already at bottom
-  const { setAutoScroll, scrollDomToBottom } = useScrollToBottom(
+  const { autoScroll, setAutoScroll, scrollDomToBottom } = useScrollToBottom(
     scrollRef,
     (isScrolledToBottom || isAttachWithTop) && !isTyping,
     session.messages,
@@ -231,6 +232,11 @@ function _Chat() {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(measure, [userInput]);
+  // id 切换时要重新判断滚动行为
+  useEffect(() => {
+    setAutoScroll(false);
+    scrollToBottom();
+  }, [session.id]);
 
   // chat commands shortcuts
   const chatCommands = useChatCommand({
@@ -353,6 +359,8 @@ function _Chat() {
   }, [msgRenderIndex, renderMessages]);
 
   const onChatBodyScroll = (e: HTMLElement) => {
+    if (autoScroll) return;
+
     const bottomHeight = e.scrollTop + e.clientHeight;
     const edgeThreshold = e.clientHeight;
 
@@ -498,7 +506,7 @@ function _Chat() {
 
                 <TooltipContent
                   hasArrow={false}
-                  className="pointer-events-none bg-[#FEFEFE] text-black border"
+                  className="pointer-events-none bg-[#FEFEFE] dark:bg-[#232627] text-black dark:text-[#6C7275] border"
                 >
                   {Locale.Chat.Actions.RefreshTitle}
                 </TooltipContent>
@@ -626,8 +634,6 @@ function _Chat() {
                   onInput={(e) => onInput(e.currentTarget.value)}
                   value={userInput}
                   onKeyDown={onInputKeyDown}
-                  onFocus={scrollToBottom}
-                  onClick={scrollToBottom}
                   rows={inputRows}
                   autoFocus={true}
                   style={{
@@ -643,10 +649,15 @@ function _Chat() {
                   />
                 </div>
                 <Button
-                  className="absolute bottom-8 right-8 h-8 w-8 bg-main rounded-full hover:bg-[#00D47E]/90 p-0"
+                  className="absolute bottom-8 right-8 h-8 w-8 bg-main rounded-full hover:bg-[#00D47E]/90 p-0 disabled:bg-[#6C7275] dark:disabled:bg-[#343839] !disabled:cursor-not-allowed"
                   onClick={() => doSubmit(userInput)}
+                  disabled={!userInput.length && !isChatting}
                 >
-                  {isChatting ? <StopIcon /> : <SendIcon />}
+                  {isChatting ? (
+                    <StopIcon className="text-white dark:text-black" />
+                  ) : (
+                    <SendIcon />
+                  )}
                 </Button>
               </label>
             </div>

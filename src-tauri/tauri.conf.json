@@ -9,7 +9,7 @@
   },
   "package": {
     "productName": "AidenChat",
-    "version": "0.1.11"
+    "version": "0.1.13"
   },
   "tauri": {
     "allowlist": {
