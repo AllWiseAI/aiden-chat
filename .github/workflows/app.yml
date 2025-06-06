@@ -174,7 +174,6 @@ jobs:
         with:
           releaseId: ${{ needs.create-release.outputs.release_id }}
           args: ${{ matrix.config.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
-            - name: Sign and Notarize DMG (macOS)
       - name: Sign and Notarize DMG (macOS)
         if: matrix.config.os == 'macos-latest'
         env:
