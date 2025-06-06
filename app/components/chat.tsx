@@ -651,7 +651,7 @@ function _Chat() {
                 <Button
                   className="absolute bottom-8 right-8 h-8 w-8 bg-main rounded-full hover:bg-[#00D47E]/90 p-0 disabled:bg-[#6C7275] dark:disabled:bg-[#343839] !disabled:cursor-not-allowed"
                   onClick={() => doSubmit(userInput)}
-                  disabled={!userInput.length}
+                  disabled={!userInput.length && !isChatting}
                 >
                   {isChatting ? (
                     <StopIcon className="text-white dark:text-black" />
