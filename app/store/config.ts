@@ -57,11 +57,11 @@ export const DEFAULT_CONFIG = {
     providerName: "OpenAI",
     temperature: 0.5,
     top_p: 1,
-    max_tokens: 4000,
+    max_tokens: 40000, // memory related
     presence_penalty: 0,
     frequency_penalty: 0,
     sendMemory: true,
-    historyMessageCount: 4,
+    historyMessageCount: 20, // memory related
     compressMessageLengthThreshold: 1000,
     compressModel: "",
     compressProviderName: "",
