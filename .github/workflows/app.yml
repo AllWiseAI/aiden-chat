@@ -170,18 +170,26 @@ jobs:
         if: matrix.config.os == 'macos-latest'
         run: |
           CERT_PATH="$RUNNER_TEMP/certificate.p12"
+          KEYCHAIN_PASSWORD="build_password"
+
+          # 解码证书
           echo "$APPLE_CERTIFICATE" | base64 --decode > "$CERT_PATH"
 
-          # 创建并设置默认钥匙串
-          security create-keychain -p "" build.keychain
+          # 创建和配置 keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
           security default-keychain -s build.keychain
-          security unlock-keychain -p "" build.keychain
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+          security list-keychains -s build.keychain
 
-          # 导入证书
+          # 导入 p12 到 keychain
           security import "$CERT_PATH" -k build.keychain -P "$APPLE_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
 
-          # 设置权限
-          security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
+          # 设置 codesign 权限
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" build.keychain
+
+          # 检查是否导入成功
+          echo "Available signing identities:"
+          security find-identity -v -p codesigning
         env:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
