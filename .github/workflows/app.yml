@@ -174,6 +174,41 @@ jobs:
         with:
           releaseId: ${{ needs.create-release.outputs.release_id }}
           args: ${{ matrix.config.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
+            - name: Sign and Notarize DMG (macOS)
+      - name: Sign and Notarize DMG (macOS)
+        if: matrix.config.os == 'macos-latest'
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+          APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
+        run: |
+          echo "开始签名和公证流程"
+
+          # 签名路径，例如你 build 出来的 dmg 在 dist/your-app.dmg
+          DMG_PATH=$(find src-tauri/target/universal-apple-darwin/release/bundle/dmg -name "*.dmg")
+
+          echo "找到 DMG 文件: $DMG_PATH"
+
+          # 签名 DMG
+          codesign --deep --force --options runtime --sign "$APPLE_SIGN_IDENTITY" "$DMG_PATH"
+
+          # 验证签名
+          codesign --verify --verbose "$DMG_PATH"
+
+          # 上传到 Apple Notarization 服务
+          xcrun notarytool submit "$DMG_PATH" \
+            --apple-id "$APPLE_ID" \
+            --password "$APPLE_APP_PASSWORD" \
+            --team-id "$APPLE_TEAM_ID" \
+            --wait
+
+          echo "公证完成 ✅"
+
+          # Staple（附加 notarization ticket）
+          xcrun stapler staple "$DMG_PATH"
+
+          echo "✅ DMG 签名和公证完成: $DMG_PATH"
       - name: List build artifacts
         run: ls -R src-tauri/target/
   publish-release:
