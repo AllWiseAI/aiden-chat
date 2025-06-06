@@ -145,6 +145,6 @@ export const useAppConfig = createPersistStore(
   }),
   {
     name: StoreKey.Config,
-    version: 1,
+    version: 2,
   },
 );
