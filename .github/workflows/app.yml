@@ -209,7 +209,7 @@ jobs:
           echo "找到 DMG 文件: $DMG_PATH"
 
           # 签名 DMG
-          codesign --deep --force --options runtime --sign "$APPLE_SIGN_IDENTITY" "$DMG_PATH"
+          codesign --deep --force --options runtime --sign "$APPLE_SIGN_IDENTITY" --verbose=4 "$DMG_PATH"
 
           # 验证签名
           codesign --verify --verbose "$DMG_PATH"
