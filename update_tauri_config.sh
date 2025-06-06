@@ -1,6 +1,18 @@
 #!/usr/bin/env bash
 set -e
 
+# 读取版本
+HOST_SERVER_VERSION=$(cat .host_server_version)
+
+# 将 HOST_SERVER_VERSION 写入 .env 文件
+# 如果已有这一项，先删除再添加
+grep -v '^HOST_SERVER_VERSION=' .env > .env.tmp || true
+echo "HOST_SERVER_VERSION=$HOST_SERVER_VERSION" >> .env.tmp
+mv .env.tmp .env
+
+echo ".env updated with HOST_SERVER_VERSION=$HOST_SERVER_VERSION"
+
+
 MODE=""
 CONF_FILE="$(cd "$(dirname "$0")"; pwd)/src-tauri/tauri.conf.json"
 
