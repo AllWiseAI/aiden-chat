@@ -218,11 +218,11 @@ jobs:
 
           # 签名 DMG
           echo "正在签名 DMG 文件..."
-          codesign --deep --force --options runtime --sign "$APPLE_SIGN_IDENTITY" --verbose=4 "$DMG_PATH"
+          codesign --deep --force --options runtime --sign "$APPLE_SIGN_IDENTITY" --verbose=4 "$DMG_PATH" || exit 1
 
           # 验证签名
           echo "验证签名..."
-          codesign --verify --verbose "$DMG_PATH"
+          codesign --verify --verbose "$DMG_PATH" || exit 1
 
           # 上传到 Apple Notarization 服务
           echo "上传到 Apple Notarization 服务..."
