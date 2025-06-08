@@ -192,8 +192,7 @@ jobs:
           security find-identity -v -p codesigning
 
           echo "Testing signature..."
-          touch test.txt
-          codesign --force --options runtime --sign "$APPLE_SIGN_IDENTITY" --verbose=4 test.txt && echo "✅ Signature OK" || echo "❌ Signature Failed"
+          codesign --force --options runtime --sign "$APPLE_SIGN_IDENTITY" --verbose=4  src-tauri/bin/bun && echo "✅ Signature OK" || echo "❌ Signature Failed"
         env:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
