@@ -8,6 +8,8 @@ RESOURCES_DIR="$APP_PATH/Contents/Resources/resources"
 DMG_DIR="src-tauri/target/universal-apple-darwin/release/bundle/dmg"
 SIGN_IDENTITY="${APPLE_SIGN_IDENTITY}"
 
+sudo xattr -rd com.apple.quarantine "$APP_PATH"
+
 sign_file() {
   FILE="$1"
   if [ -x "$FILE" ]; then

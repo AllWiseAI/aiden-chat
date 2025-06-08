@@ -204,7 +204,6 @@ jobs:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
-          releaseId: ${{ needs.create-release.outputs.release_id }}
           args: ${{ matrix.config.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
       - name: Sign all binaries and app
         run: bash .github/scripts/sign-all.sh
@@ -222,6 +221,14 @@ jobs:
           APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
       - name: List build artifacts
         run: ls -R src-tauri/target/
+      - name: Upload notarized DMG to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
+            src-tauri/target/universal-apple-darwin/release/bundle/macos/AidenChat.app
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
   publish-release:
     permissions:
       contents: write
