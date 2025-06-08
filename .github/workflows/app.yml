@@ -180,7 +180,7 @@ jobs:
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
           args: ${{ matrix.config.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
-      - name: 🧯 Re-unlock keychain before manual signing
+      - name: Re-unlock keychain before manual signing
         if: matrix.config.os == 'macos-latest'
         run: |
           KEYCHAIN_PASSWORD="build_password"
@@ -202,12 +202,18 @@ jobs:
           APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
       - name: List build artifacts
         run: ls -R src-tauri/target/
-      - name: Upload notarized DMG to release
+      - name: Zip .app for upload
+        run: |
+          cd src-tauri/target/universal-apple-darwin/release/bundle/macos
+          zip -r AidenChat.app.zip AidenChat.app
+
+      - name: Upload notarized DMG and zipped .app to release
         uses: softprops/action-gh-release@v1
         with:
           files: |
             src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
-            src-tauri/target/universal-apple-darwin/release/bundle/macos/AidenChat.app
+            src-tauri/target/universal-apple-darwin/release/bundle/macos/AidenChat.app.zip
+            src-tauri/target/universal-apple-darwin/release/bundle/macos/latest.json
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
   publish-release:
