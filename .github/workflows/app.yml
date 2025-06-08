@@ -168,31 +168,7 @@ jobs:
           EOF
       - name: Setup macOS code signing certificate
         if: matrix.config.os == 'macos-latest'
-        run: |
-          CERT_PATH="$RUNNER_TEMP/certificate.p12"
-          KEYCHAIN_PASSWORD="build_password"
-
-          # 解码证书
-          echo "$APPLE_CERTIFICATE" | base64 --decode > "$CERT_PATH"
-
-          # 创建和配置 keychain
-          security create-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
-          security default-keychain -s build.keychain
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
-          security list-keychains -s build.keychain
-
-          # 导入 p12 到 keychain
-          security import "$CERT_PATH" -k build.keychain -P "$APPLE_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
-
-          # 设置 codesign 权限
-          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" build.keychain
-
-          # 检查是否导入成功
-          echo "Available signing identities:"
-          security find-identity -v -p codesigning
-
-          echo "Testing signature..."
-          codesign --force --options runtime --sign "$APPLE_SIGN_IDENTITY" --verbose=4  src-tauri/bin/bun && echo "✅ Signature OK" || echo "❌ Signature Failed"
+        run: bash ./scripts/setup-macos-codesign.sh
         env:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
@@ -204,6 +180,12 @@ jobs:
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
           args: ${{ matrix.config.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
+      - name: 🧯 Re-unlock keychain before manual signing
+        if: matrix.config.os == 'macos-latest'
+        run: |
+          KEYCHAIN_PASSWORD="build_password"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" build.keychain
       - name: Sign all binaries and app
         run: bash .github/scripts/sign-all.sh
         env:
