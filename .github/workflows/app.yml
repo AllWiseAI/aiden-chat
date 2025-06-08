@@ -168,7 +168,7 @@ jobs:
           EOF
       - name: Setup macOS code signing certificate
         if: matrix.config.os == 'macos-latest'
-        run: bash ./scripts/setup-macos-codesign.sh
+        run: bash .github/scripts/setup-macos-codesign.sh
         env:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
