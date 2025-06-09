@@ -69,7 +69,14 @@ echo "✅ 所有公证任务完成并已 stapled ✅"
 
 # 创建sig文件
 echo "📝 创建sig文件"
-openssl dgst -sha256 -sign <(echo "$TAURI_PRIVATE_KEY" | base64 -d) -out "${ZIP_PATH}.sig" "$ZIP_PATH"
+# 解码 base64 后写入临时 PEM 文件
+echo "$TAURI_PRIVATE_KEY" | base64 -d > tauri_private_key.pem
+
+# 使用 PEM 文件进行签名
+openssl dgst -sha256 -sign tauri_private_key.pem -out "${ZIP_PATH}.sig" "$ZIP_PATH"
+
+# 清理
+rm tauri_private_key.pem
 
 # 生成latest.json
 echo "📝 生成latest.json"

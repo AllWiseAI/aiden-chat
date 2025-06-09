@@ -63,6 +63,10 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.config.rust_target }}
+      - name: get version
+        run: |
+          echo "📦 获取 src-tauri 中配置的版本号..."
+          echo "PACKAGE_VERSION=$(node -p "require('./src-tauri/tauri.conf.json').package.version")" >> $GITHUB_ENV
       - uses: Swatinem/rust-cache@v2
         with:
           key: ${{ matrix.config.os }}
