@@ -15,12 +15,20 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
       - name: setup node
         uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: get version
-        run: echo "PACKAGE_VERSION=$(node -p "require('./src-tauri/tauri.conf.json').package.version")" >> $GITHUB_ENV
+        run: |
+          echo "📦 获取 src-tauri 中配置的版本号..."
+          echo "PACKAGE_VERSION=$(node -p "require('./src-tauri/tauri.conf.json').package.version")" >> $GITHUB_ENV
+
+          echo "🏷️ 获取最新 Git tag..."
+          LATEST_TAG=$(git describe --tags --abbrev=0)
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
       - name: create release
         id: create-release
         uses: actions/github-script@v6
@@ -207,18 +215,10 @@ jobs:
         run: |
           cd src-tauri/target/universal-apple-darwin/release/bundle/macos
           zip -r AidenChat.app.zip AidenChat.app
-      - name: Get latest Git tag
-        id: get_tag
-        run: |
-          echo "🔍 获取最新 Git tag..."
-          TAG_NAME=$(git describe --tags --abbrev=0)
-          echo "最新 tag: $TAG_NAME"
-          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
-
       - name: Upload notarized DMG and zipped .app to release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ env.TAG_NAME }}
+          tag_name: ${{ env.LATEST_TAG }}
           files: |
             src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
             src-tauri/target/universal-apple-darwin/release/bundle/macos/AidenChat.app.zip
