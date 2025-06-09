@@ -45,16 +45,16 @@ sign_host_server() {
         codesign --force --options runtime --sign "$SIGN_IDENTITY" --timestamp --verbose=4 "$PY_BIN"
       done
 
-      # 签名 Python.framework/Python 顶层符号链接
-      PY_SYMLINK="$PY_FRAMEWORK/Python"
-      if [ -f "$PY_SYMLINK" ]; then
-        echo "🔏 Signing Python.framework symlink: $PY_SYMLINK"
-        codesign --force --options runtime --sign "$SIGN_IDENTITY" --timestamp --verbose=4 "$PY_SYMLINK"
-      fi
+      # # 签名 Python.framework/Python 顶层符号链接
+      # PY_SYMLINK="$PY_FRAMEWORK/Python"
+      # if [ -f "$PY_SYMLINK" ]; then
+      #   echo "🔏 Signing Python.framework symlink: $PY_SYMLINK"
+      #   codesign --force --options runtime --sign "$SIGN_IDENTITY" --timestamp --verbose=4 "$PY_SYMLINK"
+      # fi
 
-      # 最后签名整个 framework
-      echo "🔏 Signing entire framework bundle: $PY_FRAMEWORK"
-      codesign --force --options runtime --sign "$SIGN_IDENTITY" --timestamp --verbose=2 "$PY_FRAMEWORK"
+      # # 最后签名整个 framework
+      # echo "🔏 Signing entire framework bundle: $PY_FRAMEWORK"
+      # codesign --force --options runtime --sign "$SIGN_IDENTITY" --timestamp --verbose=2 "$PY_FRAMEWORK"
     fi
 
     echo "✅ Finished signing host_server_macos."
