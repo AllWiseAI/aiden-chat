@@ -43,6 +43,11 @@ cp -R "$APP_PATH" dmg_temp/
 hdiutil create -volname "$VOL_NAME" -srcfolder dmg_temp -fs HFS+ -format UDZO "$DMG_PATH"
 rm -rf dmg_temp
 
+# re-unlock
+KEYCHAIN_PASSWORD="build_password"
+security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" build.keychain
+
 # 签名 .dmg
 echo "🔏 重新签名 .dmg"
 codesign --force --sign "$APPLE_SIGN_IDENTITY" --timestamp --verbose=4 "$DMG_PATH"
