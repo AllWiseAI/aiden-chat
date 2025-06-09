@@ -207,10 +207,18 @@ jobs:
         run: |
           cd src-tauri/target/universal-apple-darwin/release/bundle/macos
           zip -r AidenChat.app.zip AidenChat.app
+      - name: Get latest Git tag
+      id: get_tag
+      run: |
+        echo "🔍 获取最新 Git tag..."
+        TAG_NAME=$(git describe --tags --abbrev=0)
+        echo "最新 tag: $TAG_NAME"
+        echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
 
       - name: Upload notarized DMG and zipped .app to release
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ env.TAG_NAME }}
           files: |
             src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
             src-tauri/target/universal-apple-darwin/release/bundle/macos/AidenChat.app.zip
