@@ -29,6 +29,9 @@ sign_host_server() {
     # 1. 检测 Python.framework 是否存在
     PY_FRAMEWORK="$HOST_DIR/_internal/Python.framework"
     PY_EXEC="$PY_FRAMEWORK/Versions/Current/Python"
+    PY_SYMLINK="$PY_FRAMEWORK/Python"
+    # 解析 real binary 路径（避免只签名 symlink）
+    REAL_PY_EXEC=$(realpath "$PY_EXEC")
 
     # 2. 先递归签名其他可执行文件，但排除 framework 下的文件
     find "$HOST_DIR" -type f \( \
@@ -41,12 +44,17 @@ sign_host_server() {
     if [ -d "$PY_FRAMEWORK" ]; then
       echo "🔏 Found Python.framework, starting proper signing flow..."
 
-      if [ -f "$PY_EXEC" ]; then
-        echo "🔏 Signing framework binary: $PY_EXEC"
-        codesign --force --options runtime --sign "$SIGN_IDENTITY" --timestamp --verbose=4 "$PY_EXEC"
+      if [ -f "$REAL_PY_EXEC" ]; then
+        echo "🔏 Signing framework binary: $REAL_PY_EXEC"
+        codesign --force --options runtime --sign "$SIGN_IDENTITY" --timestamp --verbose=4 "$REAL_PY_EXEC"
       else
-        echo "⚠️ Python executable not found in framework: $PY_EXEC"
+        echo "⚠️ Python executable not found in framework: $REAL_PY_EXEC"
       fi
+    fi
+    
+    if [ -L "$PY_SYMLINK" ]; then
+      echo "🔏 Signing Python.framework symlink path: $PY_SYMLINK"
+      codesign --force --options runtime --sign "$SIGN_IDENTITY" --timestamp --verbose=4 "$PY_SYMLINK"
     fi
 
     echo "✅ Finished signing host_server_macos contents."
