@@ -22,42 +22,42 @@ sign_file() {
 
 sign_host_server() {
   HOST_DIR="$RESOURCES_DIR/host_server_macos"
+  PY_FRAMEWORK="$HOST_DIR/_internal/Python.framework"
+  SIGN_IDENTITY="${APPLE_SIGN_IDENTITY}"
 
   if [ -d "$HOST_DIR" ]; then
-    echo "🔍 Recursively signing host_server_macos contents in $HOST_DIR..."
+    echo "🔍 Signing host_server_macos in $HOST_DIR..."
 
-    # 1. 检测 Python.framework 是否存在
-    PY_FRAMEWORK="$HOST_DIR/_internal/Python.framework"
-    PY_EXEC="$PY_FRAMEWORK/Versions/Current/Python"
-    PY_SYMLINK="$PY_FRAMEWORK/Python"
-    # 解析 real binary 路径（避免只签名 symlink）
-    REAL_PY_EXEC=$(realpath "$PY_EXEC")
-
-    # 2. 先递归签名其他可执行文件，但排除 framework 下的文件
-    find "$HOST_DIR" -type f \( \
-      -perm +111 -o -name "*.dylib" -o -name "*.so" -o -name "*.node" \
-    \) ! -path "$PY_FRAMEWORK/*" | while read -r FILE; do
-      sign_file "$FILE"
+    # 🧩 Step 1: 签除 Python.framework 外的所有可执行二进制、.dylib、.so、.node 文件
+    find "$HOST_DIR" -type f \( -perm +111 -o -name "*.dylib" -o -name "*.so" -o -name "*.node" \) \
+      ! -path "$PY_FRAMEWORK/*" | while read -r FILE; do
+      echo "🔏 Signing binary: $FILE"
+      codesign --force --options runtime --sign "$SIGN_IDENTITY" --timestamp --verbose=2 "$FILE"
     done
 
-    # 3. 单独签名 Python.framework
+    # 🧩 Step 2: 签 Python.framework 中所有实际 Python 可执行文件
     if [ -d "$PY_FRAMEWORK" ]; then
-      echo "🔏 Found Python.framework, starting proper signing flow..."
+      echo "🔍 Found Python.framework, signing all relevant binaries..."
 
-      if [ -f "$REAL_PY_EXEC" ]; then
-        echo "🔏 Signing framework binary: $REAL_PY_EXEC"
-        codesign --force --options runtime --sign "$SIGN_IDENTITY" --timestamp --verbose=4 "$REAL_PY_EXEC"
-      else
-        echo "⚠️ Python executable not found in framework: $REAL_PY_EXEC"
+      # 签名 Versions 目录下的所有真实 Python 二进制
+      find "$PY_FRAMEWORK/Versions" -type f -name "Python" | while read -r PY_BIN; do
+        echo "🔏 Signing real Python binary: $PY_BIN"
+        codesign --force --options runtime --sign "$SIGN_IDENTITY" --timestamp --verbose=4 "$PY_BIN"
+      done
+
+      # 签名 Python.framework/Python 顶层符号链接
+      PY_SYMLINK="$PY_FRAMEWORK/Python"
+      if [ -f "$PY_SYMLINK" ]; then
+        echo "🔏 Signing Python.framework symlink: $PY_SYMLINK"
+        codesign --force --options runtime --sign "$SIGN_IDENTITY" --timestamp --verbose=4 "$PY_SYMLINK"
       fi
-    fi
-    
-    if [ -L "$PY_SYMLINK" ]; then
-      echo "🔏 Signing Python.framework symlink path: $PY_SYMLINK"
-      codesign --force --options runtime --sign "$SIGN_IDENTITY" --timestamp --verbose=4 "$PY_SYMLINK"
+
+      # 最后签名整个 framework
+      echo "🔏 Signing entire framework bundle: $PY_FRAMEWORK"
+      codesign --force --options runtime --sign "$SIGN_IDENTITY" --timestamp --verbose=2 "$PY_FRAMEWORK"
     fi
 
-    echo "✅ Finished signing host_server_macos contents."
+    echo "✅ Finished signing host_server_macos."
   else
     echo "⚠️ host_server_macos directory not found at $HOST_DIR"
   fi
