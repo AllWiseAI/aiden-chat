@@ -142,6 +142,7 @@ jobs:
           APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
           PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
       - name: List build artifacts
         run: ls -R src-tauri/target/
       - name: Zip .app for upload
