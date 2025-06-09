@@ -5,7 +5,7 @@ set -e
 APP_PATH="src-tauri/target/universal-apple-darwin/release/bundle/macos/AidenChat.app"
 ZIP_PATH="${APP_PATH}.zip"
 # DMG_PATH=$(find src-tauri/target/universal-apple-darwin/release/bundle/dmg -name "*.dmg" | head -n 1)
-DMG_NAME="AidenChat.dmg"
+DMG_NAME="AidenChat_${PACKAGE_VERSION}_universal.dmg"
 DMG_PATH="src-tauri/target/universal-apple-darwin/release/bundle/dmg/${DMG_NAME}"
 VOL_NAME="AidenChat"
 
@@ -40,6 +40,7 @@ xcrun stapler staple "$APP_PATH"
 echo "💿 重新打包 .dmg"
 mkdir -p dmg_temp
 cp -R "$APP_PATH" dmg_temp/
+ln -s /Applications "dmg_temp/Applications"
 hdiutil create -volname "$VOL_NAME" -srcfolder dmg_temp -fs HFS+ -format UDZO "$DMG_PATH"
 rm -rf dmg_temp
 
