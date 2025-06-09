@@ -161,8 +161,7 @@ jobs:
           echo "✅ 使用的 tag 是：$LATEST_TAG"
           echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
           echo "✅ 上传使用的 tag 是：${{ env.LATEST_TAG }}"
-      - name: Upload notarized DMG and zipped .app to release
-        uses: softprops/action-gh-release@v1
+      - name: Update release notes
         run: bash .github/scripts/upload-release.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
