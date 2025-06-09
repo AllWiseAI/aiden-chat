@@ -96,6 +96,8 @@ jobs:
 
       - name: Download host_server and uv binaries and bun binaries
         run:  bash .github/scripts/download-bin.sh
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Inject environment variables to .env
         run: |
           cat <<EOF > src-tauri/bin/.env
