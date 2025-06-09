@@ -10,7 +10,6 @@ echo "🧾 开始 Apple Notarization 公证流程"
 
 echo "🛡️ 验证签名有效性"
 codesign --verify --deep --strict --verbose=2 "$APP_PATH"
-spctl -a -vvv -t exec "$APP_PATH"
 
 # 删除旧 zip
 if [ -f "$ZIP_PATH" ]; then

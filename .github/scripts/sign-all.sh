@@ -77,7 +77,7 @@ sign_host_server
 
 # 3. 签名完整的 .app
 echo "🔏 Signing entire app bundle..."
-codesign --force --options runtime --sign "$SIGN_IDENTITY" --timestamp --verbose=4 "$APP_PATH"
+codesign --force --deep --options runtime --sign "$SIGN_IDENTITY" --timestamp --verbose=4 "$APP_PATH"
 
 # 4. 可选：签名 dmg
 DMG_PATH=$(find "$DMG_DIR" -name "*.dmg" | head -n 1)
