@@ -23,6 +23,7 @@ sign_file() {
 sign_host_server() {
   HOST_DIR="$RESOURCES_DIR/host_server_macos"
   PY_FRAMEWORK="$HOST_DIR/_internal/Python.framework"
+  PY_SYMLINK="$PY_FRAMEWORK/Python"
   SIGN_IDENTITY="${APPLE_SIGN_IDENTITY}"
 
   if [ -d "$HOST_DIR" ]; then
