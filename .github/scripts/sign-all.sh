@@ -35,7 +35,16 @@ sign_host_server() {
       codesign --force --options runtime --sign "$SIGN_IDENTITY" --timestamp --verbose=2 "$FILE"
     done
 
-    # 🧩 Step 2: 签 Python.framework 中所有实际 Python 可执行文件
+    # 🧩 Step 2: 检查 symlink 是否存在且有效
+    if [ -L "$PY_SYMLINK" ]; then
+      echo "🔗 Python.framework/Python is a symlink (expected)"
+    elif [ -f "$PY_SYMLINK" ]; then
+      echo "🧹 Removing non-symlink Python.framework/Python and restoring symlink"
+      rm "$PY_SYMLINK"
+      ln -s "Versions/3.13/Python" "$PY_SYMLINK"
+    fi
+
+    # 🧩 Step 3: 签 Python.framework 中所有实际 Python 可执行文件
     if [ -d "$PY_FRAMEWORK" ]; then
       echo "🔍 Found Python.framework, signing all relevant binaries..."
 
@@ -45,21 +54,10 @@ sign_host_server() {
         codesign --force --options runtime --sign "$SIGN_IDENTITY" --timestamp --verbose=4 "$PY_BIN"
       done
 
-      # # 签名 Python.framework/Python 顶层符号链接
-      # PY_SYMLINK="$PY_FRAMEWORK/Python"
-      # if [ -f "$PY_SYMLINK" ]; then
-      #   echo "🔏 Signing Python.framework symlink: $PY_SYMLINK"
-      #   codesign --force --options runtime --sign "$SIGN_IDENTITY" --timestamp --verbose=4 "$PY_SYMLINK"
-      # fi
-
-      # # 最后签名整个 framework
-      # echo "🔏 Signing entire framework bundle: $PY_FRAMEWORK"
-      # codesign --force --options runtime --sign "$SIGN_IDENTITY" --timestamp --verbose=2 "$PY_FRAMEWORK"
+      # 🧩 Step 4 签名顶层 Python
+      echo "🔏 Signing top-level: $PY_SYMLINK"
+      codesign --force --deep --options runtime --sign "$SIGN_IDENTITY" --timestamp --verbose=2 "$PY_SYMLINK"
     fi
-
-    echo "✅ Finished signing host_server_macos."
-  else
-    echo "⚠️ host_server_macos directory not found at $HOST_DIR"
   fi
 }
 
