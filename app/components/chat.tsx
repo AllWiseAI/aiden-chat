@@ -9,6 +9,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import DownIcon from "../icons/down.svg";
 import StopIcon from "../icons/stop.svg";
 import SendIcon from "../icons/up-arrow.svg";
 import LoadingIcon from "../icons/three-dots.svg";
@@ -126,15 +127,21 @@ function useScrollToBottom(
 ) {
   // for auto-scroll
   const [autoScroll, setAutoScroll] = useState(true);
-  const scrollDomToBottom = useCallback(() => {
-    const dom = scrollRef.current;
-    if (dom) {
-      requestAnimationFrame(() => {
-        setAutoScroll(true);
-        dom.scrollTo(0, dom.scrollHeight);
-      });
-    }
-  }, [scrollRef]);
+  const scrollDomToBottom = useCallback(
+    (smooth?: boolean) => {
+      const dom = scrollRef.current;
+      if (dom) {
+        requestAnimationFrame(() => {
+          setAutoScroll(true);
+          dom.scrollTo({
+            top: dom.scrollHeight,
+            behavior: smooth ? "smooth" : "auto",
+          });
+        });
+      }
+    },
+    [scrollRef],
+  );
 
   // auto scroll
   useEffect(() => {
@@ -359,8 +366,6 @@ function _Chat() {
   }, [msgRenderIndex, renderMessages]);
 
   const onChatBodyScroll = (e: HTMLElement) => {
-    if (autoScroll) return;
-
     const bottomHeight = e.scrollTop + e.clientHeight;
     const edgeThreshold = e.clientHeight;
 
@@ -382,9 +387,9 @@ function _Chat() {
     setAutoScroll(isHitBottom);
   };
 
-  function scrollToBottom() {
+  function scrollToBottom(smooth: boolean = false) {
     setMsgRenderIndex(renderMessages.length - CHAT_PAGE_SIZE);
-    scrollDomToBottom();
+    scrollDomToBottom(smooth);
   }
 
   // remember unfinished input
@@ -619,6 +624,15 @@ function _Chat() {
               </div>
             )}
             <div className={styles["chat-input-panel"]}>
+              {!hitBottom && (
+                <Button
+                  variant="ghost"
+                  className="absolute -top-10 right-8 size-8 z-1000 border dark:bg-[#343839] rounded-full"
+                  onClick={() => scrollToBottom(true)}
+                >
+                  <DownIcon className="text-black dark:text-white" />
+                </Button>
+              )}
               <label
                 className={clsx(
                   styles["chat-input-panel-inner"],

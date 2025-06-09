@@ -37,11 +37,11 @@ code.hljs {
 */
 .hljs {
   color: #24292e;
-  // background: #fff;
+  background: #F9F9F9 !important;
 }
 .dark .hljs {
   color: white;
-  // background: #fff;
+  background: #3B3F45 !important;
 }
 .hljs-doctag,
 .hljs-keyword,
@@ -110,6 +110,9 @@ code.hljs {
 }
 .hljs-subst {
   color: #24292e;
+}
+.dark .hljs-subst {
+  color: #F9F9F9;
 }
 .hljs-section {
   color: #005cc5;

@@ -198,15 +198,17 @@ function CustomCode(props: { children: any; className?: string }) {
       <code
         className={clsx(props?.className)}
         ref={ref}
-        style={{
-          maxHeight: enableCodeFold && collapsed ? "400px" : "none",
-          overflowY: "hidden",
-        }}
+        style={
+          {
+            // maxHeight: enableCodeFold && collapsed ? "400px" : "none",
+            // overflowY: "hidden",
+          }
+        }
       >
         {props.children}
       </code>
 
-      {renderShowMoreButton()}
+      {/* {renderShowMoreButton()} */}
     </>
   );
 }
