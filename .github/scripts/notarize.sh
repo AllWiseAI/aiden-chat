@@ -5,7 +5,7 @@ set -e
 APP_PATH="src-tauri/target/universal-apple-darwin/release/bundle/macos/AidenChat.app"
 ZIP_PATH="${APP_PATH}.zip"
 # DMG_PATH=$(find src-tauri/target/universal-apple-darwin/release/bundle/dmg -name "*.dmg" | head -n 1)
-DMG_NAME="AidenChat_${PACKAGE_VERSION}_universal.dmg"
+DMG_NAME="AidenChat_${PACKAGE_VERSION}_universal_signed.dmg"
 DMG_PATH="src-tauri/target/universal-apple-darwin/release/bundle/dmg/${DMG_NAME}"
 VOL_NAME="AidenChat"
 
@@ -66,3 +66,33 @@ echo "📌 stapling .dmg"
 xcrun stapler staple "$DMG_PATH"
 
 echo "✅ 所有公证任务完成并已 stapled ✅"
+
+# 创建sig文件
+echo "📝 创建sig文件"
+openssl dgst -sha256 -sign <(echo "$TAURI_PRIVATE_KEY" | base64 -d) -out "${ZIP_PATH}.sig" "$ZIP_PATH"
+
+# 生成latest.json
+echo "📝 生成latest.json"
+LATEST_JSON_PATH="src-tauri/target/universal-apple-darwin/release/bundle/macos/latest.json"
+PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+SIGNATURE=$(base64 < "${ZIP_PATH}.sig" | tr -d '\n')
+ASSET_URL="https://github.com/AllWiseAI/aiden-chat/releases/download/v${PACKAGE_VERSION}/$(basename "$ZIP_PATH")"
+
+echo "📝 生成 latest.json"
+cat > "$LATEST_JSON_PATH" <<EOF
+{
+  "version": "$PACKAGE_VERSION",
+  "notes": "",
+  "pub_date": "$PUB_DATE",
+  "platforms": {
+    "darwin-aarch64": {
+      "signature": "$SIGNATURE",
+      "url": "$ASSET_URL"
+    },
+    "darwin-x86_64": {
+      "signature": "$SIGNATURE",
+      "url": "$ASSET_URL"
+    }
+  }
+}
+EOF
