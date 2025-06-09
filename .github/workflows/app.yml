@@ -27,7 +27,9 @@ jobs:
           echo "PACKAGE_VERSION=$(node -p "require('./src-tauri/tauri.conf.json').package.version")" >> $GITHUB_ENV
 
           echo "🏷️ 获取最新 Git tag..."
-          LATEST_TAG=$(git describe --tags --abbrev=0)
+          git fetch origin main --tags
+          LATEST_TAG=$(git tag --sort=-creatordate | head -n 1)
+          echo "最新的 Git tag 是: $LATEST_TAG"
           echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
       - name: create release
         id: create-release
