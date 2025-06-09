@@ -4,7 +4,10 @@ set -e
 
 APP_PATH="src-tauri/target/universal-apple-darwin/release/bundle/macos/AidenChat.app"
 ZIP_PATH="${APP_PATH}.zip"
-DMG_PATH=$(find src-tauri/target/universal-apple-darwin/release/bundle/dmg -name "*.dmg" | head -n 1)
+# DMG_PATH=$(find src-tauri/target/universal-apple-darwin/release/bundle/dmg -name "*.dmg" | head -n 1)
+DMG_NAME="AidenChat.dmg"
+DMG_PATH="src-tauri/target/universal-apple-darwin/release/bundle/dmg/${DMG_NAME}"
+VOL_NAME="AidenChat"
 
 echo "🧾 开始 Apple Notarization 公证流程"
 
@@ -33,19 +36,27 @@ xcrun notarytool submit "$ZIP_PATH" \
 echo "📌 stapling .app"
 xcrun stapler staple "$APP_PATH"
 
-# 如果有 DMG，重复公证流程
-if [ -f "$DMG_PATH" ]; then
-  echo "🚀 提交 .dmg 公证: $DMG_PATH"
-  xcrun notarytool submit "$DMG_PATH" \
-    --apple-id "$APPLE_ID" \
-    --password "$APPLE_APP_PASSWORD" \
-    --team-id "$APPLE_TEAM_ID" \
-    --wait
+# 重新创建 .dmg（使用已公证 .app）
+echo "💿 重新打包 .dmg"
+mkdir -p dmg_temp
+cp -R "$APP_PATH" dmg_temp/
+hdiutil create -volname "$VOL_NAME" -srcfolder dmg_temp -fs HFS+ -format UDZO "$DMG_PATH"
+rm -rf dmg_temp
 
-  echo "📌 stapling .dmg"
-  xcrun stapler staple "$DMG_PATH"
-else
-  echo "⚠️ 未找到 .dmg 文件，跳过 .dmg 公证"
-fi
+# 签名 .dmg
+echo "🔏 重新签名 .dmg"
+codesign --force --sign "$APPLE_SIGN_IDENTITY" --timestamp --verbose=4 "$DMG_PATH"
+
+# 提交公证 .dmg
+echo "🚀 提交 .dmg 公证: $DMG_PATH"
+xcrun notarytool submit "$DMG_PATH" \
+  --apple-id "$APPLE_ID" \
+  --password "$APPLE_APP_PASSWORD" \
+  --team-id "$APPLE_TEAM_ID" \
+  --wait
+
+# stapler .dmg
+echo "📌 stapling .dmg"
+xcrun stapler staple "$DMG_PATH"
 
 echo "✅ 所有公证任务完成并已 stapled ✅"
