@@ -16,7 +16,7 @@ interface McpTemplateModalProps {
   open: boolean;
   templateInfo: TTemplateInfo;
   onConfirm: (updated: TTemplateInfo) => void;
-  onCancel: () => void;
+  onCancel?: () => void;
   onOpenChange?: (open: boolean) => void;
 }
 
@@ -62,15 +62,15 @@ export function McpTemplateModal({
   };
 
   const handleCancel = useCallback(() => {
-    onCancel();
+    onCancel?.();
     onOpenChange?.(false);
-  }, [onOpenChange]);
+  }, [onOpenChange, onCancel]);
 
   const handleConfirm = useCallback(() => {
     const parsedEnvs = updateEnvs(envsText);
     onConfirm({ templates, envs: parsedEnvs, multiArgs });
     onOpenChange?.(false);
-  }, [templates, envs, onConfirm, onOpenChange, envsText, multiArgs]);
+  }, [templates, onConfirm, onOpenChange, envsText, multiArgs, updateEnvs]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
