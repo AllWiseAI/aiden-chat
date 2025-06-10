@@ -167,6 +167,7 @@ jobs:
       - uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ env.LATEST_TAG }}
+          overwrite: true
           files: |
             src-tauri/target/universal-apple-darwin/release/bundle/macos/AidenChat.app.zip
             src-tauri/target/universal-apple-darwin/release/bundle/macos/AidenChat.app.zip.sig
