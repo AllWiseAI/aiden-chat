@@ -15,12 +15,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+          fetch-tags: true
       - name: setup node
         uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: get version
-        run: echo "PACKAGE_VERSION=$(node -p "require('./src-tauri/tauri.conf.json').package.version")" >> $GITHUB_ENV
+        run: |
+          echo "📦 获取 src-tauri 中配置的版本号..."
+          echo "PACKAGE_VERSION=$(node -p "require('./src-tauri/tauri.conf.json').package.version")" >> $GITHUB_ENV
       - name: create release
         id: create-release
         uses: actions/github-script@v6
@@ -58,6 +63,10 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.config.rust_target }}
+      - name: get version
+        run: |
+          echo "📦 获取 src-tauri 中配置的版本号..."
+          echo "PACKAGE_VERSION=$(node -p "require('./src-tauri/tauri.conf.json').package.version")" >> $GITHUB_ENV
       - uses: Swatinem/rust-cache@v2
         with:
           key: ${{ matrix.config.os }}
@@ -84,79 +93,9 @@ jobs:
           fi
 
       - name: Download host_server and uv binaries and bun binaries
-        run: |
-          # 创建 bin 目录
-          mkdir -p src-tauri/bin
-
-          # 使用 GitHub API 获取最新的 host_server 下载链接
-          echo "正在获取 host_server 下载链接..."
-          ASSET_NAME="host_server_macos"
-          ASSET_FILE="$ASSET_NAME.zip"
-          REPO_OWNER="AllWiseAI"
-          REPO_NAME="host-server-py"
-          RELEASE_TAG=$(cat .host_server_version)
-
-          # 获取 release 信息并提取下载链接
-          echo "Fetching release info from GitHub API..."
-          RELEASE_INFO=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-            "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases/tags/$RELEASE_TAG")
-
-          # 输出 release 信息以调试
-          echo "Release Info: $RELEASE_INFO"
-
-          # 从返回的 release 信息提取下载链接
-          DOWNLOAD_URL=$(echo "$RELEASE_INFO" | jq -r ".assets[] | select(.name == \"$ASSET_FILE\") | .url")
-
-          # 检查是否获取到下载链接
-          if [ -z "$DOWNLOAD_URL" ]; then
-            echo "Error: Download URL not found for $ASSET_FILE"
-            exit 1
-          else
-            echo "Download URL: $DOWNLOAD_URL"
-          fi
-
-          # 下载 host_server 文件
-          echo "正在下载 host_server 的压缩包..."
-          curl -L -H "Authorization: token ${{ secrets.GH_TOKEN }}" -H "Accept: application/octet-stream" "$DOWNLOAD_URL" -o src-tauri/resources/$ASSET_FILE
-          unzip src-tauri/resources/$ASSET_FILE -d src-tauri/resources/
-          chmod +x src-tauri/resources/$ASSET_NAME/$ASSET_NAME
-          echo "$ASSET_FILE 已成功下载并解压。"
-
-          rm -rf src-tauri/resources/$ASSET_FILE
-          echo "已删除 $ASSET_FILE 文件。"
-
-          # 下载 uv 的压缩包
-          echo "正在下载 uv 的压缩包..."
-          curl -L https://github.com/astral-sh/uv/releases/download/0.6.17/uv-aarch64-apple-darwin.tar.gz -o src-tauri/bin/uv.tar.gz
-
-          # 解压 uv 压缩包，只提取 uv 文件
-          echo "正在解压 uv.tar.gz 并提取 uv 文件..."
-          tar -xzf src-tauri/bin/uv.tar.gz -C src-tauri/bin --strip-components=1 uv-aarch64-apple-darwin/uv uv-aarch64-apple-darwin/uvx
-
-          # 给 uv 文件添加执行权限
-          chmod +x src-tauri/bin/uv
-          chmod +x src-tauri/bin/uvx
-
-          # 可选：清理临时文件
-          rm -f src-tauri/bin/uv.tar.gz
-          echo "uv binary 已成功下载并解压。"
-
-          echo "正在下载 bun 的压缩包..."
-          curl -L https://github.com/oven-sh/bun/releases/download/bun-v1.2.13/bun-darwin-aarch64.zip -o src-tauri/bin/bun.zip
-
-          echo "正在解压 bun.zip..."
-          unzip -o src-tauri/bin/bun.zip -d src-tauri/bin/
-          mv src-tauri/bin/bun-darwin-aarch64/bun src-tauri/bin/bun
-          rm -rf src-tauri/bin/bun-darwin-aarch64
-
-          echo "给 bun 文件添加执行权限..."
-          chmod +x src-tauri/bin/bun
-
-          rm -f src-tauri/bin/bun.zip
-
-          # 打印出 src-tauri/bin 目录下的所有文件，确保 uv 文件已成功提取
-          echo "当前 src-tauri/bin 目录下的文件："
-          ls -l src-tauri/bin
+        run:  bash .github/scripts/download-bin.sh
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Inject environment variables to .env
         run: |
           cat <<EOF > src-tauri/bin/.env
@@ -166,16 +105,76 @@ jobs:
           UV_EXTRA_INDEX_URL=${{ secrets.UV_EXTRA_INDEX_URL }}
           HOST_SERVER_VERSION=$(cat .host_server_version)
           EOF
+      - name: Setup macOS code signing certificate
+        if: matrix.config.os == 'macos-latest'
+        run: bash .github/scripts/setup-macos-codesign.sh
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          args: ${{ matrix.config.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
+      - name: Re-unlock keychain before manual signing
+        if: matrix.config.os == 'macos-latest'
+        run: |
+          KEYCHAIN_PASSWORD="build_password"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" build.keychain
+      - name: Sign all binaries and app
+        run: bash .github/scripts/sign-all.sh
+        env:
+          APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
+      - name: Check missing signatures
+        run: bash .github/scripts/check-signature.sh
+        env:
+          APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
+      - name: Notarize app and DMG
+        run: bash .github/scripts/notarize.sh
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+          APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
+          PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
-        with:
-          releaseId: ${{ needs.create-release.outputs.release_id }}
-          args: ${{ matrix.config.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
       - name: List build artifacts
         run: ls -R src-tauri/target/
+      - name: Zip .app for upload
+        run: |
+          cd src-tauri/target/universal-apple-darwin/release/bundle/macos
+          zip -r AidenChat.app.zip AidenChat.app
+      - name: Output tag list for debugging
+        run: |
+          git fetch --tags
+          echo "📃 所有远端 tag："
+          git tag --sort=-creatordate
+          # 获取最新 tag
+          LATEST_TAG=$(git tag --sort=-creatordate | head -n 1)
+
+          # 如果为空则设置默认值
+          if [ -z "$LATEST_TAG" ]; then
+            echo "⚠️ 未找到 tag，使用默认 tag：v0.1.13"
+            LATEST_TAG="v0.1.13"
+          fi
+
+          echo "✅ 使用的 tag 是：$LATEST_TAG"
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+          echo "✅ 上传使用的 tag 是：${{ env.LATEST_TAG }}"
+      - uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.LATEST_TAG }}
+          overwrite: true
+          files: |
+            src-tauri/target/universal-apple-darwin/release/bundle/macos/AidenChat.app.zip
+            src-tauri/target/universal-apple-darwin/release/bundle/macos/AidenChat.app.zip.sig
+            src-tauri/target/universal-apple-darwin/release/bundle/macos/latest.json
+            src-tauri/target/universal-apple-darwin/release/bundle/dmg/AidenChat_${{ env.PACKAGE_VERSION }}_universal_signed.dmg
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
   publish-release:
     permissions:
       contents: write
