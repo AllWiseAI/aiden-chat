@@ -75,7 +75,7 @@ ASSET_PATH="$ZIP_PATH"
 SIG_PATH="${ZIP_PATH}.sig"
 
 # 使用 tauri sign 进行签名
-tauri sign \
+npx tauri sign \
   --input "$ASSET_PATH" \
   --output "$SIG_PATH" \
   ${TAURI_KEY_PASSWORD:+--password "$TAURI_KEY_PASSWORD"}
