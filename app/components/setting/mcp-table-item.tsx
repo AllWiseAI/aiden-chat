@@ -76,7 +76,7 @@ export function McpTableItem({
       e.stopPropagation();
       onSetting(item.settingInfo, item.mcp_key);
     },
-    [item.settingInfo, item.mcp_name, onSetting],
+    [item.settingInfo, onSetting, item.mcp_key],
   );
 
   const {
@@ -98,7 +98,7 @@ export function McpTableItem({
     if (current) {
       setStatus(current.action);
     }
-  }, [mcpStatusList]);
+  }, [mcpStatusList, mcp_key]);
 
   const checkShowTemplateModal = useCallback(
     (enable: boolean) => {
@@ -128,16 +128,16 @@ export function McpTableItem({
     [item, config],
   );
 
-  const initLoading = () => {
+  const initLoading = useCallback(() => {
     setStatus(McpAction.Loading);
     updateMcpStatusList(
       {
-        name: item.mcp_key,
+        name: mcp_key,
         action: McpAction.Loading,
       },
       "update",
     );
-  };
+  }, [mcp_key, updateMcpStatusList]);
 
   const handleCheckedChange = useCallback(
     async (enable: boolean) => {
@@ -155,14 +155,15 @@ export function McpTableItem({
         });
       }
     },
-    [checkShowTemplateModal],
+    [
+      checkShowTemplateModal,
+      onSwitchChange,
+      mcp_id,
+      mcp_key,
+      type,
+      initLoading,
+    ],
   );
-
-  const handleCancelTemplateSetting = useCallback(async () => {
-    initLoading();
-    await onSwitchChange(true, mcp_id, mcp_key, type);
-    console.log("[Mcp status change]: update remote config done");
-  }, []);
 
   const handleSettingConfirm = async (templateInfo: TTemplateInfo) => {
     await updateTemplate(item.mcp_key, item.mcp_id, templateInfo);
@@ -256,7 +257,6 @@ export function McpTableItem({
           onOpenChange={setTemplateModal}
           open={templateModal}
           templateInfo={templateInfo || {}}
-          onCancel={handleCancelTemplateSetting}
           onConfirm={handleSettingConfirm}
         ></McpTemplateModal>
       )}
