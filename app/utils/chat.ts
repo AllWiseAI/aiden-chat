@@ -621,6 +621,8 @@ export function streamWithThink(
                   });
                 }
               }
+              const controller = new AbortController();
+              options.onController?.(controller);
               const initTemplate = responseText + remainText;
               streamWithThink(
                 SECOND_CHAT_URL,
