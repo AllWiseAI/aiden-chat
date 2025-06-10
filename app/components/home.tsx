@@ -181,11 +181,7 @@ function MainLayout() {
   }, []);
 
   return (
-    <div
-      className={clsx(styles.container, {
-        [styles["tight-container"]]: shouldTightBorder,
-      })}
-    >
+    <div className={clsx(styles.container, styles["tight-container"])}>
       <SideBar
         className={clsx({
           [styles["sidebar-show"]]: isHome,
