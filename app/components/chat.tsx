@@ -9,6 +9,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { isEmpty } from "lodash-es";
 import DownIcon from "../icons/down.svg";
 import StopIcon from "../icons/stop.svg";
 import SendIcon from "../icons/up-arrow.svg";
@@ -20,6 +21,8 @@ import McpIcon from "../icons/mcp.svg";
 import Locale from "../locales";
 import { toast } from "sonner";
 import { useAppUpdate } from "@/app/hooks/use-app-update";
+import { ImageUploader } from "./image-uploader";
+import { useImageUploadStore } from "@/app/store/image-upload";
 
 import {
   ChatMessage,
@@ -174,6 +177,9 @@ function _Chat() {
   const session = chatStore.currentSession();
   const config = useAppConfig();
 
+  const images = useImageUploadStore((state) => state.images);
+  const removeImage = useImageUploadStore((state) => state.removeImage);
+
   const isNewChat = useMemo(() => {
     return session.messages.length === 0;
   }, [session.messages.length]);
@@ -264,7 +270,8 @@ function _Chat() {
       ChatControllerPool.stopAll();
       return;
     }
-    if (userInput.trim() === "") return;
+    if (userInput.trim() === "" && isEmpty(images)) return;
+
     const matchCommand = chatCommands.match(userInput);
     if (matchCommand.matched) {
       setUserInput("");
@@ -272,9 +279,11 @@ function _Chat() {
       return;
     }
     setIsLoading(true);
-    chatStore.onUserInput(userInput, []).then(() => setIsLoading(false));
+    const imageUrls = images.map((image) => image.url);
+    chatStore.onUserInput(userInput, imageUrls).then(() => setIsLoading(false));
     chatStore.setLastInput(userInput);
     setUserInput("");
+    images.forEach((image) => removeImage(image.id));
     inputRef.current?.focus();
     setAutoScroll(true);
   };
@@ -643,7 +652,9 @@ function _Chat() {
                 <textarea
                   id="chat-input"
                   ref={inputRef}
-                  className={styles["chat-input"]}
+                  className={clsx(styles["chat-input"], {
+                    [styles["chat-input-with-image"]]: images.length > 0,
+                  })}
                   placeholder="Ask anything..."
                   onInput={(e) => onInput(e.currentTarget.value)}
                   value={userInput}
@@ -655,12 +666,36 @@ function _Chat() {
                     fontFamily: config.fontFamily,
                   }}
                 />
+                <div className="absolute top-10 left-8">
+                  {images.map((img) => (
+                    <div key={img.id} className="relative border rounded p-2">
+                      {img.url ? (
+                        <img
+                          src={img.url}
+                          alt="上传图片"
+                          className="w-10 h-10"
+                        ></img>
+                      ) : (
+                        <div className="text-center text-gray-500">
+                          上传中 {img.progress}%
+                        </div>
+                      )}
+                      <button
+                        onClick={() => removeImage(img.id)}
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
                 <div className="absolute bottom-8 left-8 flex gap-2">
                   <McpTooltip
                     icon={
                       <McpIcon className="size-4 text-black dark:text-white" />
                     }
                   />
+                  <ImageUploader />
                 </div>
                 <Button
                   className="absolute bottom-8 right-8 h-8 w-8 bg-main rounded-full hover:bg-[#00D47E]/90 p-0 disabled:bg-[#6C7275] dark:disabled:bg-[#343839] !disabled:cursor-not-allowed"

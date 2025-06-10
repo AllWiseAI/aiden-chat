@@ -663,6 +663,11 @@
   border: 1px solid var(--primary);
 }
 
+.chat-input.chat-input-with-image {
+  padding-top: 100px;
+  height: 200px;
+}
+
 .chat-input {
   height: 100%;
   width: 100%;
