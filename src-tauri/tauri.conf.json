@@ -107,7 +107,7 @@
       "dangerousUseHttpScheme": true
     },
     "updater": {
-      "active": true,
+      "active": false,
       "endpoints": [
         "https://github.com/AllWiseAI/aiden-chat/releases/latest/download/latest.json"
       ],
