@@ -627,7 +627,7 @@ function _Chat() {
               {!hitBottom && (
                 <Button
                   variant="ghost"
-                  className="absolute -top-10 right-8 size-8 z-1000 border dark:bg-[#343839] rounded-full"
+                  className="absolute -top-10 right-8 size-8 z-1000 border bg-white dark:bg-[#343839] rounded-full"
                   onClick={() => scrollToBottom(true)}
                 >
                   <DownIcon className="text-black dark:text-white" />
