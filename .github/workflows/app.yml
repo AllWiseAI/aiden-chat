@@ -164,12 +164,16 @@ jobs:
           echo "✅ 使用的 tag 是：$LATEST_TAG"
           echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
           echo "✅ 上传使用的 tag 是：${{ env.LATEST_TAG }}"
-      - name: Update release notes
-        run: bash .github/scripts/upload-release.sh
+      - uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.LATEST_TAG }}
+          files: |
+            src-tauri/target/universal-apple-darwin/release/bundle/macos/AidenChat.app.zip
+            src-tauri/target/universal-apple-darwin/release/bundle/macos/AidenChat.app.zip.sig
+            src-tauri/target/universal-apple-darwin/release/bundle/macos/latest.json
+            src-tauri/target/universal-apple-darwin/release/bundle/dmg/AidenChat_${{ env.PACKAGE_VERSION }}_universal_signed.dmg
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          LATEST_TAG: ${{ env.LATEST_TAG }}
-          PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
   publish-release:
     permissions:
       contents: write
