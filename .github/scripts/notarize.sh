@@ -68,18 +68,22 @@ xcrun stapler staple "$DMG_PATH"
 echo "✅ 所有公证任务完成并已 stapled ✅"
 
 # 创建 sig 文件
-echo "📝 使用 tauri sign 创建 sig 文件"
+echo "📝 使用 openssl 创建 sig 文件"
 
 # 设置输入输出路径
 ASSET_PATH="$ZIP_PATH"
 SIG_PATH="${ZIP_PATH}.sig"
 
-# 使用 tauri sign 进行签名
-npx tauri sign \
-  --input "$ASSET_PATH" \
-  --output "$SIG_PATH" \
-  ${TAURI_KEY_PASSWORD:+--password "$TAURI_KEY_PASSWORD"}
+# 1. 将 base64 编码的私钥写入临时 PEM 文件
+echo "$TAURI_PRIVATE_KEY" | base64 -d > tauri_private_key.pem
 
+# 2. 使用 openssl 进行签名
+openssl dgst -sha256 -sign tauri_private_key.pem -out "$SIG_PATH" "$ASSET_PATH"
+
+# 3. 清理私钥文件
+rm tauri_private_key.pem
+
+# 4. 提示完成
 echo "✅ 签名完成: $SIG_PATH"
 
 # 生成latest.json
