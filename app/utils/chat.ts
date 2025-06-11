@@ -495,6 +495,10 @@ export function streamWithThink(
   animateResponseText();
 
   const finish = () => {
+    if (finished) {
+      return;
+    }
+    finished = true;
     options.onFinish(responseText + remainText, responseRes);
   };
 
