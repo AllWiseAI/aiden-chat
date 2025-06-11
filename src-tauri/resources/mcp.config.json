@@ -88,14 +88,5 @@
       "aiden_id": "markitdown"
     }
   },
-  "a2aServers": [
-    {
-      "name": "Travel Agent",
-      "url": "http://127.0.0.1:5001"
-    },
-    {
-      "name": "Currency Exchange Agent",
-      "url": "https://prod.aidenai.io/agents/langgraph/"
-    }
-  ]
+  "a2aServers": []
 }
