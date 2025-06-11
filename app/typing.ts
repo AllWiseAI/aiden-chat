@@ -36,6 +36,7 @@ export type TDetailInfo = {
   tutorial: string;
   checked: boolean;
   type: McpItemType;
+  latest_version: string;
 };
 
 export enum McpAction {
@@ -82,6 +83,7 @@ export type TRemoteMcpInfo = {
   tutorial_en: string;
   tutorial_zh: string;
   type: string;
+  latest_version: string;
 };
 
 export type EnvItem = { key: string; value: string };

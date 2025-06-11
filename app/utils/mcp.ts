@@ -190,6 +190,8 @@ export const getRenderMcpList: any = async (
           mcp_name: name,
           mcp_key: name,
           checked: aiden_enable,
+          latest_version: "",
+          local_version: aiden_mcp_version || "",
           remote_version: "",
           description: "",
           description_en: "",
@@ -211,8 +213,8 @@ export const getRenderMcpList: any = async (
           mcp_key: name,
           checked: aiden_enable,
           type: "remote",
-          local_version: aiden_mcp_version,
-          remote_version: item.mcp_version,
+          local_version: aiden_mcp_version || "",
+          remote_version: item.latest_version || "",
           settingInfo: parseConfig(server as CustomMCPServer),
         });
       }
@@ -230,13 +232,12 @@ export const getRenderMcpList: any = async (
         type: "remote",
         mcp_key: Object.keys(item.basic_config)[0],
         local_version: "",
-        remote_version: item.mcp_version,
+        remote_version: item.latest_version || "",
         checked: false,
         settingInfo: null,
       });
     }
   }
-
   return {
     mcpRemoteInfoMap,
     renderMcpList: items,

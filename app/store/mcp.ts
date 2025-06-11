@@ -266,11 +266,13 @@ export const useMcpStore = createPersistStore(
         name,
         enable,
         type,
+        version,
       }: {
         id: string;
         name: string;
         type: string;
         enable: boolean;
+        version: string;
       }) => {
         console.log("[Mcp store] switchMcpStatus: ", name, enable);
         const { config, mcpRemoteInfoMap, renderMcpList, getRemoteMcpStatus } =
@@ -305,6 +307,7 @@ export const useMcpStore = createPersistStore(
                 aiden_enable: enable,
                 aiden_type: type,
                 aiden_id: id,
+                aiden_mcp_version: version,
               },
             },
           };
@@ -327,6 +330,49 @@ export const useMcpStore = createPersistStore(
         set({ renderMcpList: newList as McpItemInfo[] });
         await updateConfig(newConfig);
         if (newConfig.mcpServers[name].aiden_enable) {
+          getRemoteMcpStatus(name);
+        }
+      },
+      updateLocalMcpVersion: async (
+        id: string,
+        name: string,
+        version: string,
+      ) => {
+        const { config, renderMcpList, mcpRemoteInfoMap, getRemoteMcpStatus } =
+          _get();
+        if (!config) return;
+        let newConfig;
+        if (config.mcpServers[name]) {
+          let localItem = config.mcpServers[name];
+          newConfig = {
+            ...config,
+            mcpServers: {
+              ...config.mcpServers,
+              [name]: {
+                ...(getFirstValue(mcpRemoteInfoMap.get(id)?.basic_config) ||
+                  {}),
+                aiden_enable: localItem.aiden_enable,
+                aiden_type: "remote",
+                aiden_id: id,
+                aiden_mcp_version: version,
+              },
+            },
+          };
+        }
+        set({ config: newConfig });
+        await updateConfig(newConfig);
+        const newList = renderMcpList.map((item) => {
+          if (item.mcp_key === name) {
+            return {
+              ...item,
+              local_version: version,
+              remote_version: version,
+            };
+          }
+          return item;
+        });
+        set({ renderMcpList: newList as McpItemInfo[] });
+        if (config.mcpServers[name].aiden_enable) {
           getRemoteMcpStatus(name);
         }
       },
@@ -393,7 +439,7 @@ export const useMcpStore = createPersistStore(
   },
   {
     name: StoreKey.Mcp,
-    version: 1,
+    version: 2,
     onRehydrateStorage: () => {
       return (state, error) => {
         if (error) {

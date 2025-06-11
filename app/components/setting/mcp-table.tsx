@@ -28,11 +28,13 @@ type ServerTableProps = {
     name,
     enable,
     type,
+    version,
   }: {
     id: string;
     name: string;
     type: string;
     enable: boolean;
+    version: string;
   }) => void;
   setDetail: (detailInfo: McpItemInfo) => void;
   removeMcpItem: (name: string) => void;
@@ -82,9 +84,9 @@ function ServerTable({
               key={item.mcp_id + item.mcp_name}
               item={{ ...item }}
               keyword={keyword}
-              onSwitchChange={async (enable, id, name, type) => {
+              onSwitchChange={async (enable, id, name, type, version) => {
                 try {
-                  await switchMcpStatus({ id, name, enable, type });
+                  await switchMcpStatus({ id, name, enable, type, version });
                 } catch (e: any) {
                   toast.error(e, {
                     className: "w-auto max-w-max",
@@ -121,6 +123,7 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
   const [currentSetting, setCurrentSetting] = useState<TSettingInfo | null>(
     null,
   );
+  console.log("renderMcpList ===", renderMcpList);
   const [currentMcpName, setCurrentMcpName] = useState<string>("");
   const handleSettingConfirm = (update: TSettingInfo) => {
     setShowSettingModal(false);
