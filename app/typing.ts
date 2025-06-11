@@ -66,6 +66,7 @@ export type CustomMCPServer = {
   aiden_type: McpItemType;
   aiden_enable: boolean;
   aiden_id: string;
+  aiden_mcp_version?: string;
 };
 
 export type TRemoteMcpInfo = {
@@ -114,6 +115,8 @@ export type McpItemInfo = Omit<
   tutorial_zh?: string;
   tutorial_en?: string;
   settingInfo: TSettingInfo | null;
+  local_version: string;
+  remote_version: string;
 };
 
 export type A2AServer = {

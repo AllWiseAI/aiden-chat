@@ -182,13 +182,15 @@ export const getRenderMcpList: any = async (
   }
   if (config?.mcpServers) {
     Object.entries(config.mcpServers).forEach(([name, server]) => {
-      const { aiden_type, aiden_enable, aiden_id } = server as CustomMCPServer;
+      const { aiden_type, aiden_enable, aiden_id, aiden_mcp_version } =
+        server as CustomMCPServer;
       if (!mcpRemoteInfoMap.has(aiden_id)) {
         items.push({
           mcp_id: aiden_id,
           mcp_name: name,
           mcp_key: name,
           checked: aiden_enable,
+          remote_version: "",
           description: "",
           description_en: "",
           description_zh: "",
@@ -201,12 +203,16 @@ export const getRenderMcpList: any = async (
         });
       } else {
         addedInJSONIds.push(aiden_id);
+
+        const item = mcpRemoteInfoMap.get(aiden_id);
         items.push({
-          ...mcpRemoteInfoMap.get(aiden_id),
+          ...item,
           mcp_id: aiden_id,
           mcp_key: name,
           checked: aiden_enable,
           type: "remote",
+          local_version: aiden_mcp_version,
+          remote_version: item.mcp_version,
           settingInfo: parseConfig(server as CustomMCPServer),
         });
       }
@@ -223,6 +229,8 @@ export const getRenderMcpList: any = async (
         ...item,
         type: "remote",
         mcp_key: Object.keys(item.basic_config)[0],
+        local_version: "",
+        remote_version: item.mcp_version,
         checked: false,
         settingInfo: null,
       });
