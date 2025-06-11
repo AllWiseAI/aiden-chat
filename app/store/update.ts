@@ -3,7 +3,7 @@ import { getClientConfig } from "../config/client";
 import { createPersistStore } from "../utils/store";
 import { clientUpdate } from "../utils";
 import ChatGptIcon from "../icons/chatgpt.png";
-import Locale from "../locales";
+import { t } from "i18next";
 import { ClientApi } from "../client/api";
 
 const ONE_MINUTE = 60 * 1000;
@@ -101,13 +101,17 @@ export const useUpdateStore = createPersistStore(
                         // Show a notification using Tauri
                         window.__TAURI__?.notification.sendNotification({
                           title: "AidenChat",
-                          body: `${Locale.Settings.Update.IsLatest}`,
+                          body: `${t("settings.update.isLatest", {
+                            ns: "general",
+                          })}`,
                           icon: `${ChatGptIcon.src}`,
                           sound: "Default",
                         });
                       } else {
-                        const updateMessage =
-                          Locale.Settings.Update.FoundUpdate(`${remoteId}`);
+                        const updateMessage = t("settings.update.foundUpdate", {
+                          ns: "general",
+                          x: remoteId,
+                        });
                         // Show a notification for the new version using Tauri
                         window.__TAURI__?.notification.sendNotification({
                           title: "AidenChat",

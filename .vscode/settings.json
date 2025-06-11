@@ -23,5 +23,10 @@
   },
   "[json]": {
     "editor.defaultFormatter": "vscode.json-language-features"
-  }
+  },
+  "i18n-ally.localesPaths": ["app/locales"],
+  "i18n-ally.enabledParsers": ["json"],
+  "i18n-ally.sourceLanguage": "en-US",
+  "i18n-ally.keystyle": "nested",
+  "i18n-ally.namespace": true
 }

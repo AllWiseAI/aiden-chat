@@ -14,7 +14,8 @@ import {
   DEFAULT_SYSTEM_TEMPLATE,
   StoreKey,
 } from "../constant";
-import Locale, { getLang } from "../locales";
+import { getLang } from "../locales";
+import { t } from "i18next";
 import { createPersistStore } from "../utils/store";
 import { estimateTokenLength } from "../utils/token";
 import { ModelConfig, ModelType, useAppConfig } from "./config";
@@ -76,10 +77,10 @@ export interface ChatSession {
   mask: Mask;
 }
 
-export const DEFAULT_TOPIC = Locale.Store.DefaultTopic;
+export const DEFAULT_TOPIC = t("store.defaultTopic", { ns: "general" });
 export const BOT_HELLO: ChatMessage = createMessage({
   role: "assistant",
-  content: Locale.Store.BotHello,
+  content: t("store.botHello", { ns: "general" }),
 });
 
 function createEmptySession(): ChatSession {
@@ -484,7 +485,10 @@ export const useChatStore = createPersistStore(
         if (session.memoryPrompt.length) {
           return {
             role: "system",
-            content: Locale.Store.Prompt.History(session.memoryPrompt),
+            content: t("store.prompt.history", {
+              ns: "general",
+              content: session.memoryPrompt,
+            }),
             date: "",
           } as ChatMessage;
         }
@@ -626,7 +630,7 @@ export const useChatStore = createPersistStore(
             .concat(
               createMessage({
                 role: "user",
-                content: Locale.Store.Prompt.Topic,
+                content: t("store.prompt.topic", { ns: "general" }),
               }),
             );
           api.llm.chat({
@@ -691,7 +695,7 @@ export const useChatStore = createPersistStore(
             messages: toBeSummarizedMsgs.concat(
               createMessage({
                 role: "system",
-                content: Locale.Store.Prompt.Summarize,
+                content: t("store.prompt.summarize", { ns: "general" }),
                 date: "",
               }),
             ),

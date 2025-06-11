@@ -8,7 +8,7 @@ import RehypeHighlight from "rehype-highlight";
 import { useRef, useState, RefObject, useEffect, useMemo } from "react";
 import { copyToClipboard, useWindowSize } from "../utils";
 import mermaid from "mermaid";
-import Locale from "../locales";
+import { useTranslation } from "react-i18next";
 import LoadingIcon from "../icons/three-dots.svg";
 import ReloadButtonIcon from "../icons/reload.svg";
 import React from "react";
@@ -160,6 +160,7 @@ function CustomCode(props: { children: any; className?: string }) {
   const chatStore = useChatStore();
   const session = chatStore.currentSession();
   const config = useAppConfig();
+  const { t } = useTranslation("general");
   const enableCodeFold =
     session.mask?.enableCodeFold !== false && config.enableCodeFold;
 
@@ -187,7 +188,7 @@ function CustomCode(props: { children: any; className?: string }) {
             expanded: !collapsed,
           })}
         >
-          <button onClick={toggleCollapsed}>{Locale.NewChat.More}</button>
+          <button onClick={toggleCollapsed}>{t("newChat.more")}</button>
         </div>
       );
     }

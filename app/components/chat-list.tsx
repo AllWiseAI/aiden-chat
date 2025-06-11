@@ -10,7 +10,7 @@ import MoreIcon from "../icons/more.svg";
 import EditIcon from "../icons/edit.svg";
 import DeleteIcon from "../icons/delete.svg";
 import CloseIcon from "../icons/close.svg";
-import Locale from "../locales";
+import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Path } from "../constant";
 
@@ -66,7 +66,7 @@ export function ChatItem(props: {
   const [openMenu, setOpenMenu] = useState(false);
   const chatStore = useChatStore();
   const session = chatStore.sessions.find((s) => s.id === props.id)!;
-
+  const { t } = useTranslation("general");
   useEffect(() => {
     if (isEdit && inputRef.current) {
       inputRef.current?.focus();
@@ -93,9 +93,9 @@ export function ChatItem(props: {
           }}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          title={`${props.title}\n${Locale.ChatItem.ChatItemCount(
-            props.count,
-          )}`}
+          title={`${props.title}\n${t("chatItem.chatItemCount", {
+            count: props.count,
+          })}`}
         >
           {!props.narrow && (
             <>
@@ -241,6 +241,7 @@ export function ChatList(props: { narrow?: boolean; searchValue?: string }) {
   const chatStore = useChatStore();
   const navigate = useNavigate();
   const isMobileScreen = useMobileScreen();
+  const { t } = useTranslation("general");
 
   const filteredSessions = useMemo(() => {
     if (!props.searchValue)
@@ -294,7 +295,7 @@ export function ChatList(props: { narrow?: boolean; searchValue?: string }) {
                   onDelete={async () => {
                     if (
                       (!props.narrow && !isMobileScreen) ||
-                      (await showConfirm(Locale.Home.DeleteChat))
+                      (await showConfirm(t("home.deleteChat")))
                     ) {
                       chatStore.deleteSession(item.originIndex);
                     }
