@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Path } from "../../constant";
 import { Theme, useAppConfig } from "@/app/store";
+import { getLang, changeLanguage, localeOptions, Locales } from "../../locales";
 import {
   Select,
   SelectContent,
@@ -47,7 +48,7 @@ export default function General() {
           </div>
         </div>
       </div>
-      {/* <div className="w-full flex justify-between items-center gap-6 px-4 py-6 border-b">
+      <div className="w-full flex justify-between items-center gap-6 px-4 py-6 border-b">
         <div className="font-medium">Country</div>
         <Select defaultValue={"china"}>
           <SelectTrigger className="w-[180px] dark:border-[#232627]">
@@ -85,28 +86,30 @@ export default function General() {
       </div>
       <div className="w-full flex justify-between items-center gap-6 px-4 py-6 border-b">
         <div className="font-medium">Language</div>
-        <Select defaultValue={"en"}>
+        <Select
+          defaultValue={getLang()}
+          onValueChange={(value) => {
+            changeLanguage(value as Locales);
+          }}
+        >
           <SelectTrigger className="w-[180px] dark:border-[#232627]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="bg-[#F3F5F7] dark:bg-[#232627]">
             <SelectGroup className="space-y-2">
-              <SelectItem
-                value="en"
-                className="hover:!bg-[#E8ECEF] dark:hover:!bg-black"
-              >
-                English
-              </SelectItem>
-              <SelectItem
-                value="cn"
-                className="hover:!bg-[#E8ECEF] dark:hover:!bg-black"
-              >
-                Chinese
-              </SelectItem>
+              {localeOptions.map((option) => (
+                <SelectItem
+                  key={option.value}
+                  value={option.value}
+                  className="hover:!bg-[#E8ECEF] dark:hover:!bg-black"
+                >
+                  {option.label}
+                </SelectItem>
+              ))}
             </SelectGroup>
           </SelectContent>
         </Select>
-      </div> */}
+      </div>
       <div className="w-full flex justify-between items-center gap-6 px-4 py-6">
         <div className="font-medium">Appearance</div>
         <Select

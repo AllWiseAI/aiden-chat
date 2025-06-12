@@ -13,7 +13,7 @@ import { getCSSVar, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
 import { Path, SlotID } from "../constant";
 import { ErrorBoundary } from "./error";
-import { getISOLang } from "../locales";
+import { getLang } from "../locales";
 
 import {
   HashRouter as Router,
@@ -133,7 +133,7 @@ export function useSwitchTheme() {
 
 function useHtmlLang() {
   useEffect(() => {
-    const lang = getISOLang();
+    const lang = getLang();
     const htmlLang = document.documentElement.lang;
 
     if (lang !== htmlLang) {

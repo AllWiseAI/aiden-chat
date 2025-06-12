@@ -1,4 +1,4 @@
-import { getLang, Lang } from "../locales";
+import { getLang, Locales } from "../locales";
 import { DEFAULT_TOPIC, ChatMessage } from "./chat";
 import { ModelConfig, useAppConfig } from "./config";
 import { nanoid } from "nanoid";
@@ -12,7 +12,7 @@ export type Mask = {
   context: ChatMessage[];
   syncGlobalConfig?: boolean;
   modelConfig: ModelConfig;
-  lang: Lang;
+  lang: Locales;
   builtin: boolean;
   plugin?: string[];
   enableArtifacts?: boolean;
@@ -21,11 +21,11 @@ export type Mask = {
 
 export const DEFAULT_MASK_STATE = {
   masks: {} as Record<string, Mask>,
-  language: undefined as Lang | undefined,
+  language: undefined as Locales | undefined,
 };
 
 export type MaskState = typeof DEFAULT_MASK_STATE & {
-  language?: Lang | undefined;
+  language?: Locales | undefined;
 };
 
 export const DEFAULT_MASK_AVATAR = "gpt-bot";
