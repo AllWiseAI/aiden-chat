@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { useAppUpdate } from "@/app/hooks/use-app-update";
 import { ImageUploader } from "./image-uploader";
 import { useImageUploadStore } from "@/app/store/image-upload";
+import CircleProgress from "./circle-progress";
 
 import {
   ChatMessage,
@@ -574,21 +575,6 @@ function _Chat() {
                         <div className={styles["chat-message-container"]}>
                           <div className={styles["chat-message-item"]}>
                             {isMcpMsg && renderMessageMcpInfo(message)}
-                            <Markdown
-                              key={message.streaming ? "loading" : "done"}
-                              content={getMessageTextContent(message)}
-                              loading={
-                                (message.preview || message.streaming) &&
-                                message.content.length === 0 &&
-                                !isUser
-                              }
-                              onDoubleClickCapture={() => {
-                                if (!isMobileScreen) return;
-                                setUserInput(getMessageTextContent(message));
-                              }}
-                              parentRef={scrollRef}
-                              defaultShow={i >= renderMessages.length - 6}
-                            />
                             {getMessageImages(message).length == 1 && (
                               <img
                                 className={styles["chat-message-item-image"]}
@@ -624,6 +610,21 @@ function _Chat() {
                                 )}
                               </div>
                             )}
+                            <Markdown
+                              key={message.streaming ? "loading" : "done"}
+                              content={getMessageTextContent(message)}
+                              loading={
+                                (message.preview || message.streaming) &&
+                                message.content.length === 0 &&
+                                !isUser
+                              }
+                              onDoubleClickCapture={() => {
+                                if (!isMobileScreen) return;
+                                setUserInput(getMessageTextContent(message));
+                              }}
+                              parentRef={scrollRef}
+                              defaultShow={i >= renderMessages.length - 6}
+                            />
                           </div>
                         </div>
                       </div>
@@ -666,23 +667,22 @@ function _Chat() {
                     fontFamily: config.fontFamily,
                   }}
                 />
-                <div className="absolute top-10 left-8">
+                <div className="absolute top-6 left-8 flex items-center gap-2.5">
                   {images.map((img) => (
-                    <div key={img.id} className="relative border rounded p-2">
+                    <div key={img.id} className="relative">
                       {img.url ? (
                         <img
                           src={img.url}
-                          alt="上传图片"
-                          className="w-10 h-10"
+                          className={styles["input-img"]}
                         ></img>
                       ) : (
-                        <div className="text-center text-gray-500">
-                          上传中 {img.progress}%
+                        <div className={styles["input-img-loading"]}>
+                          <CircleProgress progress={img.progress} />
                         </div>
                       )}
                       <button
                         onClick={() => removeImage(img.id)}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                        className="absolute -top-2 -right-2 bg-[#F3F5F7] text-[#343839] rounded-full w-4 h-4 flex items-center justify-center"
                       >
                         ×
                       </button>
@@ -690,17 +690,17 @@ function _Chat() {
                   ))}
                 </div>
                 <div className="absolute bottom-8 left-8 flex gap-2">
+                  <ImageUploader />
                   <McpTooltip
                     icon={
                       <McpIcon className="size-4 text-black dark:text-white" />
                     }
                   />
-                  <ImageUploader />
                 </div>
                 <Button
                   className="absolute bottom-8 right-8 h-8 w-8 bg-main rounded-full hover:bg-[#00D47E]/90 p-0 disabled:bg-[#6C7275] dark:disabled:bg-[#343839] !disabled:cursor-not-allowed"
                   onClick={() => doSubmit(userInput)}
-                  disabled={!userInput.length && !isChatting}
+                  disabled={!(userInput.length || images.length) && !isChatting}
                 >
                   {isChatting ? (
                     <StopIcon className="text-white dark:text-black" />

@@ -1,19 +1,4 @@
-export async function mockUpload(
-  file: File,
-  onProgress: (percent: number) => void,
-): Promise<string> {
-  return new Promise((resolve) => {
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 10;
-      onProgress(progress);
-      if (progress >= 100) {
-        clearInterval(interval);
-        resolve(URL.createObjectURL(file)); // 模拟上传后返回的图片 URL
-      }
-    }, 200);
-  });
-}
+const BASE_URL = "https://prod-hk.aidenai.io/api/image/upload";
 
 export function uploadImageWithProgress(
   file: File,
@@ -21,7 +6,7 @@ export function uploadImageWithProgress(
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "/manage/v1/image/upload");
+    xhr.open("POST", BASE_URL);
     xhr.setRequestHeader("Content-Type", "application/octet-stream");
 
     // 上传进度监听
