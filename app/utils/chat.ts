@@ -465,6 +465,7 @@ export function streamWithThink(
   let responseText = text;
   let remainText = "";
   let finished = false;
+  let hasConfirmRequest = false;
   let responseRes: Response;
 
   function animateResponseText() {
@@ -475,7 +476,7 @@ export function streamWithThink(
         options.onError?.(new Error("User canceled"), true);
         return;
       }
-      if (responseText?.length === 0) {
+      if (!hasConfirmRequest && responseText?.length === 0) {
         options.onError?.(new Error("empty response from server"), true);
       }
       return;
@@ -495,6 +496,10 @@ export function streamWithThink(
   animateResponseText();
 
   const finish = () => {
+    if (finished) {
+      return;
+    }
+    finished = true;
     options.onFinish(responseText + remainText, responseRes);
   };
 
@@ -578,6 +583,7 @@ export function streamWithThink(
           if (chunk.mcpInfo) {
             const { type } = chunk.mcpInfo;
             if (type === McpStepsAction.ToolCallConfirm) {
+              hasConfirmRequest = true;
               options.onUpdate?.(responseText, {
                 title: chunk.mcpInfo.tool,
                 request: prettyObject(chunk.mcpInfo || "") + "\n\n",
@@ -621,6 +627,8 @@ export function streamWithThink(
                   });
                 }
               }
+              const controller = new AbortController();
+              options.onController?.(controller);
               const initTemplate = responseText + remainText;
               streamWithThink(
                 SECOND_CHAT_URL,

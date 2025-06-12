@@ -45,11 +45,7 @@ import dynamic from "next/dynamic";
 import { ChatControllerPool } from "../client/controller";
 import { Prompt } from "../store/prompt";
 import styles from "./chat.module.scss";
-import {
-  CHAT_PAGE_SIZE,
-  REQUEST_TIMEOUT_MS,
-  UNFINISHED_INPUT,
-} from "../constant";
+import { REQUEST_TIMEOUT_MS, UNFINISHED_INPUT } from "../constant";
 import { useChatCommand } from "../command";
 import { prettyObject } from "../utils/format";
 import clsx from "clsx";
@@ -217,7 +213,7 @@ function _Chat() {
 
   // if user is typing, should auto scroll to bottom
   // if user is not typing, should auto scroll to bottom only if already at bottom
-  const { autoScroll, setAutoScroll, scrollDomToBottom } = useScrollToBottom(
+  const { setAutoScroll, scrollDomToBottom } = useScrollToBottom(
     scrollRef,
     (isScrolledToBottom || isAttachWithTop) && !isTyping,
     session.messages,
@@ -356,48 +352,48 @@ function _Chat() {
     );
   }, [context, isLoading, session.messages]);
 
-  const [msgRenderIndex, _setMsgRenderIndex] = useState(
-    Math.max(0, renderMessages.length - CHAT_PAGE_SIZE),
-  );
+  // const [msgRenderIndex, _setMsgRenderIndex] = useState(
+  //   Math.max(0, renderMessages.length - CHAT_PAGE_SIZE),
+  // );
 
-  function setMsgRenderIndex(newIndex: number) {
-    newIndex = Math.min(renderMessages.length - CHAT_PAGE_SIZE, newIndex);
-    newIndex = Math.max(0, newIndex);
-    _setMsgRenderIndex(newIndex);
-  }
+  // function setMsgRenderIndex(newIndex: number) {
+  //   newIndex = Math.min(renderMessages.length - CHAT_PAGE_SIZE, newIndex);
+  //   newIndex = Math.max(0, newIndex);
+  //   _setMsgRenderIndex(newIndex);
+  // }
 
-  const messages = useMemo(() => {
-    const endRenderIndex = Math.min(
-      msgRenderIndex + 3 * CHAT_PAGE_SIZE,
-      renderMessages.length,
-    );
-    return renderMessages.slice(msgRenderIndex, endRenderIndex);
-  }, [msgRenderIndex, renderMessages]);
+  // const messages = useMemo(() => {
+  //   const endRenderIndex = Math.min(
+  //     msgRenderIndex + 3 * CHAT_PAGE_SIZE,
+  //     renderMessages.length,
+  //   );
+  //   return renderMessages.slice(msgRenderIndex, endRenderIndex);
+  // }, [msgRenderIndex, renderMessages]);
 
   const onChatBodyScroll = (e: HTMLElement) => {
     const bottomHeight = e.scrollTop + e.clientHeight;
-    const edgeThreshold = e.clientHeight;
+    // const edgeThreshold = e.clientHeight;
 
-    const isTouchTopEdge = e.scrollTop <= edgeThreshold;
-    const isTouchBottomEdge = bottomHeight >= e.scrollHeight - edgeThreshold;
+    // const isTouchTopEdge = e.scrollTop <= edgeThreshold;
+    // const isTouchBottomEdge = bottomHeight >= e.scrollHeight - edgeThreshold;
     const isHitBottom =
       bottomHeight >= e.scrollHeight - (isMobileScreen ? 4 : 10);
 
-    const prevPageMsgIndex = msgRenderIndex - CHAT_PAGE_SIZE;
-    const nextPageMsgIndex = msgRenderIndex + CHAT_PAGE_SIZE;
+    // const prevPageMsgIndex = msgRenderIndex - CHAT_PAGE_SIZE;
+    // const nextPageMsgIndex = msgRenderIndex + CHAT_PAGE_SIZE;
 
-    if (isTouchTopEdge && !isTouchBottomEdge) {
-      setMsgRenderIndex(prevPageMsgIndex);
-    } else if (isTouchBottomEdge) {
-      setMsgRenderIndex(nextPageMsgIndex);
-    }
+    // if (isTouchTopEdge && !isTouchBottomEdge) {
+    //   setMsgRenderIndex(prevPageMsgIndex);
+    // } else if (isTouchBottomEdge) {
+    //   setMsgRenderIndex(nextPageMsgIndex);
+    // }
 
     setHitBottom(isHitBottom);
     setAutoScroll(isHitBottom);
   };
 
   function scrollToBottom(smooth: boolean = false) {
-    setMsgRenderIndex(renderMessages.length - CHAT_PAGE_SIZE);
+    // setMsgRenderIndex(renderMessages.length - CHAT_PAGE_SIZE);
     scrollDomToBottom(smooth);
   }
 
@@ -425,7 +421,11 @@ function _Chat() {
     if (!response?.length) return null;
     return typeof response === "string"
       ? response
-      : response.map((item, index) => <div key={index}>{item}</div>);
+      : response.map((item, index) => (
+          <div key={index} className="max-h-100 overflow-y-auto">
+            {item}
+          </div>
+        ));
   };
 
   const renderCallResult = (result: string[] | undefined) => {
@@ -558,7 +558,7 @@ function _Chat() {
                   setAutoScroll(false);
                 }}
               >
-                {messages.map((message, i) => {
+                {renderMessages.map((message, i) => {
                   const isUser = message.role === "user";
                   const isMcpMsg = message.mcpInfo !== undefined;
 
@@ -587,7 +587,7 @@ function _Chat() {
                                 setUserInput(getMessageTextContent(message));
                               }}
                               parentRef={scrollRef}
-                              defaultShow={i >= messages.length - 6}
+                              defaultShow={i >= renderMessages.length - 6}
                             />
                             {getMessageImages(message).length == 1 && (
                               <img

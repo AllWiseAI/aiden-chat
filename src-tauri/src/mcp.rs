@@ -1,3 +1,4 @@
+use semver::Version;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 
@@ -70,19 +71,22 @@ pub fn init_mcp_config(app: &tauri::App) -> Result<(), String> {
     let mut user_json: Value = serde_json::from_str(&user_text)
         .map_err(|e| format!("Invalid JSON in user config: {}", e))?;
 
-    let default_version = default_json
+    let default_version_str = default_json
         .get("version")
         .and_then(|v| v.as_str())
         .unwrap_or("");
-    let user_version = user_json
+    let user_version_str = user_json
         .get("version")
         .and_then(|v: &Value| v.as_str())
         .unwrap_or("");
     log::info!(
         "MCP config version: default={}, user={}",
-        default_version,
-        user_version
+        default_version_str,
+        user_version_str
     );
+    let default_version =
+        Version::parse(default_version_str).unwrap_or_else(|_| Version::new(0, 0, 0));
+    let user_version = Version::parse(user_version_str).unwrap_or_else(|_| Version::new(0, 0, 0));
     if default_version > user_version {
         log::info!(
             "MCP config update needed: {} -> {}",
@@ -111,6 +115,9 @@ pub fn init_mcp_config(app: &tauri::App) -> Result<(), String> {
 
         user_json["mcpServers"] = Value::Object(updated_servers);
         user_json["version"] = Value::String(default_version.to_string());
+        if let Some(default_a2a) = default_json.get("a2aServers") {
+            user_json["a2aServers"] = default_a2a.clone();
+        }
 
         fs::write(
             &user_config_path,
