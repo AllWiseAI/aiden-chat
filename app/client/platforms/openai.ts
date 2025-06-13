@@ -17,7 +17,6 @@ import {
   SpeechOptions,
 } from "../api";
 import { t } from "i18next";
-import { getMessageTextContent } from "@/app/utils";
 import { fetch, tauriFetchWithSignal } from "@/app/utils/stream";
 import { streamWithThink, parseSSE } from "@/app/utils/chat";
 
@@ -111,9 +110,9 @@ export class ChatGPTApi implements LLMApi {
   async chat(options: ChatOptions) {
     const messages: ChatOptions["messages"] = [];
     for (const v of options.messages) {
-      const content = getMessageTextContent(v);
-      messages.push({ role: v.role, content });
+      messages.push({ role: v.role, content: v.content });
     }
+    console.log("[Request] openai chat payload: ", messages);
     let requestPayload: RequestPayload = { messages };
     const shouldStream = !!options.config.stream;
 

@@ -9,6 +9,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { isEmpty } from "lodash-es";
 import DownIcon from "../icons/down.svg";
 import StopIcon from "../icons/stop.svg";
 import SendIcon from "../icons/up-arrow.svg";
@@ -20,6 +21,9 @@ import McpIcon from "../icons/mcp.svg";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { useAppUpdate } from "@/app/hooks/use-app-update";
+import { ImageUploader } from "./image-uploader";
+import { useImageUploadStore } from "@/app/store/image-upload";
+import CircleProgress from "./circle-progress";
 
 import {
   ChatMessage,
@@ -170,6 +174,9 @@ function _Chat() {
   const session = chatStore.currentSession();
   const config = useAppConfig();
 
+  const images = useImageUploadStore((state) => state.images);
+  const removeImage = useImageUploadStore((state) => state.removeImage);
+
   const isNewChat = useMemo(() => {
     return session.messages.length === 0;
   }, [session.messages.length]);
@@ -260,7 +267,8 @@ function _Chat() {
       ChatControllerPool.stopAll();
       return;
     }
-    if (userInput.trim() === "") return;
+    if (userInput.trim() === "" && isEmpty(images)) return;
+
     const matchCommand = chatCommands.match(userInput);
     if (matchCommand.matched) {
       setUserInput("");
@@ -268,9 +276,11 @@ function _Chat() {
       return;
     }
     setIsLoading(true);
-    chatStore.onUserInput(userInput, []).then(() => setIsLoading(false));
+    const imageUrls = images.map((image) => image.url);
+    chatStore.onUserInput(userInput, imageUrls).then(() => setIsLoading(false));
     chatStore.setLastInput(userInput);
     setUserInput("");
+    images.forEach((image) => removeImage(image.id));
     inputRef.current?.focus();
     setAutoScroll(true);
   };
@@ -565,21 +575,6 @@ function _Chat() {
                         <div className={styles["chat-message-container"]}>
                           <div className={styles["chat-message-item"]}>
                             {isMcpMsg && renderMessageMcpInfo(message)}
-                            <Markdown
-                              key={message.streaming ? "loading" : "done"}
-                              content={getMessageTextContent(message)}
-                              loading={
-                                (message.preview || message.streaming) &&
-                                message.content.length === 0 &&
-                                !isUser
-                              }
-                              onDoubleClickCapture={() => {
-                                if (!isMobileScreen) return;
-                                setUserInput(getMessageTextContent(message));
-                              }}
-                              parentRef={scrollRef}
-                              defaultShow={i >= renderMessages.length - 6}
-                            />
                             {getMessageImages(message).length == 1 && (
                               <img
                                 className={styles["chat-message-item-image"]}
@@ -615,6 +610,21 @@ function _Chat() {
                                 )}
                               </div>
                             )}
+                            <Markdown
+                              key={message.streaming ? "loading" : "done"}
+                              content={getMessageTextContent(message)}
+                              loading={
+                                (message.preview || message.streaming) &&
+                                message.content.length === 0 &&
+                                !isUser
+                              }
+                              onDoubleClickCapture={() => {
+                                if (!isMobileScreen) return;
+                                setUserInput(getMessageTextContent(message));
+                              }}
+                              parentRef={scrollRef}
+                              defaultShow={i >= renderMessages.length - 6}
+                            />
                           </div>
                         </div>
                       </div>
@@ -643,7 +653,9 @@ function _Chat() {
                 <textarea
                   id="chat-input"
                   ref={inputRef}
-                  className={styles["chat-input"]}
+                  className={clsx(styles["chat-input"], {
+                    [styles["chat-input-with-image"]]: images.length > 0,
+                  })}
                   placeholder="Ask anything..."
                   onInput={(e) => onInput(e.currentTarget.value)}
                   value={userInput}
@@ -655,7 +667,30 @@ function _Chat() {
                     fontFamily: config.fontFamily,
                   }}
                 />
+                <div className="absolute top-6 left-8 flex items-center gap-2.5">
+                  {images.map((img) => (
+                    <div key={img.id} className="relative">
+                      {img.url ? (
+                        <img
+                          src={img.url}
+                          className={styles["input-img"]}
+                        ></img>
+                      ) : (
+                        <div className={styles["input-img-loading"]}>
+                          <CircleProgress progress={img.progress} />
+                        </div>
+                      )}
+                      <button
+                        onClick={() => removeImage(img.id)}
+                        className="absolute -top-2 -right-2 bg-[#F3F5F7] text-[#343839] rounded-full w-4 h-4 flex items-center justify-center"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
                 <div className="absolute bottom-8 left-8 flex gap-2">
+                  <ImageUploader />
                   <McpTooltip
                     icon={
                       <McpIcon className="size-4 text-black dark:text-white" />
@@ -665,7 +700,7 @@ function _Chat() {
                 <Button
                   className="absolute bottom-8 right-8 h-8 w-8 bg-main rounded-full hover:bg-[#00D47E]/90 p-0 disabled:bg-[#6C7275] dark:disabled:bg-[#343839] !disabled:cursor-not-allowed"
                   onClick={() => doSubmit(userInput)}
-                  disabled={!userInput.length && !isChatting}
+                  disabled={!(userInput.length || images.length) && !isChatting}
                 >
                   {isChatting ? (
                     <StopIcon className="text-white dark:text-black" />
