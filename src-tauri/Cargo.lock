@@ -58,6 +58,7 @@ dependencies = [
  "nix 0.28.0",
  "percent-encoding",
  "reqwest",
+ "semver",
  "sentry",
  "serde",
  "serde_json",
