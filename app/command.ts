@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import Locale from "./locales";
+import { useTranslation } from "react-i18next";
 
 type Command = (param: string) => void;
 interface Commands {
@@ -46,6 +46,7 @@ interface ChatCommands {
 export const ChatCommandPrefix = /^[:：]/;
 
 export function useChatCommand(commands: ChatCommands = {}) {
+  const { t } = useTranslation("general");
   function extract(userInput: string) {
     const match = userInput.match(ChatCommandPrefix);
     if (match) {
@@ -56,11 +57,10 @@ export function useChatCommand(commands: ChatCommands = {}) {
 
   function search(userInput: string) {
     const input = extract(userInput);
-    const desc = Locale.Chat.Commands;
     return Object.keys(commands)
       .filter((c) => c.startsWith(input))
       .map((c) => ({
-        title: desc[c as keyof ChatCommands],
+        title: t(`chat.commands.${c}`),
         content: ":" + c,
       }));
   }

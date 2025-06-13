@@ -18,7 +18,7 @@ import SuccessIcon from "../icons/success.svg";
 import ErrorIcon from "../icons/error.svg";
 import ReloadIcon from "../icons/reload.svg";
 import McpIcon from "../icons/mcp.svg";
-import Locale from "../locales";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { useAppUpdate } from "@/app/hooks/use-app-update";
 import { ImageUploader } from "./image-uploader";
@@ -28,7 +28,7 @@ import CircleProgress from "./circle-progress";
 import {
   ChatMessage,
   createMessage,
-  DEFAULT_TOPIC,
+  defaultTopic,
   SubmitKey,
   useAppConfig,
   useChatStore,
@@ -185,7 +185,7 @@ function _Chat() {
   const [userInput, setUserInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isChatting, setIsChatting] = useState(false);
-
+  const { t } = useTranslation("general");
   useEffect(() => {
     setIsChatting(ChatControllerPool.hasPendingInSession(session.id));
   }, [session.id, session.messages]);
@@ -500,7 +500,7 @@ function _Chat() {
                 styles["chat-body-main-title"],
               )}
             >
-              {!session.topic ? DEFAULT_TOPIC : session.topic}
+              {!session.topic ? defaultTopic() : session.topic}
             </div>
             <TooltipProvider>
               <Tooltip>
@@ -509,7 +509,7 @@ function _Chat() {
                     data-tauri-drag-region="false"
                     variant="ghost"
                     onClick={() => {
-                      toast(Locale.Chat.Actions.RefreshToast, {
+                      toast(t("chat.actions.refreshToast"), {
                         className: "w-auto max-w-max",
                       });
                       chatStore.summarizeSession(true, session);
@@ -523,7 +523,7 @@ function _Chat() {
                   hasArrow={false}
                   className="pointer-events-none bg-[#FEFEFE] dark:bg-[#232627] text-black dark:text-[#6C7275] border"
                 >
-                  {Locale.Chat.Actions.RefreshTitle}
+                  {t("chat.actions.refreshTitle")}
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -545,7 +545,7 @@ function _Chat() {
               <>
                 <div className="w-full h-10" data-tauri-drag-region></div>
                 <div className={styles["chat-main-welcome"]}>
-                  Hi, I&apos;m Aiden
+                  {t("chat.title")} Aiden
                 </div>
               </>
             ) : (

@@ -11,6 +11,7 @@ import dynamic from "next/dynamic";
 import { useAppConfig, Theme } from "@/app/store";
 import { vscodeLight, vscodeDark } from "@uiw/codemirror-theme-vscode";
 import { foldGutter, indentOnInput } from "@codemirror/language";
+import { useTranslation } from "react-i18next";
 
 const CodeMirror = dynamic(() => import("@uiw/react-codemirror"), {
   ssr: false,
@@ -56,6 +57,7 @@ function ConfigEditor({ jsonStr, setJsonStr, error }: ConfigEditorProps) {
 
 const McpEditor: React.FC<Props> = ({ setMode }) => {
   const mcpStore = useMcpStore();
+  const { t } = useTranslation("settings");
   const { saveEditorConfig, getCleanedConfig } = mcpStore;
   const [jsonStr, setJsonStr] = useState<string>(JSON.stringify({}, null, 2));
   useEffect(() => {
@@ -92,7 +94,7 @@ const McpEditor: React.FC<Props> = ({ setMode }) => {
         >
           <div className="flex items-center gap-2">
             <BackIcon className="size-6" />
-            <span className="text-lg font-medium">Edit Config</span>
+            <span className="text-lg font-medium">{t("mcp.edit")}</span>
           </div>
         </div>
         <div className="flex">
@@ -100,7 +102,7 @@ const McpEditor: React.FC<Props> = ({ setMode }) => {
             onClick={handleSave}
             className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] w-[54px]"
           >
-            Save
+            {t("mcp.save")}
           </Button>
         </div>
       </div>

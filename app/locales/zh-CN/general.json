@@ -1,0 +1,120 @@
+{
+  "error": {
+    "unauthorized": "未授权"
+  },
+  "chatItem": {
+    "chatItemCount": "{{count}} 条对话"
+  },
+  "chat": {
+    "title": "嗨，我是",
+    "subTitle": "共 {{count}} 条对话",
+    "actions": {
+      "copy": "复制",
+      "stop": "停止",
+      "retry": "重试",
+      "delete": "删除",
+      "refreshTitle": "刷新标题",
+      "refreshToast": "已发送刷新标题请求"
+    },
+    "commands": {
+      "new": "新建聊天",
+      "newM": "从面具新建聊天",
+      "next": "下一个聊天",
+      "prev": "上一个聊天",
+      "clear": "清除上下文",
+      "fork": "复制聊天",
+      "del": "删除聊天"
+    },
+    "rename": "重命名",
+    "delete": "删除",
+    "typing": "正在输入…",
+    "send": "发送"
+  },
+  "home": {
+    "newChat": "新的聊天",
+    "deleteChat": "确认删除选中的对话？",
+    "deleteToast": "已删除会话"
+  },
+  "settings": {
+    "title": "设置",
+    "subTitle": "所有设置选项",
+    "showPassword": "显示密码",
+    "danger": {
+      "reset": {
+        "title": "重置所有设置",
+        "subTitle": "重置所有设置项回默认值",
+        "action": "立即重置",
+        "confirm": "确认重置所有设置？"
+      },
+      "clear": {
+        "title": "清除所有数据",
+        "subTitle": "清除所有聊天、设置数据",
+        "action": "立即清除",
+        "confirm": "确认清除所有聊天、设置数据？"
+      }
+    },
+    "update": {
+      "version": "当前版本：{{x}}",
+      "isLatest": "已是最新版本",
+      "checkUpdate": "检查更新",
+      "isChecking": "正在检查更新...",
+      "foundUpdate": "发现新版本：{{x}}",
+      "goToUpdate": "前往更新",
+      "success": "更新成功！",
+      "failed": "更新失败"
+    }
+  },
+  "store": {
+    "defaultTopic": "新的聊天",
+    "botHello": "有什么可以帮你的吗",
+    "error": "出错了，稍后重试吧",
+    "prompt": {
+      "history": "这是历史聊天总结作为前情提要：{{content}}",
+      "topic": "使用四到五个字直接返回这句话的简要主题，不要解释、不要标点、不要语气词、不要多余文本，不要加粗，如果没有主题，请直接返回“闲聊”，注意请根据消息原生语言来返回主题，如果用户是用的英文，只返回你总结出来的中文标题，不要英文解释。",
+      "summarize": "简要总结一下对话内容，用作后续的上下文提示 prompt，控制在 200 字以内"
+    }
+  },
+  "copy": {
+    "success": "已写入剪贴板",
+    "failed": "复制失败，请赋予剪贴板权限"
+  },
+  "download": {
+    "success": "内容已下载到您的目录。",
+    "failed": "下载失败。"
+  },
+  "newChat": {
+    "return": "返回",
+    "skip": "直接开始",
+    "notShow": "不再展示",
+    "confirmNoShow": "确认禁用？禁用后可以随时在设置中重新启用。",
+    "more": "查看全部"
+  },
+  "ui": {
+    "confirm": "确认",
+    "cancel": "取消",
+    "close": "关闭",
+    "create": "新建",
+    "edit": "编辑",
+    "export": "导出",
+    "import": "导入",
+    "sync": "同步",
+    "config": "配置"
+  },
+  "dialog": {
+    "deleteTitle": "删除聊天？",
+    "alert": "你确定要删除这条聊天记录吗？",
+    "cancel": "取消",
+    "delete": "删除"
+  },
+  "dialog": {
+    "deleteTitle": "删除聊天？",
+    "alert": "你确定要删除这条聊天记录吗？",
+    "cancel": "取消",
+    "delete": "删除",
+    "mcpTitle": "请求使用 MCP",
+    "confirm": "确认",
+    "decline": "拒绝",
+    "allowAlways": "始终允许",
+    "allowOnce": "仅允许一次"
+  }
+}

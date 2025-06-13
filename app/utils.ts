@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { showToast } from "./components/ui-lib";
-import Locale from "./locales";
+import { t } from "i18next";
 import { RequestMessage } from "./client/api";
 import {
   REQUEST_TIMEOUT_MS,
@@ -29,7 +29,7 @@ export async function copyToClipboard(text: string) {
       await navigator.clipboard.writeText(text);
     }
 
-    showToast(Locale.Copy.Success);
+    showToast(t("copy.success"));
   } catch (error) {
     const textArea = document.createElement("textarea");
     textArea.value = text;
@@ -38,9 +38,9 @@ export async function copyToClipboard(text: string) {
     textArea.select();
     try {
       document.execCommand("copy");
-      showToast(Locale.Copy.Success);
+      showToast(t("copy.success"));
     } catch (error) {
-      showToast(Locale.Copy.Failed);
+      showToast(t("copy.success"));
     }
     document.body.removeChild(textArea);
   }
@@ -65,12 +65,12 @@ export async function downloadAs(text: string, filename: string) {
     if (result !== null) {
       try {
         await window.__TAURI__.fs.writeTextFile(result, text);
-        showToast(Locale.Download.Success);
+        showToast(t("download.success"));
       } catch (error) {
-        showToast(Locale.Download.Failed);
+        showToast(t("download.failed"));
       }
     } else {
-      showToast(Locale.Download.Failed);
+      showToast(t("download.failed"));
     }
   } else {
     const element = document.createElement("a");
@@ -402,17 +402,17 @@ export function clientUpdate() {
         window.__TAURI__?.updater
           .installUpdate()
           .then((result) => {
-            showToast(Locale.Settings.Update.Success);
+            showToast(t("settings.update.success"));
           })
           .catch((e) => {
             console.error("[Install Update Error]", e);
-            showToast(Locale.Settings.Update.Failed);
+            showToast(t("settings.update.failed"));
           });
       }
     })
     .catch((e) => {
       console.error("[Check Update Error]", e);
-      showToast(Locale.Settings.Update.Failed);
+      showToast(t("settings.update.failed"));
     });
 }
 

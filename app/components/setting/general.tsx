@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Path } from "../../constant";
 import { Theme, useAppConfig } from "@/app/store";
+import { useTranslation } from "react-i18next";
+import { getLang, changeLanguage, localeOptions, Locales } from "../../locales";
 import {
   Select,
   SelectContent,
@@ -15,6 +17,7 @@ import {
 export default function General() {
   const authStore = useAuthStore();
   const config = useAppConfig();
+  const { t } = useTranslation("settings");
   const updateConfig = config.update;
   const email = useAuthStore((state) => state.user.email);
   const navigate = useNavigate();
@@ -36,19 +39,19 @@ export default function General() {
   return (
     <div className="w-full h-full flex flex-col gap-4 justify-start items-center p-4 text-black dark:text-white">
       <div className="w-full flex flex-col gap-6 px-4 pb-6 border-b">
-        <div className="font-medium">Account</div>
+        <div className="font-medium">{t("general.account")}</div>
         <div className="flex justify-between items-center gap-5 p-3 bg-[#F3F5F7] dark:bg-[#232627]/30 border border-[#E8ECEF] dark:border-[#232627] rounded-xl text-sm">
           <p>{email}</p>
           <div
             className="text-[#EF466F] underline cursor-pointer hover:opacity-70"
             onClick={logout}
           >
-            Log Out
+            {t("general.logout")}
           </div>
         </div>
       </div>
-      {/* <div className="w-full flex justify-between items-center gap-6 px-4 py-6 border-b">
-        <div className="font-medium">Country</div>
+      <div className="w-full flex justify-between items-center gap-6 px-4 py-6 border-b">
+        <div className="font-medium">{t("general.country.title")}</div>
         <Select defaultValue={"china"}>
           <SelectTrigger className="w-[180px] dark:border-[#232627]">
             <SelectValue />
@@ -59,56 +62,58 @@ export default function General() {
                 value="china"
                 className="hover:!bg-[#E8ECEF] dark:hover:!bg-black"
               >
-                China
+                {t("general.country.cn")}
               </SelectItem>
               <SelectItem
                 value="russia"
                 className="hover:!bg-[#E8ECEF] dark:hover:!bg-black"
               >
-                Russia
+                {t("general.country.ru")}
               </SelectItem>
               <SelectItem
                 value="uk"
                 className="hover:!bg-[#E8ECEF] dark:hover:!bg-black"
               >
-                United Kingdom
+                {t("general.country.uk")}
               </SelectItem>
               <SelectItem
                 value="france"
                 className="hover:!bg-[#E8ECEF] dark:hover:!bg-black"
               >
-                France
+                {t("general.country.fr")}
               </SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
       </div>
       <div className="w-full flex justify-between items-center gap-6 px-4 py-6 border-b">
-        <div className="font-medium">Language</div>
-        <Select defaultValue={"en"}>
+        <div className="font-medium">{t("general.language")}</div>
+        <Select
+          defaultValue={getLang()}
+          onValueChange={(value) => {
+            changeLanguage(value as Locales);
+          }}
+        >
           <SelectTrigger className="w-[180px] dark:border-[#232627]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="bg-[#F3F5F7] dark:bg-[#232627]">
             <SelectGroup className="space-y-2">
-              <SelectItem
-                value="en"
-                className="hover:!bg-[#E8ECEF] dark:hover:!bg-black"
-              >
-                English
-              </SelectItem>
-              <SelectItem
-                value="cn"
-                className="hover:!bg-[#E8ECEF] dark:hover:!bg-black"
-              >
-                Chinese
-              </SelectItem>
+              {localeOptions.map((option) => (
+                <SelectItem
+                  key={option.value}
+                  value={option.value}
+                  className="hover:!bg-[#E8ECEF] dark:hover:!bg-black"
+                >
+                  {option.label}
+                </SelectItem>
+              ))}
             </SelectGroup>
           </SelectContent>
         </Select>
-      </div> */}
+      </div>
       <div className="w-full flex justify-between items-center gap-6 px-4 py-6">
-        <div className="font-medium">Appearance</div>
+        <div className="font-medium">{t("general.theme.title")}</div>
         <Select
           defaultValue={config.theme}
           onValueChange={(value) => {
@@ -126,19 +131,19 @@ export default function General() {
                 value="auto"
                 className="hover:!bg-[#E8ECEF] dark:hover:!bg-black"
               >
-                System match
+                {t("general.theme.system")}
               </SelectItem>
               <SelectItem
                 value="light"
                 className="hover:!bg-[#E8ECEF] dark:hover:!bg-black"
               >
-                Light
+                {t("general.theme.light")}
               </SelectItem>
               <SelectItem
                 value="dark"
                 className="hover:!bg-[#E8ECEF] dark:hover:!bg-black"
               >
-                Dark
+                {t("general.theme.dark")}
               </SelectItem>
             </SelectGroup>
           </SelectContent>

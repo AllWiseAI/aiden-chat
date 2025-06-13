@@ -5,7 +5,7 @@ import {
   DEFAULT_USER_DELINETED,
 } from "@/app/constant";
 import { MultimodalContent, RequestMessage } from "@/app/client/api";
-import Locale from "@/app/locales";
+import { t } from "i18next";
 import {
   EventStreamContentType,
   fetchEventSource,
@@ -409,7 +409,7 @@ export function stream(
           } catch {}
 
           if (res.status === 401) {
-            responseTexts.push(Locale.Error.Unauthorized);
+            responseTexts.push(t("error.unauthorized"));
           }
 
           if (extraInfo) {
@@ -551,7 +551,7 @@ export function streamWithThink(
           } catch {}
 
           if (res.status === 401) {
-            responseTexts.push(Locale.Error.Unauthorized);
+            responseTexts.push(t("error.unauthorized"));
           }
 
           if (extraInfo) {
@@ -605,7 +605,7 @@ export function streamWithThink(
                   "[MCP confirm] No user approval before. Show confirm modal.  ",
                 );
                 let result = await showConfirm({
-                  title: "Aiden would like to use an MCP",
+                  title: "Aiden " + t("dialog.mcpTitle"),
                   description: chunk.mcpInfo.tool,
                 });
                 approved = [ConfirmType.Always, ConfirmType.Once].includes(

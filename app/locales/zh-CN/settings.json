@@ -1,0 +1,41 @@
+{
+  "title": "设置",
+  "tabs": {
+    "general": "通用",
+    "mcp": "Mcp 管理",
+    "aboutUs": "关于我们"
+  },
+  "general": {
+    "account": "账号",
+    "logout": "登出",
+    "country": {
+      "title": "国家",
+      "cn": "中国",
+      "ru": "俄罗斯",
+      "uk": "英国",
+      "fr": "法国"
+    },
+    "language": "语言",
+    "theme": {
+      "title": "外观",
+      "system": "跟随系统",
+      "light": "浅色模式",
+      "dark": "深色模式"
+    }
+  },
+  "mcp": {
+    "edit": "编辑配置",
+    "search": "搜索",
+    "setting": "设置",
+    "remove": "移除",
+    "save": "保存"
+  },
+  "aboutUs": {
+    "contact": "联系我们：",
+    "updating": "更新中...",
+    "update": "更新到最新版本",
+    "export": "导出日志",
+    "terms": "用户协议",
+    "privacy": "隐私政策"
+  }
+}

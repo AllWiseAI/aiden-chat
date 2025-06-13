@@ -3,6 +3,7 @@ import { Button } from "@/app/components/shadcn/button";
 import { Input } from "@/app/components/shadcn/input";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import {
   showConfirm,
   ConfirmType,
@@ -116,6 +117,7 @@ function ServerTable({
 
 const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
   const mcpStore = useMcpStore();
+  const { t } = useTranslation("settings");
   const { switchMcpStatus, removeMcpItem, updateMcpArgsEnvs } = mcpStore;
   const [searchValue, setSearchValue] = useState("");
   const [showSettingModal, setShowSettingModal] = useState(false);
@@ -133,21 +135,21 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
   return (
     <>
       <div className="flex justify-between @lg:items-center mb-4 @max-lg:flex-col @max-lg:gap-2">
-        <h2 className="text-lg font-bold">MCP Management</h2>
+        <h2 className="text-lg font-bold">{t("tabs.mcp")}</h2>
         <div className="flex items-center gap-2 self-end">
           <Button
             className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main border border-[#00D47E]/10 font-medium text-sm rounded-xl"
             onClick={() => setMode("edit")}
           >
             <EditIcon className="size-4" />
-            Edit Config
+            {t("mcp.edit")}
           </Button>
           <div className="flex-center relative w-[200px]">
             <Input
               className="h-9 !text-left !placeholder:text-[#6C7275]/50 placeholder:text-sm px-12 py-3.5 rounded-xl"
               clearable
               value={searchValue}
-              placeholder="Search"
+              placeholder={t("mcp.search")}
               onChange={(e) => setSearchValue(e.target.value)}
             />
 

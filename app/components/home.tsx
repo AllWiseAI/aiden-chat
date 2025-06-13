@@ -13,7 +13,8 @@ import { getCSSVar, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
 import { Path, SlotID } from "../constant";
 import { ErrorBoundary } from "./error";
-import { getISOLang } from "../locales";
+import i18n from "i18next";
+import { getLang } from "../locales";
 
 import {
   HashRouter as Router,
@@ -133,12 +134,19 @@ export function useSwitchTheme() {
 
 function useHtmlLang() {
   useEffect(() => {
-    const lang = getISOLang();
-    const htmlLang = document.documentElement.lang;
+    const lang = getLang();
+    document.documentElement.lang = lang;
 
-    if (lang !== htmlLang) {
+    const handler = (lang: string) => {
       document.documentElement.lang = lang;
-    }
+    };
+
+    i18n.on("languageChanged", handler);
+
+    // 清理副作用
+    return () => {
+      i18n.off("languageChanged", handler);
+    };
   }, []);
 }
 

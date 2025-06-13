@@ -10,8 +10,7 @@ import CancelIcon from "../icons/cancel.svg";
 import MaxIcon from "../icons/max.svg";
 import MinIcon from "../icons/min.svg";
 
-import Locale from "../locales";
-
+import { t } from "i18next";
 import { createRoot } from "react-dom/client";
 import React, {
   HTMLProps,
@@ -333,11 +332,11 @@ export function showConfirm(content: any) {
   return new Promise<boolean>((resolve) => {
     root.render(
       <Modal
-        title={Locale.UI.Confirm}
+        title={t("ui.confirm")}
         actions={[
           <IconButton
             key="cancel"
-            text={Locale.UI.Cancel}
+            text={t("ui.cancel")}
             onClick={() => {
               resolve(false);
               closeModal();
@@ -349,7 +348,7 @@ export function showConfirm(content: any) {
           ></IconButton>,
           <IconButton
             key="confirm"
-            text={Locale.UI.Confirm}
+            text={t("ui.confirm")}
             type="primary"
             onClick={() => {
               resolve(true);
@@ -412,7 +411,7 @@ export function showPrompt(content: any, value = "", rows = 3) {
         actions={[
           <IconButton
             key="cancel"
-            text={Locale.UI.Cancel}
+            text={t("ui.cancel")}
             onClick={() => {
               closeModal();
             }}
@@ -423,7 +422,7 @@ export function showPrompt(content: any, value = "", rows = 3) {
           ></IconButton>,
           <IconButton
             key="confirm"
-            text={Locale.UI.Confirm}
+            text={t("ui.confirm")}
             type="primary"
             onClick={() => {
               resolve(userInput);

@@ -13,6 +13,7 @@ import { createPortal } from "react-dom";
 import CloseIcon from "../../icons/close.svg";
 import MapIcon from "../../icons/map.svg";
 import AidenIcon from "../../icons/logo-text.svg";
+import { t } from "i18next";
 
 export type ConfirmOptions = {
   title: string;
@@ -69,7 +70,7 @@ export const ConfirmProvider = ({
               handleClose("cancel");
             }}
           >
-            Cancel
+            {t("dialog.cancel")}
           </Button>
           <div className="flex gap-2">
             <Button
@@ -78,7 +79,7 @@ export const ConfirmProvider = ({
                 handleClose("confirm");
               }}
             >
-              Confirm
+              {t("dialog.cancel")}
             </Button>
           </div>
         </AlertDialogFooter>
@@ -94,7 +95,7 @@ export const ConfirmProvider = ({
               handleClose("confirm");
             }}
           >
-            Confirm
+            {t("dialog.confirm")}
           </Button>
         </div>
       );
@@ -108,7 +109,7 @@ export const ConfirmProvider = ({
             handleClose("decline");
           }}
         >
-          Decline
+          {t("dialog.decline")}
         </Button>
         <div className="flex gap-2">
           <Button
@@ -117,7 +118,7 @@ export const ConfirmProvider = ({
               handleClose("always");
             }}
           >
-            Allow always
+            {t("dialog.allowAlways")}
           </Button>
           <Button
             className="h-10 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main flex-center gap-3 px-5 py-3 rounded-xl"
@@ -125,7 +126,7 @@ export const ConfirmProvider = ({
               handleClose("once");
             }}
           >
-            Allow once
+            {t("dialog.allowOnce")}
           </Button>
         </div>
       </AlertDialogFooter>
