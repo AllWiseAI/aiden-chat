@@ -57,6 +57,23 @@ export function McpTableItem({
   const [status, setStatus] = useState<McpAction | null>(null);
   const [templateModal, setTemplateModal] = useState(false);
   const [templateInfo, setTemplateInfo] = useState<TTemplateInfo | null>(null);
+  const {
+    mcp_id,
+    mcp_name,
+    mcp_key,
+    mcp_logo,
+    description,
+    checked = false,
+    type,
+    current_version,
+    local_version,
+    remote_version,
+  } = item;
+
+  const { updateMcpStatusList, updateTemplate, updateLocalMcpVersion } =
+    useMcpStore();
+  const mcpStatusList = useMcpStore((state) => state.mcpStatusList);
+  const config = useMcpStore((state) => state.config);
   const StatusIcon = useMemo(() => {
     if (status === McpAction.Loading) return LoadingIcon;
     else if (status === McpAction.Connected) return SuccessIcon;
@@ -73,13 +90,14 @@ export function McpTableItem({
   }, [item]);
 
   const showUpdate = useMemo(() => {
-    const { local_version, remote_version } = item;
+    if (!config?.mcpServers[mcp_key]) return false;
     if (!local_version && !remote_version) return false;
     if (local_version !== remote_version) {
+      console.log(mcp_key, local_version, remote_version, config?.mcpServers);
       return true;
     }
     return false;
-  }, [item]);
+  }, [mcp_key, local_version, remote_version, config?.mcpServers]);
 
   const handleShowSettingModal = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -89,29 +107,13 @@ export function McpTableItem({
     [item.settingInfo, onSetting, item.mcp_key],
   );
 
-  const {
-    mcp_id,
-    mcp_name,
-    mcp_key,
-    mcp_logo,
-    description,
-    checked = false,
-    type,
-    latest_version,
-  } = item;
-
-  const { updateMcpStatusList, updateTemplate, updateLocalMcpVersion } =
-    useMcpStore();
-  const mcpStatusList = useMcpStore((state) => state.mcpStatusList);
-  const config = useMcpStore((state) => state.config);
-
   const handleUpdateMcpVersion = useCallback(
     async (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
-      const { mcp_id, mcp_key, latest_version } = item;
+      const { mcp_id, mcp_key, current_version } = item;
       try {
-        await updateLocalMcpVersion(mcp_id, mcp_key, latest_version || "");
-        toast.success("Update success");
+        await updateLocalMcpVersion(mcp_id, mcp_key, current_version || "");
+        toast.success("Update mcp version success");
       } catch (e: any) {
         toast.error(e, {
           className: "w-auto max-w-max",
@@ -180,7 +182,7 @@ export function McpTableItem({
           mcp_id,
           mcp_key,
           type,
-          latest_version || "",
+          current_version || "",
         );
         console.log("[Mcp status change]: update remote config done");
       } catch (e: any) {
@@ -196,7 +198,7 @@ export function McpTableItem({
       mcp_key,
       type,
       initLoading,
-      latest_version,
+      current_version,
     ],
   );
 
@@ -212,7 +214,7 @@ export function McpTableItem({
 
   return (
     <div
-      className="flex flex-col gap-5 rounded-xl border p-4 cursor-pointer hover:bg-[#F3F5F74D] dark:hover:bg-[#232627]/30 transition-colors"
+      className="flex flex-col gap-5 rounded-xl border p-4 cursor-pointer hover:bg-[#F3F5F74D] dark:hover:bg-[#232627]/30 transition-colors max-w-[400px]"
       key={mcp_id + mcp_key}
       onClick={onSelect}
     >

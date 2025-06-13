@@ -123,11 +123,11 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
   const [currentSetting, setCurrentSetting] = useState<TSettingInfo | null>(
     null,
   );
-  console.log("renderMcpList ===", renderMcpList);
   const [currentMcpName, setCurrentMcpName] = useState<string>("");
-  const handleSettingConfirm = (update: TSettingInfo) => {
+  const handleSettingConfirm = async (update: TSettingInfo) => {
     setShowSettingModal(false);
-    updateMcpArgsEnvs(currentMcpName, update);
+    await updateMcpArgsEnvs(currentMcpName, update);
+    toast.success("Updated successfully");
   };
 
   return (
@@ -168,7 +168,6 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
           setDetail={setDetail}
           removeMcpItem={removeMcpItem}
           setCurrentSetting={(settingInfo, mcpName) => {
-            console.log("settingInfo in table ===", settingInfo);
             setCurrentSetting(settingInfo);
             setCurrentMcpName(mcpName);
             setShowSettingModal(true);

@@ -13,9 +13,93 @@ import {
   EnvItem,
 } from "@/app/typing";
 import { invoke } from "@tauri-apps/api/tauri";
+import { toast } from "sonner";
 
 export type TemplateItem = { key: string; value: string };
 export type MultiArgItem = { key: string; value: string[] };
+
+/**
+ * 填充 args 中的 KEY=<VAL> []<KEY> 模板
+ * @param oldArgs 
+ * @param newTemplate 
+ * @returns 
+ * @example
+  const oldArgs = [
+    "-y",
+    "@modelcontextprotocol/server-filesystem@2025.3.28",
+    "--from=123",
+    "token=abc",
+    "free-value"
+  ];
+
+  const newArgsTemplate = [
+    "-y",
+    "@modelcontextprotocol/server-filesystem@2025.3.29",
+    "--from=<from>",
+    "token=<token>",
+    "[]<freeval>"
+  ];
+
+    console.log(fillFlexibleArgs(oldArgs, newArgsTemplate));
+
+    Output:
+
+    [
+      '-y',
+      '@modelcontextprotocol/server-filesystem@2025.3.29',
+      '--from=123',
+      '--token=abc',
+      'free-value'
+    ]
+ */
+function fillFlexibleArgs(oldArgs: string[], newArgs: string[]) {
+  if (!oldArgs.length) return newArgs;
+  if (!newArgs.length) return [];
+  const keyValueMap: Record<string, string> = {};
+  const freeValues: string[] = [];
+
+  for (const arg of oldArgs) {
+    if (arg.includes("=")) {
+      // 去掉开头的 -- 或 - 之类的前缀
+      const cleanedArg = arg.replace(/^-+/, "");
+      const [key, val] = cleanedArg.split("=");
+      keyValueMap[key] = val;
+    } else if (!arg.startsWith("-") && !arg.includes("@")) {
+      freeValues.push(arg);
+    }
+  }
+
+  const result = [];
+
+  for (const arg of newArgs) {
+    const keyValMatch = arg.match(/^([-\w]*)=?<(\w+)>$/);
+    const freeValMatch = arg.match(/^\[\]<(\w+)>$/);
+
+    if (keyValMatch) {
+      const [, keyPrefix, placeholder] = keyValMatch;
+      const val = keyValueMap[placeholder];
+      result.push(val !== undefined ? `${keyPrefix}=${val}` : arg);
+    } else if (freeValMatch && freeValues.length > 0) {
+      result.push(...freeValues);
+    } else {
+      result.push(arg);
+    }
+  }
+
+  return result;
+}
+
+export function updateMcpArgsEnvs(localItem: MCPServer, remoteItem: MCPServer) {
+  const { args = [], env = {} } = remoteItem;
+  const { args: localArgs = [], env: localEnv = {} } = localItem;
+  const newArgs = fillFlexibleArgs(localArgs, args);
+  const newEnv = { ...env, ...localEnv };
+
+  return {
+    args: newArgs,
+    env: newEnv,
+  };
+}
 
 export function replaceTemplate(
   args: string[] | undefined,
@@ -190,7 +274,7 @@ export const getRenderMcpList: any = async (
           mcp_name: name,
           mcp_key: name,
           checked: aiden_enable,
-          latest_version: "",
+          current_version: "",
           local_version: aiden_mcp_version || "",
           remote_version: "",
           description: "",
@@ -212,9 +296,9 @@ export const getRenderMcpList: any = async (
           mcp_id: aiden_id,
           mcp_key: name,
           checked: aiden_enable,
-          type: "remote",
+          type: aiden_type,
           local_version: aiden_mcp_version || "",
-          remote_version: item.latest_version || "",
+          remote_version: item.current_version || "",
           settingInfo: parseConfig(server as CustomMCPServer),
         });
       }
@@ -232,7 +316,7 @@ export const getRenderMcpList: any = async (
         type: "remote",
         mcp_key: Object.keys(item.basic_config)[0],
         local_version: "",
-        remote_version: item.latest_version || "",
+        remote_version: item.current_version || "",
         checked: false,
         settingInfo: null,
       });
@@ -246,27 +330,26 @@ export const getRenderMcpList: any = async (
 
 export const updateLocalConfig = async (config: any) => {
   console.log("[Mcp store] updateLocalConfig");
-  try {
-    await invoke<MCPConfig>("write_mcp_config", { newConfig: config });
-    return true;
-  } catch (e: any) {
-    throw new Error(e);
-  }
+  await invoke<MCPConfig>("write_mcp_config", { newConfig: config });
+  return true;
 };
 
 export const updateConfig = async (newConfig: any) => {
   console.log("[Mcp store] updateConfig", newConfig);
   try {
     let res = await updateLocalConfig(newConfig);
-    console.log("[Mcp store] updateLocalConfig", res);
+    console.log("[Mcp store] updateLocalConfig result:", res);
     if (res) {
       console.log("[Mcp store] updateRemoteMcpConfig");
       await updateRemoteMcpConfig(newConfig);
+      toast.success("Updated config successfully");
     } else {
       console.log("Failed to write local mcp.config.json", res);
     }
   } catch (e: any) {
-    console.log("Failed to write local mcp.config.json", e);
+    console.log("Failed to update config", e);
+    toast.error("Failed to update config. " + e);
+    throw new Error(e);
   }
 };
 
@@ -282,6 +365,7 @@ export const restoreServers = (
       aiden_enable: config?.mcpServers[name]?.aiden_enable || true,
       aiden_id: config?.mcpServers[name]?.aiden_id || name,
       aiden_type: config?.mcpServers[name]?.aiden_type || "custom",
+      aiden_mcp_version: config?.mcpServers[name]?.aiden_mcp_version || "",
     };
   });
   return updatedConfig;

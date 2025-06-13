@@ -23,6 +23,7 @@ import {
   parseConfig,
   parseTemplate,
   replaceTemplate,
+  updateMcpArgsEnvs,
 } from "@/app/utils/mcp";
 import { delay } from "@/app/utils";
 
@@ -75,6 +76,19 @@ export const useMcpStore = createPersistStore(
         console.log("[Mcp store] init end");
       },
 
+      reCaculateMcpList: async () => {
+        console.log("[Mcp store] reCaculateMcpList");
+        const { remoteMcpList } = _get();
+        const config = await readMcpConfig();
+        if (!config) return;
+
+        const { renderMcpList, mcpRemoteInfoMap } = await getRenderMcpList(
+          config,
+          remoteMcpList,
+        );
+        set({ renderMcpList, mcpRemoteInfoMap });
+      },
+
       updateMcpStatusList: async (
         { name, action }: McpStatusItem,
         type: "update" | "delete",
@@ -109,8 +123,13 @@ export const useMcpStore = createPersistStore(
         if (!config) return {};
         const cleaned: Record<string, MCPServer> = {};
         Object.entries(config.mcpServers).forEach(([name, server]) => {
-          const { aiden_id, aiden_type, aiden_enable, ...other } =
-            server as CustomMCPServer;
+          const {
+            aiden_id,
+            aiden_type,
+            aiden_enable,
+            aiden_mcp_version,
+            ...other
+          } = server as CustomMCPServer;
           if (aiden_enable) {
             cleaned[name] = other;
           }
@@ -126,15 +145,19 @@ export const useMcpStore = createPersistStore(
 
         const newConfig = { ...config, mcpServers: { ...updatedMcpServers } };
         set({ config: newConfig });
-        await updateConfig(newConfig);
-        const mcpStatusList = await getMcpStatusList(newConfig);
-        set({ mcpStatusList });
-        const { renderMcpList, mcpRemoteInfoMap } = await getRenderMcpList(
-          newConfig,
-          remoteMcpList,
-        );
-        set({ renderMcpList, mcpRemoteInfoMap });
-        return true;
+        try {
+          await updateConfig(newConfig);
+          const mcpStatusList = await getMcpStatusList(newConfig);
+          set({ mcpStatusList });
+          const { renderMcpList, mcpRemoteInfoMap } = await getRenderMcpList(
+            newConfig,
+            remoteMcpList,
+          );
+          set({ renderMcpList, mcpRemoteInfoMap });
+          return true;
+        } catch (e) {
+          return false;
+        }
       },
 
       getRemoteMcpStatus: async (name: string) => {
@@ -152,7 +175,6 @@ export const useMcpStore = createPersistStore(
           console.error(err);
         }
       },
-
       updateTemplate: async (
         name: string,
         id: string,
@@ -168,8 +190,14 @@ export const useMcpStore = createPersistStore(
             ...config.mcpServers[name],
           };
         } else {
+          const remoteInfo = mcpRemoteInfoMap.get(id);
+          const remoteItem = getFirstValue(remoteInfo?.basic_config) || {};
           previousConfig = {
-            ...getFirstValue(mcpRemoteInfoMap.get(id)?.basic_config),
+            ...remoteItem,
+            aiden_mcp_version: remoteInfo?.current_version,
+            aiden_enable: true,
+            aiden_type: "remote",
+            aiden_id: remoteInfo.mcp_id,
           };
         }
 
@@ -204,18 +232,25 @@ export const useMcpStore = createPersistStore(
             return {
               ...item,
               checked: true,
+              templateInfo,
               settingInfo: parseConfig(
                 newConfig.mcpServers[name] as CustomMCPServer,
               ),
-              templateInfo,
+              local_version: (newConfig.mcpServers[name] as CustomMCPServer)
+                ?.aiden_mcp_version,
+              remote_version: mcpRemoteInfoMap.get(id)?.current_version || "",
             };
           }
           return item;
         });
 
-        set({ renderMcpList: newList });
-        await updateConfig(newConfig);
-        getRemoteMcpStatus(name);
+        set({ renderMcpList: newList as McpItemInfo[] });
+        try {
+          await updateConfig(newConfig);
+          getRemoteMcpStatus(name);
+        } catch (e) {
+          console.error(e);
+        }
       },
 
       updateMcpArgsEnvs: async (name: string, settingInfo: TSettingInfo) => {
@@ -253,11 +288,14 @@ export const useMcpStore = createPersistStore(
           }
           return item;
         });
-
-        set({ renderMcpList: newList });
-        await updateConfig(newConfig);
-        if (config.mcpServers[name].aiden_enable) {
-          getRemoteMcpStatus(name);
+        set({ renderMcpList: newList as McpItemInfo[] });
+        try {
+          await updateConfig(newConfig);
+          if (config.mcpServers[name].aiden_enable) {
+            getRemoteMcpStatus(name);
+          }
+        } catch (e) {
+          console.error(e);
         }
       },
 
@@ -316,21 +354,18 @@ export const useMcpStore = createPersistStore(
         }
 
         set({ config: newConfig });
-        const newList = renderMcpList.map((item) => {
-          if (item.mcp_key === name) {
-            return {
-              ...item,
-              checked: enable,
-              settingInfo: settingInfo as TSettingInfo | null,
-              templateInfo: templateInfo as TTemplateInfo | null,
-            };
-          }
-          return item;
-        });
+        const { renderMcpList: newList } = await getRenderMcpList(
+          newConfig,
+          renderMcpList,
+        );
         set({ renderMcpList: newList as McpItemInfo[] });
-        await updateConfig(newConfig);
-        if (newConfig.mcpServers[name].aiden_enable) {
-          getRemoteMcpStatus(name);
+        try {
+          await updateConfig(newConfig);
+          if (newConfig.mcpServers[name].aiden_enable) {
+            getRemoteMcpStatus(name);
+          }
+        } catch (e) {
+          console.error(e);
         }
       },
       updateLocalMcpVersion: async (
@@ -340,40 +375,46 @@ export const useMcpStore = createPersistStore(
       ) => {
         const { config, renderMcpList, mcpRemoteInfoMap, getRemoteMcpStatus } =
           _get();
-        if (!config) return;
-        let newConfig;
-        if (config.mcpServers[name]) {
-          let localItem = config.mcpServers[name];
-          newConfig = {
-            ...config,
-            mcpServers: {
-              ...config.mcpServers,
-              [name]: {
-                ...(getFirstValue(mcpRemoteInfoMap.get(id)?.basic_config) ||
-                  {}),
-                aiden_enable: localItem.aiden_enable,
-                aiden_type: "remote",
-                aiden_id: id,
-                aiden_mcp_version: version,
-              },
+        if (!config || !config?.mcpServers[name]) return;
+        let localItem = config.mcpServers[name];
+        const remoteItem =
+          getFirstValue(mcpRemoteInfoMap.get(id)?.basic_config) || {};
+        const newArgsEnv = updateMcpArgsEnvs(localItem, remoteItem);
+        let newConfig = {
+          ...config,
+          mcpServers: {
+            ...config.mcpServers,
+            [name]: {
+              ...remoteItem,
+              aiden_enable: localItem.aiden_enable,
+              aiden_type: localItem.aiden_type,
+              aiden_id: id,
+              aiden_mcp_version: version,
+              ...newArgsEnv,
             },
-          };
-        }
+          },
+        };
         set({ config: newConfig });
-        await updateConfig(newConfig);
         const newList = renderMcpList.map((item) => {
           if (item.mcp_key === name) {
             return {
               ...item,
               local_version: version,
-              remote_version: version,
+              remote_version: mcpRemoteInfoMap.get(id)?.current_version || "",
+              settingInfo: parseConfig(newConfig.mcpServers[name]),
             };
           }
           return item;
         });
-        set({ renderMcpList: newList as McpItemInfo[] });
-        if (config.mcpServers[name].aiden_enable) {
-          getRemoteMcpStatus(name);
+        set({ renderMcpList: newList });
+        if (!localItem.aiden_enable) return;
+        try {
+          await updateConfig(newConfig);
+          if (config.mcpServers[name].aiden_enable) {
+            getRemoteMcpStatus(name);
+          }
+        } catch (e) {
+          console.error(e);
         }
       },
 
@@ -390,8 +431,12 @@ export const useMcpStore = createPersistStore(
         set({ config: newConfig });
         const newList = renderMcpList.filter((item) => item.mcp_key !== name);
         set({ renderMcpList: newList });
-        await updateConfig(newConfig);
-        updateMcpStatusList({ name, action: McpAction.Loading }, "delete");
+        try {
+          await updateConfig(newConfig);
+          updateMcpStatusList({ name, action: McpAction.Loading }, "delete");
+        } catch (e) {
+          console.error(e);
+        }
       },
 
       pollMcpStatus: async () => {
