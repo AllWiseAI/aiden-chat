@@ -190,7 +190,7 @@ export class ChatGPTApi implements LLMApi {
     ]);
 
     if (used.status === 401) {
-      throw new Error(t("error.unauthorized", { ns: "general" }));
+      throw new Error(t("error.unauthorized"));
     }
 
     if (!used.ok || !subs.ok) {

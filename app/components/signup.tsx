@@ -11,6 +11,7 @@ import { Path } from "../constant";
 import { toast } from "sonner";
 import clsx from "clsx";
 import { shell } from "@tauri-apps/api";
+import { useTranslation } from "react-i18next";
 import LoadingIcon from "../icons/loading-spinner.svg";
 
 interface FormData {
@@ -31,6 +32,7 @@ interface VerifyCodeFormProps {
 }
 
 const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
+  const { t } = useTranslation("auth");
   const [checked, setChecked] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
@@ -42,12 +44,12 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
   const verifyPassword = () => {
     if (formData.password === confirmPassword) {
       setPasswordError("");
-    } else setPasswordError("Passwords do not match.");
+    } else setPasswordError(t("signUp.inValidPassword"));
   };
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     if (id === "email" && value && !validateEmail(value)) {
-      setEmailError("Please enter a valid email address");
+      setEmailError(t("signUp.inValidEmail"));
     } else {
       setEmailError("");
     }
@@ -56,7 +58,7 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
     <>
       <div className="flex-center flex-col gap-4 text-black dark:text-white">
         <LogoTextIcon />
-        <span className="text-2xl font-medium">Sign up to Aiden.ai</span>
+        <span className="text-2xl font-medium">{t("signUp.to")} Aiden.ai</span>
       </div>
       <form
         className="flex-center flex-col gap-8 w-full"
@@ -70,7 +72,7 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
             htmlFor="email"
             className="font-bold after:content['*'] after:content-['*'] after:text-red-500 !gap-1"
           >
-            Email
+            {t("email")}
           </Label>
           <Input
             id="email"
@@ -94,13 +96,13 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
             htmlFor="password"
             className="font-bold after:content['*'] after:content-['*'] after:text-red-500 !gap-1"
           >
-            Password
+            {t("password")}
           </Label>
 
           <Password
             id="password"
             type="password"
-            placeholder="Enter password"
+            placeholder={t("enter")}
             className="!w-full h-13 !max-w-130 !text-left !px-4 !py-3.5 !rounded-xl"
             value={formData.password}
             onChange={onFormChange}
@@ -112,13 +114,13 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
             htmlFor="password"
             className="font-bold after:content['*'] after:content-['*'] after:text-red-500 !gap-1"
           >
-            Confirm Password
+            {t("signUp.confirm")}
           </Label>
 
           <Password
             id="confirm-password"
             type="password"
-            placeholder="Confirm password"
+            placeholder={t("signUp.confirmP")}
             className={clsx(
               "!w-full h-12 !max-w-130 !text-left !px-4 !py-3.5 !rounded-xl",
               { "border-2 border-[#EF466F]": passwordError },
@@ -142,21 +144,21 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
             onChange={(e) => setChecked(e.target.checked)}
           />
           <div>
-            I agree to Aiden&apos;s{" "}
+            {t("agree")}{" "}
             <span
               className="cursor-pointer text-main underline"
               onClick={() =>
                 shell.open("https://aidenai.io/terms-of-service.html")
               }
             >
-              Terms of Service
+              {t("terms")}
             </span>
-            {" and "}
+            {" " + t("and") + " "}
             <span
               className="cursor-pointer text-main underline"
               onClick={() => shell.open("https://aidenai.io/privacy.html")}
             >
-              Privacy Policy
+              {t("privacy")}
             </span>
           </div>
         </div>
@@ -174,13 +176,13 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
             !!passwordError
           }
         >
-          Sign up
+          {t("signUp.btn")}
         </Button>
       </form>
       <span className="text-xs text-[#777E90] font-medium">
-        Already have an account?{" "}
+        {t("signUp.has")}{" "}
         <Link to={Path.Login} className="underline text-main">
-          Sign in
+          {t("signIn.btn")}
         </Link>
       </span>
     </>
@@ -195,6 +197,7 @@ const VerifyCodeForm = ({
 }: VerifyCodeFormProps) => {
   const [countdown, setCountdown] = useState(0);
   const navigate = useNavigate();
+  const { t } = useTranslation("auth");
   const getCode = async (email: string) => {
     try {
       const res = (await apiGetSignUpCode({ email }).catch((err) => {
@@ -238,19 +241,21 @@ const VerifyCodeForm = ({
     >
       <div className=" flex-center flex-col gap-4">
         <LogoTextIcon className="text-black dark:text-white" />
-        <span className="text-2xl font-medium">Verify your email address</span>
+        <span className="text-2xl font-medium">
+          {t("signUp.verifyAddress")}
+        </span>
       </div>
       <div className="w-full flex flex-col gap-4">
         <div className="w-full flex flex-col gap-2 bg-[#F3F5F7] dark:bg-[#141718] border-2 border-[#E8ECEF] dark:border-[#232627] px-4 py-3.5 rounded-xl font-bold">
           <span className="text-[#777E90] dark:text-[#6C7275] text-sm">
-            Email
+            {t("email")}
           </span>
           <span className="text-[#141416] dark:text-white">
             {formData.email}
           </span>
         </div>
         <span className="text-center text-sm font-medium text-[#777E90] dark:text-[#6C7275]">
-          Please enter the 6-digit verification code sent to your email.
+          {t("signUp.tip")}
         </span>
       </div>
 
@@ -258,7 +263,7 @@ const VerifyCodeForm = ({
         <Input
           id="code"
           className="bg-[#F3F5F7] h-12 w-full pl-4 pr-32 py-3.5 rounded-xl placeholder:text-[#777E90] placeholder:font-medium font-medium !text-left"
-          placeholder="Enter verification code"
+          placeholder={t("enterCode")}
           value={formData.code}
           onChange={onCodeChange}
         />
@@ -269,7 +274,7 @@ const VerifyCodeForm = ({
           disabled={countdown > 0}
           className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent text-main text-sm font-medium rounded-lg hover:bg-gray-200 hover:text-main transition-colors disabled:text-main disabled:font-medium disabled:opacity-100 disabled:cursor-not-allowed"
         >
-          {countdown > 0 ? `${countdown}s` : "Get Code"}
+          {countdown > 0 ? `${countdown}s` : t("getCode")}
         </Button>
       </div>
 
@@ -279,7 +284,7 @@ const VerifyCodeForm = ({
         className="w-full h-12 font-semibold rounded-full bg-main hover:bg-[#02C174]/90 px-6 py-4"
       >
         {loading && <LoadingIcon className="size-4 animate-spin" />}
-        Verify
+        {t("signUp.verify")}
       </Button>
       <Button
         type="button"
@@ -287,7 +292,7 @@ const VerifyCodeForm = ({
         className="w-full h-12 font-semibold rounded-full px-6 py-4"
         onClick={() => navigate(-1)}
       >
-        Back
+        {t("back")}
       </Button>
     </form>
   );
@@ -296,6 +301,7 @@ const VerifyCodeForm = ({
 export function SignUpPage() {
   const authStore = useAuthStore();
   const navigate = useNavigate();
+  const { t } = useTranslation("auth");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -315,7 +321,7 @@ export function SignUpPage() {
       );
       if (success) {
         navigate(Path.Chat);
-        toast.success("Signup success", {
+        toast.success(t("signUp.success"), {
           className: "w-auto max-w-max",
         });
       }

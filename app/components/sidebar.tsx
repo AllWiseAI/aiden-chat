@@ -21,6 +21,7 @@ import SearchIcon from "../icons/search.svg";
 import CollapseIcon from "../icons/collapse.svg";
 import PlusIcon from "../icons/plus.svg";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { useAppConfig, useAuthStore, useChatStore } from "../store";
 import {
   DEFAULT_SIDEBAR_WIDTH,
@@ -178,6 +179,7 @@ export function SideBarHeader(props: {
   const { children, shouldNarrow, toggleSearch } = props;
   const authStore = useAuthStore();
   const navigate = useNavigate();
+  const { t } = useTranslation("settings");
   const { toggleSideBar } = useDragSideBar();
 
   const logout = async () => {
@@ -212,7 +214,7 @@ export function SideBarHeader(props: {
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent
-                  className="px-2 py-4 rounded-xl flex flex-col gap-3"
+                  className="px-2 py-4 rounded-xl flex flex-col gap-3 min-w-max"
                   align="start"
                   side="right"
                 >
@@ -224,7 +226,7 @@ export function SideBarHeader(props: {
                     >
                       <SettingIcon className="size-4" />
                       <span className="-ml-1 text-xs font-medium">
-                        Settings
+                        {t("title")}
                       </span>
                     </DropdownMenuRadioItem>
                     {/* <DropdownMenuRadioItem
@@ -243,7 +245,9 @@ export function SideBarHeader(props: {
                       onClick={logout}
                     >
                       <LogoutIcon className="size-4" />
-                      <span className="-ml-1 text-xs font-medium">Log out</span>
+                      <span className="-ml-1 text-xs font-medium">
+                        {t("general.logout")}
+                      </span>
                     </DropdownMenuRadioItem>
                   </DropdownMenuRadioGroup>
                 </DropdownMenuContent>
@@ -304,6 +308,7 @@ export function SideBar(props: { className?: string }) {
   const { onDragStart, shouldNarrow } = useDragSideBar();
   const chatStore = useChatStore();
   const navigate = useNavigate();
+  const { t } = useTranslation("general");
   const [searchValue, setSearchValue] = useState("");
   const [isSearchVisible, setIsSearchVisible] = useState(false);
 
@@ -355,7 +360,9 @@ export function SideBar(props: { className?: string }) {
                 }}
               >
                 <PlusIcon className="size-4" />
-                <span className="font-medium select-none">New Chat</span>
+                <span className="font-medium select-none">
+                  {t("home.newChat")}
+                </span>
               </Button>
             </div>
           </>

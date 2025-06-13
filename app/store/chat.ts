@@ -77,16 +77,16 @@ export interface ChatSession {
   mask: Mask;
 }
 
-export const DEFAULT_TOPIC = t("store.defaultTopic", { ns: "general" });
+export const defaultTopic = () => t("store.defaultTopic");
 export const BOT_HELLO: ChatMessage = createMessage({
   role: "assistant",
-  content: t("store.botHello", { ns: "general" }),
+  content: t("store.botHello"),
 });
 
 function createEmptySession(): ChatSession {
   return {
     id: nanoid(),
-    topic: DEFAULT_TOPIC,
+    topic: defaultTopic(),
     memoryPrompt: "",
     messages: [],
     stat: {
@@ -486,7 +486,6 @@ export const useChatStore = createPersistStore(
           return {
             role: "system",
             content: t("store.prompt.history", {
-              ns: "general",
               content: session.memoryPrompt,
             }),
             date: "",
@@ -614,7 +613,7 @@ export const useChatStore = createPersistStore(
         const SUMMARIZE_MIN_LEN = 50;
         if (
           (config.enableAutoGenerateTitle &&
-            session.topic === DEFAULT_TOPIC &&
+            session.topic === defaultTopic() &&
             countMessages(messages) >= SUMMARIZE_MIN_LEN) ||
           refreshTitle
         ) {
@@ -630,7 +629,7 @@ export const useChatStore = createPersistStore(
             .concat(
               createMessage({
                 role: "user",
-                content: t("store.prompt.topic", { ns: "general" }),
+                content: t("store.prompt.topic"),
               }),
             );
           api.llm.chat({
@@ -646,7 +645,7 @@ export const useChatStore = createPersistStore(
                   session,
                   (session) =>
                     (session.topic =
-                      message.length > 0 ? trimTopic(message) : DEFAULT_TOPIC),
+                      message.length > 0 ? trimTopic(message) : defaultTopic()),
                 );
               }
             },
@@ -695,7 +694,7 @@ export const useChatStore = createPersistStore(
             messages: toBeSummarizedMsgs.concat(
               createMessage({
                 role: "system",
-                content: t("store.prompt.summarize", { ns: "general" }),
+                content: t("store.prompt.summarize"),
                 date: "",
               }),
             ),

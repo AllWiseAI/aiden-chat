@@ -6,6 +6,7 @@
     "chatItemCount": "{{count}} messages"
   },
   "chat": {
+    "title": "Hi, I&apos;m",
     "subTitle": "{{count}} messages",
     "actions": {
       "copy": "Copy",
@@ -24,7 +25,8 @@
       "fork": "Copy Chat",
       "del": "Delete Chat"
     },
-    "rename": "Rename Chat",
+    "rename": "Rename",
+    "delete": "Delete",
     "typing": "Typing…",
     "send": "Send"
   },
@@ -97,5 +99,16 @@
     "import": "Import",
     "sync": "Sync",
     "config": "Config"
+  },
+  "dialog": {
+    "deleteTitle": "Delete chat?",
+    "alert": "Are you sure you want to delete chat?",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "mcpTitle": "would like to use an MCP",
+    "confirm": "Confirm",
+    "decline": "Decline",
+    "allowAlways": "Allow always",
+    "allowOnce": "Allow once"
   }
 }

@@ -6,6 +6,7 @@
     "chatItemCount": "{{count}} 条对话"
   },
   "chat": {
+    "title": "嗨，我是",
     "subTitle": "共 {{count}} 条对话",
     "actions": {
       "copy": "复制",
@@ -24,7 +25,8 @@
       "fork": "复制聊天",
       "del": "删除聊天"
     },
-    "rename": "重命名对话",
+    "rename": "重命名",
+    "delete": "删除",
     "typing": "正在输入…",
     "send": "发送"
   },
@@ -97,5 +99,22 @@
     "import": "导入",
     "sync": "同步",
     "config": "配置"
+  },
+  "dialog": {
+    "deleteTitle": "删除聊天？",
+    "alert": "你确定要删除这条聊天记录吗？",
+    "cancel": "取消",
+    "delete": "删除"
+  },
+  "dialog": {
+    "deleteTitle": "删除聊天？",
+    "alert": "你确定要删除这条聊天记录吗？",
+    "cancel": "取消",
+    "delete": "删除",
+    "mcpTitle": "请求使用 MCP",
+    "confirm": "确认",
+    "decline": "拒绝",
+    "allowAlways": "始终允许",
+    "allowOnce": "仅允许一次"
   }
 }

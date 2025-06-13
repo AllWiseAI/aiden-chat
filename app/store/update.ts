@@ -101,15 +101,12 @@ export const useUpdateStore = createPersistStore(
                         // Show a notification using Tauri
                         window.__TAURI__?.notification.sendNotification({
                           title: "AidenChat",
-                          body: `${t("settings.update.isLatest", {
-                            ns: "general",
-                          })}`,
+                          body: `${t("settings.update.isLatest")}`,
                           icon: `${ChatGptIcon.src}`,
                           sound: "Default",
                         });
                       } else {
                         const updateMessage = t("settings.update.foundUpdate", {
-                          ns: "general",
                           x: remoteId,
                         });
                         // Show a notification for the new version using Tauri

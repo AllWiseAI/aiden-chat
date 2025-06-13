@@ -13,6 +13,7 @@ import { getCSSVar, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
 import { Path, SlotID } from "../constant";
 import { ErrorBoundary } from "./error";
+import i18n from "i18next";
 import { getLang } from "../locales";
 
 import {
@@ -134,11 +135,18 @@ export function useSwitchTheme() {
 function useHtmlLang() {
   useEffect(() => {
     const lang = getLang();
-    const htmlLang = document.documentElement.lang;
+    document.documentElement.lang = lang;
 
-    if (lang !== htmlLang) {
+    const handler = (lang: string) => {
       document.documentElement.lang = lang;
-    }
+    };
+
+    i18n.on("languageChanged", handler);
+
+    // 清理副作用
+    return () => {
+      i18n.off("languageChanged", handler);
+    };
   }, []);
 }
 

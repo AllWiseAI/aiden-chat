@@ -332,11 +332,11 @@ export function showConfirm(content: any) {
   return new Promise<boolean>((resolve) => {
     root.render(
       <Modal
-        title={t("ui.confirm", { ns: "general" })}
+        title={t("ui.confirm")}
         actions={[
           <IconButton
             key="cancel"
-            text={t("ui.cancel", { ns: "general" })}
+            text={t("ui.cancel")}
             onClick={() => {
               resolve(false);
               closeModal();
@@ -348,7 +348,7 @@ export function showConfirm(content: any) {
           ></IconButton>,
           <IconButton
             key="confirm"
-            text={t("ui.confirm", { ns: "general" })}
+            text={t("ui.confirm")}
             type="primary"
             onClick={() => {
               resolve(true);
@@ -411,7 +411,7 @@ export function showPrompt(content: any, value = "", rows = 3) {
         actions={[
           <IconButton
             key="cancel"
-            text={t("ui.cancel", { ns: "general" })}
+            text={t("ui.cancel")}
             onClick={() => {
               closeModal();
             }}
@@ -422,7 +422,7 @@ export function showPrompt(content: any, value = "", rows = 3) {
           ></IconButton>,
           <IconButton
             key="confirm"
-            text={t("ui.confirm", { ns: "general" })}
+            text={t("ui.confirm")}
             type="primary"
             onClick={() => {
               resolve(userInput);

@@ -24,7 +24,7 @@ import { useAppUpdate } from "@/app/hooks/use-app-update";
 import {
   ChatMessage,
   createMessage,
-  DEFAULT_TOPIC,
+  defaultTopic,
   SubmitKey,
   useAppConfig,
   useChatStore,
@@ -490,7 +490,7 @@ function _Chat() {
                 styles["chat-body-main-title"],
               )}
             >
-              {!session.topic ? DEFAULT_TOPIC : session.topic}
+              {!session.topic ? defaultTopic() : session.topic}
             </div>
             <TooltipProvider>
               <Tooltip>
@@ -535,7 +535,7 @@ function _Chat() {
               <>
                 <div className="w-full h-10" data-tauri-drag-region></div>
                 <div className={styles["chat-main-welcome"]}>
-                  Hi, I&apos;m Aiden
+                  {t("chat.title")} Aiden
                 </div>
               </>
             ) : (

@@ -409,7 +409,7 @@ export function stream(
           } catch {}
 
           if (res.status === 401) {
-            responseTexts.push(t("error.unauthorized", { ns: "general" }));
+            responseTexts.push(t("error.unauthorized"));
           }
 
           if (extraInfo) {
@@ -546,7 +546,7 @@ export function streamWithThink(
           } catch {}
 
           if (res.status === 401) {
-            responseTexts.push(t("error.unauthorized", { ns: "general" }));
+            responseTexts.push(t("error.unauthorized"));
           }
 
           if (extraInfo) {
@@ -599,7 +599,7 @@ export function streamWithThink(
                   "[MCP confirm] No user approval before. Show confirm modal.  ",
                 );
                 let result = await showConfirm({
-                  title: "Aiden would like to use an MCP",
+                  title: "Aiden " + t("dialog.mcpTitle"),
                   description: chunk.mcpInfo.tool,
                 });
                 approved = [ConfirmType.Always, ConfirmType.Once].includes(

@@ -29,7 +29,7 @@ export async function copyToClipboard(text: string) {
       await navigator.clipboard.writeText(text);
     }
 
-    showToast(t("copy.success", { ns: "general" }));
+    showToast(t("copy.success"));
   } catch (error) {
     const textArea = document.createElement("textarea");
     textArea.value = text;
@@ -38,9 +38,9 @@ export async function copyToClipboard(text: string) {
     textArea.select();
     try {
       document.execCommand("copy");
-      showToast(t("copy.success", { ns: "general" }));
+      showToast(t("copy.success"));
     } catch (error) {
-      showToast(t("copy.success", { ns: "general" }));
+      showToast(t("copy.success"));
     }
     document.body.removeChild(textArea);
   }
@@ -65,12 +65,12 @@ export async function downloadAs(text: string, filename: string) {
     if (result !== null) {
       try {
         await window.__TAURI__.fs.writeTextFile(result, text);
-        showToast(t("download.success", { ns: "general" }));
+        showToast(t("download.success"));
       } catch (error) {
-        showToast(t("download.failed", { ns: "general" }));
+        showToast(t("download.failed"));
       }
     } else {
-      showToast(t("download.failed", { ns: "general" }));
+      showToast(t("download.failed"));
     }
   } else {
     const element = document.createElement("a");
@@ -402,17 +402,17 @@ export function clientUpdate() {
         window.__TAURI__?.updater
           .installUpdate()
           .then((result) => {
-            showToast(t("settings.update.success", { ns: "general" }));
+            showToast(t("settings.update.success"));
           })
           .catch((e) => {
             console.error("[Install Update Error]", e);
-            showToast(t("settings.update.failed", { ns: "general" }));
+            showToast(t("settings.update.failed"));
           });
       }
     })
     .catch((e) => {
       console.error("[Check Update Error]", e);
-      showToast(t("settings.update.failed", { ns: "general" }));
+      showToast(t("settings.update.failed"));
     });
 }
 
