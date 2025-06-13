@@ -346,6 +346,8 @@ export const useChatStore = createPersistStore(
         const sendMessages = recentMessages.concat(userMessage);
         const messageIndex = session.messages.length + 1;
 
+        console.log("[Chat store]sendMessages: ", sendMessages);
+
         // save user's and bot's message
         get().updateTargetSession(session, (session) => {
           const savedUserMessage = {

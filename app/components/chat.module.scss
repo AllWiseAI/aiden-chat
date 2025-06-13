@@ -1,5 +1,24 @@
 @import "../styles/animation.scss";
 
+
+
+.input-img {
+  height: 70px !important;
+  width: 70px;
+  border-radius: 4px;
+  object-fit: cover;
+  background-color: #141718BF;
+} 
+.input-img-loading {
+  height: 70px !important;
+  width: 70px;
+  border-radius: 4px;
+  background-color: #141718BF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .attach-images {
   position: absolute;
   left: 30px;
@@ -494,16 +513,17 @@
 
 .chat-message-item-image {
   width: 100%;
-  margin-top: 10px;
+  margin-bottom: 10px;
+  max-width: 180px !important;
 }
 
 .chat-message-item-images {
+  margin-bottom: 10px;
   width: 100%;
   display: grid;
   justify-content: left;
   grid-gap: 10px;
   grid-template-columns: repeat(var(--image-count), auto);
-  margin-top: 10px;
 }
 
 .chat-message-item-image-multi {
@@ -661,6 +681,11 @@
 
 .chat-input-panel-inner:has(.chat-input:focus) {
   border: 1px solid var(--primary);
+}
+
+.chat-input.chat-input-with-image {
+  padding-top: 94px;
+  height: 194px;
 }
 
 .chat-input {
