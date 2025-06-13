@@ -5,6 +5,7 @@ import McpManagement from "./setting/mcp-management";
 import AboutUs from "./setting/about-us";
 import { Button } from "@/app/components/shadcn/button";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import generalIcon from "../icons/general.svg";
 import McpIcon from "../icons/mcp.svg";
 import InfoIcon from "../icons/info.svg";
@@ -24,11 +25,12 @@ function AboutUsPanel() {
 
 export function Settings() {
   const [searchParams] = useSearchParams();
+  const { t } = useTranslation("settings");
   const settingList = [
-    { name: "General", value: "general", icon: generalIcon },
+    { name: t("tabs.general"), value: "general", icon: generalIcon },
     // { name: "Connected Apps", value: "connected-app"},
-    { name: "MCP Management", value: "mcp", icon: McpIcon },
-    { name: "About us", value: "about-us", icon: InfoIcon },
+    { name: t("tabs.mcp"), value: "mcp", icon: McpIcon },
+    { name: t("tabs.aboutUs"), value: "about-us", icon: InfoIcon },
   ];
 
   const [selected, setSelected] = useState<string>(
@@ -65,7 +67,7 @@ export function Settings() {
     >
       <div className="flex justify-between items-center">
         <div className="w-max text-xl dark:text-white font-semibold disable-select">
-          Settings
+          {t("title")}
         </div>
         <Button
           variant="ghost"

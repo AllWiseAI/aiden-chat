@@ -1,0 +1,114 @@
+{
+  "error": {
+    "unauthorized": "Unauthorized"
+  },
+  "chatItem": {
+    "chatItemCount": "{{count}} messages"
+  },
+  "chat": {
+    "title": "Hi, I&apos;m",
+    "subTitle": "{{count}} messages",
+    "actions": {
+      "copy": "Copy",
+      "stop": "Stop",
+      "retry": "Retry",
+      "delete": "Delete",
+      "refreshTitle": "Refresh Title",
+      "refreshToast": "Title refresh request sent"
+    },
+    "commands": {
+      "new": "Start a new chat",
+      "newM": "Start a new chat with mask",
+      "next": "Next Chat",
+      "prev": "Previous Chat",
+      "clear": "Clear Context",
+      "fork": "Copy Chat",
+      "del": "Delete Chat"
+    },
+    "rename": "Rename",
+    "delete": "Delete",
+    "typing": "Typing…",
+    "send": "Send"
+  },
+  "home": {
+    "newChat": "New Chat",
+    "deleteChat": "Confirm to delete the selected conversation?",
+    "deleteToast": "Chat Deleted"
+  },
+  "settings": {
+    "title": "Settings",
+    "subTitle": "All Settings",
+    "showPassword": "ShowPassword",
+    "danger": {
+      "reset": {
+        "title": "Reset All Settings",
+        "subTitle": "Reset all setting items to default",
+        "action": "Reset",
+        "confirm": "Confirm to reset all settings to default?"
+      },
+      "clear": {
+        "title": "Clear All Data",
+        "subTitle": "Clear all messages and settings",
+        "action": "Clear",
+        "confirm": "Confirm to clear all messages and settings?"
+      }
+    },
+    "update": {
+      "version": "Version: {{x}}",
+      "isLatest": "Latest version",
+      "checkUpdate": "Check Update",
+      "isChecking": "Checking update...",
+      "foundUpdate": "Found new version: {{x}}",
+      "goToUpdate": "Update",
+      "success": "Update Successful.",
+      "failed": "Update Failed."
+    }
+  },
+  "store": {
+    "defaultTopic": "New Conversation",
+    "botHello": "Hello! How can I assist you today?",
+    "error": "Something went wrong, please try again later.",
+    "prompt": {
+      "history": "This is a summary of the chat history as a recap: {{content}}",
+      "topic": "Please generate a four to five word title summarizing our conversation without any lead-in, punctuation, quotation marks, periods, symbols, bold text, or additional text. Remove enclosing quotation marks.",
+      "summarize": "Summarize the discussion briefly in 200 words or less to use as a prompt for future context."
+    }
+  },
+  "copy": {
+    "success": "Copied to clipboard",
+    "failed": "Copy failed, please grant permission to access clipboard"
+  },
+  "download": {
+    "success": "Content downloaded to your directory.",
+    "failed": "Download failed."
+  },
+  "newChat": {
+    "return": "Return",
+    "skip": "Just Start",
+    "more": "Find More",
+    "notShow": "Never Show Again",
+    "confirmNoShow": "Confirm to disable？You can enable it in settings later."
+  },
+  "ui": {
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "close": "Close",
+    "create": "Create",
+    "edit": "Edit",
+    "export": "Export",
+    "import": "Import",
+    "sync": "Sync",
+    "config": "Config"
+  },
+  "dialog": {
+    "deleteTitle": "Delete chat?",
+    "alert": "Are you sure you want to delete chat?",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "mcpTitle": "would like to use an MCP",
+    "confirm": "Confirm",
+    "decline": "Decline",
+    "allowAlways": "Allow always",
+    "allowOnce": "Allow once"
+  }
+}

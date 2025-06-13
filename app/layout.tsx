@@ -3,6 +3,7 @@ import "./styles/globals.scss";
 import "./styles/markdown.scss";
 import "./styles/highlight.scss";
 import "./global.css";
+import "../i18n";
 import { getClientConfig } from "./config/client";
 import type { Metadata, Viewport } from "next";
 import { Toaster } from "@/app/components/shadcn/sonner";

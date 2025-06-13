@@ -5,12 +5,12 @@ import {
   OnDragEndResponder,
 } from "@hello-pangea/dnd";
 
-import { DEFAULT_TOPIC, useChatStore } from "../store";
+import { defaultTopic, useChatStore } from "../store";
 import MoreIcon from "../icons/more.svg";
 import EditIcon from "../icons/edit.svg";
 import DeleteIcon from "../icons/delete.svg";
 import CloseIcon from "../icons/close.svg";
-import Locale from "../locales";
+import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Path } from "../constant";
 
@@ -66,6 +66,7 @@ export function ChatItem(props: {
   const [openMenu, setOpenMenu] = useState(false);
   const chatStore = useChatStore();
   const session = chatStore.sessions.find((s) => s.id === props.id)!;
+  const { t } = useTranslation("general");
 
   useEffect(() => {
     if (isEdit && inputRef.current) {
@@ -93,9 +94,9 @@ export function ChatItem(props: {
           }}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          title={`${props.title}\n${Locale.ChatItem.ChatItemCount(
-            props.count,
-          )}`}
+          title={`${props.title}\n${t("chatItem.chatItemCount", {
+            count: props.count,
+          })}`}
         >
           {!props.narrow && (
             <>
@@ -115,7 +116,7 @@ export function ChatItem(props: {
                       if (props.title === "") {
                         chatStore.updateTargetSession(
                           session,
-                          (session) => (session.topic = DEFAULT_TOPIC),
+                          (session) => (session.topic = defaultTopic()),
                         );
                       }
                       setIsEdit(false);
@@ -125,7 +126,7 @@ export function ChatItem(props: {
                     if (props.title === "") {
                       chatStore.updateTargetSession(
                         session,
-                        (session) => (session.topic = DEFAULT_TOPIC),
+                        (session) => (session.topic = defaultTopic()),
                       );
                     }
                     setIsEdit(false);
@@ -153,7 +154,7 @@ export function ChatItem(props: {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                       asChild
-                      className="flex flex-col p-2"
+                      className="flex flex-col p-2 min-w-max"
                       onCloseAutoFocus={(e) => {
                         e.preventDefault();
                       }}
@@ -170,7 +171,9 @@ export function ChatItem(props: {
                           }}
                         >
                           <EditIcon className="size-4" />
-                          <span className="-ml-1 font-xs">Rename</span>
+                          <span className="-ml-1 font-xs">
+                            {t("chat.rename")}
+                          </span>
                         </DropdownMenuRadioItem>
                         <DropdownMenuRadioItem
                           value="delete"
@@ -180,7 +183,9 @@ export function ChatItem(props: {
                           }}
                         >
                           <DeleteIcon className="size-4" />
-                          <span className="-ml-1 font-xs">Delete</span>
+                          <span className="-ml-1 font-xs">
+                            {t("chat.delete")}
+                          </span>
                         </DropdownMenuRadioItem>
                       </DropdownMenuRadioGroup>
                     </DropdownMenuContent>
@@ -196,7 +201,7 @@ export function ChatItem(props: {
                     <div className="flex justify-between">
                       <AlertDialogHeader>
                         <AlertDialogTitle className="!text-[21px]">
-                          Delete chat?
+                          {t("dialog.deleteTitle")}
                         </AlertDialogTitle>
                       </AlertDialogHeader>
 
@@ -205,17 +210,17 @@ export function ChatItem(props: {
                       </AlertDialogCancel>
                     </div>
                     <AlertDialogDescription className="text-lg font-normal text-[#141718] dark:text-white">
-                      Are you sure you want to delete chat?
+                      {t("dialog.alert")}
                     </AlertDialogDescription>
                     <AlertDialogFooter>
                       <AlertDialogCancel className="rounded-xl">
-                        Cancel
+                        {t("dialog.cancel")}
                       </AlertDialogCancel>
                       <AlertDialogAction
                         onClick={props.onDelete}
                         className="bg-[#EF466F] hover:bg-[#EF466F]/75 rounded-full"
                       >
-                        Delete
+                        {t("dialog.delete")}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -241,6 +246,7 @@ export function ChatList(props: { narrow?: boolean; searchValue?: string }) {
   const chatStore = useChatStore();
   const navigate = useNavigate();
   const isMobileScreen = useMobileScreen();
+  const { t } = useTranslation("general");
 
   const filteredSessions = useMemo(() => {
     if (!props.searchValue)
@@ -294,7 +300,7 @@ export function ChatList(props: { narrow?: boolean; searchValue?: string }) {
                   onDelete={async () => {
                     if (
                       (!props.narrow && !isMobileScreen) ||
-                      (await showConfirm(Locale.Home.DeleteChat))
+                      (await showConfirm(t("home.deleteChat")))
                     ) {
                       chatStore.deleteSession(item.originIndex);
                     }

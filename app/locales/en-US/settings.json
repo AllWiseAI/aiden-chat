@@ -1,0 +1,41 @@
+{
+  "title": "Settings",
+  "tabs": {
+    "general": "General",
+    "mcp": "Mcp Management",
+    "aboutUs": "About us"
+  },
+  "general": {
+    "account": "Account",
+    "logout": "Log Out",
+    "country": {
+      "title": "Country",
+      "cn": "China",
+      "ru": "Russia",
+      "uk": "United Kingdom",
+      "fr": "France"
+    },
+    "language": "Language",
+    "theme": {
+      "title": "Appearance",
+      "system": "System match",
+      "light": "Light",
+      "dark": "Dark"
+    }
+  },
+  "mcp": {
+    "edit": "Edit Config",
+    "search": "Search",
+    "setting": "Setting",
+    "remove": "Remove",
+    "save": "Save"
+  },
+  "aboutUs": {
+    "contact": "Contact us:",
+    "updating": "Updating...",
+    "update": "Update to latest version",
+    "export": "Export log",
+    "terms": "User Agreement",
+    "privacy": "Privacy Policy"
+  }
+}

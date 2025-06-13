@@ -16,7 +16,7 @@ import {
   MultimodalContent,
   SpeechOptions,
 } from "../api";
-import Locale from "../../locales";
+import { t } from "i18next";
 import { fetch, tauriFetchWithSignal } from "@/app/utils/stream";
 import { streamWithThink, parseSSE } from "@/app/utils/chat";
 
@@ -189,7 +189,7 @@ export class ChatGPTApi implements LLMApi {
     ]);
 
     if (used.status === 401) {
-      throw new Error(Locale.Error.Unauthorized);
+      throw new Error(t("error.unauthorized"));
     }
 
     if (!used.ok || !subs.ok) {

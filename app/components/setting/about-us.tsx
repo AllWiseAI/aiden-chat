@@ -5,13 +5,14 @@ import config from "@/src-tauri/tauri.conf.json";
 import RightIcon from "../../icons/right-arrow.svg";
 import { useAppUpdate } from "@/app/hooks/use-app-update";
 import { showConfirm } from "@/app/components/confirm-modal/confirm";
+import { useTranslation } from "react-i18next";
 
 export default function AboutUs() {
   const { isShowUpdate, isLatest, handleUpdate, isUpdating } = useAppUpdate();
-
+  const { t } = useTranslation("settings");
   const aboutUsArr = [
     {
-      name: isUpdating ? "Updating..." : "Update to latest version",
+      name: isUpdating ? t("aboutUs.updating") : t("aboutUs.update"),
       onClick: () => {
         if (isUpdating) return;
         if (isLatest || !isShowUpdate) {
@@ -27,13 +28,13 @@ export default function AboutUs() {
         handleUpdate();
       },
     },
-    { name: "Export log", onClick: () => exportAndDownloadLog() },
+    { name: t("aboutUs.export"), onClick: () => exportAndDownloadLog() },
     {
-      name: "User Agreement",
+      name: t("aboutUs.terms"),
       onClick: () => shell.open("https://aidenai.io/terms-of-service.html"),
     },
     {
-      name: "Privacy Policy",
+      name: t("aboutUs.privacy"),
       onClick: () => shell.open("https://aidenai.io/privacy.html"),
     },
   ];
@@ -44,7 +45,7 @@ export default function AboutUs() {
         <div className="flex flex-col gap-2 justify-center font-medium">
           <div>{"v" + config.package.version}</div>
           <div className="text-xs text-[#6C7275]">
-            Contact us: contact@allwise.com
+            {t("aboutUs.contact")} contact@allwise.com
           </div>
         </div>
       </div>

@@ -16,6 +16,7 @@ import {
   CustomMCPServer,
 } from "@/app/typing";
 import { useMcpStore } from "@/app/store/mcp";
+import { useTranslation } from "react-i18next";
 import { getFirstValue, parseTemplate } from "@/app/utils/mcp";
 import { toast } from "sonner";
 import { McpTemplateModal } from "./mcp-template-modal";
@@ -53,6 +54,7 @@ export function McpTableItem({
   onSelect,
   onSetting,
 }: McpItemProps) {
+  const { t } = useTranslation("settings");
   const [status, setStatus] = useState<McpAction | null>(null);
   const [templateModal, setTemplateModal] = useState(false);
   const [templateInfo, setTemplateInfo] = useState<TTemplateInfo | null>(null);
@@ -229,7 +231,7 @@ export function McpTableItem({
               className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] px-2.5"
               onClick={handleShowSettingModal}
             >
-              Setting
+              {t("mcp.setting")}
             </Button>
           )}
           {showDelete && (
@@ -239,7 +241,7 @@ export function McpTableItem({
                 onDelete(e, mcp_key)
               }
             >
-              Remove
+              {t("mcp.remove")}
             </Button>
           )}
         </div>

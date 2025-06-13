@@ -11,10 +11,12 @@ import { toast } from "sonner";
 import clsx from "clsx";
 import { shell } from "@tauri-apps/api";
 import LoadingIcon from "../icons/loading-spinner.svg";
+import { useTranslation } from "react-i18next";
 
 export function LoginPage() {
   const authStore = useAuthStore();
   const navigate = useNavigate();
+  const { t } = useTranslation("auth");
   const [formData, setFormData] = useState({
     email: localStorage.getItem("user-email") || "",
     password: "",
@@ -25,7 +27,7 @@ export function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.email && !validateEmail(formData.email)) {
-      setEmailError("Please enter a valid email address");
+      setEmailError(t("inValidEmail"));
       return;
     }
     setLoading(true);
@@ -34,7 +36,7 @@ export function LoginPage() {
       const success = await authStore.login(formData.email, formData.password);
       if (success) {
         navigate(Path.Chat);
-        toast.success("Login success", {
+        toast.success(t("signIn.success"), {
           className: "w-auto max-w-max",
         });
         localStorage.setItem("user-email", formData.email);
@@ -63,7 +65,7 @@ export function LoginPage() {
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     if (id === "email" && value && !validateEmail(value)) {
-      setEmailError("Please enter a valid email address");
+      setEmailError(t("signIn.success"));
     } else {
       setEmailError("");
     }
@@ -72,7 +74,7 @@ export function LoginPage() {
     <div className="w-full h-full p-10 bg-white dark:bg-[#141416] mx-auto flex flex-col justify-start items-center gap-8 rounded-2xl">
       <div className="flex-center flex-col gap-4 text-black dark:text-white">
         <LogoTextIcon />
-        <span className="text-2xl font-medium">Sign in to Aiden.ai</span>
+        <span className="text-2xl font-medium">{t("signIn.to")} Aiden.ai</span>
       </div>
       <form
         className="flex-center flex-col gap-8 w-full"
@@ -83,7 +85,7 @@ export function LoginPage() {
             htmlFor="email"
             className="font-bold after:content['*'] after:content-['*'] after:text-red-500 !gap-1"
           >
-            Email
+            {t("email")}
           </Label>
           <Input
             id="email"
@@ -108,20 +110,20 @@ export function LoginPage() {
               htmlFor="password"
               className="font-bold after:content['*'] after:content-['*'] after:text-red-500 !gap-1"
             >
-              Password
+              {t("password")}
             </Label>
             <Link
               to={Path.ForgotPassword}
               className="text-xs text-main font-medium underline"
             >
-              Forgot password?
+              {t("signIn.forgot")}
             </Link>
           </div>
 
           <Password
             id="password"
             type="password"
-            placeholder="Enter password"
+            placeholder={t("enter")}
             className="!w-full h-13 !max-w-130 !text-left !px-4 !py-3.5 !rounded-xl"
             value={formData.password}
             onChange={handleChange}
@@ -136,21 +138,21 @@ export function LoginPage() {
             onChange={(e) => setChecked(e.target.checked)}
           />
           <div>
-            I agree to Aiden&apos;s{" "}
+            {t("agree")}{" "}
             <span
               className="cursor-pointer text-main underline"
               onClick={() =>
                 shell.open("https://aidenai.io/terms-of-service.html")
               }
             >
-              Terms of Service
+              {t("terms")}
             </span>
-            {" and "}
+            {" " + t("and") + " "}
             <span
               className="cursor-pointer text-main underline"
               onClick={() => shell.open("https://aidenai.io/privacy.html")}
             >
-              Privacy Policy
+              {t("privacy")}
             </span>
           </div>
         </div>
@@ -164,13 +166,13 @@ export function LoginPage() {
           }
         >
           {loading && <LoadingIcon className="size-4 animate-spin" />}
-          Sign in
+          {t("signIn.btn")}
         </Button>
       </form>
       <span className="text-xs text-[#777E90] font-medium">
-        Don&apos;t have an account?{" "}
+        {t("signIn.noAccount")}{" "}
         <Link to={Path.SignUp} className="underline text-main">
-          Sign up
+          {t("signUp.btn")}
         </Link>
       </span>
     </div>

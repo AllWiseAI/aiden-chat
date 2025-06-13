@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Path } from "../constant";
 import { apiCompleteResetPassword, apiResetPasswordCode } from "@/app/services";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 
 interface FormData {
@@ -32,10 +33,11 @@ interface ResetPasswordProps {
 function EmailInput({ formData, onEmailChange, onSubmit }: EmailFormProps) {
   const [emailError, setEmailError] = useState("");
   const navigate = useNavigate();
+  const { t } = useTranslation("auth");
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.email && !validateEmail(formData.email)) {
-      setEmailError("Please enter a valid email address");
+      setEmailError(t("inValidEmail"));
       return;
     }
     onSubmit(e);
@@ -48,7 +50,7 @@ function EmailInput({ formData, onEmailChange, onSubmit }: EmailFormProps) {
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     if (id === "email" && value && !validateEmail(value)) {
-      setEmailError("Please enter a valid email address");
+      setEmailError(t("inValidEmail"));
     } else {
       setEmailError("");
     }
@@ -60,13 +62,13 @@ function EmailInput({ formData, onEmailChange, onSubmit }: EmailFormProps) {
           htmlFor="email"
           className="font-bold after:content['*'] after:content-['*'] after:text-red-500 !gap-1"
         >
-          Email
+          {t("email")}
         </Label>
         <Input
           id="email"
           type="email"
           placeholder="mail@aiden.com"
-          className={clsx("w-full h-13 bg-[#F3F5F7] !text-left px-4 py-3.5", {
+          className={clsx("w-full h-13 !text-left px-4 py-3.5", {
             "border-2 border-[#EF466F]": emailError,
           })}
           value={formData.email}
@@ -84,7 +86,7 @@ function EmailInput({ formData, onEmailChange, onSubmit }: EmailFormProps) {
         type="submit"
         disabled={!formData.email || !!emailError}
       >
-        Next
+        {t("forgot.next")}
       </Button>
       <Button
         type="button"
@@ -92,7 +94,7 @@ function EmailInput({ formData, onEmailChange, onSubmit }: EmailFormProps) {
         className="w-full h-12 font-semibold rounded-full px-6 py-4 dark:border-[#777E90]"
         onClick={() => navigate(-1)}
       >
-        Back
+        {t("back")}
       </Button>
     </form>
   );
@@ -108,6 +110,7 @@ const ResetPassword = ({
   const [passwordError, setPasswordError] = useState("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const navigate = useNavigate();
+  const { t } = useTranslation("auth");
   const getCode = async (email: string) => {
     try {
       const res = (await apiResetPasswordCode(email).catch((err) => {
@@ -121,7 +124,7 @@ const ResetPassword = ({
       });
     } catch (e: any) {
       if (e.message.includes("Network Error")) {
-        toast.error("Error: Connection Error", {
+        toast.error(t("netErr"), {
           className: "w-auto max-w-max",
         });
       } else {
@@ -148,7 +151,7 @@ const ResetPassword = ({
   const verifyPassword = () => {
     if (formData.password === confirmPassword) {
       setPasswordError("");
-    } else setPasswordError("Passwords do not match.");
+    } else setPasswordError(t("inValidPassword"));
   };
 
   return (
@@ -157,9 +160,13 @@ const ResetPassword = ({
       onSubmit={onSubmit}
     >
       <div className="w-full flex flex-col gap-4">
-        <div className="w-full flex flex-col gap-2 bg-[#F3F5F7] border-2 border-[#E8ECEF] px-4 py-3.5 rounded-xl font-bold">
-          <span className="text-[#777E90] text-sm">Email</span>
-          <span className="text-[#141416]">{formData.email}</span>
+        <div className="w-full flex flex-col gap-2 bg-[#F3F5F7] dark:bg-[#141718] border-2 border-[#E8ECEF] dark:border-[#232627] px-4 py-3.5 rounded-xl font-bold">
+          <span className="text-[#777E90] text-sm dark:text-[#6C7275]">
+            {t("email")}
+          </span>
+          <span className="text-[#141416] dark:text-white">
+            {formData.email}
+          </span>
         </div>
         {/* <span className="text-center text-sm font-medium text-[#777E90]">
           Please enter the 6-digit verification code sent to your email.
@@ -168,8 +175,8 @@ const ResetPassword = ({
         <Password
           id="password"
           type="password"
-          placeholder="Enter new password"
-          className="!w-full h-12 !max-w-130 !bg-[#F3F5F7] !text-left !px-4 !py-3.5"
+          placeholder={t("forgot.enter")}
+          className="!w-full h-12 !max-w-130 !text-left !px-4 !py-3.5"
           value={formData.password}
           onChange={onFormChange}
           required
@@ -178,8 +185,8 @@ const ResetPassword = ({
         <Password
           id="confirm-password"
           type="password"
-          placeholder="Confirm password"
-          className="!w-full h-12 !max-w-130 !bg-[#F3F5F7] !text-left !px-4 !py-3.5"
+          placeholder={t("forgot.confirm")}
+          className="!w-full h-12 !max-w-130 !text-left !px-4 !py-3.5"
           value={confirmPassword}
           onChange={(e) => {
             setConfirmPassword(e.target.value);
@@ -194,7 +201,7 @@ const ResetPassword = ({
           <Input
             id="code"
             className="bg-[#F3F5F7] h-12 w-full pl-4 pr-32 py-3.5 rounded-xl placeholder:text-[#777E90] placeholder:font-medium font-medium !text-left"
-            placeholder="Enter verification code"
+            placeholder={t("enterCode")}
             value={formData.code}
             onChange={onFormChange}
           />
@@ -205,7 +212,7 @@ const ResetPassword = ({
             disabled={countdown > 0}
             className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent text-main text-sm font-medium rounded-lg hover:bg-gray-200 hover:text-main transition-colors disabled:text-main disabled:font-medium disabled:opacity-100 disabled:cursor-not-allowed"
           >
-            {countdown > 0 ? `${countdown}s` : "Get Code"}
+            {countdown > 0 ? `${countdown}s` : t("getCode")}
           </Button>
         </div>
       </div>
@@ -217,7 +224,7 @@ const ResetPassword = ({
         }
         className="w-full h-12 font-semibold rounded-full bg-main text-white dark:text-black hover:bg-[#02C174]/90 px-6 py-4"
       >
-        Reset
+        {t("forgot.reset")}
       </Button>
       <Button
         type="button"
@@ -225,7 +232,7 @@ const ResetPassword = ({
         className="w-full h-12 font-semibold rounded-full px-6 py-4"
         onClick={() => navigate(-1)}
       >
-        Back
+        {t("back")}
       </Button>
     </form>
   );
@@ -240,6 +247,7 @@ export const ForgotPasswordPage = () => {
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation("auth");
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     const filteredValue = value.replace(/\s/g, "");
@@ -266,7 +274,7 @@ export const ForgotPasswordPage = () => {
       navigate(Path.Login);
     } catch (e: any) {
       if (e.message.includes("Network Error")) {
-        toast.error("Error: Connection Error", {
+        toast.error(t("netErr"), {
           className: "w-auto max-w-max",
         });
       } else {
@@ -283,7 +291,7 @@ export const ForgotPasswordPage = () => {
     <div className="w-full h-full p-10 my-10 bg-white dark:bg-[#141416] mx-auto flex flex-col justify-start items-center gap-8 rounded-2xl">
       <div className="flex-center flex-col gap-4">
         <LogoTextIcon className="text-black dark:text-white" />
-        <span className="text-2xl font-medium">Forgot Password</span>
+        <span className="text-2xl font-medium">{t("forgot.title")}</span>
       </div>
       {isEmailForm ? (
         <EmailInput

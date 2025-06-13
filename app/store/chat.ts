@@ -14,7 +14,8 @@ import {
   DEFAULT_SYSTEM_TEMPLATE,
   StoreKey,
 } from "../constant";
-import Locale, { getLang } from "../locales";
+import { getLang } from "../locales";
+import { t } from "i18next";
 import { createPersistStore } from "../utils/store";
 import { estimateTokenLength } from "../utils/token";
 import { ModelConfig, ModelType, useAppConfig } from "./config";
@@ -76,16 +77,16 @@ export interface ChatSession {
   mask: Mask;
 }
 
-export const DEFAULT_TOPIC = Locale.Store.DefaultTopic;
+export const defaultTopic = () => t("store.defaultTopic");
 export const BOT_HELLO: ChatMessage = createMessage({
   role: "assistant",
-  content: Locale.Store.BotHello,
+  content: t("store.botHello"),
 });
 
 function createEmptySession(): ChatSession {
   return {
     id: nanoid(),
-    topic: DEFAULT_TOPIC,
+    topic: defaultTopic(),
     memoryPrompt: "",
     messages: [],
     stat: {
@@ -486,7 +487,9 @@ export const useChatStore = createPersistStore(
         if (session.memoryPrompt.length) {
           return {
             role: "system",
-            content: Locale.Store.Prompt.History(session.memoryPrompt),
+            content: t("store.prompt.history", {
+              content: session.memoryPrompt,
+            }),
             date: "",
           } as ChatMessage;
         }
@@ -612,7 +615,7 @@ export const useChatStore = createPersistStore(
         const SUMMARIZE_MIN_LEN = 50;
         if (
           (config.enableAutoGenerateTitle &&
-            session.topic === DEFAULT_TOPIC &&
+            session.topic === defaultTopic() &&
             countMessages(messages) >= SUMMARIZE_MIN_LEN) ||
           refreshTitle
         ) {
@@ -628,7 +631,7 @@ export const useChatStore = createPersistStore(
             .concat(
               createMessage({
                 role: "user",
-                content: Locale.Store.Prompt.Topic,
+                content: t("store.prompt.topic"),
               }),
             );
           api.llm.chat({
@@ -644,7 +647,7 @@ export const useChatStore = createPersistStore(
                   session,
                   (session) =>
                     (session.topic =
-                      message.length > 0 ? trimTopic(message) : DEFAULT_TOPIC),
+                      message.length > 0 ? trimTopic(message) : defaultTopic()),
                 );
               }
             },
@@ -693,7 +696,7 @@ export const useChatStore = createPersistStore(
             messages: toBeSummarizedMsgs.concat(
               createMessage({
                 role: "system",
-                content: Locale.Store.Prompt.Summarize,
+                content: t("store.prompt.summarize"),
                 date: "",
               }),
             ),
