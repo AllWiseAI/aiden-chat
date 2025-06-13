@@ -72,14 +72,14 @@ const McpEditor: React.FC<Props> = ({ setMode }) => {
       const parsed = JSON.parse(jsonStr);
       const res = await saveEditorConfig(parsed);
       if (res) {
-        toast.success("配置成功", {
+        toast.success(t("mcp.editor.success"), {
           className: "w-auto max-w-max",
         });
         setMode("table");
       }
     } catch (e: any) {
       setError("JSON 解析错误：" + (e.message || e));
-      toast.error("配置失败", {
+      toast.error(t("mcp.editor.success"), {
         className: "w-auto max-w-max",
       });
       console.error(e);

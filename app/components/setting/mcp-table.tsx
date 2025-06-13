@@ -58,22 +58,23 @@ function ServerTable({
   switchMcpStatus,
   setCurrentSetting,
 }: ServerTableProps) {
+  const { t } = useTranslation("settings");
   const handleDeleteMcp = async (
     e: React.MouseEvent<HTMLButtonElement>,
     mcp_key: string,
   ) => {
     e.stopPropagation();
     let result = await showConfirm({
-      title: "Delete",
-      description: "Confirm to delete?",
+      title: t("mcp.delete.title"),
+      description: t("mcp.delete.description"),
       type: "delete",
     });
     if (result !== ConfirmType.Confirm) return;
     try {
       await removeMcpItem(mcp_key);
-      toast.success("Deleted successfully");
+      toast.success(t("mcp.delete.success"));
     } catch (e) {
-      toast.error("Failed to delete, please try again");
+      toast.error(t("mcp.delete.fail"));
     }
   };
   return (
@@ -129,7 +130,7 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
   const handleSettingConfirm = async (update: TSettingInfo) => {
     setShowSettingModal(false);
     await updateMcpArgsEnvs(currentMcpName, update);
-    toast.success("Updated successfully");
+    toast.success(t("mcp.update.success"));
   };
 
   return (

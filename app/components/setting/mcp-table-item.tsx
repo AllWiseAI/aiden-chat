@@ -276,7 +276,7 @@ export function McpTableItem({
               className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] px-2.5"
               onClick={handleUpdateMcpVersion}
             >
-              Update
+              {t("mcp.btnUpdate")}
             </Button>
           )}
           {showDelete && (

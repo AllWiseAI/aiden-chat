@@ -79,7 +79,7 @@ export const ConfirmProvider = ({
                 handleClose("confirm");
               }}
             >
-              {t("dialog.cancel")}
+              {t("dialog.confirm")}
             </Button>
           </div>
         </AlertDialogFooter>

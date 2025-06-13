@@ -342,7 +342,6 @@ export const updateConfig = async (newConfig: any) => {
     if (res) {
       console.log("[Mcp store] updateRemoteMcpConfig");
       await updateRemoteMcpConfig(newConfig);
-      toast.success("Updated config successfully");
     } else {
       console.log("Failed to write local mcp.config.json", res);
     }

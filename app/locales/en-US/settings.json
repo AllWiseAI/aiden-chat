@@ -27,8 +27,21 @@
     "edit": "Edit Config",
     "search": "Search",
     "setting": "Setting",
+    "btnUpdate": "Update",
     "remove": "Remove",
-    "save": "Save"
+    "save": "Save",
+    "update": {
+      "success": "Update successful."
+    },
+    "delete": {
+      "title": "Delete",
+      "description": "Confirm to delete?"
+    },
+    "editor": {
+      "success": "Config saved.",
+      "fail": "Config save failed. Please try again later.",
+      "parseError": "Config parse failed."
+    }
   },
   "aboutUs": {
     "contact": "Contact us:",

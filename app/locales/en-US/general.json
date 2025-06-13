@@ -109,6 +109,7 @@
     "confirm": "Confirm",
     "decline": "Decline",
     "allowAlways": "Allow always",
-    "allowOnce": "Allow once"
+    "allowOnce": "Allow once",
+    "mcpSetting": "MCP Setting"
   }
 }
