@@ -48,7 +48,7 @@ export const ImageUploader = () => {
         variant="outline"
         className="border border-[#E8ECEF] text-black dark:text-white dark:bg-[#141416] dark:border-[#6C7275] text-sm font-semibold p-2"
       >
-        <FileIcon />
+        <FileIcon className="text-[#141718] dark:text-white" />
       </Button>
       <input
         ref={inputRef}
