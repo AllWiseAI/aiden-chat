@@ -6,7 +6,7 @@
     "chatItemCount": "{{count}} messages"
   },
   "chat": {
-    "title": "Hi, I&apos;m",
+    "title": "Hi, I'm",
     "subTitle": "{{count}} messages",
     "actions": {
       "copy": "Copy",
