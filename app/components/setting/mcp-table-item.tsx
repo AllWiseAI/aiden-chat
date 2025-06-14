@@ -115,7 +115,7 @@ export function McpTableItem({
       const { mcp_id, mcp_key, current_version } = item;
       try {
         await updateLocalMcpVersion(mcp_id, mcp_key, current_version || "");
-        toast.success("Update mcp version success");
+        toast.success(t("mcp.update.success"));
       } catch (e: any) {
         toast.error(e, {
           className: "w-auto max-w-max",

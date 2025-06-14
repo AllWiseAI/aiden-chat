@@ -28,7 +28,11 @@
     "rename": "Rename",
     "delete": "Delete",
     "typing": "Typing…",
-    "send": "Send"
+    "send": "Send",
+    "image": {
+      "tip": "Please select an image to upload",
+      "fileTypes": "The image type is not supported, please select an image file"
+    }
   },
   "home": {
     "newChat": "New Chat",
