@@ -1,12 +1,19 @@
 #!/bin/bash
 set -e
 
+ARCH=$1
+
+if [ -z "$ARCH" ]; then
+  echo "❌ 错误：未传入架构参数 (arm64 或 x86_64)"
+  exit 1
+fi
+
 # 创建 bin 目录
 mkdir -p src-tauri/bin
 
 # === 下载 host_server ===
 echo "正在获取 host_server 下载链接..."
-ASSET_NAME="host_server_macos"
+ASSET_NAME="host_server_darwin_${ARCH}"
 ASSET_FILE="$ASSET_NAME.zip"
 REPO_OWNER="AllWiseAI"
 REPO_NAME="host-server-py"
@@ -36,19 +43,29 @@ echo "✅ host_server 已成功下载并解压"
 
 # === 下载 uv ===
 echo "正在下载 uv..."
-curl -L https://github.com/astral-sh/uv/releases/download/0.6.17/uv-aarch64-apple-darwin.tar.gz -o src-tauri/bin/uv.tar.gz
-tar -xzf src-tauri/bin/uv.tar.gz -C src-tauri/bin --strip-components=1 uv-aarch64-apple-darwin/uv uv-aarch64-apple-darwin/uvx
+if [ "$ARCH" == "arm64" ]; then
+  UV_ARCH="aarch64"
+else
+  UV_ARCH="x86_64"
+fi
+curl -L https://github.com/astral-sh/uv/releases/download/0.6.17/uv-${UV_ARCH}-apple-darwin.tar.gz -o src-tauri/bin/uv.tar.gz
+tar -xzf src-tauri/bin/uv.tar.gz -C src-tauri/bin --strip-components=1 uv-${UV_ARCH}-apple-darwin/uv uv-${UV_ARCH}-apple-darwin/uvx
 chmod +x src-tauri/bin/uv src-tauri/bin/uvx
 rm -f src-tauri/bin/uv.tar.gz
 echo "✅ uv 已下载并解压"
 
 # === 下载 bun ===
 echo "正在下载 bun..."
-curl -L https://github.com/oven-sh/bun/releases/download/bun-v1.2.13/bun-darwin-aarch64.zip -o src-tauri/bin/bun.zip
+if [ "$ARCH" == "arm64" ]; then
+  BUN_ARCH="aarch64"
+else
+  BUN_ARCH="x64"
+fi
+curl -L https://github.com/oven-sh/bun/releases/download/bun-v1.2.13/bun-darwin-${BUN_ARCH}.zip -o src-tauri/bin/bun.zip
 unzip -o src-tauri/bin/bun.zip -d src-tauri/bin/
-mv src-tauri/bin/bun-darwin-aarch64/bun src-tauri/bin/bun
+mv src-tauri/bin/bun-darwin-${BUN_ARCH}/bun src-tauri/bin/bun
 chmod +x src-tauri/bin/bun
-rm -rf src-tauri/bin/bun-darwin-aarch64 src-tauri/bin/bun.zip
+rm -rf src-tauri/bin/bun-darwin-${BUN_ARCH} src-tauri/bin/bun.zip
 echo "✅ bun 已下载并解压"
 
 # 打印结果
