@@ -36,6 +36,7 @@ export type TDetailInfo = {
   tutorial: string;
   checked: boolean;
   type: McpItemType;
+  current_version: string;
 };
 
 export enum McpAction {
@@ -66,6 +67,7 @@ export type CustomMCPServer = {
   aiden_type: McpItemType;
   aiden_enable: boolean;
   aiden_id: string;
+  aiden_mcp_version?: string;
 };
 
 export type TRemoteMcpInfo = {
@@ -81,6 +83,7 @@ export type TRemoteMcpInfo = {
   tutorial_en: string;
   tutorial_zh: string;
   type: string;
+  current_version: string;
 };
 
 export type EnvItem = { key: string; value: string };
@@ -114,6 +117,8 @@ export type McpItemInfo = Omit<
   tutorial_zh?: string;
   tutorial_en?: string;
   settingInfo: TSettingInfo | null;
+  local_version: string;
+  remote_version: string;
 };
 
 export type A2AServer = {

@@ -10,7 +10,7 @@ import {
   DialogClose,
 } from "@/app/components/shadcn/dialog";
 import { Button } from "@/app/components/shadcn/button";
-
+import { t } from "i18next";
 interface SettingItem {
   key: string;
   value: string;
@@ -79,7 +79,9 @@ export function McpSettingModal({
         }}
       >
         <DialogHeader>
-          <DialogTitle className="dark:text-[#FEFEFE]">MCP Setting</DialogTitle>
+          <DialogTitle className="dark:text-[#FEFEFE]">
+            {t("dialog.mcpSetting")}
+          </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 px-2 max-h-[500px] overflow-y-auto">
@@ -124,7 +126,7 @@ export function McpSettingModal({
               type="button"
               onClick={() => onOpenChange?.(false)}
             >
-              Cancel
+              {t("dialog.cancel")}
             </Button>
           </DialogClose>
           <DialogClose asChild>
@@ -133,7 +135,7 @@ export function McpSettingModal({
               onClick={handleConfirm}
               type="button"
             >
-              Confirm
+              {t("dialog.confirm")}
             </Button>
           </DialogClose>
         </DialogFooter>

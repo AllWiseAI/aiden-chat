@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMcpStore } from "@/app/store/mcp";
 
 import McpTable from "./mcp-table";
@@ -10,6 +10,7 @@ import McpEditor from "./mcp-editor";
 import { McpConfigKey, TDetailInfo } from "@/app/typing";
 
 export default function McpConfig() {
+  const mcpStore = useMcpStore();
   const config = useMcpStore((state) => state.config);
   const [mode, setMode] = useState<McpConfigKey>("table");
   const [detailInfo, setDetailInfo] = useState<TDetailInfo>();
@@ -17,6 +18,10 @@ export default function McpConfig() {
     setMode("detail");
     setDetailInfo(detailInfo);
   };
+
+  useEffect(() => {
+    mcpStore.reCaculateMcpList();
+  }, []);
 
   if (!config) {
     return <div className="p-4 text-gray-600">Loading...</div>;
