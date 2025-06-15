@@ -3,7 +3,6 @@ set -e
 
 ARCH=$1
 
-# ✅ 架构别名映射：用来修正 Tauri 输出中实际使用的目录命名和文件名
 if [[ "$ARCH" == "arm64" ]]; then
   ARCH_DIR="aarch64"
   ARCH_DMG_SUFFIX="aarch64"
@@ -17,7 +16,7 @@ fi
 
 APP_PATH="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/macos/AidenChat.app"
 ZIP_PATH="${APP_PATH}.zip"
-DMG_NAME="AidenChat_${PACKAGE_VERSION}_${ARCH_DMG_SUFFIX}.dmg"
+DMG_NAME="AidenChat_${PACKAGE_VERSION}_${ARCH_DMG_SUFFIX}_signed.dmg"
 DMG_PATH="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/dmg/${DMG_NAME}"
 VOL_NAME="AidenChat"
 LATEST_JSON_PATH="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/macos/latest.json"

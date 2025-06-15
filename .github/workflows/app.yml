@@ -133,7 +133,7 @@ jobs:
           APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
 
       - name: Notarize app and DMG
-        run: bash .github/scripts/notarize.sh
+        run: bash .github/scripts/notarize.sh ${{ matrix.config.arch }}
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
