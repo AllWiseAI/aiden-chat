@@ -46,16 +46,27 @@ fn get_env_path<R: Runtime>(app: &AppHandle<R>) -> Option<PathBuf> {
 }
 
 fn get_host_server_path<R: Runtime>(app: &AppHandle<R>) -> PathBuf {
-    // 根据平台选择对应的host_server名称
-    let binary_name = if cfg!(target_os = "macos") {
-        "host_server_macos"
-    } else if cfg!(target_os = "linux") {
-        "host_server_linux"
-    } else if cfg!(target_os = "windows") {
-        "host_server_windows.exe"
-    } else {
-        "host_server_macos"
+    #[cfg(target_os = "macos")]
+    let binary_name = {
+        // 使用运行时架构判断（arm64 vs x86_64）
+        #[cfg(target_arch = "aarch64")]
+        {
+            "host_server_darwin_arm64"
+        }
+        #[cfg(target_arch = "x86_64")]
+        {
+            "host_server_darwin_x86_64"
+        }
     };
+
+    #[cfg(target_os = "linux")]
+    let binary_name = "host_server_linux";
+
+    #[cfg(target_os = "windows")]
+    let binary_name = "host_server_windows.exe";
+
+    #[cfg(not(any(target_os = "macos", target_os = "linux", target_os = "windows")))]
+    let binary_name = "host_server_darwin_arm64";
 
     if cfg!(debug_assertions) {
         std::env::current_dir()
