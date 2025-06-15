@@ -105,57 +105,58 @@ jobs:
           HOST_SERVER_VERSION=$(cat .host_server_version)
           EOF
 
-      - name: Setup macOS code signing
-        run: bash .github/scripts/setup-macos-codesign.sh
-        env:
-          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
+      # - name: Setup macOS code signing
+      #   run: bash .github/scripts/setup-macos-codesign.sh
+      #   env:
+      #     APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+      #     APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+      #     APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
 
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
+          releaseId: ${{ needs.create-release.outputs.release_id }}
           args: --target ${{ matrix.config.rust_target }}
 
-      - name: Sign all binaries and app
-        run: bash .github/scripts/sign-all.sh ${{ matrix.config.arch }}
-        env:
-          APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
-      - name: Check missing signatures
-        run: bash .github/scripts/check-signature.sh ${{ matrix.config.arch }}
-        env:
-          APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
-      - name: Notarize app and DMG
-        run: bash .github/scripts/notarize.sh
-        env:
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
-          APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
-          PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+      # - name: Sign all binaries and app
+      #   run: bash .github/scripts/sign-all.sh ${{ matrix.config.arch }}
+      #   env:
+      #     APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
+      # - name: Check missing signatures
+      #   run: bash .github/scripts/check-signature.sh ${{ matrix.config.arch }}
+      #   env:
+      #     APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
+      # - name: Notarize app and DMG
+      # run: bash .github/scripts/notarize.sh
+      # env:
+      #   APPLE_ID: ${{ secrets.APPLE_ID }}
+      #   APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      #   APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+      #   APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
+      #   PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
+      #   TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+      #   TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
       - name: List build artifacts
         run: ls -R src-tauri/target/
 
-      - name: Zip .app for upload
-        run: |
-          cd src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos
-          zip -r AidenChat_${{ matrix.config.artifact_arch }}.app.zip AidenChat.app
+      # - name: Zip .app for upload
+      #   run: |
+      #     cd src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos
+      #     zip -r AidenChat_${{ matrix.config.artifact_arch }}.app.zip AidenChat.app
 
-      - uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.ref_name }}
-          overwrite: true
-          files: |
-            src-tauri/target/arm64-apple-darwin/release/bundle/macos/AidenChat_arm64.app.zip
-            src-tauri/target/arm64-apple-darwin/release/bundle/macos/AidenChat_arm64.app.zip.sig
-            src-tauri/target/arm64-apple-darwin/release/bundle/dmg/AidenChat_${{ env.PACKAGE_VERSION }}_arm64_signed.dmg
+      # - uses: softprops/action-gh-release@v1
+      #   with:
+      #     tag_name: ${{ github.ref_name }}
+      #     overwrite: true
+      #     files: |
+      #       src-tauri/target/arm64-apple-darwin/release/bundle/macos/AidenChat_arm64.app.zip
+      #       src-tauri/target/arm64-apple-darwin/release/bundle/macos/AidenChat_arm64.app.zip.sig
+      #       src-tauri/target/arm64-apple-darwin/release/bundle/dmg/AidenChat_${{ env.PACKAGE_VERSION }}_arm64_signed.dmg
 
-            src-tauri/target/x86_64-apple-darwin/release/bundle/macos/AidenChat_x86_64.app.zip
-            src-tauri/target/x86_64-apple-darwin/release/bundle/macos/AidenChat_x86_64.app.zip.sig
-            src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/AidenChat_${{ env.PACKAGE_VERSION }}_x86_64_signed.dmg
+      #       src-tauri/target/x86_64-apple-darwin/release/bundle/macos/AidenChat_x86_64.app.zip
+      #       src-tauri/target/x86_64-apple-darwin/release/bundle/macos/AidenChat_x86_64.app.zip.sig
+      #       src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/AidenChat_${{ env.PACKAGE_VERSION }}_x86_64_signed.dmg
 
   publish-release:
     permissions:
