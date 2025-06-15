@@ -3,17 +3,24 @@ set -e
 
 ARCH=$1
 
-if [[ "$ARCH" != "arm64" && "$ARCH" != "x86_64" ]]; then
+# ✅ 架构别名映射：用来修正 Tauri 输出中实际使用的目录命名和文件名
+if [[ "$ARCH" == "arm64" ]]; then
+  ARCH_DIR="aarch64"
+  ARCH_DMG_SUFFIX="aarch64"
+elif [[ "$ARCH" == "x86_64" ]]; then
+  ARCH_DIR="x86_64"
+  ARCH_DMG_SUFFIX="x64"
+else
   echo "❌ Invalid arch: $ARCH"
   exit 1
 fi
 
-APP_PATH="src-tauri/target/${ARCH}-apple-darwin/release/bundle/macos/AidenChat.app"
+APP_PATH="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/macos/AidenChat.app"
 ZIP_PATH="${APP_PATH}.zip"
-DMG_NAME="AidenChat_${PACKAGE_VERSION}_${ARCH}_signed.dmg"
-DMG_PATH="src-tauri/target/${ARCH}-apple-darwin/release/bundle/dmg/${DMG_NAME}"
+DMG_NAME="AidenChat_${PACKAGE_VERSION}_${ARCH_DMG_SUFFIX}_signed.dmg"
+DMG_PATH="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/dmg/${DMG_NAME}"
 VOL_NAME="AidenChat"
-LATEST_JSON_PATH="src-tauri/target/${ARCH}-apple-darwin/release/bundle/macos/latest.json"
+LATEST_JSON_PATH="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/macos/latest.json"
 
 echo "🧾 开始 Apple Notarization 公证流程 for $ARCH"
 
