@@ -37,7 +37,7 @@ done
 
 echo "🚀 签名 host_server_macos_${HOST_ARCH} 中的可执行文件..."
 
-HOST_DIR="src-tauri/resources/host_server_macos_${HOST_ARCH}"
+HOST_DIR="src-tauri/resources/host_server_darwin_${HOST_ARCH}"
 PY_FRAMEWORK="$HOST_DIR/_internal/Python.framework"
 PY_SYMLINK="$PY_FRAMEWORK/Python"
 
