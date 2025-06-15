@@ -46,9 +46,9 @@ jobs:
         config:
           - arch: x86_64
             rust_target: x86_64-apple-darwin
-            artifact_arch: x64
+            artifact_arch: x86_64
           - arch: arm64
-            rust_target: aarch64-apple-darwin
+            rust_target: arm64-apple-darwin
             artifact_arch: arm64
 
     runs-on: macos-latest
