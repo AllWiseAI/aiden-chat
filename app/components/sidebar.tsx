@@ -1,11 +1,7 @@
 import React, { Fragment, useEffect, useState, useMemo, useRef } from "react";
 
 import styles from "./home.module.scss";
-import {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-} from "@/app/components/shadcn/avatar";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,11 +11,12 @@ import {
 } from "@/app/components/shadcn/dropdown-menu";
 import { Button } from "@/app/components/shadcn/button";
 import { Input } from "@/app/components/shadcn/input";
+import LogoIcon from "../icons/logo-circle.svg";
 import LogoutIcon from "../icons/logout.svg";
 import SettingIcon from "../icons/setting.svg";
 import SearchIcon from "../icons/search.svg";
 import CollapseIcon from "../icons/collapse.svg";
-import PlusIcon from "../icons/plus.svg";
+import TaskIcon from "../icons/task.svg";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { useAppConfig, useAuthStore, useChatStore } from "../store";
@@ -154,9 +151,14 @@ export function SideBarContainer(props: {
   const { children, className, onDragStart, shouldNarrow } = props;
   return (
     <div
-      className={clsx(styles.sidebar, className, {
-        [styles["narrow-sidebar"]]: shouldNarrow,
-      })}
+      className={clsx(
+        styles.sidebar,
+        className,
+        {
+          [styles["narrow-sidebar"]]: shouldNarrow,
+        },
+        "bg-[#F3F5F7]/50",
+      )}
       style={{
         // #3016 disable transition on ios mobile screen
         transition: isMobileScreen && isIOSMobile ? "none" : undefined,
@@ -199,18 +201,27 @@ export function SideBarHeader(props: {
   };
   return (
     <Fragment>
-      <div className="flex justify-between items-center h-20 gap-4 overflow-hidden px-6 pt-10 dark:border-[#232627] select-none">
+      <div
+        className={clsx(
+          "flex items-center h-13 gap-4 overflow-hidden px-4 pt-5 dark:border-[#232627] select-none",
+          shouldNarrow ? "justify-center" : "justify-between",
+        )}
+      >
         {!shouldNarrow && (
           <>
             <div className="flex items-center gap-4">
               <DropdownMenu>
                 <DropdownMenuTrigger>
-                  <Avatar className="size-10 cursor-pointer">
+                  {/* <Avatar className="size-10 cursor-pointer">
                     <AvatarImage src={authStore.user.profile} />
                     <AvatarFallback>
                       {authStore.user.email?.[0].toUpperCase()}
                     </AvatarFallback>
-                  </Avatar>
+                  </Avatar> */}
+                  <div className="flex gap-2">
+                    <LogoIcon />
+                    <p className="text-sm">Aiden</p>
+                  </div>
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent
@@ -258,14 +269,14 @@ export function SideBarHeader(props: {
             </span> */}
           </>
         )}
-        <div className="flex gap-2">
+        <div className="flex gap-[5px]">
           {!shouldNarrow && (
-            <Button variant="ghost" className="size-8" onClick={toggleSearch}>
-              <SearchIcon className="size-6" />
+            <Button variant="ghost" className="size-4" onClick={toggleSearch}>
+              <SearchIcon className="size-4" />
             </Button>
           )}
-          <Button variant="ghost" className="size-8" onClick={toggleSideBar}>
-            <CollapseIcon className="size-6 text-white dark:text-[#141718]" />
+          <Button variant="ghost" className="size-4" onClick={toggleSideBar}>
+            <CollapseIcon className="size-4 text-white dark:text-[#141718]" />
           </Button>
         </div>
       </div>
@@ -353,14 +364,14 @@ export function SideBar(props: { className?: string }) {
               )}
               <Button
                 variant="ghost"
-                className="h-10 text-main hover:text-[#00D47E] flex justify-start items-center gap-3 px-5 py-3 rounded-full"
+                className="h-9 text-main bg-[#00D47E]/12 hover:text-main hover:bg-[#00D47E]/24 flex justify-start items-center gap-3 p-1.5 rounded-sm"
                 onClick={() => {
                   chatStore.newSession();
                   navigate(Path.Chat);
                 }}
               >
-                <PlusIcon className="size-4" />
-                <span className="font-medium select-none">
+                <TaskIcon className="size-4" />
+                <span className="font-medium text-sm select-none">
                   {t("home.newChat")}
                 </span>
               </Button>

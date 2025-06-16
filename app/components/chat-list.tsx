@@ -79,13 +79,13 @@ export function ChatItem(props: {
       {(provided) => (
         <div
           className={clsx(
-            "p-2.5 rounded-xl group my-1",
+            "p-1.5 rounded-sm group h-7.5",
             props.selected &&
               (currentPath === Path.Chat || currentPath === Path.Home)
-              ? "bg-gray-200 dark:bg-[#232323]"
+              ? "bg-[#E8ECEF]/50 dark:bg-[#232323]"
               : openMenu
-              ? "bg-gray-100 dark:bg-[#2F2F2F]"
-              : "hover:bg-gray-100 dark:hover:bg-[#2F2F2F]",
+              ? "bg-bg-[#E8ECEF]/50 dark:bg-[#2F2F2F]"
+              : "hover:bg-[#E8ECEF]/50 dark:hover:bg-[#2F2F2F]",
           )}
           onClick={props.onClick}
           ref={(ele) => {
@@ -135,14 +135,14 @@ export function ChatItem(props: {
               ) : (
                 <div className="flex justify-between items-center">
                   <div className="flex justify-start items-center gap-4 leading-6">
-                    <div className="text-[#232627] dark:text-white cursor-default text-sm font-semibold w-full line-clamp-1">
+                    <div className="text-[#232627] dark:text-white cursor-default text-xs font-semibold w-full line-clamp-1">
                       {props.title}
                     </div>
                   </div>
 
                   <DropdownMenu open={openMenu} onOpenChange={setOpenMenu}>
                     <DropdownMenuTrigger
-                      className="size-6 flex-center cursor-pointer"
+                      className="size-4 flex-center cursor-pointer"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <MoreIcon
@@ -280,7 +280,7 @@ export function ChatList(props: { narrow?: boolean; searchValue?: string }) {
         <Droppable droppableId="chat-list">
           {(provided) => (
             <div
-              className="select-none"
+              className="flex flex-col gap-[8px] select-none"
               ref={provided.innerRef}
               {...provided.droppableProps}
             >
