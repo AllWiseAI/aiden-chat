@@ -105,6 +105,13 @@ jobs:
           HOST_SERVER_VERSION=$(cat .host_server_version)
           EOF
 
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          releaseId: ${{ needs.create-release.outputs.release_id }}
+          args: --target ${{ matrix.config.rust_target }}
+
       - name: Setup macOS code signing
         run: bash .github/scripts/setup-macos-codesign.sh
         env:
@@ -116,16 +123,6 @@ jobs:
         run: bash .github/scripts/sign-all.sh ${{ matrix.config.arch }}
         env:
           APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
-
-      - uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
-        with:
-          releaseId: ${{ needs.create-release.outputs.release_id }}
-          args: --target ${{ matrix.config.rust_target }}
 
       - name: Check missing signatures
         run: bash .github/scripts/check-signature.sh ${{ matrix.config.arch }}
