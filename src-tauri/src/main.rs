@@ -14,6 +14,7 @@ use std::process::{Command as StdCommand, Stdio as StdStdio};
 use std::sync::Mutex;
 use tauri::api::path::resource_dir;
 use tauri::{AppHandle, Manager, Runtime, State};
+use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
 use tokio::io::AsyncBufReadExt;
 use tokio::process::{Child, Command as TokioCommand};
 use tokio::task;
@@ -258,12 +259,28 @@ fn main() {
         None
     };
 
+    let setting = CustomMenuItem::new("open_setting".to_string(), "Setting");
+    let submenu = Submenu::new(
+        "App",
+        Menu::new()
+            .add_item(setting)
+            .add_native_item(MenuItem::Quit),
+    );
+    let menu = Menu::new().add_submenu(submenu);
+
     tokio::runtime::Builder::new_multi_thread()
         .enable_all()
         .build()
         .unwrap()
         .block_on(async {
             tauri::Builder::default()
+                .menu(menu)
+                .on_menu_event(|event| match event.menu_item_id() {
+                    "open_setting" => {
+                        let _ = event.window().emit("open-setting", {});
+                    }
+                    _ => {}
+                })
                 .manage(HostServerProcess(Mutex::new(None)))
                 .invoke_handler(tauri::generate_handler![
                     log_from_frontend,

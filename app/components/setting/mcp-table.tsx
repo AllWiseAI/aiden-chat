@@ -29,11 +29,13 @@ type ServerTableProps = {
     name,
     enable,
     type,
+    version,
   }: {
     id: string;
     name: string;
     type: string;
     enable: boolean;
+    version: string;
   }) => void;
   setDetail: (detailInfo: McpItemInfo) => void;
   removeMcpItem: (name: string) => void;
@@ -56,22 +58,23 @@ function ServerTable({
   switchMcpStatus,
   setCurrentSetting,
 }: ServerTableProps) {
+  const { t } = useTranslation("settings");
   const handleDeleteMcp = async (
     e: React.MouseEvent<HTMLButtonElement>,
     mcp_key: string,
   ) => {
     e.stopPropagation();
     let result = await showConfirm({
-      title: "Delete",
-      description: "Confirm to delete?",
+      title: t("mcp.delete.title"),
+      description: t("mcp.delete.description"),
       type: "delete",
     });
     if (result !== ConfirmType.Confirm) return;
     try {
       await removeMcpItem(mcp_key);
-      toast.success("Deleted successfully");
+      toast.success(t("mcp.delete.success"));
     } catch (e) {
-      toast.error("Failed to delete, please try again");
+      toast.error(t("mcp.delete.fail"));
     }
   };
   return (
@@ -83,9 +86,9 @@ function ServerTable({
               key={item.mcp_id + item.mcp_name}
               item={{ ...item }}
               keyword={keyword}
-              onSwitchChange={async (enable, id, name, type) => {
+              onSwitchChange={async (enable, id, name, type, version) => {
                 try {
-                  await switchMcpStatus({ id, name, enable, type });
+                  await switchMcpStatus({ id, name, enable, type, version });
                 } catch (e: any) {
                   toast.error(e, {
                     className: "w-auto max-w-max",
@@ -124,9 +127,10 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
     null,
   );
   const [currentMcpName, setCurrentMcpName] = useState<string>("");
-  const handleSettingConfirm = (update: TSettingInfo) => {
+  const handleSettingConfirm = async (update: TSettingInfo) => {
     setShowSettingModal(false);
-    updateMcpArgsEnvs(currentMcpName, update);
+    await updateMcpArgsEnvs(currentMcpName, update);
+    toast.success(t("mcp.update.success"));
   };
 
   return (
@@ -167,7 +171,6 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
           setDetail={setDetail}
           removeMcpItem={removeMcpItem}
           setCurrentSetting={(settingInfo, mcpName) => {
-            console.log("settingInfo in table ===", settingInfo);
             setCurrentSetting(settingInfo);
             setCurrentMcpName(mcpName);
             setShowSettingModal(true);
