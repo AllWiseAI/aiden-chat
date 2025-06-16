@@ -13,7 +13,11 @@ mkdir -p src-tauri/bin
 
 # === 下载 host_server ===
 echo "正在获取 host_server 下载链接..."
-ASSET_NAME="host_server_darwin_${ARCH}"
+if [ "$ARCH" == "arm64" ]; then
+  ASSET_NAME="host_server_macos"
+else
+  ASSET_NAME="host_server_macos_x86_64"
+fi
 ASSET_FILE="$ASSET_NAME.zip"
 REPO_OWNER="AllWiseAI"
 REPO_NAME="host-server-py"
