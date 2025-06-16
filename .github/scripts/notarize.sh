@@ -53,6 +53,12 @@ ln -s /Applications "dmg_temp/Applications"
 hdiutil create -volname "$VOL_NAME" -srcfolder dmg_temp -fs HFS+ -format UDZO "$DMG_PATH"
 rm -rf dmg_temp
 
+# unlock keychain
+echo "🔐 解锁 keychain"
+KEYCHAIN_PASSWORD="build_password"
+security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" build.keychain
+
 # 重新签名 .dmg
 echo "🔏 重新签名 .dmg"
 codesign --force --sign "$APPLE_SIGN_IDENTITY" --timestamp --verbose=4 "$DMG_PATH"
