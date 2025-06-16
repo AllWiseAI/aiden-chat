@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { app, shell } from "@tauri-apps/api";
-import { exit } from "@tauri-apps/api/process";
+import { relaunch } from "@tauri-apps/api/process";
 
 import { join } from "@tauri-apps/api/path";
 import { exists, writeBinaryFile, removeFile } from "@tauri-apps/api/fs";
@@ -105,7 +105,7 @@ export function useSilentUpdater() {
       console.log("[Updater] 开始安装:", installerPath);
       await shell.open(installerPath);
       await removeFile(installerPath);
-      await exit(0);
+      await relaunch();
     } catch (e) {
       console.error("[Updater] 安装失败:", e);
     }

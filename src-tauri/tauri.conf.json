@@ -62,7 +62,9 @@
         "readFile": true,
         "removeFile": true,
         "scope": [
-          "*"
+          "$APPDATA",
+          "$APPDATA/*",
+          "$APPDATA/**"
         ]
       },
       "notification": {
