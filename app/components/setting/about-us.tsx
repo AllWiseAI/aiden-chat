@@ -6,9 +6,12 @@ import RightIcon from "../../icons/right-arrow.svg";
 import { useAppUpdate } from "@/app/hooks/use-app-update";
 import { showConfirm } from "@/app/components/confirm-modal/confirm";
 import { useTranslation } from "react-i18next";
+import { useSilentUpdater } from "@/app/hooks/use-silent-update";
 
 export default function AboutUs() {
   const { isShowUpdate, isLatest, handleUpdate, isUpdating } = useAppUpdate();
+  const { isNewVersionDownloaded, installApp } = useSilentUpdater();
+  console.log("isNewVersionDownloaded===", isNewVersionDownloaded);
   const { t } = useTranslation("settings");
   const aboutUsArr = [
     {
