@@ -313,8 +313,13 @@ export const useMcpStore = createPersistStore(
         version: string;
       }) => {
         console.log("[Mcp store] switchMcpStatus: ", name, enable);
-        const { config, mcpRemoteInfoMap, renderMcpList, getRemoteMcpStatus } =
-          _get();
+        const {
+          config,
+          updateMcpStatusList,
+          mcpRemoteInfoMap,
+          renderMcpList,
+          getRemoteMcpStatus,
+        } = _get();
         if (!config) return;
         let newConfig;
         let settingInfo: TSettingInfo | null = null;
@@ -363,6 +368,8 @@ export const useMcpStore = createPersistStore(
           await updateConfig(newConfig);
           if (newConfig.mcpServers[name].aiden_enable) {
             getRemoteMcpStatus(name);
+          } else {
+            updateMcpStatusList({ name, action: McpAction.Loading }, "delete");
           }
         } catch (e) {
           console.error(e);
