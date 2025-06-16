@@ -18,10 +18,6 @@ function McpTooltip({ icon }: { icon: ReactElement }) {
   const navigate = useNavigate();
   const mcpStatusList = useMcpStore((state) => state.mcpStatusList);
 
-  const allSuccess = useMemo(() => {
-    return mcpStatusList.every((item) => item.action === McpAction.Connected);
-  }, [mcpStatusList]);
-
   const allFailed = useMemo(() => {
     return mcpStatusList.every((item) => item.action === McpAction.Failed);
   }, [mcpStatusList]);
@@ -29,6 +25,11 @@ function McpTooltip({ icon }: { icon: ReactElement }) {
   const hasLoading = useMemo(() => {
     return mcpStatusList.some((item) => item.action === McpAction.Loading);
   }, [mcpStatusList]);
+
+  const hasSuccess = useMemo(() => {
+    if (hasLoading) return false;
+    return mcpStatusList.some((item) => item.action === McpAction.Connected);
+  }, [mcpStatusList, hasLoading]);
 
   const shouldShowStatusIcon = useMemo(() => {
     return mcpStatusList.length > 0;
@@ -53,12 +54,12 @@ function McpTooltip({ icon }: { icon: ReactElement }) {
   }, []);
 
   const renderStatusIcon = useMemo(() => {
-    if (allSuccess) return SuccessStatusIcon;
+    if (hasSuccess) return SuccessStatusIcon;
     if (allFailed) return FailedStatusIcon;
     if (hasLoading) return LoadingStatusIcon;
     return null;
   }, [
-    allSuccess,
+    hasSuccess,
     allFailed,
     hasLoading,
     FailedStatusIcon,
