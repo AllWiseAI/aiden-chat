@@ -76,22 +76,3 @@ SIG_PATH="${ZIP_PATH}.sig"
 echo "$TAURI_PRIVATE_KEY" | base64 -d > tauri_private_key.pem
 openssl dgst -sha256 -sign tauri_private_key.pem -out "$SIG_PATH" "$ASSET_PATH"
 rm tauri_private_key.pem
-
-SIGNATURE=$(base64 < "$SIG_PATH" | tr -d '\n')
-ASSET_URL="https://github.com/AllWiseAI/aiden-chat/releases/download/v${PACKAGE_VERSION}/$(basename "$ZIP_PATH")"
-PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-
-echo "📝 生成 latest.json"
-cat > "$LATEST_JSON_PATH" <<EOF
-{
-  "version": "$PACKAGE_VERSION",
-  "notes": "",
-  "pub_date": "$PUB_DATE",
-  "platforms": {
-    "darwin-${ARCH}": {
-      "signature": "$SIGNATURE",
-      "url": "$ASSET_URL"
-    }
-  }
-}
-EOF

@@ -129,6 +129,11 @@ jobs:
         env:
           APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
 
+      - name: get version
+        run: |
+          echo "📦 获取 src-tauri 中配置的版本号..."
+          echo "PACKAGE_VERSION=$(node -p "require('./src-tauri/tauri.conf.json').package.version")" >> $GITHUB_ENV
+
       - name: Notarize app and DMG
         run: bash .github/scripts/notarize.sh ${{ matrix.config.arch }}
         env:
@@ -143,23 +148,58 @@ jobs:
       - name: List build artifacts
         run: ls -R src-tauri/target/
 
-      # - name: Zip .app for upload
-      #   run: |
-      #     cd src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos
-      #     zip -r AidenChat_${{ matrix.config.artifact_arch }}.app.zip AidenChat.app
+      - name: Set mapped arch name
+        id: arch_map
+        run: |
+          if [ "${{ matrix.config.artifact_arch }}" == "arm64" ]; then
+            echo "mapped_arch=aarch64" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.config.artifact_arch }}" == "x86_64" ]; then
+            echo "mapped_arch=x64" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Unknown arch: ${{ matrix.config.artifact_arch }}"
+            exit 1
+          fi
 
-      # - uses: softprops/action-gh-release@v1
-      #   with:
-      #     tag_name: ${{ github.ref_name }}
-      #     overwrite: true
-      #     files: |
-      #       src-tauri/target/arm64-apple-darwin/release/bundle/macos/AidenChat_arm64.app.zip
-      #       src-tauri/target/arm64-apple-darwin/release/bundle/macos/AidenChat_arm64.app.zip.sig
-      #       src-tauri/target/arm64-apple-darwin/release/bundle/dmg/AidenChat_${{ env.PACKAGE_VERSION }}_arm64_signed.dmg
+      - name: Zip .app for upload
+        run: |
+          cd src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos
+          zip -r AidenChat_${{ steps.arch_map.outputs.mapped_arch }}.app.zip AidenChat.app
 
-      #       src-tauri/target/x86_64-apple-darwin/release/bundle/macos/AidenChat_x86_64.app.zip
-      #       src-tauri/target/x86_64-apple-darwin/release/bundle/macos/AidenChat_x86_64.app.zip.sig
-      #       src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/AidenChat_${{ env.PACKAGE_VERSION }}_x86_64_signed.dmg
+      - uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          overwrite: true
+          files: |
+            src-tauri/target/aarch64-apple-darwin/release/bundle/macos/AidenChat_${{ steps.arch_map.outputs.mapped_arch }}.app.zip
+            src-tauri/target/aarch64-apple-darwin/release/bundle/macos/AidenChat_${{ steps.arch_map.outputs.mapped_arch }}.app.zip.sig
+            src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/AidenChat_${{ env.PACKAGE_VERSION }}_${{ steps.arch_map.outputs.mapped_arch }}_signed.dmg
+
+    generate-latest-json:
+      runs-on: ubuntu-latest
+      needs: build-tauri
+
+      steps:
+        - uses: actions/checkout@v4
+
+        - name: Download build artifacts
+          uses: actions/download-artifact@v4
+          with:
+            path: artifacts
+
+        - name: get version
+          run: |
+            echo "📦 获取 src-tauri 中配置的版本号..."
+            echo "PACKAGE_VERSION=$(node -p "require('./src-tauri/tauri.conf.json').package.version")" >> $GITHUB_ENV
+        - name: Generate latest.json
+          run: bash .github/scripts/gen-latest-json.sh
+          env:
+            PACKAGE_VERSION: ${{ needs.build-tauri.outputs.PACKAGE_VERSION }}
+
+        - name: Upload latest.json
+          uses: softprops/action-gh-release@v1
+          with:
+            tag_name: ${{ github.ref_name }}
+            files: dist/latest.json
 
   publish-release:
     permissions:
