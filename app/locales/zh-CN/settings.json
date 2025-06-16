@@ -2,7 +2,7 @@
   "title": "设置",
   "tabs": {
     "general": "通用",
-    "mcp": "Mcp 管理",
+    "mcp": "MCP 管理",
     "aboutUs": "关于我们"
   },
   "general": {
@@ -27,8 +27,22 @@
     "edit": "编辑配置",
     "search": "搜索",
     "setting": "设置",
+    "btnUpdate": "更新",
     "remove": "移除",
-    "save": "保存"
+    "save": "保存",
+    "update": {
+      "success": "更新成功。"
+    },
+    "delete": {
+      "title": "移除",
+      "description": "确认移除？",
+      "success": "移除成功。",
+      "fail": "移除失败。请稍后再试。"
+    },
+    "editor": {
+      "success": "配置已保存。",
+      "fail": "配置保存失败。请稍后再试。"
+    }
   },
   "aboutUs": {
     "contact": "联系我们：",

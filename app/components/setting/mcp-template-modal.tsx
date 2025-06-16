@@ -11,6 +11,7 @@ import {
 } from "@/app/components/shadcn/dialog";
 import { Button } from "@/app/components/shadcn/button";
 import { TTemplateInfo } from "@/app/typing";
+import { t } from "i18next";
 
 interface McpTemplateModalProps {
   open: boolean;
@@ -81,7 +82,9 @@ export function McpTemplateModal({
         }}
       >
         <DialogHeader>
-          <DialogTitle className="dark:text-[#FEFEFE]">MCP Setting</DialogTitle>
+          <DialogTitle className="dark:text-[#FEFEFE]">
+            {t("dialog.mcpSetting")}
+          </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 px-2 max-h-[500px] overflow-y-auto">
@@ -154,7 +157,7 @@ export function McpTemplateModal({
               type="button"
               onClick={handleCancel}
             >
-              Cancel
+              {t("dialog.cancel")}
             </Button>
           </DialogClose>
           <DialogClose asChild>
@@ -163,7 +166,7 @@ export function McpTemplateModal({
               onClick={handleConfirm}
               type="button"
             >
-              Confirm
+              {t("dialog.confirm")}
             </Button>
           </DialogClose>
         </DialogFooter>

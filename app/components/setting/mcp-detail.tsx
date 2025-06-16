@@ -55,6 +55,7 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
                     name: detailInfo.mcp_key,
                     enable: enable,
                     type: detailInfo.type,
+                    version: detailInfo.current_version || "",
                   });
                   toast.success("切换成功", {
                     className: "w-auto max-w-max",
