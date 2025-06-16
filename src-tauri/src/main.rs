@@ -48,17 +48,7 @@ fn get_env_path<R: Runtime>(app: &AppHandle<R>) -> Option<PathBuf> {
 
 fn get_host_server_path<R: Runtime>(app: &AppHandle<R>) -> PathBuf {
     #[cfg(target_os = "macos")]
-    let binary_name = {
-        // 使用运行时架构判断（arm64 vs x86_64）
-        #[cfg(target_arch = "aarch64")]
-        {
-            "host_server_macos"
-        }
-        #[cfg(target_arch = "x86_64")]
-        {
-            "host_server_macos_x86_64"
-        }
-    };
+    let binary_name = "host_server_macos";
 
     #[cfg(target_os = "linux")]
     let binary_name = "host_server_linux";
