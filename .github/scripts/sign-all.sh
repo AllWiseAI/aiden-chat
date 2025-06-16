@@ -35,9 +35,9 @@ for bin in uv uvx bun; do
   fi
 done
 
-echo "🚀 签名 host_server_macos_${HOST_ARCH} 中的可执行文件..."
+echo "🚀 签名 host_server_macos 中的可执行文件..."
 
-HOST_DIR="src-tauri/resources/host_server_darwin_${HOST_ARCH}"
+HOST_DIR="src-tauri/resources/host_server_macos"
 PY_FRAMEWORK="$HOST_DIR/_internal/Python.framework"
 PY_SYMLINK="$PY_FRAMEWORK/Python"
 
@@ -62,7 +62,7 @@ if [ -d "$HOST_DIR" ]; then
     sign_file "$PY_SYMLINK"
   fi
 else
-  echo "❌ 没有找到 host_server_macos_${HOST_ARCH} 目录"
+  echo "❌ 没有找到 host_server_macos 目录"
 fi
 
 echo "✅ 所有构建前资源已签名完成"
