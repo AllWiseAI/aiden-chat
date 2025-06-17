@@ -82,3 +82,15 @@ SIG_PATH="${ZIP_PATH}.sig"
 echo "$TAURI_PRIVATE_KEY" | base64 -d > tauri_private_key.pem
 openssl dgst -sha256 -sign tauri_private_key.pem -out "$SIG_PATH" "$ASSET_PATH"
 rm tauri_private_key.pem
+
+
+# ✅ 添加后缀并重命名 zip 和 sig（防止覆盖）
+RENAMED_ZIP_PATH="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/macos/AidenChat_${ARCH_DMG_SUFFIX}.app.zip"
+RENAMED_SIG_PATH="${RENAMED_ZIP_PATH}.sig"
+
+mv "$ZIP_PATH" "$RENAMED_ZIP_PATH"
+mv "$SIG_PATH" "$RENAMED_SIG_PATH"
+
+echo "📦 重命名产物为:"
+echo "  ZIP: $RENAMED_ZIP_PATH"
+echo "  SIG: $RENAMED_SIG_PATH"
