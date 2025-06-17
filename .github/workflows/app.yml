@@ -190,8 +190,8 @@ jobs:
             src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos/AidenChat_${{ steps.arch_map.outputs.mapped_arch }}.app.zip
             src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos/AidenChat_${{ steps.arch_map.outputs.mapped_arch }}.app.zip.sig
             src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/dmg/AidenChat_${{ env.PACKAGE_VERSION }}_${{ steps.arch_map.outputs.mapped_arch }}_signed.dmg
-          env:
-            GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
