@@ -164,14 +164,32 @@ jobs:
           cd src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos
           zip -r AidenChat_${{ steps.arch_map.outputs.mapped_arch }}.app.zip AidenChat.app
 
+      - name: Output tag list for debugging
+        run: |
+          git fetch --tags
+          echo "📃 所有远端 tag："
+          git tag --sort=-creatordate
+          # 获取最新 tag
+          LATEST_TAG=$(git tag --sort=-creatordate | head -n 1)
+
+          # 如果为空则设置默认值
+          if [ -z "$LATEST_TAG" ]; then
+            echo "⚠️ 未找到 tag，使用默认 tag：v0.1.13"
+            LATEST_TAG="v0.1.13"
+          fi
+
+          echo "✅ 使用的 tag 是：$LATEST_TAG"
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+          echo "✅ 上传使用的 tag 是：${{ env.LATEST_TAG }}"
+
       - uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref_name }}
+          tag_name: ${{ env.LATEST_TAG }}
           overwrite: true
           files: |
-            src-tauri/target/aarch64-apple-darwin/release/bundle/macos/AidenChat_${{ steps.arch_map.outputs.mapped_arch }}.app.zip
-            src-tauri/target/aarch64-apple-darwin/release/bundle/macos/AidenChat_${{ steps.arch_map.outputs.mapped_arch }}.app.zip.sig
-            src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/AidenChat_${{ env.PACKAGE_VERSION }}_${{ steps.arch_map.outputs.mapped_arch }}_signed.dmg
+            src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos/AidenChat_${{ steps.arch_map.outputs.mapped_arch }}.app.zip
+            src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos/AidenChat_${{ steps.arch_map.outputs.mapped_arch }}.app.zip.sig
+            src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/dmg/AidenChat_${{ env.PACKAGE_VERSION }}_${{ steps.arch_map.outputs.mapped_arch }}_signed.dmg
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -200,15 +218,35 @@ jobs:
         run: |
           echo "📦 获取 src-tauri 中配置的版本号..."
           echo "PACKAGE_VERSION=$(node -p "require('./src-tauri/tauri.conf.json').package.version")" >> $GITHUB_ENV
+
       - name: Generate latest.json
         run: bash .github/scripts/gen-latest-json.sh
         env:
           PACKAGE_VERSION: ${{ needs.build-tauri.outputs.PACKAGE_VERSION }}
 
+      - name: Output tag list for debugging
+        run: |
+          git fetch --tags
+          echo "📃 所有远端 tag："
+          git tag --sort=-creatordate
+          # 获取最新 tag
+          LATEST_TAG=$(git tag --sort=-creatordate | head -n 1)
+
+          # 如果为空则设置默认值
+          if [ -z "$LATEST_TAG" ]; then
+            echo "⚠️ 未找到 tag，使用默认 tag：v0.1.13"
+            LATEST_TAG="v0.1.13"
+          fi
+
+          echo "✅ 使用的 tag 是：$LATEST_TAG"
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+          echo "✅ 上传使用的 tag 是：${{ env.LATEST_TAG }}"
+
       - name: Upload latest.json
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref_name }}
+          tag_name: ${{ env.LATEST_TAG }}
+          overwrite: true
           files: dist/latest.json
 
   publish-release:
