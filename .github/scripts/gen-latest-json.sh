@@ -7,11 +7,11 @@ REPO_URL="https://github.com/AllWiseAI/aiden-chat/releases/download/v${VERSION}"
 ARTIFACT_DIR="artifacts"
 
 # === 路径设定 ===
-SIG_ARM64="${ARTIFACT_DIR}/AidenChat_aarch64.app.zip.sig"
-ZIP_ARM64="${ARTIFACT_DIR}/AidenChat_aarch64.app.zip"
+SIG_ARM64="${ARTIFACT_DIR}/aarch64-artifacts/AidenChat_aarch64.app.zip.sig"
+ZIP_ARM64="${ARTIFACT_DIR}/aarch64-artifacts/AidenChat_aarch64.app.zip"
 
-SIG_X64="${ARTIFACT_DIR}/AidenChat_x64.app.zip.sig"
-ZIP_X64="${ARTIFACT_DIR}/AidenChat_x64.app.zip"
+SIG_X64="${ARTIFACT_DIR}/x64-artifacts/AidenChat_x64.app.zip.sig"
+ZIP_X64="${ARTIFACT_DIR}/x64-artifacts/AidenChat_x64.app.zip"
 
 # === 检查产物是否存在 ===
 for f in "$SIG_ARM64" "$ZIP_ARM64" "$SIG_X64" "$ZIP_X64"; do
