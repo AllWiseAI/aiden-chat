@@ -109,7 +109,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
-          releaseId: ${{ needs.create-release.outputs.release_id }}
           args: --target ${{ matrix.config.rust_target }}
 
       - name: Setup macOS code signing
@@ -174,6 +173,14 @@ jobs:
             src-tauri/target/aarch64-apple-darwin/release/bundle/macos/AidenChat_${{ steps.arch_map.outputs.mapped_arch }}.app.zip.sig
             src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/AidenChat_${{ env.PACKAGE_VERSION }}_${{ steps.arch_map.outputs.mapped_arch }}_signed.dmg
 
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.arch_map.outputs.mapped_arch }}-artifacts
+          path: |
+            src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos/AidenChat_*.app.zip
+            src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos/AidenChat_*.app.zip.sig
+
   generate-latest-json:
     runs-on: ubuntu-latest
     needs: build-tauri
@@ -185,6 +192,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
+
+      - name: List downloaded artifacts
+        run: ls -R artifacts
 
       - name: get version
         run: |

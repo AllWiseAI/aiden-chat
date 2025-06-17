@@ -4,13 +4,22 @@ set -e
 VERSION="${PACKAGE_VERSION}"
 PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 REPO_URL="https://github.com/AllWiseAI/aiden-chat/releases/download/v${VERSION}"
+ARTIFACT_DIR="artifacts"
 
 # === 路径设定 ===
-SIG_ARM64="src-tauri/target/aarch64-apple-darwin/release/bundle/macos/AidenChat_aarch64.app.zip.sig"
-ZIP_ARM64="src-tauri/target/aarch64-apple-darwin/release/bundle/macos/AidenChat_aarch64.app.zip"
+SIG_ARM64="${ARTIFACT_DIR}/AidenChat_aarch64.app.zip.sig"
+ZIP_ARM64="${ARTIFACT_DIR}/AidenChat_aarch64.app.zip"
 
-SIG_X64="src-tauri/target/x86_64-apple-darwin/release/bundle/macos/AidenChat_x64.app.zip.sig"
-ZIP_X64="src-tauri/target/x86_64-apple-darwin/release/bundle/macos/AidenChat_x64.app.zip"
+SIG_X64="${ARTIFACT_DIR}/AidenChat_x64.app.zip.sig"
+ZIP_X64="${ARTIFACT_DIR}/AidenChat_x64.app.zip"
+
+# === 检查产物是否存在 ===
+for f in "$SIG_ARM64" "$ZIP_ARM64" "$SIG_X64" "$ZIP_X64"; do
+  if [[ ! -f "$f" ]]; then
+    echo "❌ 缺少构建产物: $f"
+    exit 1
+  fi
+done
 
 # === 编码签名 ===
 SIGNATURE_ARM64=$(base64 < "$SIG_ARM64" | tr -d '\n')
