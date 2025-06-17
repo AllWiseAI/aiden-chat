@@ -311,8 +311,8 @@
   flex: 1;
   overflow: auto;
   overflow-x: hidden;
-  padding: 20px;
-  padding-bottom: 40px;
+  padding: 40px;
+  padding-top: 20px;
   position: relative;
   overscroll-behavior: none;
 }
@@ -463,7 +463,7 @@
   max-width: 100%;
   margin-top: 10px;
   border-radius: 20px;
-  padding: 12px;
+  // padding: 12px;
   min-width: 40px;
   font-size: 14px;
   user-select: text;
@@ -480,7 +480,7 @@
 .chat-message-mcp-info {
   width: 100%;
   border-radius: 10px;
-  padding: 0 16px;
+  padding: 8px 10px;
   margin-bottom: 16px;
 }
 
@@ -489,6 +489,7 @@
 }
 
 .chat-message-item-mcp-result {
+  padding-top: 10px;
   border-radius: 10px;
 }
 
@@ -600,9 +601,11 @@
 
 .chat-input-panel {
   position: relative;
-  width: 100%;
-  padding: 20px;
+
   padding-top: 10px;
+  padding-bottom: 20px;
+  margin-left: 40px;
+  margin-right: 40px;
   box-sizing: border-box;
   flex-direction: column;
 
@@ -676,16 +679,16 @@
 }
 
 .chat-input-panel-inner-attach {
-  padding-bottom: 80px;
+  padding-bottom: 40px;
 }
 
-.chat-input-panel-inner:has(.chat-input:focus) {
-  border: 1px solid var(--primary);
-}
+// .chat-input-panel-inner:has(.chat-input:focus) {
+//   border: 1px solid var(--primary);
+// }
 
 .chat-input.chat-input-with-image {
   padding-top: 94px;
-  height: 194px;
+  height: 140px;
 }
 
 .chat-input {
@@ -696,13 +699,13 @@
   background-color: var(--white);
   color: var(--black);
   font-family: inherit;
-  padding: 10px 90px 10px 14px;
+  padding: 10px 14px 10px 14px;
   margin-bottom: 48px;
   resize: none;
   outline: none;
   box-sizing: border-box;
   overflow-y: scroll;
-  height: 100px;
+  height: 50px;
 }
 
 .chat-input:focus {
@@ -780,10 +783,10 @@
 }
 
 .chat-main-welcome {
-  font-size: 40px;
+  font-size: 20px;
   font-weight: 600;
   color: var(--black-1);
-  margin: 20% auto 80px;
+  margin: 25% auto 20px;
 }
 .chat-main {
   display: flex;

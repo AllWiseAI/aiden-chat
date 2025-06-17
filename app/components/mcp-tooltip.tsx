@@ -6,6 +6,7 @@ import {
   TooltipTrigger,
 } from "@/app/components/shadcn/tooltip";
 import { ReactElement } from "react";
+import RightIcon from "../icons/right-arrow.svg";
 import AccessIcon from "../icons/access.svg";
 import LoadingIcon from "../icons/loading-spinner.svg";
 import ErrorIcon from "../icons/error.svg";
@@ -24,7 +25,7 @@ function McpTooltip({ icon }: { icon: ReactElement }) {
         <TooltipTrigger asChild>
           <Button
             variant="outline"
-            className="border border-[#E8ECEF] text-black dark:text-white dark:bg-[#141416] dark:border-[#6C7275] text-sm font-semibold p-2"
+            className="border border-[#E8ECEF] text-black dark:text-white dark:bg-[#141416] dark:border-[#343839] text-xs font-medium !rounded-sm p-2.5 h-[30px]"
             // onMouseEnter={updateStatus}
           >
             {icon}
@@ -42,7 +43,7 @@ function McpTooltip({ icon }: { icon: ReactElement }) {
           }}
         >
           {mcpStatusList.length ? (
-            <div className="w-40 max-h-[300px] overflow-y-auto">
+            <div className="w-40 max-h-40 overflow-y-auto">
               {mcpStatusList.map((item) => {
                 let StatusIcon;
                 if (item.action === McpAction.Loading)
@@ -50,9 +51,9 @@ function McpTooltip({ icon }: { icon: ReactElement }) {
                     <LoadingIcon className="animate-spin size-4 text-[#6C7275]" />
                   );
                 else if (item.action === McpAction.Connected)
-                  StatusIcon = <AccessIcon />;
+                  StatusIcon = <AccessIcon className="size-4" />;
                 else if (item.action === McpAction.Failed)
-                  StatusIcon = <ErrorIcon />;
+                  StatusIcon = <ErrorIcon className="size-4" />;
                 return (
                   <div
                     key={item.name}
@@ -79,10 +80,11 @@ function McpTooltip({ icon }: { icon: ReactElement }) {
             <div className="p-5 text-gray-500">No Mcp</div>
           )}
           <div
-            className="w-max text-main text-center hover:opacity-80 cursor-pointer"
+            className="h-[30px] flex justify-between items-center w-full bg-[#E8ECEF]/50 hover:text-[#00AB66] text-center hover:opacity-80 cursor-pointer rounded-sm px-2.5"
             onClick={() => navigate(Path.Settings + "?tab=mcp")}
           >
             Manage
+            <RightIcon />
           </div>
         </TooltipContent>
       </Tooltip>

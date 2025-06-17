@@ -11,6 +11,7 @@ export default function AboutUs() {
   const { isShowUpdate, isLatest, handleUpdate, isUpdating } = useAppUpdate();
   const { t } = useTranslation("settings");
   const aboutUsArr = [
+    { name: t("aboutUs.export"), onClick: () => exportAndDownloadLog() },
     {
       name: isUpdating ? t("aboutUs.updating") : t("aboutUs.update"),
       onClick: () => {
@@ -28,7 +29,7 @@ export default function AboutUs() {
         handleUpdate();
       },
     },
-    { name: t("aboutUs.export"), onClick: () => exportAndDownloadLog() },
+
     {
       name: t("aboutUs.terms"),
       onClick: () => shell.open("https://aidenai.io/terms-of-service.html"),
@@ -39,12 +40,12 @@ export default function AboutUs() {
     },
   ];
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-4">
       <div className="flex gap-4">
-        <Logo className="size-20" />
-        <div className="flex flex-col gap-2 justify-center font-medium">
-          <div>{"v" + config.package.version}</div>
-          <div className="text-xs text-[#6C7275]">
+        <Logo className="size-12" />
+        <div className="flex flex-col gap-1 justify-center font-medium">
+          <div className="text-sm">{"v" + config.package.version}</div>
+          <div className="text-[10px] text-[#6C7275]">
             {t("aboutUs.contact")} contact@allwise.com
           </div>
         </div>
@@ -55,7 +56,7 @@ export default function AboutUs() {
             <div
               key={item.name}
               onClick={item.onClick}
-              className="group h-14 flex justify-between items-center hover:bg-[#E8ECEF] dark:hover:bg-[#232627]/50 px-5 py-4 cursor-pointer text-black dark:text-white text-sm font-medium border-t border-[#E8ECEF] dark:border-[#343839]/50"
+              className="group h-13 flex justify-between items-center hover:bg-[#E8ECEF] dark:hover:bg-[#232627]/50 px-4 py-2.5 cursor-pointer text-black dark:text-white text-sm border-t border-[#E8ECEF] dark:border-[#343839]/50"
             >
               {item.name}
               <RightIcon className="hidden group-hover:inline-block" />

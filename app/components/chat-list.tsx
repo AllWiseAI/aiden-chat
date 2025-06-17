@@ -135,7 +135,14 @@ export function ChatItem(props: {
               ) : (
                 <div className="flex justify-between items-center">
                   <div className="flex justify-start items-center gap-4 leading-6">
-                    <div className="text-[#232627] dark:text-white cursor-default text-xs font-semibold w-full line-clamp-1">
+                    <div
+                      className={clsx(
+                        "text-[#232627] dark:text-[#6C7275] cursor-default text-xs w-full line-clamp-1",
+                        props.selected
+                          ? "font-semibold dark:text-white"
+                          : "font-normal",
+                      )}
+                    >
                       {props.title}
                     </div>
                   </div>
@@ -162,7 +169,7 @@ export function ChatItem(props: {
                       <DropdownMenuRadioGroup>
                         <DropdownMenuRadioItem
                           value="rename"
-                          className="flex justify-start gap-4 !pl-1 !py-2"
+                          className="flex justify-start gap-2 !pl-1 !py-2"
                           onClick={(e) => {
                             e.stopPropagation();
                             e.preventDefault();
@@ -170,19 +177,19 @@ export function ChatItem(props: {
                             setOpenMenu(false);
                           }}
                         >
-                          <EditIcon className="size-4" />
+                          <EditIcon className="size-[18px]" />
                           <span className="-ml-1 font-xs">
                             {t("chat.rename")}
                           </span>
                         </DropdownMenuRadioItem>
                         <DropdownMenuRadioItem
                           value="delete"
-                          className="!text-[#D84C10] flex justify-start gap-4 !pl-1 !py-2"
+                          className="!text-[#EF466F] flex justify-start gap-2 !pl-1 !py-2"
                           onClick={() => {
                             setShowDeleteDialog(true);
                           }}
                         >
-                          <DeleteIcon className="size-4" />
+                          <DeleteIcon className="size-[18px]" />
                           <span className="-ml-1 font-xs">
                             {t("chat.delete")}
                           </span>
