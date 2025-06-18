@@ -61,7 +61,6 @@ export const useMcpStore = createPersistStore(
         const remoteMcpList = await getRemoteMcpList();
         const { renderMcpList, mcpRemoteInfoMap, mcpIconMap } =
           await getRenderMcpList(config, remoteMcpList);
-
         const mcpStatusList = await getMcpStatusList(config);
         startPollingMcpStatus();
 
