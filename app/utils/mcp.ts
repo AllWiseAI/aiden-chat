@@ -261,6 +261,7 @@ export const getRenderMcpList: any = async (
   const items: McpItemInfo[] = [];
   const addedInJSONIds: string[] = [];
   const mcpRemoteInfoMap = new Map();
+  const mcpIconMap = new Map();
   for (let item of remoteMcpList) {
     mcpRemoteInfoMap.set(item.mcp_id, item);
   }
@@ -322,7 +323,12 @@ export const getRenderMcpList: any = async (
       });
     }
   }
+
+  for (let item of items) {
+    mcpIconMap.set(item.mcp_key, item.mcp_logo);
+  }
   return {
+    mcpIconMap,
     mcpRemoteInfoMap,
     renderMcpList: items,
   };
