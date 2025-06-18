@@ -22,6 +22,7 @@ pub fn get_user_config_path_from_app(app: &tauri::AppHandle) -> Option<PathBuf> 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MCPConfig {
     pub version: String,
+    pub syncVersion: String,
     pub mcpServers: serde_json::Map<String, serde_json::Value>,
     pub a2aServers: Option<serde_json::Value>,
 }
@@ -54,6 +55,7 @@ pub fn init_mcp_config(app: &tauri::App) -> Result<(), String> {
         .resolve_resource("resources/mcp.config.json")
         .ok_or("Cannot find default MCP config in resources.")?;
 
+    // 首次安装，用户 config 不存在
     if !user_config_path.exists() {
         fs::copy(&default_path, &user_config_path)
             .map_err(|e| format!("Copy MCP config failed: {}", e))?;
@@ -61,16 +63,49 @@ pub fn init_mcp_config(app: &tauri::App) -> Result<(), String> {
         return Ok(());
     }
 
+    // 读取默认 config
     let default_text = fs::read_to_string(&default_path)
         .map_err(|e| format!("Failed to read default MCP config: {}", e))?;
     let default_json: Value = serde_json::from_str(&default_text)
         .map_err(|e| format!("Invalid JSON in default config: {}", e))?;
 
+    // 读取用户 config
     let user_text = fs::read_to_string(&user_config_path)
         .map_err(|e| format!("Failed to read user MCP config: {}", e))?;
     let mut user_json: Value = serde_json::from_str(&user_text)
-        .map_err(|e| format!("Invalid JSON in user config: {}", e))?;
+        .map_err(|e: serde_json::Error| format!("Invalid JSON in user config: {}", e))?;
 
+    // ========= Step 1: 强制 syncVersion 同步判断 ============
+    let default_sync_str = default_json
+        .get("syncVersion")
+        .and_then(|v| v.as_str())
+        .unwrap_or("0.0.0");
+    let user_sync_str = user_json
+        .get("syncVersion")
+        .and_then(|v| v.as_str())
+        .unwrap_or("0.0.0");
+
+    let default_sync = Version::parse(default_sync_str).unwrap_or_else(|_| Version::new(0, 0, 0));
+    let user_sync = Version::parse(user_sync_str).unwrap_or_else(|_| Version::new(0, 0, 0));
+
+    log::info!(
+        "MCP config syncVersion: default={}, user={}",
+        default_sync,
+        user_sync
+    );
+
+    if default_sync > user_sync {
+        fs::copy(&default_path, &user_config_path)
+            .map_err(|e| format!("Forced sync copy failed: {}", e))?;
+        log::info!(
+            "MCP config forcibly synced due to syncVersion mismatch: {} -> {}",
+            user_sync,
+            default_sync
+        );
+        return Ok(());
+    }
+
+    // ========= Step 2: 正常 version 增量更新逻辑 ============
     let default_version_str = default_json
         .get("version")
         .and_then(|v| v.as_str())
@@ -79,14 +114,17 @@ pub fn init_mcp_config(app: &tauri::App) -> Result<(), String> {
         .get("version")
         .and_then(|v: &Value| v.as_str())
         .unwrap_or("");
+
     log::info!(
         "MCP config version: default={}, user={}",
         default_version_str,
         user_version_str
     );
+
     let default_version =
         Version::parse(default_version_str).unwrap_or_else(|_| Version::new(0, 0, 0));
     let user_version = Version::parse(user_version_str).unwrap_or_else(|_| Version::new(0, 0, 0));
+
     if default_version > user_version {
         log::info!(
             "MCP config update needed: {} -> {}",
@@ -115,6 +153,7 @@ pub fn init_mcp_config(app: &tauri::App) -> Result<(), String> {
 
         user_json["mcpServers"] = Value::Object(updated_servers);
         user_json["version"] = Value::String(default_version.to_string());
+
         if let Some(default_a2a) = default_json.get("a2aServers") {
             user_json["a2aServers"] = default_a2a.clone();
         }
