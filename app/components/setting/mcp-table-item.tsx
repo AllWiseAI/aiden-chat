@@ -55,7 +55,7 @@ export function McpTableItem({
   onSelect,
   onSetting,
 }: McpItemProps) {
-  const { t } = useTranslation("settings");
+  const { t, i18n } = useTranslation("settings");
   const [status, setStatus] = useState<McpAction | null>(null);
   const [templateModal, setTemplateModal] = useState(false);
   const [templateInfo, setTemplateInfo] = useState<TTemplateInfo | null>(null);
@@ -65,12 +65,23 @@ export function McpTableItem({
     mcp_key,
     mcp_logo,
     description,
+    description_en,
+    description_zh,
     checked = false,
     type,
     current_version,
     local_version,
     remote_version,
   } = item;
+
+  const renderedDescription = useMemo(() => {
+    if (i18n.language === "zh-CN" && description_zh) {
+      return description_zh;
+    } else if (i18n.language === "en-US" && description_en) {
+      return description_en;
+    }
+    return description;
+  }, [i18n.language, description, description_en, description_zh]);
 
   const { updateMcpStatusList, updateTemplate, updateLocalMcpVersion } =
     useMcpStore();
@@ -251,7 +262,7 @@ export function McpTableItem({
               height: "72px",
             }}
           >
-            {description || "No description"}
+            {renderedDescription || "No description"}
           </div>
         </div>
       </div>

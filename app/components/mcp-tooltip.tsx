@@ -121,9 +121,9 @@ function McpTooltip({ icon }: { icon: ReactElement }) {
                     >
                       {/* 
                           TODO  add  icon here
-                         <img src={mcpRenderedMap.get(item.name)?.icon} className="size-4"/>
+                         <img src={mcpRenderedMap?.get(item.name)?.icon} className="size-4"/>
                       */}
-                      {mcpRenderedMap.get(item.name)?.renderName || item.name}
+                      {mcpRenderedMap.get?.(item.name)?.renderName || item.name}
                     </p>
                     {StatusIcon}
                   </div>
