@@ -83,7 +83,7 @@ export function LoginPage() {
         <div className="flex flex-col gap-2 w-full">
           <Label
             htmlFor="email"
-            className="font-bold after:content['*'] after:content-['*'] after:text-red-500 !gap-1 text-xs"
+            className="font-normal after:content['*'] after:content-['*'] after:text-red-500 !gap-1 text-xs"
           >
             {t("email")}
           </Label>
@@ -92,9 +92,9 @@ export function LoginPage() {
             type="email"
             placeholder="mail@aiden.com"
             className={clsx(
-              "w-full h-8 !text-left px-2.5 py-2 rounded-sm text-xs",
+              "w-full h-8 !text-left px-2.5 py-2 rounded-sm text-xs hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]",
               {
-                "border-2 border-[#EF466F]": emailError,
+                "border border-[#EF466F]": emailError,
               },
             )}
             value={formData.email}
@@ -111,7 +111,7 @@ export function LoginPage() {
           <div className="flex justify-between">
             <Label
               htmlFor="password"
-              className="font-bold after:content['*'] after:content-['*'] after:text-red-500 !gap-1 text-xs"
+              className="font-normal after:content['*'] after:content-['*'] after:text-red-500 !gap-1 text-xs"
             >
               {t("password")}
             </Label>
@@ -127,7 +127,7 @@ export function LoginPage() {
             id="password"
             type="password"
             placeholder={t("enter")}
-            className="!w-full h-8 !max-w-130 !text-left !px-2.5 !py-2 !rounded-sm text-xs"
+            className="!w-full h-8 !max-w-130 !text-left !px-2.5 !py-2 !rounded-sm text-xs border hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]"
             value={formData.password}
             onChange={handleChange}
             required
@@ -160,7 +160,7 @@ export function LoginPage() {
           </div>
         </div>
         <Button
-          className="w-full h-8 !px-2.5 !py-2 bg-main hover:bg-[#009A5C] disabled:bg-[#7FD5B2] text-white text-xs dark:text-black font-semibold rounded-sm"
+          className="w-full h-8 !px-2.5 !py-2 bg-main hover:bg-[#009A5C] disabled:bg-[#00AB66] text-white text-xs dark:text-black font-semibold rounded-sm"
           type="submit"
           disabled={
             !(formData.email && formData.password && checked) ||
@@ -172,7 +172,7 @@ export function LoginPage() {
           {t("signIn.btn")}
         </Button>
       </form>
-      <span className="text-[10px] text-[#777E90] font-medium">
+      <span className="text-[10px] text-[#777E90]">
         {t("signIn.noAccount")}{" "}
         <Link to={Path.SignUp} className="underline text-main">
           {t("signUp.btn")}

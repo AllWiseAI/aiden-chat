@@ -9,7 +9,6 @@ import { defaultTopic, useChatStore } from "../store";
 import MoreIcon from "../icons/more.svg";
 import EditIcon from "../icons/edit.svg";
 import DeleteIcon from "../icons/delete.svg";
-import CloseIcon from "../icons/close.svg";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Path } from "../constant";
@@ -104,7 +103,7 @@ export function ChatItem(props: {
               {isEdit ? (
                 <Input
                   ref={inputRef}
-                  className="!h-full !text-start text-[#232627] dark:text-white !text-xs font-semibold border-main"
+                  className="!h-full !text-start text-[#232627] dark:text-white !text-xs font-semibold border-main dark:border-main"
                   value={props.title}
                   onChange={(e) =>
                     chatStore.updateTargetSession(
@@ -205,28 +204,28 @@ export function ChatItem(props: {
                   open={showDeleteDialog}
                   onOpenChange={setShowDeleteDialog}
                 >
-                  <AlertDialogContent className="!rounded-[18px] w-120 dark:text-white">
-                    <div className="flex justify-between">
+                  <AlertDialogContent className="rounded-sm w-80 dark:text-white gap-5">
+                    <div className="flex justify-center">
                       <AlertDialogHeader>
-                        <AlertDialogTitle className="!text-[21px]">
+                        <AlertDialogTitle className="text-sm">
                           {t("dialog.deleteTitle")}
                         </AlertDialogTitle>
                       </AlertDialogHeader>
 
-                      <AlertDialogCancel className="size-9 rounded-4xl border-0 hover:cursor-pointer hover:opacity-75 bg-[#F3F5F7] dark:bg-[#6C7275] hover:bg-[#F3F5F7]/75 dark:hover:bg-[#6C7275]/75">
+                      {/* <AlertDialogCancel className="size-9 rounded-4xl border-0 hover:cursor-pointer hover:opacity-75 bg-[#F3F5F7] dark:bg-[#6C7275] hover:bg-[#F3F5F7]/75 dark:hover:bg-[#6C7275]/75">
                         <CloseIcon className="size-6" />
-                      </AlertDialogCancel>
+                      </AlertDialogCancel> */}
                     </div>
-                    <AlertDialogDescription className="text-lg font-normal text-[#141718] dark:text-white">
+                    <AlertDialogDescription className="text-xs text-center font-normal text-[#141718] dark:text-white">
                       {t("dialog.alert")}
                     </AlertDialogDescription>
                     <AlertDialogFooter>
-                      <AlertDialogCancel className="rounded-xl">
+                      <AlertDialogCancel className="flex-1 rounded-sm hover:bg-[#F3F5F74D] border border-[#E8ECEF] dark:border-[#343839] font-medium">
                         {t("dialog.cancel")}
                       </AlertDialogCancel>
                       <AlertDialogAction
                         onClick={props.onDelete}
-                        className="bg-[#EF466F] hover:bg-[#EF466F]/75 rounded-full"
+                        className="flex-1 bg-[#EF466F] hover:bg-[#EF466F]/75 rounded-sm font-medium"
                       >
                         {t("dialog.delete")}
                       </AlertDialogAction>

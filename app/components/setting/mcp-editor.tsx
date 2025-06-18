@@ -41,7 +41,7 @@ function ConfigEditor({ jsonStr, setJsonStr, error }: ConfigEditorProps) {
       <CodeMirror
         className=""
         value={jsonStr}
-        height="calc(100vh - 200px)"
+        height="calc(100vh - 180px)"
         extensions={[json(), foldGutter(), indentOnInput()]}
         theme={theme}
         basicSetup={{
@@ -93,18 +93,17 @@ const McpEditor: React.FC<Props> = ({ setMode }) => {
           onClick={() => setMode("table")}
         >
           <div className="flex items-center gap-2">
-            <BackIcon className="size-6" />
-            <span className="text-lg font-medium">{t("mcp.edit")}</span>
+            <BackIcon className="size-5" />
+            <span className="text-sm font-medium">{t("mcp.edit")}</span>
           </div>
         </div>
-        <div className="flex">
-          <Button
-            onClick={handleSave}
-            className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] w-[54px]"
-          >
-            {t("mcp.save")}
-          </Button>
-        </div>
+
+        <Button
+          onClick={handleSave}
+          className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] text-xs w-[54px] h-6"
+        >
+          {t("mcp.save")}
+        </Button>
       </div>
 
       <ConfigEditor jsonStr={jsonStr} setJsonStr={setJsonStr} error={error} />

@@ -265,7 +265,7 @@ export function McpTableItem({
         <div className="flex items-center gap-2">
           {showSetting && (
             <Button
-              className="bg-[#DBF5EC] hover:bg-[#BEF0DD] rounded-sm text-xs text-main px-1.5 !py-1 h-6"
+              className="bg-[#DBF5EC] hover:bg-[#BEF0DD] dark:bg-[#00D47E]/6 dark:hover:bg-[#00D47E]/12 rounded-sm text-xs text-main px-1.5 !py-1 h-6"
               onClick={handleShowSettingModal}
             >
               {t("mcp.setting")}
@@ -273,7 +273,7 @@ export function McpTableItem({
           )}
           {showUpdate && (
             <Button
-              className="bg-[#DBF5EC] hover:bg-[#BEF0DD] rounded-sm text-xs text-main px-1.5 py-1"
+              className="bg-[#DBF5EC] hover:bg-[#BEF0DD] dark:bg-[#00D47E]/6 dark:hover:bg-[#00D47E]/12 rounded-sm text-xs text-main px-1.5 py-1 h-6"
               onClick={handleUpdateMcpVersion}
             >
               {t("mcp.btnUpdate")}
@@ -281,7 +281,7 @@ export function McpTableItem({
           )}
           {showDelete && (
             <Button
-              className="bg-[#EF466F]/6 hover:bg-[#EF466F]/20 text-xs text-[#EF466F] px-1.5 py-1"
+              className="bg-[#EF466F]/6 hover:bg-[#EF466F]/20 text-xs text-[#EF466F] px-1.5 py-1 h-6"
               onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
                 onDelete(e, mcp_key)
               }

@@ -58,7 +58,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/app/components/shadcn/tooltip";
-import McpTooltip from "./mcp-tooltip";
+import McpPopover from "./mcp-tooltip";
 import {
   Accordion,
   AccordionContent,
@@ -517,13 +517,13 @@ function _Chat() {
                       chatStore.summarizeSession(true, session);
                     }}
                   >
-                    <ReloadIcon className="size-4" />
+                    <ReloadIcon className="size-4 text-black dark:text-white" />
                   </Button>
                 </TooltipTrigger>
 
                 <TooltipContent
                   hasArrow={false}
-                  className="pointer-events-none bg-[#FEFEFE] dark:bg-[#232627] text-black dark:text-[#6C7275] border"
+                  className="pointer-events-none bg-[#FEFEFE] dark:bg-[#232627] text-black dark:text-white border"
                 >
                   {t("chat.actions.refreshTitle")}
                 </TooltipContent>
@@ -701,7 +701,7 @@ function _Chat() {
                 </div>
                 <div className="absolute bottom-8 left-3 flex gap-2">
                   <ImageUploader />
-                  <McpTooltip
+                  <McpPopover
                     icon={
                       <McpIcon className="size-4 text-black dark:text-white" />
                     }

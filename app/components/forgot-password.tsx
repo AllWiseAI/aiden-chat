@@ -60,7 +60,7 @@ function EmailInput({ formData, onEmailChange, onSubmit }: EmailFormProps) {
       <div className="flex flex-col gap-2 w-full">
         <Label
           htmlFor="email"
-          className="font-bold after:content['*'] after:content-['*'] after:text-red-500 !gap-1"
+          className="font-bold after:content['*'] after:content-['*'] after:text-red-500 !gap-1 text-xs"
         >
           {t("email")}
         </Label>
@@ -68,9 +68,12 @@ function EmailInput({ formData, onEmailChange, onSubmit }: EmailFormProps) {
           id="email"
           type="email"
           placeholder="mail@aiden.com"
-          className={clsx("w-full h-13 !text-left px-4 py-3.5", {
-            "border-2 border-[#EF466F]": emailError,
-          })}
+          className={clsx(
+            "w-full h-8 !text-left px-2.5 py-2 text-xs hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]",
+            {
+              "border-2 border-[#EF466F]": emailError,
+            },
+          )}
           value={formData.email}
           onChange={onEmailChange}
           onBlur={handleBlur}
@@ -81,21 +84,23 @@ function EmailInput({ formData, onEmailChange, onSubmit }: EmailFormProps) {
           <span className="text-xs text-red-500">{emailError}</span>
         )}
       </div>
-      <Button
-        className="w-full h-12 !px-6 !py-3 bg-main hover:bg-[#02C174]/90 text-white dark:text-black font-semibold rounded-full"
-        type="submit"
-        disabled={!formData.email || !!emailError}
-      >
-        {t("forgot.next")}
-      </Button>
-      <Button
-        type="button"
-        variant="outline"
-        className="w-full h-12 font-semibold rounded-full px-6 py-4 dark:border-[#777E90]"
-        onClick={() => navigate(-1)}
-      >
-        {t("back")}
-      </Button>
+      <div className="w-full flex flex-col gap-2.5">
+        <Button
+          className="w-full h-8 !px-6 !py-3 bg-main hover:bg-[#02C174]/90 text-white dark:text-black font-semibold rounded-sm"
+          type="submit"
+          disabled={!formData.email || !!emailError}
+        >
+          {t("forgot.next")}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full h-8 font-semibold rounded-sm px-6 py-4 dark:border-[#777E90]"
+          onClick={() => navigate(-1)}
+        >
+          {t("back")}
+        </Button>
+      </div>
     </form>
   );
 }
@@ -155,15 +160,12 @@ const ResetPassword = ({
   };
 
   return (
-    <form
-      className="w-full h-full flex-center flex-col gap-8"
-      onSubmit={onSubmit}
-    >
+    <form className="w-full flex-center flex-col gap-8" onSubmit={onSubmit}>
       <div className="w-full flex flex-col gap-4">
-        <div className="w-full flex flex-col gap-2 bg-[#F3F5F7] dark:bg-[#141718] border-2 border-[#E8ECEF] dark:border-[#232627] px-4 py-3.5 rounded-xl font-bold">
-          <span className="text-[#777E90] text-sm dark:text-[#6C7275]">
-            {t("email")}
-          </span>
+        <span className="text-[#777E90] text-xs dark:text-[#6C7275]">
+          {t("email")}
+        </span>
+        <div className="w-full flex gap-2 bg-[#F3F5F7]/50 dark:bg-[#141718] border-2 border-[#E8ECEF] dark:border-[#232627] px-2.5 py-2 rounded-sm text-xs">
           <span className="text-[#141416] dark:text-white">
             {formData.email}
           </span>
@@ -176,7 +178,7 @@ const ResetPassword = ({
           id="password"
           type="password"
           placeholder={t("forgot.enter")}
-          className="!w-full h-12 !max-w-130 !text-left !px-4 !py-3.5"
+          className="!w-full h-8 !max-w-130 !text-left !px-2.5 !py-2 text-xs hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]"
           value={formData.password}
           onChange={onFormChange}
           required
@@ -186,7 +188,7 @@ const ResetPassword = ({
           id="confirm-password"
           type="password"
           placeholder={t("forgot.confirm")}
-          className="!w-full h-12 !max-w-130 !text-left !px-4 !py-3.5"
+          className="!w-full h-8 !max-w-130 !text-left !px-2.5 !py-2 text-xs hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]"
           value={confirmPassword}
           onChange={(e) => {
             setConfirmPassword(e.target.value);
@@ -197,10 +199,10 @@ const ResetPassword = ({
         {passwordError && (
           <span className="text-xs text-red-500">{passwordError}</span>
         )}
-        <div className="relative w-full">
+        <div className="relative w-full overflow-hidden">
           <Input
             id="code"
-            className="bg-[#F3F5F7] h-12 w-full pl-4 pr-32 py-3.5 rounded-xl placeholder:text-[#777E90] placeholder:font-medium font-medium !text-left"
+            className="h-8 w-full pl-2.5 pr-22 py-2 rounded-sm text-xs !text-left hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]"
             placeholder={t("enterCode")}
             value={formData.code}
             onChange={onFormChange}
@@ -210,30 +212,31 @@ const ResetPassword = ({
             type="button"
             variant="ghost"
             disabled={countdown > 0}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent text-main text-sm font-medium rounded-lg hover:bg-gray-200 hover:text-main transition-colors disabled:text-main disabled:font-medium disabled:opacity-100 disabled:cursor-not-allowed"
+            className="absolute right-2 top-1/2 px-1 py-0 transform -translate-y-1/2 bg-transparent text-main text-xs font-medium rounded-lg hover:text-main transition-colors disabled:text-main disabled:font-medium disabled:opacity-100 disabled:cursor-not-allowed"
           >
             {countdown > 0 ? `${countdown}s` : t("getCode")}
           </Button>
         </div>
       </div>
-
-      <Button
-        type="submit"
-        disabled={
-          !formData.code || !formData.password || !confirmPassword || loading
-        }
-        className="w-full h-12 font-semibold rounded-full bg-main text-white dark:text-black hover:bg-[#02C174]/90 px-6 py-4"
-      >
-        {t("forgot.reset")}
-      </Button>
-      <Button
-        type="button"
-        variant="outline"
-        className="w-full h-12 font-semibold rounded-full px-6 py-4"
-        onClick={() => navigate(-1)}
-      >
-        {t("back")}
-      </Button>
+      <div className="w-full flex flex-col gap-2.5">
+        <Button
+          type="submit"
+          disabled={
+            !formData.code || !formData.password || !confirmPassword || loading
+          }
+          className="w-full h-8 text-xs rounded-sm bg-main text-white dark:text-black hover:bg-[#02C174]/90 px-2.5 py-2"
+        >
+          {t("forgot.reset")}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full h-8 text-xs rounded-sm px-2.5 py-2 border border-[#E8ECEF] dark:border-[#343839]"
+          onClick={() => navigate(-1)}
+        >
+          {t("back")}
+        </Button>
+      </div>
     </form>
   );
 };
@@ -288,10 +291,10 @@ export const ForgotPasswordPage = () => {
   };
 
   return (
-    <div className="w-full h-full p-10 my-10 bg-white dark:bg-[#141416] mx-auto flex flex-col justify-start items-center gap-8 rounded-2xl">
+    <div className="w-full h-full px-6 py-7.5 my-10 bg-white dark:bg-[#141416] mx-auto flex flex-col justify-start items-center gap-8 rounded-2xl">
       <div className="flex-center flex-col gap-4">
         <LogoTextIcon className="text-black dark:text-white" />
-        <span className="text-2xl font-medium">{t("forgot.title")}</span>
+        <span className="text-sm font-medium">{t("forgot.title")}</span>
       </div>
       {isEmailForm ? (
         <EmailInput

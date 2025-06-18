@@ -105,7 +105,7 @@
     "config": "Config"
   },
   "dialog": {
-    "deleteTitle": "Delete chat?",
+    "deleteTitle": "Delete chat",
     "alert": "Are you sure you want to delete chat?",
     "cancel": "Cancel",
     "delete": "Delete",
@@ -114,6 +114,7 @@
     "decline": "Decline",
     "allowAlways": "Allow always",
     "allowOnce": "Allow once",
-    "mcpSetting": "MCP Setting"
+    "mcpSetting": "MCP Setting",
+    "save": "Save"
   }
 }

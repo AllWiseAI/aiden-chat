@@ -57,7 +57,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <CloseCircleIcon
             type="button"
             onClick={handleClear}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full size-[18px] hover:cursor-pointer hover:opacity-70 transition-colors"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full size-[18px] hover:cursor-pointer hover:opacity-70 transition-colors bg-[#F3F5F7] dark:bg-[#232627] text-[#343839] dark:text-[#E8ECEF]"
             variant="ghost"
             size="icon"
           />

@@ -105,7 +105,7 @@
     "config": "配置"
   },
   "dialog": {
-    "deleteTitle": "删除聊天？",
+    "deleteTitle": "删除聊天",
     "alert": "你确定要删除这条聊天记录吗？",
     "cancel": "取消",
     "delete": "删除",
@@ -114,6 +114,7 @@
     "decline": "拒绝",
     "allowAlways": "始终允许",
     "allowOnce": "仅允许一次",
-    "mcpSetting": "MCP 设置"
+    "mcpSetting": "MCP 设置",
+    "save": "保存"
   }
 }
