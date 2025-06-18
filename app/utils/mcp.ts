@@ -288,10 +288,11 @@ export const getRenderMcpList: any = async (
           type: aiden_type,
           settingInfo: parseConfig(server as CustomMCPServer),
         });
+        mcpIconMap.set(name, "");
       } else {
         addedInJSONIds.push(aiden_id);
-
         const item = mcpRemoteInfoMap.get(aiden_id);
+        mcpIconMap.set(name, item.mcp_logo);
         items.push({
           ...item,
           mcp_id: aiden_id,
@@ -321,12 +322,10 @@ export const getRenderMcpList: any = async (
         checked: false,
         settingInfo: null,
       });
+      mcpIconMap.set(Object.keys(item.basic_config)[0], item.mcp_logo);
     }
   }
 
-  for (let item of items) {
-    mcpIconMap.set(item.mcp_key, item.mcp_logo);
-  }
   return {
     mcpIconMap,
     mcpRemoteInfoMap,
