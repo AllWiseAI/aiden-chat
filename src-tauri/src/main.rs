@@ -250,13 +250,29 @@ fn main() {
     };
 
     let setting = CustomMenuItem::new("open_setting".to_string(), "Setting");
-    let submenu = Submenu::new(
+
+    let app_submenu = Submenu::new(
         "App",
         Menu::new()
             .add_item(setting)
             .add_native_item(MenuItem::Quit),
     );
-    let menu = Menu::new().add_submenu(submenu);
+
+    let edit_submenu = Submenu::new(
+        "Edit",
+        Menu::new()
+            .add_native_item(MenuItem::Undo)
+            .add_native_item(MenuItem::Redo)
+            .add_native_item(MenuItem::Separator)
+            .add_native_item(MenuItem::Cut)
+            .add_native_item(MenuItem::Copy)
+            .add_native_item(MenuItem::Paste)
+            .add_native_item(MenuItem::SelectAll),
+    );
+
+    let menu = Menu::new()
+        .add_submenu(app_submenu)
+        .add_submenu(edit_submenu);
 
     tokio::runtime::Builder::new_multi_thread()
         .enable_all()
