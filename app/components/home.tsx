@@ -8,7 +8,7 @@ import styles from "./home.module.scss";
 import AidenIcon from "../icons/aiden-logo.svg";
 import LoadingIcon from "../icons/three-dots.svg";
 
-import { getCSSVar, useMobileScreen } from "../utils";
+import { getCSSVar } from "../utils";
 
 import dynamic from "next/dynamic";
 import { Path, SlotID } from "../constant";
@@ -25,6 +25,7 @@ import {
 import { SideBar } from "./sidebar";
 import { useAppConfig } from "../store/config";
 import { getClientConfig } from "../config/client";
+import useAppSetting from "../hooks/use-app-setting";
 import clsx from "clsx";
 
 export function Loading(props: { noLogo?: boolean }) {
@@ -176,14 +177,10 @@ const loadAsyncGoogleFont = () => {
 };
 
 function MainLayout() {
-  const config = useAppConfig();
   const location = useLocation();
   const isHome = location.pathname === Path.Home;
 
-  const isMobileScreen = useMobileScreen();
-  const shouldTightBorder =
-    getClientConfig()?.isApp || (config.tightBorder && !isMobileScreen);
-
+  useAppSetting();
   useEffect(() => {
     loadAsyncGoogleFont();
   }, []);

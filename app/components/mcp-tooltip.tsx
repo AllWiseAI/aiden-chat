@@ -18,6 +18,55 @@ function McpPopover({ icon }: { icon: ReactElement }) {
   const navigate = useNavigate();
   const mcpStatusList = useMcpStore((state) => state.mcpStatusList);
 
+  const allFailed = useMemo(() => {
+    return mcpStatusList.every((item) => item.action === McpAction.Failed);
+  }, [mcpStatusList]);
+
+  const hasLoading = useMemo(() => {
+    return mcpStatusList.some((item) => item.action === McpAction.Loading);
+  }, [mcpStatusList]);
+
+  const hasSuccess = useMemo(() => {
+    if (hasLoading) return false;
+    return mcpStatusList.some((item) => item.action === McpAction.Connected);
+  }, [mcpStatusList, hasLoading]);
+
+  const shouldShowStatusIcon = useMemo(() => {
+    return mcpStatusList.length > 0;
+  }, [mcpStatusList]);
+
+  const SuccessStatusIcon = useMemo(() => {
+    return (
+      <div className="absolute bottom-2 left-6 w-1 h-1 bg-[#00AB66] rounded-full animate-[breathing_2s_ease-in-out_infinite"></div>
+    );
+  }, []);
+
+  const FailedStatusIcon = useMemo(() => {
+    return (
+      <div className="absolute bottom-2 left-6 w-1 h-1 bg-[#EF466F] rounded-full animate-[breathing_2s_ease-in-out_infinite"></div>
+    );
+  }, []);
+
+  const LoadingStatusIcon = useMemo(() => {
+    return (
+      <div className="absolute bottom-2 left-6 w-1 h-1 bg-[#F8E243] rounded-full animate-[breathing_2s_ease-in-out_infinite"></div>
+    );
+  }, []);
+
+  const renderStatusIcon = useMemo(() => {
+    if (hasSuccess) return SuccessStatusIcon;
+    if (allFailed) return FailedStatusIcon;
+    if (hasLoading) return LoadingStatusIcon;
+    return null;
+  }, [
+    hasSuccess,
+    allFailed,
+    hasLoading,
+    FailedStatusIcon,
+    SuccessStatusIcon,
+    LoadingStatusIcon,
+  ]);
+
   return (
     <Popover>
       <PopoverTrigger asChild>

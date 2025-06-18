@@ -1,14 +1,15 @@
 {
-  "version": "0.0.11",
+  "version": "0.0.12",
+  "syncVersion": "0.0.2",
   "mcpServers": {
-    "search": {
+    "aiden-search": {
       "url": "https://dev.aidenai.io/sse",
       "transport": "sse",
       "aiden_type": "default",
       "aiden_enable": true,
-      "aiden_id": "internal-search"
+      "aiden_id": "aiden-search"
     },
-    "desktop-commander": {
+    "aiden-desktop-commander": {
       "command": "npx",
       "args": [
         "-y",
@@ -18,9 +19,9 @@
       "aiden_type": "default",
       "aiden_enable": true,
       "aiden_mcp_version": "0.2.2",
-      "aiden_id": "internal-desktop-commander"
+      "aiden_id": "aiden-desktop-commander"
     },
-    "fetch": {
+    "aiden-fetch": {
       "command": "uvx",
       "args": [
         "mcp-server-fetch@2025.4.7"
@@ -29,7 +30,7 @@
       "aiden_type": "default",
       "aiden_enable": true,
       "aiden_mcp_version": "2025.4.7",
-      "aiden_id": "internal-fetch"
+      "aiden_id": "aiden-fetch"
     },
     "aiden-time": {
       "command": "uv",
@@ -40,9 +41,9 @@
       "transport": "stdio",
       "aiden_type": "default",
       "aiden_enable": true,
-      "aiden_id": "internal-time"
+      "aiden_id": "aiden-time"
     },
-    "sequential-thinking": {
+    "aiden-sequential-thinking": {
       "command": "npx",
       "args": [
         "-y",
@@ -52,9 +53,9 @@
       "aiden_type": "default",
       "aiden_enable": true,
       "aiden_mcp_version": "0.6.2",
-      "aiden_id": "sequential-thinking"
+      "aiden_id": "aiden-sequential-thinking"
     },
-    "excel": {
+    "aiden-excel": {
       "command": "npx",
       "args": [
         "--yes",
@@ -67,9 +68,9 @@
       "aiden_type": "default",
       "aiden_enable": true,
       "aiden_mcp_version": "0.9.2",
-      "aiden_id": "internal-excel"
+      "aiden_id": "aiden-excel"
     },
-    "ppt": {
+    "aiden-ppt": {
       "command": "uvx",
       "args": [
         "--from",
@@ -80,9 +81,9 @@
       "aiden_type": "default",
       "aiden_enable": true,
       "aiden_mcp_version": "1.0.0",
-      "aiden_id": "internal-ppt"
+      "aiden_id": "aiden-ppt"
     },
-    "markitdown": {
+    "aiden-markitdown": {
       "command": "uvx",
       "args": [
         "markitdown-mcp@0.0.1a4"
@@ -91,7 +92,7 @@
       "aiden_type": "default",
       "aiden_enable": true,
       "aiden_mcp_version": "0.0.1a4",
-      "aiden_id": "markitdown"
+      "aiden_id": "aiden-markitdown"
     }
   },
   "a2aServers": []

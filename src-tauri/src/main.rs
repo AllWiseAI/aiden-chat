@@ -14,6 +14,7 @@ use std::process::{Command as StdCommand, Stdio as StdStdio};
 use std::sync::Mutex;
 use tauri::api::path::resource_dir;
 use tauri::{AppHandle, Manager, Runtime, State};
+use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
 use tokio::io::AsyncBufReadExt;
 use tokio::process::{Child, Command as TokioCommand};
 use tokio::task;
@@ -46,16 +47,17 @@ fn get_env_path<R: Runtime>(app: &AppHandle<R>) -> Option<PathBuf> {
 }
 
 fn get_host_server_path<R: Runtime>(app: &AppHandle<R>) -> PathBuf {
-    // 根据平台选择对应的host_server名称
-    let binary_name = if cfg!(target_os = "macos") {
-        "host_server_macos"
-    } else if cfg!(target_os = "linux") {
-        "host_server_linux"
-    } else if cfg!(target_os = "windows") {
-        "host_server_windows.exe"
-    } else {
-        "host_server_macos"
-    };
+    #[cfg(target_os = "macos")]
+    let binary_name = "host_server_macos";
+
+    #[cfg(target_os = "linux")]
+    let binary_name = "host_server_linux";
+
+    #[cfg(target_os = "windows")]
+    let binary_name = "host_server_windows";
+
+    #[cfg(not(any(target_os = "macos", target_os = "linux", target_os = "windows")))]
+    let binary_name = "host_server_macos";
 
     if cfg!(debug_assertions) {
         std::env::current_dir()
@@ -247,12 +249,44 @@ fn main() {
         None
     };
 
+    let setting = CustomMenuItem::new("open_setting".to_string(), "Setting");
+
+    let app_submenu = Submenu::new(
+        "App",
+        Menu::new()
+            .add_item(setting)
+            .add_native_item(MenuItem::Quit),
+    );
+
+    let edit_submenu = Submenu::new(
+        "Edit",
+        Menu::new()
+            .add_native_item(MenuItem::Undo)
+            .add_native_item(MenuItem::Redo)
+            .add_native_item(MenuItem::Separator)
+            .add_native_item(MenuItem::Cut)
+            .add_native_item(MenuItem::Copy)
+            .add_native_item(MenuItem::Paste)
+            .add_native_item(MenuItem::SelectAll),
+    );
+
+    let menu = Menu::new()
+        .add_submenu(app_submenu)
+        .add_submenu(edit_submenu);
+
     tokio::runtime::Builder::new_multi_thread()
         .enable_all()
         .build()
         .unwrap()
         .block_on(async {
             tauri::Builder::default()
+                .menu(menu)
+                .on_menu_event(|event| match event.menu_item_id() {
+                    "open_setting" => {
+                        let _ = event.window().emit("open-setting", {});
+                    }
+                    _ => {}
+                })
                 .manage(HostServerProcess(Mutex::new(None)))
                 .invoke_handler(tauri::generate_handler![
                     log_from_frontend,

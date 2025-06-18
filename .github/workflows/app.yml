@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 
+          fetch-depth: 0
           fetch-tags: true
       - name: setup node
         uses: actions/setup-node@v4
@@ -24,7 +24,6 @@ jobs:
           node-version: 18
       - name: get version
         run: |
-          echo "📦 获取 src-tauri 中配置的版本号..."
           echo "PACKAGE_VERSION=$(node -p "require('./src-tauri/tauri.conf.json').package.version")" >> $GITHUB_ENV
       - name: create release
         id: create-release
@@ -36,8 +35,6 @@ jobs:
               repo: context.repo.repo,
             })
             return data.id
-      - name: Add x86_64-apple-darwin target
-        run: rustup target add x86_64-apple-darwin
 
   build-tauri:
     needs: create-release
@@ -47,37 +44,38 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - os: macos-latest
-            arch: aarch64
-            rust_target: x86_64-apple-darwin,aarch64-apple-darwin
+          - arch: x86_64
+            rust_target: x86_64-apple-darwin
+            artifact_arch: x64
+          - arch: arm64
+            rust_target: aarch64-apple-darwin
+            artifact_arch: arm64
 
-    runs-on: ${{ matrix.config.os }}
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: setup node
         uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: "yarn"
+
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.config.rust_target }}
+
       - name: get version
         run: |
-          echo "📦 获取 src-tauri 中配置的版本号..."
-          echo "PACKAGE_VERSION=$(node -p "require('./src-tauri/tauri.conf.json').package.version")" >> $GITHUB_ENV
+          echo "PACKAGE_VERSION=$(node -p \"require('./src-tauri/tauri.conf.json').package.version\")" >> $GITHUB_ENV
+
       - uses: Swatinem/rust-cache@v2
         with:
-          key: ${{ matrix.config.os }}
-      - name: install dependencies (ubuntu only)
-        if: matrix.config.os == 'ubuntu-latest'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+          key: ${{ matrix.config.arch }}
 
       - name: install frontend dependencies
-        run: yarn install # change this to npm or pnpm depending on which one you use
+        run: yarn install
 
       - name: Update tauri config
         run: |
@@ -92,11 +90,12 @@ jobs:
             echo "jq is already installed"
           fi
 
-      - name: Download host_server and uv binaries and bun binaries
-        run:  bash .github/scripts/download-bin.sh
+      - name: Download host_server, uv, bun binaries
+        run: bash .github/scripts/download-bin.sh ${{ matrix.config.arch }}
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Inject environment variables to .env
+
+      - name: Inject environment variables
         run: |
           cat <<EOF > src-tauri/bin/.env
           NPM_CONFIG_REGISTRY=${{ secrets.NPM_CONFIG_REGISTRY }}
@@ -105,34 +104,37 @@ jobs:
           UV_EXTRA_INDEX_URL=${{ secrets.UV_EXTRA_INDEX_URL }}
           HOST_SERVER_VERSION=$(cat .host_server_version)
           EOF
-      - name: Setup macOS code signing certificate
-        if: matrix.config.os == 'macos-latest'
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          args: --target ${{ matrix.config.rust_target }}
+
+      - name: Setup macOS code signing
         run: bash .github/scripts/setup-macos-codesign.sh
         env:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
-      - uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        with:
-          args: ${{ matrix.config.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
-      - name: Re-unlock keychain before manual signing
-        if: matrix.config.os == 'macos-latest'
-        run: |
-          KEYCHAIN_PASSWORD="build_password"
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
-          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" build.keychain
+
       - name: Sign all binaries and app
-        run: bash .github/scripts/sign-all.sh
+        run: bash .github/scripts/sign-all.sh ${{ matrix.config.arch }}
         env:
           APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
+
       - name: Check missing signatures
-        run: bash .github/scripts/check-signature.sh
+        run: bash .github/scripts/check-signature.sh ${{ matrix.config.arch }}
         env:
           APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
+
+      - name: get version
+        run: |
+          echo "📦 获取 src-tauri 中配置的版本号..."
+          echo "PACKAGE_VERSION=$(node -p "require('./src-tauri/tauri.conf.json').package.version")" >> $GITHUB_ENV
+
       - name: Notarize app and DMG
-        run: bash .github/scripts/notarize.sh
+        run: bash .github/scripts/notarize.sh ${{ matrix.config.arch }}
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
@@ -141,12 +143,27 @@ jobs:
           PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+
       - name: List build artifacts
         run: ls -R src-tauri/target/
+
+      - name: Set mapped arch name
+        id: arch_map
+        run: |
+          if [ "${{ matrix.config.artifact_arch }}" == "arm64" ]; then
+            echo "mapped_arch=aarch64" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.config.artifact_arch }}" == "x64" ]; then
+            echo "mapped_arch=x64" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Unknown arch: ${{ matrix.config.artifact_arch }}"
+            exit 1
+          fi
+
       - name: Zip .app for upload
         run: |
-          cd src-tauri/target/universal-apple-darwin/release/bundle/macos
-          zip -r AidenChat.app.zip AidenChat.app
+          cd src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos
+          zip -r AidenChat_${{ steps.arch_map.outputs.mapped_arch }}.app.zip AidenChat.app
+
       - name: Output tag list for debugging
         run: |
           git fetch --tags
@@ -164,22 +181,83 @@ jobs:
           echo "✅ 使用的 tag 是：$LATEST_TAG"
           echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
           echo "✅ 上传使用的 tag 是：${{ env.LATEST_TAG }}"
+
       - uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ env.LATEST_TAG }}
           overwrite: true
           files: |
-            src-tauri/target/universal-apple-darwin/release/bundle/macos/AidenChat.app.zip
-            src-tauri/target/universal-apple-darwin/release/bundle/macos/AidenChat.app.zip.sig
-            src-tauri/target/universal-apple-darwin/release/bundle/macos/latest.json
-            src-tauri/target/universal-apple-darwin/release/bundle/dmg/AidenChat_${{ env.PACKAGE_VERSION }}_universal_signed.dmg
+            src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos/AidenChat_${{ steps.arch_map.outputs.mapped_arch }}.app.zip
+            src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos/AidenChat_${{ steps.arch_map.outputs.mapped_arch }}.app.zip.sig
+            src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/dmg/AidenChat_${{ env.PACKAGE_VERSION }}_${{ steps.arch_map.outputs.mapped_arch }}_signed.dmg
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.arch_map.outputs.mapped_arch }}-artifacts
+          path: |
+            src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos/AidenChat_*.app.zip
+            src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos/AidenChat_*.app.zip.sig
+
+  generate-latest-json:
+    runs-on: ubuntu-latest
+    needs: build-tauri
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: List downloaded artifacts
+        run: ls -R artifacts
+
+      - name: get version
+        run: |
+          echo "📦 获取 src-tauri 中配置的版本号..."
+          echo "PACKAGE_VERSION=$(node -p "require('./src-tauri/tauri.conf.json').package.version")" >> $GITHUB_ENV
+
+      - name: Generate latest.json
+        run: bash .github/scripts/gen-latest-json.sh
+        env:
+          PACKAGE_VERSION: ${{ needs.build-tauri.outputs.PACKAGE_VERSION }}
+
+      - name: Output tag list for debugging
+        run: |
+          git fetch --tags
+          echo "📃 所有远端 tag："
+          git tag --sort=-creatordate
+          # 获取最新 tag
+          LATEST_TAG=$(git tag --sort=-creatordate | head -n 1)
+
+          # 如果为空则设置默认值
+          if [ -z "$LATEST_TAG" ]; then
+            echo "⚠️ 未找到 tag，使用默认 tag：v0.1.13"
+            LATEST_TAG="v0.1.13"
+          fi
+
+          echo "✅ 使用的 tag 是：$LATEST_TAG"
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+          echo "✅ 上传使用的 tag 是：${{ env.LATEST_TAG }}"
+
+      - name: Upload latest.json
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.LATEST_TAG }}
+          overwrite: true
+          files: dist/latest.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
   publish-release:
     permissions:
       contents: write
     runs-on: ubuntu-latest
-    needs: [create-release, build-tauri]
+    needs: [create-release, build-tauri, generate-latest-json]
 
     steps:
       - name: publish release
@@ -195,4 +273,4 @@ jobs:
               release_id: process.env.release_id,
               draft: false,
               prerelease: false
-            })    
+            })

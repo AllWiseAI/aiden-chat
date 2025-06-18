@@ -1,11 +1,23 @@
 #!/bin/bash
-
 set -e
 
-APP_PATH="src-tauri/target/universal-apple-darwin/release/bundle/macos/AidenChat.app"
+ARCH=$1
+
+# ✅ 映射 ARCH 到 rust_target 平台名
+if [[ "$ARCH" == "arm64" ]]; then
+  PLATFORM_ARCH="aarch64"
+elif [[ "$ARCH" == "x86_64" ]]; then
+  PLATFORM_ARCH="x86_64"
+else
+  echo "❌ Invalid arch: $ARCH (must be 'arm64' or 'x86_64')"
+  exit 1
+fi
+
+
+APP_PATH="src-tauri/target/${PLATFORM_ARCH}-apple-darwin/release/bundle/macos/AidenChat.app"
 BIN_DIR="$APP_PATH/Contents/Resources/bin"
 RESOURCES_DIR="$APP_PATH/Contents/Resources/resources"
-DMG_DIR="src-tauri/target/universal-apple-darwin/release/bundle/dmg"
+DMG_DIR="src-tauri/target/${PLATFORM_ARCH}-apple-darwin/release/bundle/dmg"
 SIGN_IDENTITY="${APPLE_SIGN_IDENTITY}"
 
 sign_file() {
@@ -87,3 +99,5 @@ if [ -f "$DMG_PATH" ]; then
 fi
 
 echo "✅ 所有签名已完成。"
+
+
