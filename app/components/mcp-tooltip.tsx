@@ -17,6 +17,7 @@ import { useMcpStore } from "@/app/store/mcp";
 function McpTooltip({ icon }: { icon: ReactElement }) {
   const navigate = useNavigate();
   const mcpStatusList = useMcpStore((state) => state.mcpStatusList);
+  const mcpRenderedMap = useMcpStore((state) => state.mcpRenderedMap);
 
   const allFailed = useMemo(() => {
     return mcpStatusList.every((item) => item.action === McpAction.Failed);
@@ -118,7 +119,11 @@ function McpTooltip({ icon }: { icon: ReactElement }) {
                         maxWidth: "110px",
                       }}
                     >
-                      {item.name}
+                      {/* 
+                          TODO  add  icon here
+                         <img src={mcpRenderedMap.get(item.name)?.icon} className="size-4"/>
+                      */}
+                      {mcpRenderedMap.get(item.name)?.renderName || item.name}
                     </p>
                     {StatusIcon}
                   </div>

@@ -261,7 +261,7 @@ export const getRenderMcpList: any = async (
   const items: McpItemInfo[] = [];
   const addedInJSONIds: string[] = [];
   const mcpRemoteInfoMap = new Map();
-  const mcpIconMap = new Map();
+  const mcpRenderedMap = new Map();
   for (let item of remoteMcpList) {
     mcpRemoteInfoMap.set(item.mcp_id, item);
   }
@@ -288,11 +288,14 @@ export const getRenderMcpList: any = async (
           type: aiden_type,
           settingInfo: parseConfig(server as CustomMCPServer),
         });
-        mcpIconMap.set(name, "");
+        mcpRenderedMap.set(name, { icon: "", renderName: name });
       } else {
         addedInJSONIds.push(aiden_id);
         const item = mcpRemoteInfoMap.get(aiden_id);
-        mcpIconMap.set(name, item.mcp_logo);
+        mcpRenderedMap.set(name, {
+          icon: item.mcp_logo,
+          renderName: item.mcp_name,
+        });
         items.push({
           ...item,
           mcp_id: aiden_id,
@@ -322,12 +325,15 @@ export const getRenderMcpList: any = async (
         checked: false,
         settingInfo: null,
       });
-      mcpIconMap.set(Object.keys(item.basic_config)[0], item.mcp_logo);
+      mcpRenderedMap.set(Object.keys(item.basic_config)[0], {
+        icon: item.mcp_logo,
+        renderName: item.mcp_name,
+      });
     }
   }
 
   return {
-    mcpIconMap,
+    mcpRenderedMap,
     mcpRemoteInfoMap,
     renderMcpList: items,
   };

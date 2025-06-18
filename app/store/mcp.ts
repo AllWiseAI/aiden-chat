@@ -34,7 +34,7 @@ const DEFAULT_MCP_STATE = {
   remoteMcpList: [] as TRemoteMcpInfo[],
   renderMcpList: [] as McpItemInfo[],
   mcpRemoteInfoMap: new Map(),
-  mcpIconMap: new Map(),
+  mcpRenderedMap: new Map(),
   mcpStatusList: [] as McpStatusItem[],
 };
 
@@ -59,7 +59,7 @@ export const useMcpStore = createPersistStore(
         const { startPollingMcpStatus } = _get();
         const config = await readMcpConfig();
         const remoteMcpList = await getRemoteMcpList();
-        const { renderMcpList, mcpRemoteInfoMap, mcpIconMap } =
+        const { renderMcpList, mcpRemoteInfoMap, mcpRenderedMap } =
           await getRenderMcpList(config, remoteMcpList);
         const mcpStatusList = await getMcpStatusList(config);
         startPollingMcpStatus();
@@ -69,7 +69,7 @@ export const useMcpStore = createPersistStore(
           remoteMcpList,
           renderMcpList,
           mcpRemoteInfoMap,
-          mcpIconMap,
+          mcpRenderedMap,
           mcpStatusList,
         });
         console.log("[Mcp store] init end");
