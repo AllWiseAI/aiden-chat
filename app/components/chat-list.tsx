@@ -79,13 +79,14 @@ export function ChatItem(props: {
       {(provided) => (
         <div
           className={clsx(
-            "p-1.5 rounded-sm group h-7.5",
+            "rounded-sm group h-7.5",
             props.selected &&
               (currentPath === Path.Chat || currentPath === Path.Home)
               ? "bg-[#E8ECEF]/50 dark:bg-[#232323]"
               : openMenu
               ? "bg-bg-[#E8ECEF]/50 dark:bg-[#2F2F2F]"
               : "hover:bg-[#E8ECEF]/50 dark:hover:bg-[#2F2F2F]",
+            !isEdit && "p-1.5",
           )}
           onClick={props.onClick}
           ref={(ele) => {
@@ -103,7 +104,7 @@ export function ChatItem(props: {
               {isEdit ? (
                 <Input
                   ref={inputRef}
-                  className="!text-start text-[#232627] dark:text-white text-sm font-semibold"
+                  className="!h-full !text-start text-[#232627] dark:text-white !text-xs font-semibold border-main"
                   value={props.title}
                   onChange={(e) =>
                     chatStore.updateTargetSession(

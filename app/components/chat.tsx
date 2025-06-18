@@ -509,7 +509,7 @@ function _Chat() {
                   <Button
                     data-tauri-drag-region="false"
                     variant="ghost"
-                    className="size-5"
+                    className="size-5 !p-0"
                     onClick={() => {
                       toast(t("chat.actions.refreshToast"), {
                         className: "w-auto max-w-max",

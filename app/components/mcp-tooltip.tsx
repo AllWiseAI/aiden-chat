@@ -57,8 +57,9 @@ function McpTooltip({ icon }: { icon: ReactElement }) {
                 return (
                   <div
                     key={item.name}
-                    className="h-8 p-2 flex justify-between items-center gap-2"
+                    className="h-8 p-2 flex items-center gap-2"
                   >
+                    {StatusIcon}
                     <p
                       className="text-[#6C7275] h-4 text-xs"
                       style={{
@@ -71,7 +72,6 @@ function McpTooltip({ icon }: { icon: ReactElement }) {
                     >
                       {item.name}
                     </p>
-                    {StatusIcon}
                   </div>
                 );
               })}

@@ -40,7 +40,7 @@ export default function General() {
     <div className="w-full h-full flex flex-col gap-4 justify-start items-center text-black dark:text-white">
       <div className="w-full flex flex-col gap-3 px-2.5 pb-5 border-b">
         <div className="font-medium">{t("general.account")}</div>
-        <div className="flex justify-between items-center gap-5 p-3 bg-[#F3F5F7]/30 dark:bg-[#232627]/30 border border-[#E8ECEF] dark:border-[#232627] rounded-sm text-sm">
+        <div className="flex justify-between items-center gap-5 p-2.5 bg-[#F3F5F7]/30 dark:bg-[#232627]/30 border border-[#E8ECEF] dark:border-[#232627] rounded-sm text-sm">
           <p>{email}</p>
           <div
             className="text-[#EF466F] text-xs underline cursor-pointer hover:opacity-70"

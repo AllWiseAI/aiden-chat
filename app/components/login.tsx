@@ -71,19 +71,19 @@ export function LoginPage() {
     }
   };
   return (
-    <div className="w-full h-full p-10 bg-white dark:bg-[#141416] mx-auto flex flex-col justify-start items-center gap-8 rounded-2xl">
+    <div className="w-full h-full px-6 py-7.5 bg-white dark:bg-[#141416] mx-auto flex flex-col justify-start items-center gap-12 rounded-2xl">
       <div className="flex-center flex-col gap-4 text-black dark:text-white">
         <LogoTextIcon />
-        <span className="text-2xl font-medium">{t("signIn.to")} Aiden.ai</span>
+        <span className="text-sm font-medium">{t("signIn.to")} Aiden.ai</span>
       </div>
       <form
-        className="flex-center flex-col gap-8 w-full"
+        className="flex-center flex-col gap-5 w-full"
         onSubmit={handleSubmit}
       >
         <div className="flex flex-col gap-2 w-full">
           <Label
             htmlFor="email"
-            className="font-bold after:content['*'] after:content-['*'] after:text-red-500 !gap-1"
+            className="font-bold after:content['*'] after:content-['*'] after:text-red-500 !gap-1 text-xs"
           >
             {t("email")}
           </Label>
@@ -91,9 +91,12 @@ export function LoginPage() {
             id="email"
             type="email"
             placeholder="mail@aiden.com"
-            className={clsx("w-full h-13 !text-left px-4 py-3.5 rounded-xl", {
-              "border-2 border-[#EF466F]": emailError,
-            })}
+            className={clsx(
+              "w-full h-8 !text-left px-2.5 py-2 rounded-sm text-xs",
+              {
+                "border-2 border-[#EF466F]": emailError,
+              },
+            )}
             value={formData.email}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -101,20 +104,20 @@ export function LoginPage() {
             required
           />
           {emailError && (
-            <span className="text-xs text-red-500">{emailError}</span>
+            <span className="text-[10px] text-red-500">{emailError}</span>
           )}
         </div>
         <div className="flex flex-col gap-2 w-full">
           <div className="flex justify-between">
             <Label
               htmlFor="password"
-              className="font-bold after:content['*'] after:content-['*'] after:text-red-500 !gap-1"
+              className="font-bold after:content['*'] after:content-['*'] after:text-red-500 !gap-1 text-xs"
             >
               {t("password")}
             </Label>
             <Link
               to={Path.ForgotPassword}
-              className="text-xs text-main font-medium underline"
+              className="text-[10px] text-main font-medium underline"
             >
               {t("signIn.forgot")}
             </Link>
@@ -124,16 +127,16 @@ export function LoginPage() {
             id="password"
             type="password"
             placeholder={t("enter")}
-            className="!w-full h-13 !max-w-130 !text-left !px-4 !py-3.5 !rounded-xl"
+            className="!w-full h-8 !max-w-130 !text-left !px-2.5 !py-2 !rounded-sm text-xs"
             value={formData.password}
             onChange={handleChange}
             required
           />
         </div>
-        <div className="self-start flex items-center gap-2 text-xs">
+        <div className="self-start flex items-center gap-2 text-[10px]">
           <input
             type="checkbox"
-            className="!size-[18px]"
+            className="!size-[14px] !border-[#6C7275] !rounded-xs"
             checked={checked}
             onChange={(e) => setChecked(e.target.checked)}
           />
@@ -157,7 +160,7 @@ export function LoginPage() {
           </div>
         </div>
         <Button
-          className="w-full h-12 !px-6 !py-3 bg-main hover:bg-[#02C174]/90 disabled:bg-[#02C174] text-white dark:text-black font-semibold rounded-full"
+          className="w-full h-8 !px-2.5 !py-2 bg-main hover:bg-[#009A5C] disabled:bg-[#7FD5B2] text-white text-xs dark:text-black font-semibold rounded-sm"
           type="submit"
           disabled={
             !(formData.email && formData.password && checked) ||
@@ -169,7 +172,7 @@ export function LoginPage() {
           {t("signIn.btn")}
         </Button>
       </form>
-      <span className="text-xs text-[#777E90] font-medium">
+      <span className="text-[10px] text-[#777E90] font-medium">
         {t("signIn.noAccount")}{" "}
         <Link to={Path.SignUp} className="underline text-main">
           {t("signUp.btn")}
