@@ -1,5 +1,6 @@
 {
   "version": "0.0.11",
+  "syncVersion": "0.0.1",
   "mcpServers": {
     "search": {
       "url": "https://dev.aidenai.io/sse",
