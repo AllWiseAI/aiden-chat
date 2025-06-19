@@ -6,7 +6,6 @@ import {
   PopoverTrigger,
 } from "@/app/components/shadcn/popover";
 import { ReactElement } from "react";
-import RightIcon from "../icons/right-arrow.svg";
 import AccessIcon from "../icons/access.svg";
 import LoadingIcon from "../icons/loading-spinner.svg";
 import ErrorIcon from "../icons/error.svg";
@@ -18,6 +17,7 @@ import { useMcpStore } from "@/app/store/mcp";
 function McpPopover({ icon }: { icon: ReactElement }) {
   const navigate = useNavigate();
   const mcpStatusList = useMcpStore((state) => state.mcpStatusList);
+  const mcpRenderedMap = useMcpStore((state) => state.mcpRenderedMap);
 
   const allFailed = useMemo(() => {
     return mcpStatusList.every((item) => item.action === McpAction.Failed);
@@ -89,7 +89,7 @@ function McpPopover({ icon }: { icon: ReactElement }) {
         }}
       >
         {mcpStatusList.length ? (
-          <div className="max-h-40 overflow-y-auto">
+          <div className="w-40 max-h-[300px] overflow-y-auto">
             {mcpStatusList.map((item) => {
               let StatusIcon;
               if (item.action === McpAction.Loading)
@@ -97,17 +97,16 @@ function McpPopover({ icon }: { icon: ReactElement }) {
                   <LoadingIcon className="animate-spin size-4 text-[#6C7275]" />
                 );
               else if (item.action === McpAction.Connected)
-                StatusIcon = <AccessIcon className="size-4" />;
+                StatusIcon = <AccessIcon />;
               else if (item.action === McpAction.Failed)
-                StatusIcon = <ErrorIcon className="size-4" />;
+                StatusIcon = <ErrorIcon />;
               return (
                 <div
                   key={item.name}
-                  className="h-8 p-2 flex items-center gap-2"
+                  className="h-8 p-2 flex justify-between items-center gap-2"
                 >
-                  {StatusIcon}
                   <p
-                    className="h-4 text-xs"
+                    className="text-[#6C7275] h-4 text-xs"
                     style={{
                       display: "-webkit-box",
                       WebkitLineClamp: 1,
@@ -116,8 +115,13 @@ function McpPopover({ icon }: { icon: ReactElement }) {
                       maxWidth: "110px",
                     }}
                   >
-                    {item.name}
+                    {/* 
+                          TODO  add  icon here
+                         <img src={mcpRenderedMap?.get(item.name)?.icon} className="size-4"/>
+                      */}
+                    {mcpRenderedMap.get?.(item.name)?.renderName || item.name}
                   </p>
+                  {StatusIcon}
                 </div>
               );
             })}
@@ -126,11 +130,10 @@ function McpPopover({ icon }: { icon: ReactElement }) {
           <div className="p-5 text-gray-500">No Mcp</div>
         )}
         <div
-          className="h-[30px] flex justify-between items-center w-full bg-[#E8ECEF]/50 dark:bg-[#232627]/50 hover:text-[#00AB66] text-center hover:opacity-80 cursor-pointer rounded-sm px-2.5"
+          className="w-max text-main text-center hover:opacity-80 cursor-pointer"
           onClick={() => navigate(Path.Settings + "?tab=mcp")}
         >
           Manage
-          <RightIcon />
         </div>
       </PopoverContent>
     </Popover>
