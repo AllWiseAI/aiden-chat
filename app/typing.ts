@@ -35,6 +35,10 @@ export type TDetailInfo = {
   description: string;
   tutorial: string;
   checked: boolean;
+  description_en?: string;
+  description_zh?: string;
+  tutorial_zh?: string;
+  tutorial_en?: string;
   type: McpItemType;
   current_version: string;
 };
