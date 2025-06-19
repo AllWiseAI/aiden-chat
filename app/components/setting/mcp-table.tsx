@@ -80,38 +80,27 @@ function ServerTable({
     <>
       {servers.length ? (
         <div className="grid grid-cols-1 @xss:grid-cols-2 @sm:grid-cols-3 justify-items-center items-center gap-5">
-          {servers
-            .sort((a, b) => {
-              if (a.checked !== b.checked) {
-                return a.checked ? -1 : 1;
-              }
-              return a.mcp_name > b.mcp_name
-                ? 1
-                : a.mcp_name < b.mcp_name
-                ? -1
-                : 0;
-            })
-            .map((item) => (
-              <McpTableItem
-                key={item.mcp_id + item.mcp_name}
-                item={{ ...item }}
-                keyword={keyword}
-                onSwitchChange={async (enable, id, name, type, version) => {
-                  try {
-                    await switchMcpStatus({ id, name, enable, type, version });
-                  } catch (e: any) {
-                    toast.error(e, {
-                      className: "w-auto max-w-max",
-                    });
-                  }
-                }}
-                onDelete={handleDeleteMcp}
-                onSelect={() => setDetail({ ...item })}
-                onSetting={(settingInfo, name) =>
-                  setCurrentSetting(settingInfo, name)
+          {servers.map((item) => (
+            <McpTableItem
+              key={item.mcp_id + item.mcp_name}
+              item={{ ...item }}
+              keyword={keyword}
+              onSwitchChange={async (enable, id, name, type, version) => {
+                try {
+                  await switchMcpStatus({ id, name, enable, type, version });
+                } catch (e: any) {
+                  toast.error(e, {
+                    className: "w-auto max-w-max",
+                  });
                 }
-              />
-            ))}
+              }}
+              onDelete={handleDeleteMcp}
+              onSelect={() => setDetail({ ...item })}
+              onSetting={(settingInfo, name) =>
+                setCurrentSetting(settingInfo, name)
+              }
+            />
+          ))}
         </div>
       ) : (
         <div className="w-full h-full flex-center">

@@ -358,10 +358,20 @@ export const useMcpStore = createPersistStore(
         }
 
         set({ config: newConfig });
-        const { renderMcpList: newList } = await getRenderMcpList(
-          newConfig,
-          renderMcpList,
-        );
+        const newList = renderMcpList.map?.((item) => {
+          if (item.mcp_key === name) {
+            return {
+              ...item,
+              checked: enable,
+              settingInfo,
+              templateInfo,
+              local_version: (newConfig.mcpServers[name] as CustomMCPServer)
+                ?.aiden_mcp_version,
+              remote_version: mcpRemoteInfoMap.get(id)?.current_version || "",
+            };
+          }
+          return item;
+        });
         set({ renderMcpList: newList as McpItemInfo[] });
         try {
           await updateConfig(newConfig);
