@@ -332,10 +332,17 @@ export const getRenderMcpList: any = async (
     }
   }
 
+  const sortedItems = items.sort((a, b) => {
+    if (a.checked !== b.checked) {
+      return a.checked ? -1 : 1;
+    }
+    return a.mcp_name > b.mcp_name ? 1 : a.mcp_name < b.mcp_name ? -1 : 0;
+  });
+
   return {
     mcpRenderedMap,
     mcpRemoteInfoMap,
-    renderMcpList: items,
+    renderMcpList: sortedItems,
   };
 };
 
