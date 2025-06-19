@@ -59,7 +59,7 @@ export default function AboutUs() {
               className="group h-13 flex justify-between items-center hover:bg-[#E8ECEF] dark:hover:bg-[#232627]/50 px-4 py-2.5 cursor-pointer text-black dark:text-white text-sm border-t border-[#E8ECEF] dark:border-[#343839]/50"
             >
               {item.name}
-              <RightIcon className="hidden group-hover:inline-block" />
+              <RightIcon className="size-5 hidden group-hover:inline-block text-[#6C7275] dark:text-[#6C7275]" />
             </div>
           );
         })}

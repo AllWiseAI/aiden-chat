@@ -76,28 +76,29 @@ export function McpTemplateModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-xl"
+        className="max-w-xl w-80 rounded-sm gap-5 p-5"
+        closeIcon={false}
         onClick={(e) => {
           e.stopPropagation();
         }}
       >
         <DialogHeader>
-          <DialogTitle className="dark:text-[#FEFEFE]">
+          <DialogTitle className="text-center dark:text-[#FEFEFE]">
             {t("dialog.mcpSetting")}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 px-2 max-h-[500px] overflow-y-auto">
+        <div className="space-y-4 max-h-[500px] overflow-y-auto">
           {!!templates?.length && (
             <div>
               {templates.map((template, index) => {
                 return (
-                  <div className="mb-4" key={index}>
-                    <div className="mb-2 text-[#6C7275] dark:text-[#FEFEFE]">
+                  <div key={index}>
+                    <div className="text-sm mb-2 text-[#6C7275] dark:text-[#FEFEFE]">
                       {template.key}
                     </div>
                     <textarea
-                      className="w-full text-left whitespace-pre font-mono text-smdark:border-[#6C7275] bg-background border border-input rounded-md px-3 py-2 focus:!border-primary resize-y"
+                      className="w-full text-left whitespace-pre font-mono text-smdark:border-[#6C7275] bg-background border border-input rounded-sm px-2.5 py-2 focus:!border-primary resize-none"
                       rows={5}
                       value={template.value}
                       onChange={(e) => updateTemplate(index, e.target.value)}
@@ -117,7 +118,7 @@ export function McpTemplateModal({
                       {arg.key}
                     </div>
                     <textarea
-                      className="w-full text-left whitespace-pre font-mono text-sm dark:border-[#6C7275] bg-background border border-input rounded-md px-3 py-2 focus:!border-primary resize-y"
+                      className="w-full text-left whitespace-pre font-mono text-sm dark:border-[#6C7275] bg-background border border-input rounded-sm px-2.5 py-2 focus:!border-primary resize-y"
                       rows={5}
                       value={arg.value.join("\n")}
                       onChange={(e) => updateMultiArgs(index, e.target.value)}
@@ -132,11 +133,11 @@ export function McpTemplateModal({
             <div className="space-y-4">
               {envs.map((item, idx) => (
                 <div key={idx}>
-                  <label className="block text-sm font-medium text-[#6C7275] dark:text-white mb-1">
+                  <label className="block text-sm font-medium text-[#6C7275] dark:text-white mb-2.5">
                     {item.key}
                   </label>
                   <input
-                    className="w-full !text-left font-mono text-sm dark:border-[#6C7275] bg-background border border-input rounded-md px-3 py-2 focus:border-primary focus:outline-none"
+                    className="w-full h-[34px] !text-left font-mono text-sm dark:border-[#6C7275] bg-background border border-input rounded-sm px-2.5 py-2 focus:border-primary focus:outline-none"
                     value={item.value}
                     onChange={(e) => {
                       const newEnvs = [...envs];
@@ -150,23 +151,23 @@ export function McpTemplateModal({
           )}
         </div>
 
-        <DialogFooter className="mt-6">
-          <DialogClose asChild>
+        <DialogFooter>
+          <DialogClose asChild className="flex-1">
             <Button
-              className=" bg-white hover:bg-[#F3F5F74D] dark:bg-[#141718] dark:border-[#6C7275] dark:hover:bg-[#141718]/8 text-[#6C7275] dark:text-[#FEFEFE] border border-[#6C7275]/10 "
+              className="bg-white h-8 rounded-sm text-xs hover:bg-[#F3F5F74D] dark:bg-[#141718] dark:border-[#343839] dark:hover:bg-[#141718]/8 text-[#6C7275] dark:text-[#FEFEFE] border border-[#6C7275]/10 px-2.5 py-2"
               type="button"
-              onClick={handleCancel}
+              onClick={() => onOpenChange?.(false)}
             >
               {t("dialog.cancel")}
             </Button>
           </DialogClose>
-          <DialogClose asChild>
+          <DialogClose asChild className="flex-1">
             <Button
-              className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E]"
+              className="h-8 rounded-sm text-xs bg-[#00D47E] text-white dark:text-black px-2.5 py-2"
               onClick={handleConfirm}
               type="button"
             >
-              {t("dialog.confirm")}
+              {t("dialog.save")}
             </Button>
           </DialogClose>
         </DialogFooter>

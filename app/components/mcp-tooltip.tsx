@@ -6,9 +6,8 @@ import {
   PopoverTrigger,
 } from "@/app/components/shadcn/popover";
 import { ReactElement } from "react";
-import AccessIcon from "../icons/access.svg";
-import LoadingIcon from "../icons/loading-spinner.svg";
-import ErrorIcon from "../icons/error.svg";
+import FetchIcon from "../icons/fetch.svg";
+import RightIcon from "../icons/right-arrow.svg";
 import { useNavigate } from "react-router-dom";
 import { Path } from "../constant";
 import { McpAction } from "@/app/typing";
@@ -16,6 +15,18 @@ import { useMcpStore } from "@/app/store/mcp";
 
 function McpPopover({ icon }: { icon: ReactElement }) {
   const navigate = useNavigate();
+
+  // const mcpIconMap: Map<string, string> = useMemo(
+  //   () => {
+  //     const map = new Map<string, string>();
+  //     for (const [k, v] of Object.entries(iconObj)) {
+  //       map.set(k, v);
+  //     }
+  //     return map;
+  //   },
+  //   [iconObj],
+  // );
+
   const mcpStatusList = useMcpStore((state) => state.mcpStatusList);
   const mcpRenderedMap = useMcpStore((state) => state.mcpRenderedMap);
 
@@ -38,19 +49,19 @@ function McpPopover({ icon }: { icon: ReactElement }) {
 
   const SuccessStatusIcon = useMemo(() => {
     return (
-      <div className="absolute bottom-2 left-6 w-1 h-1 bg-[#00AB66] rounded-full animate-[breathing_2s_ease-in-out_infinite"></div>
+      <div className="absolute -bottom-[2px] -right-[2px] w-1 h-1 bg-[#00AB66] rounded-full animate-[breathing_2s_ease-in-out_infinite"></div>
     );
   }, []);
 
   const FailedStatusIcon = useMemo(() => {
     return (
-      <div className="absolute bottom-2 left-6 w-1 h-1 bg-[#EF466F] rounded-full animate-[breathing_2s_ease-in-out_infinite"></div>
+      <div className="absolute -bottom-1 -right-[2px] w-1 h-1 bg-[#EF466F] rounded-full animate-[breathing_2s_ease-in-out_infinite"></div>
     );
   }, []);
 
   const LoadingStatusIcon = useMemo(() => {
     return (
-      <div className="absolute bottom-2 left-6 w-1 h-1 bg-[#F8E243] rounded-full animate-[breathing_2s_ease-in-out_infinite"></div>
+      <div className="absolute -bottom-1 -right-[2px] w-1 h-1 bg-[#F8E243] rounded-full animate-ping"></div>
     );
   }, []);
 
@@ -89,22 +100,33 @@ function McpPopover({ icon }: { icon: ReactElement }) {
         }}
       >
         {mcpStatusList.length ? (
-          <div className="w-40 max-h-[300px] overflow-y-auto">
+          <div className="w-40 max-h-40 overflow-y-auto">
             {mcpStatusList.map((item) => {
               let StatusIcon;
               if (item.action === McpAction.Loading)
-                StatusIcon = (
-                  <LoadingIcon className="animate-spin size-4 text-[#6C7275]" />
-                );
+                StatusIcon = LoadingStatusIcon;
               else if (item.action === McpAction.Connected)
-                StatusIcon = <AccessIcon />;
+                StatusIcon = SuccessStatusIcon;
               else if (item.action === McpAction.Failed)
-                StatusIcon = <ErrorIcon />;
+                StatusIcon = FailedStatusIcon;
+
               return (
                 <div
                   key={item.name}
-                  className="h-8 p-2 flex justify-between items-center gap-2"
+                  className="h-8 p-2 flex items-center gap-2"
                 >
+                  <div className="relative !w-[14px] !h-[14px]">
+                    {mcpRenderedMap.get?.(item.name)?.icon !== "" ? (
+                      <img
+                        src={mcpRenderedMap.get?.(item.name)?.icon}
+                        className="size-[14px]"
+                      ></img>
+                    ) : (
+                      <FetchIcon className="size-[14px] text-[#343839] dark:text-white" />
+                    )}
+
+                    {StatusIcon}
+                  </div>
                   <p
                     className="text-[#6C7275] h-4 text-xs"
                     style={{
@@ -115,10 +137,6 @@ function McpPopover({ icon }: { icon: ReactElement }) {
                       maxWidth: "110px",
                     }}
                   >
-                    {/* 
-                          TODO  add  icon here
-                         <img src={mcpRenderedMap?.get(item.name)?.icon} className="size-4"/>
-                      */}
                     {mcpRenderedMap.get?.(item.name)?.renderName || item.name}
                   </p>
                   {StatusIcon}
@@ -130,10 +148,11 @@ function McpPopover({ icon }: { icon: ReactElement }) {
           <div className="p-5 text-gray-500">No Mcp</div>
         )}
         <div
-          className="w-max text-main text-center hover:opacity-80 cursor-pointer"
+          className="group h-[30px] text-xs flex justify-between items-center w-full bg-[#E8ECEF]/50 dark:bg-[#232627]/50 hover:text-[#00AB66] text-center hover:opacity-80 cursor-pointer rounded-sm px-2.5"
           onClick={() => navigate(Path.Settings + "?tab=mcp")}
         >
           Manage
+          <RightIcon className="size-4 dark:text-[#6C7275] dark:group-hover:text-[#00AB66]" />
         </div>
       </PopoverContent>
     </Popover>
