@@ -67,18 +67,39 @@ export async function apiLogin(payload: { email: string; password: string }) {
     },
     headers: { ...getCommonHeaders() },
   });
+  console.log("login!", response.data);
   return response.data;
 }
 
-export async function apiLogout(token: string) {
-  const params = {};
+export async function apiLogout(accessToken: string, refreshToken: string) {
+  const params = {
+    refresh_token: refreshToken,
+  };
   const result = await fetch(`${baseURL}/auth/logout`, {
     method: "POST",
     body: {
       type: "Json",
       payload: params,
     },
-    headers: { ...getCommonHeaders(), Authorization: `Bearer ${token}` },
+    headers: { ...getCommonHeaders(), Authorization: `Bearer ${accessToken}` },
+  });
+  return result.data;
+}
+
+export async function apiRefreshToken(
+  accessToken: string,
+  refreshToken: string,
+) {
+  const params = {
+    refresh_token: refreshToken,
+  };
+  const result = await fetch(`"https://dev.aidenai.io/app/auth/refresh_token`, {
+    method: "POST",
+    body: {
+      type: "Json",
+      payload: params,
+    },
+    headers: { ...getCommonHeaders(), Authorization: `Bearer ${accessToken}` },
   });
   return result.data;
 }
