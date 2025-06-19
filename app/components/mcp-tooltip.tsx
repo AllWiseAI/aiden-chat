@@ -128,7 +128,7 @@ function McpPopover({ icon }: { icon: ReactElement }) {
                     {StatusIcon}
                   </div>
                   <p
-                    className="text-[#6C7275] h-4 text-xs"
+                    className="text-black dark:text-white h-4 text-xs"
                     style={{
                       display: "-webkit-box",
                       WebkitLineClamp: 1,
