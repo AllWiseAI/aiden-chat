@@ -16,7 +16,6 @@ import {
   TDetailInfo,
   TSettingInfo,
 } from "@/app/typing";
-import EditIcon from "../../icons/edit.svg";
 import { useMcpStore } from "@/app/store/mcp";
 import SearchIcon from "../../icons/search.svg";
 import { McpSettingModal } from "./mcp-setting-modal";
@@ -80,28 +79,39 @@ function ServerTable({
   return (
     <>
       {servers.length ? (
-        <div className="grid grid-cols-[repeat(auto-fit,_minmax(300px,_1fr))] gap-5">
-          {servers.map((item) => (
-            <McpTableItem
-              key={item.mcp_id + item.mcp_name}
-              item={{ ...item }}
-              keyword={keyword}
-              onSwitchChange={async (enable, id, name, type, version) => {
-                try {
-                  await switchMcpStatus({ id, name, enable, type, version });
-                } catch (e: any) {
-                  toast.error(e, {
-                    className: "w-auto max-w-max",
-                  });
-                }
-              }}
-              onDelete={handleDeleteMcp}
-              onSelect={() => setDetail({ ...item })}
-              onSetting={(settingInfo, name) =>
-                setCurrentSetting(settingInfo, name)
+        <div className="grid grid-cols-1 @xss:grid-cols-2 @sm:grid-cols-3 justify-items-center items-center gap-5">
+          {servers
+            .sort((a, b) => {
+              if (a.checked !== b.checked) {
+                return a.checked ? -1 : 1;
               }
-            />
-          ))}
+              return a.mcp_name > b.mcp_name
+                ? 1
+                : a.mcp_name < b.mcp_name
+                ? -1
+                : 0;
+            })
+            .map((item) => (
+              <McpTableItem
+                key={item.mcp_id + item.mcp_name}
+                item={{ ...item }}
+                keyword={keyword}
+                onSwitchChange={async (enable, id, name, type, version) => {
+                  try {
+                    await switchMcpStatus({ id, name, enable, type, version });
+                  } catch (e: any) {
+                    toast.error(e, {
+                      className: "w-auto max-w-max",
+                    });
+                  }
+                }}
+                onDelete={handleDeleteMcp}
+                onSelect={() => setDetail({ ...item })}
+                onSetting={(settingInfo, name) =>
+                  setCurrentSetting(settingInfo, name)
+                }
+              />
+            ))}
         </div>
       ) : (
         <div className="w-full h-full flex-center">
@@ -135,26 +145,26 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
 
   return (
     <>
-      <div className="flex justify-between @lg:items-center mb-4 @max-lg:flex-col @max-lg:gap-2">
-        <h2 className="text-lg font-bold">{t("tabs.mcp")}</h2>
-        <div className="flex items-center gap-2 self-end">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-sm font-bold">{t("tabs.mcp")}</h2>
+        <div className="flex items-center gap-2 self-end h-6">
           <Button
-            className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main border border-[#00D47E]/10 font-medium text-sm rounded-xl"
+            className="h-full bg-[#DBF5EC] dark:bg-[#00D47E]/6 hover:bg-[#BEF0DD] dark:hover:bg-[#00D47E]/12 text-main border border-[#00D47E]/10 text-xs rounded-sm px-1.5 py-1"
             onClick={() => setMode("edit")}
           >
-            <EditIcon className="size-4" />
+            {/* <EditIcon className="size-4" /> */}
             {t("mcp.edit")}
           </Button>
-          <div className="flex-center relative w-[200px]">
+          <div className="flex-center relative w-40">
             <Input
-              className="h-9 !text-left !placeholder:text-[#6C7275]/50 placeholder:text-sm px-12 py-3.5 rounded-xl"
+              className="h-6 !text-left !placeholder:text-[#6C7275]/50 placeholder:text-xs pl-6 pr-2.5 py-1 rounded-sm"
               clearable
               value={searchValue}
               placeholder={t("mcp.search")}
               onChange={(e) => setSearchValue(e.target.value)}
             />
 
-            <SearchIcon className="absolute top-1/2 left-4 transform -translate-y-1/2 size-6 text-[#6C7275]/50" />
+            <SearchIcon className="absolute top-1/2 left-1.5 transform -translate-y-1/2 size-4 text-[#6C7275]/50" />
           </div>
         </div>
       </div>

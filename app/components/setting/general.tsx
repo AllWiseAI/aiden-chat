@@ -37,23 +37,23 @@ export default function General() {
     }
   };
   return (
-    <div className="w-full h-full flex flex-col gap-4 justify-start items-center p-4 text-black dark:text-white">
-      <div className="w-full flex flex-col gap-6 px-4 pb-6 border-b">
+    <div className="w-full h-full flex flex-col gap-4 justify-start items-center text-black dark:text-white">
+      <div className="w-full flex flex-col gap-3 px-2.5 pb-5 border-b">
         <div className="font-medium">{t("general.account")}</div>
-        <div className="flex justify-between items-center gap-5 p-3 bg-[#F3F5F7] dark:bg-[#232627]/30 border border-[#E8ECEF] dark:border-[#232627] rounded-xl text-sm">
+        <div className="flex justify-between items-center gap-5 p-2.5 bg-[#F3F5F7]/30 dark:bg-[#232627]/30 border border-[#E8ECEF] dark:border-[#232627] rounded-sm text-sm">
           <p>{email}</p>
           <div
-            className="text-[#EF466F] underline cursor-pointer hover:opacity-70"
+            className="text-[#EF466F] text-xs underline cursor-pointer hover:opacity-70"
             onClick={logout}
           >
             {t("general.logout")}
           </div>
         </div>
       </div>
-      <div className="w-full flex justify-between items-center gap-6 px-4 py-6 border-b">
+      <div className="w-full flex justify-between items-center gap-6 px-2.5 py-5 border-b text-sm">
         <div className="font-medium">{t("general.country.title")}</div>
         <Select defaultValue={"china"}>
-          <SelectTrigger className="w-[180px] dark:border-[#232627]">
+          <SelectTrigger className="w-[180px] dark:border-[#232627] text-xs">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="bg-[#F3F5F7] dark:bg-[#232627]">
@@ -86,7 +86,7 @@ export default function General() {
           </SelectContent>
         </Select>
       </div>
-      <div className="w-full flex justify-between items-center gap-6 px-4 py-6 border-b">
+      <div className="w-full flex justify-between items-center gap-6 px-2.5 py-5 border-b">
         <div className="font-medium">{t("general.language")}</div>
         <Select
           defaultValue={getLang()}
@@ -94,7 +94,7 @@ export default function General() {
             changeLanguage(value as Locales);
           }}
         >
-          <SelectTrigger className="w-[180px] dark:border-[#232627]">
+          <SelectTrigger className="w-[180px] dark:border-[#232627] text-xs">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="bg-[#F3F5F7] dark:bg-[#232627]">
@@ -112,7 +112,7 @@ export default function General() {
           </SelectContent>
         </Select>
       </div>
-      <div className="w-full flex justify-between items-center gap-6 px-4 py-6">
+      <div className="w-full flex justify-between items-center gap-6 px-2.5 py-5">
         <div className="font-medium">{t("general.theme.title")}</div>
         <Select
           defaultValue={config.theme}
@@ -122,7 +122,7 @@ export default function General() {
             });
           }}
         >
-          <SelectTrigger className="w-[180px] dark:border-[#232627]">
+          <SelectTrigger className="w-[180px] dark:border-[#232627] text-xs">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="bg-[#F3F5F7] dark:bg-[#232627]">

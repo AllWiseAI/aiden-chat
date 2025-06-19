@@ -2,10 +2,10 @@
   background-color: #F3F5F7;
 }
 .light .cm-editor .cm-gutters {
-  background-color: transparent;
+  background-color: #F3F5F7;
 }
 .window-header {
-  padding: 14px 20px;
+  padding: 20px 40px;
   position: relative;
 
   display: flex;
@@ -18,8 +18,8 @@
   overflow: hidden;
 
   .window-header-main-title {
-    font-size: 20px;
-    font-weight: 600;
+    font-size: 16px;
+    font-weight: 500;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

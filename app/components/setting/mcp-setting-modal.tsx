@@ -73,69 +73,67 @@ export function McpSettingModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-xl"
+        className="max-w-xl w-80 rounded-sm gap-5 p-5"
+        closeIcon={false}
         onClick={(e) => {
           e.stopPropagation();
         }}
       >
         <DialogHeader>
-          <DialogTitle className="dark:text-[#FEFEFE]">
+          <DialogTitle className="text-sm text-center dark:text-[#FEFEFE]">
             {t("dialog.mcpSetting")}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 px-2 max-h-[500px] overflow-y-auto">
+        <div className="space-y-4 max-h-[500px] overflow-y-auto">
           {!!args.length && (
             <div>
-              <h3 className="text-base mb-2 text-[#6C7275] dark:text-[#FEFEFE]">
-                args
+              <h3 className="text-sm font-medium mb-2 text-[#6C7275] dark:text-[#FEFEFE]">
+                ARGS
               </h3>
-              <div className="mb-4">
-                <textarea
-                  className="w-full text-left whitespace-pre font-mono text-sm bg-background border border-input dark:border-[#6C7275] rounded-md px-3 py-2 focus:!border-primary resize-y"
-                  rows={5}
-                  value={args.join("\n")}
-                  onChange={(e) => updateArgs(e.target.value)}
-                />
-              </div>
+              <textarea
+                className="w-full text-left whitespace-pre font-mono text-xs bg-background border border-input dark:border-[#6C7275] rounded-sm px-2.5 py-2 focus:!border-primary resize-none"
+                rows={5}
+                value={args.join("\n")}
+                onChange={(e) => updateArgs(e.target.value)}
+              />
             </div>
           )}
 
           {!!envs.length && (
             <div>
-              <h3 className="text-base mb-2 text-[#6C7275] dark:text-[#FEFEFE]">
-                env
+              <h3 className="text-sm mb-2 text-[#6C7275] dark:text-[#FEFEFE]">
+                ENV
               </h3>
-              <div className="flex space-x-2 mb-2">
-                <textarea
-                  className="w-full text-left whitespace-pre font-mono text-sm bg-background border border-input dark:border-[#6C7275] rounded-md px-3 py-2 focus:!border-primary resize-y"
-                  rows={5}
-                  value={envsText}
-                  onChange={(e) => setEnvsText(e.target.value)}
-                  placeholder="ENV=VALUE"
-                />
-              </div>
+
+              <textarea
+                className="w-full text-left whitespace-pre font-mono text-xs bg-background border border-input dark:border-[#6C7275] rounded-sm px-2.5 py-2 focus:!border-primary resize-none"
+                rows={5}
+                value={envsText}
+                onChange={(e) => setEnvsText(e.target.value)}
+                placeholder="ENV=VALUE"
+              />
             </div>
           )}
         </div>
 
-        <DialogFooter className="mt-6">
-          <DialogClose asChild>
+        <DialogFooter>
+          <DialogClose asChild className="flex-1">
             <Button
-              className=" bg-white hover:bg-[#F3F5F74D] dark:bg-[#141718] dark:border-[#6C7275] dark:hover:bg-[#141718]/8 text-[#6C7275] dark:text-[#FEFEFE] border border-[#6C7275]/10 "
+              className="bg-white h-8 rounded-sm text-xs hover:bg-[#F3F5F74D] dark:bg-[#141718] dark:border-[#343839] dark:hover:bg-[#141718]/8 text-[#6C7275] dark:text-[#FEFEFE] border border-[#6C7275]/10 px-2.5 py-2"
               type="button"
               onClick={() => onOpenChange?.(false)}
             >
               {t("dialog.cancel")}
             </Button>
           </DialogClose>
-          <DialogClose asChild>
+          <DialogClose asChild className="flex-1">
             <Button
-              className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E]"
+              className="h-8 rounded-sm text-xs bg-[#00D47E] text-white dark:text-black px-2.5 py-2"
               onClick={handleConfirm}
               type="button"
             >
-              {t("dialog.confirm")}
+              {t("dialog.save")}
             </Button>
           </DialogClose>
         </DialogFooter>

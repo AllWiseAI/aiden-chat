@@ -1,21 +1,32 @@
 import { Button } from "@/app/components/shadcn/button";
+import { useMemo } from "react";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/app/components/shadcn/tooltip";
-import { ReactElement, useMemo } from "react";
-import AccessIcon from "../icons/access.svg";
-import LoadingIcon from "../icons/loading-spinner.svg";
-import ErrorIcon from "../icons/error.svg";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/app/components/shadcn/popover";
+import { ReactElement } from "react";
+import FetchIcon from "../icons/fetch.svg";
+import RightIcon from "../icons/right-arrow.svg";
 import { useNavigate } from "react-router-dom";
 import { Path } from "../constant";
 import { McpAction } from "@/app/typing";
 import { useMcpStore } from "@/app/store/mcp";
 
-function McpTooltip({ icon }: { icon: ReactElement }) {
+function McpPopover({ icon }: { icon: ReactElement }) {
   const navigate = useNavigate();
+
+  // const mcpIconMap: Map<string, string> = useMemo(
+  //   () => {
+  //     const map = new Map<string, string>();
+  //     for (const [k, v] of Object.entries(iconObj)) {
+  //       map.set(k, v);
+  //     }
+  //     return map;
+  //   },
+  //   [iconObj],
+  // );
+
   const mcpStatusList = useMcpStore((state) => state.mcpStatusList);
   const mcpRenderedMap = useMcpStore((state) => state.mcpRenderedMap);
 
@@ -38,19 +49,19 @@ function McpTooltip({ icon }: { icon: ReactElement }) {
 
   const SuccessStatusIcon = useMemo(() => {
     return (
-      <div className="absolute bottom-2 left-6 w-1 h-1 bg-[#00AB66] rounded-full animate-[breathing_2s_ease-in-out_infinite"></div>
+      <div className="absolute -bottom-[2px] -right-[2px] w-1 h-1 bg-[#00AB66] rounded-full animate-[breathing_2s_ease-in-out_infinite"></div>
     );
   }, []);
 
   const FailedStatusIcon = useMemo(() => {
     return (
-      <div className="absolute bottom-2 left-6 w-1 h-1 bg-[#EF466F] rounded-full animate-[breathing_2s_ease-in-out_infinite"></div>
+      <div className="absolute -bottom-1 -right-[2px] w-1 h-1 bg-[#EF466F] rounded-full animate-[breathing_2s_ease-in-out_infinite"></div>
     );
   }, []);
 
   const LoadingStatusIcon = useMemo(() => {
     return (
-      <div className="absolute bottom-2 left-6 w-1 h-1 bg-[#F8E243] rounded-full animate-[breathing_2s_ease-in-out_infinite"></div>
+      <div className="absolute -bottom-1 -right-[2px] w-1 h-1 bg-[#F8E243] rounded-full animate-ping"></div>
     );
   }, []);
 
@@ -69,80 +80,83 @@ function McpTooltip({ icon }: { icon: ReactElement }) {
   ]);
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="outline"
-            className="border relative border-[#E8ECEF] text-black dark:text-white dark:bg-[#141416] dark:border-[#6C7275] text-sm font-semibold p-2"
-            // onMouseEnter={updateStatus}
-          >
-            {icon}
-            MCP
-            {shouldShowStatusIcon && renderStatusIcon}
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent
-          hasArrow={false}
-          className="flex flex-col gap-2 items-center bg-white text-black dark:bg-[#232627] dark:text-white p-2 mb-2 text-sm font-medium"
-          style={{
-            boxShadow: `
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          className="border border-[#E8ECEF] text-black dark:text-white dark:bg-[#141416] dark:border-[#343839] text-xs font-medium !rounded-sm p-2.5 h-[30px]"
+        >
+          {icon}
+          MCP
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent
+        className="w-40 flex flex-col gap-2 items-center bg-white text-black dark:bg-[#101213] dark:text-white p-2 mb-2 text-sm font-medium"
+        style={{
+          boxShadow: `
                     0px 0px 24px 4px rgba(0,0,0,0.05),
                     0px 32px 48px -4px rgba(0,0,0,0.2)
                 `,
-          }}
-        >
-          {mcpStatusList.length ? (
-            <div className="w-40 max-h-[300px] overflow-y-auto">
-              {mcpStatusList.map((item) => {
-                let StatusIcon;
-                if (item.action === McpAction.Loading)
-                  StatusIcon = (
-                    <LoadingIcon className="animate-spin size-4 text-[#6C7275]" />
-                  );
-                else if (item.action === McpAction.Connected)
-                  StatusIcon = <AccessIcon />;
-                else if (item.action === McpAction.Failed)
-                  StatusIcon = <ErrorIcon />;
-                return (
-                  <div
-                    key={item.name}
-                    className="h-8 p-2 flex justify-between items-center gap-2"
-                  >
-                    <p
-                      className="text-[#6C7275] h-4 text-xs"
-                      style={{
-                        display: "-webkit-box",
-                        WebkitLineClamp: 1,
-                        WebkitBoxOrient: "vertical",
-                        overflow: "hidden",
-                        maxWidth: "110px",
-                      }}
-                    >
-                      {/* 
-                          TODO  add  icon here
-                         <img src={mcpRenderedMap?.get(item.name)?.icon} className="size-4"/>
-                      */}
-                      {mcpRenderedMap.get?.(item.name)?.renderName || item.name}
-                    </p>
+        }}
+      >
+        {mcpStatusList.length ? (
+          <div className="w-40 max-h-40 overflow-y-auto">
+            {mcpStatusList.map((item) => {
+              let StatusIcon;
+              if (item.action === McpAction.Loading)
+                StatusIcon = LoadingStatusIcon;
+              else if (item.action === McpAction.Connected)
+                StatusIcon = SuccessStatusIcon;
+              else if (item.action === McpAction.Failed)
+                StatusIcon = FailedStatusIcon;
+
+              return (
+                <div
+                  key={item.name}
+                  className="h-8 p-2 flex items-center gap-2"
+                >
+                  <div className="relative !w-[14px] !h-[14px]">
+                    {mcpRenderedMap.get?.(item.name)?.icon !== "" ? (
+                      <img
+                        src={mcpRenderedMap.get?.(item.name)?.icon}
+                        className="size-[14px]"
+                      ></img>
+                    ) : (
+                      <FetchIcon className="size-[14px] text-[#343839] dark:text-white" />
+                    )}
+
                     {StatusIcon}
                   </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="p-5 text-gray-500">No Mcp</div>
-          )}
-          <div
-            className="w-max text-main text-center hover:opacity-80 cursor-pointer"
-            onClick={() => navigate(Path.Settings + "?tab=mcp")}
-          >
-            Manage
+                  <p
+                    className="text-[#6C7275] h-4 text-xs"
+                    style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 1,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                      maxWidth: "110px",
+                    }}
+                  >
+                    {mcpRenderedMap.get?.(item.name)?.renderName || item.name}
+                  </p>
+                  {StatusIcon}
+                </div>
+              );
+            })}
           </div>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+        ) : (
+          <div className="p-5 text-gray-500">No Mcp</div>
+        )}
+        <div
+          className="group h-[30px] text-xs flex justify-between items-center w-full bg-[#E8ECEF]/50 dark:bg-[#232627]/50 hover:text-[#00AB66] text-center hover:opacity-80 cursor-pointer rounded-sm px-2.5"
+          onClick={() => navigate(Path.Settings + "?tab=mcp")}
+        >
+          Manage
+          <RightIcon className="size-4 dark:text-[#6C7275] dark:group-hover:text-[#00AB66]" />
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
 
-export default McpTooltip;
+export default McpPopover;

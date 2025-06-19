@@ -2,7 +2,7 @@
   "title": "Settings",
   "tabs": {
     "general": "General",
-    "mcp": "MCP Management",
+    "mcp": "MCP",
     "aboutUs": "About us"
   },
   "general": {

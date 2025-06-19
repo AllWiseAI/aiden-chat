@@ -55,26 +55,27 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
         className="flex justify-between items-center mb-4 cursor-pointer w-max"
         onClick={() => setMode("table")}
       >
-        <div className="flex items-center gap-2">
-          <BackIcon className="size-6" />
-          <span className="text-lg font-medium">MCP Details</span>
+        <div className="flex items-center gap-1">
+          <BackIcon className="size-5" />
+          <span className="text-sm font-medium">MCP Details</span>
         </div>
       </div>
 
       <div className="border rounded-xl mt-6 overflow-y-auto max-h-[calc(100%-80px)] px-[20px] py-[24px]">
         <div className="header flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="bg-[#E8ECEF] rounded-sm flex items-center justify-center w-12 h-12">
+            <div className="bg-[#E8ECEF] rounded-full flex items-center justify-center w-[30px] h-[30px]">
               {detailInfo.mcp_logo ? (
-                <img width="30" height="30" src={detailInfo.mcp_logo}></img>
+                <img width="18" height="18" src={detailInfo.mcp_logo}></img>
               ) : (
-                <FetchIcon className="w-[30px] h-[30px]" />
+                <FetchIcon className="w-[18px] h-[18px]" />
               )}
             </div>
-            <div className="font-medium text-xl">{detailInfo.mcp_name}</div>
+            <div className="font-medium text-sm">{detailInfo.mcp_name}</div>
           </div>
-          <div className="mt-4">
+          <div className="mt-1">
             <Switch
+              className="scale-75"
               checked={checked}
               onCheckedChange={async (enable) => {
                 try {

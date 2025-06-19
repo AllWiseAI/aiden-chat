@@ -14,10 +14,10 @@ export default function WindowSize() {
   useEffect(() => {
     async function adjustWindow() {
       if (isInitPage) {
-        await appWindow.setSize(new LogicalSize(500, 780));
+        await appWindow.setSize(new LogicalSize(320, 564));
         await appWindow.setResizable(false);
       } else {
-        await appWindow.setSize(new LogicalSize(1440, 1024));
+        await appWindow.setSize(new LogicalSize(960, 600));
         await appWindow.setResizable(true);
       }
       await appWindow.center();

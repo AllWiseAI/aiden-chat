@@ -5,12 +5,10 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogCancel,
 } from "../shadcn/alert-dialog";
 import { Button } from "@/app/components/shadcn/button";
 import { createContext, useContext, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
-import CloseIcon from "../../icons/close.svg";
 import MapIcon from "../../icons/map.svg";
 import AidenIcon from "../../icons/logo-text.svg";
 import { t } from "i18next";
@@ -63,25 +61,24 @@ export const ConfirmProvider = ({
     if (!options) return null;
     if (options?.type === "delete") {
       return (
-        <AlertDialogFooter className="flex justify-start">
+        <AlertDialogFooter className="flex justify-between gap-2.5">
           <Button
-            className="h-10 bg-white hover:bg-[#F3F5F74D] dark:bg-[#141718] dark:hover:bg-[#141718]/8 text-[#6C7275] dark:text-white border border-[#6C7275]/10 dark:border-[#6C7275] flex-center gap-3 px-5 py-3 rounded-xl"
+            className="flex-1 h-8 text-xs bg-white hover:bg-[#F3F5F74D] dark:bg-[#141718] dark:hover:bg-[#141718]/8 text-[#6C7275] dark:text-white border border-[#6C7275]/10 dark:border-[#343839] flex-center gap-3 px-2.5 py-2 rounded-sm"
             onClick={() => {
               handleClose("cancel");
             }}
           >
             {t("dialog.cancel")}
           </Button>
-          <div className="flex gap-2">
-            <Button
-              className="h-10 bg-[#EF466F]/6 hover:bg-[#EF466F]/20 text-[#EF466F] dark:text-white dark:bg-[#EF466F] dark:hover:bg-[#EF466F]/70 flex-center gap-3 px-5 py-3 rounded-xl"
-              onClick={() => {
-                handleClose("confirm");
-              }}
-            >
-              {t("dialog.confirm")}
-            </Button>
-          </div>
+
+          <Button
+            className="flex-1 h-8 text-xs bg-[#EF466F]/6 hover:bg-[#EF466F]/20 text-[#EF466F] dark:text-black dark:bg-[#EF466F] dark:hover:bg-[#EF466F]/70 flex-center gap-3 px-2.5 py-2 rounded-sm"
+            onClick={() => {
+              handleClose("confirm");
+            }}
+          >
+            {t("dialog.delete")}
+          </Button>
         </AlertDialogFooter>
       );
     }
@@ -90,7 +87,7 @@ export const ConfirmProvider = ({
       return (
         <div className="flex items-center justify-center">
           <Button
-            className="h-10 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main flex-center gap-3 px-5 py-3 rounded-xl"
+            className="w-33 h-8 bg-main text-xs text-white dark:text-black flex-center gap-3 px-5 py-3 rounded-sm"
             onClick={() => {
               handleClose("confirm");
             }}
@@ -104,7 +101,7 @@ export const ConfirmProvider = ({
     return (
       <AlertDialogFooter className="flex !justify-between">
         <Button
-          className="h-10 bg-white hover:bg-[#F3F5F74D] dark:bg-[#141718] text-[#6C7275] border border-[#E8ECEF] dark:border-[#343839] flex-center gap-3 px-5 py-3 rounded-xl"
+          className="h-7 bg-white hover:bg-[#F3F5F74D] dark:bg-[#141718] text-[#6C7275] text-xs border border-[#E8ECEF] dark:border-[#343839] flex-center gap-3 px-1.5 py-1 rounded-sm"
           onClick={() => {
             handleClose("decline");
           }}
@@ -113,7 +110,7 @@ export const ConfirmProvider = ({
         </Button>
         <div className="flex gap-2">
           <Button
-            className="h-10 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main flex-center gap-3 px-5 py-3 rounded-xl"
+            className="h-7 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main text-xs flex-center gap-3 px-1.5 py-1 rounded-sm"
             onClick={() => {
               handleClose("always");
             }}
@@ -121,7 +118,7 @@ export const ConfirmProvider = ({
             {t("dialog.allowAlways")}
           </Button>
           <Button
-            className="h-10 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main flex-center gap-3 px-5 py-3 rounded-xl"
+            className="h-7 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main text-xs flex-center gap-3 px-1.5 py-1 rounded-sm"
             onClick={() => {
               handleClose("once");
             }}
@@ -137,7 +134,7 @@ export const ConfirmProvider = ({
     if (!options) return null;
     if (options?.type === "delete") {
       return (
-        <AlertDialogDescription className="flex items-center text-lg font-normal text-[#141718] dark:text-white">
+        <AlertDialogDescription className="flex justify-center items-center text-xs font-normal text-[#141718] dark:text-white">
           {options.description}
         </AlertDialogDescription>
       );
@@ -145,15 +142,15 @@ export const ConfirmProvider = ({
 
     if (options?.type === "latestVersion") {
       return (
-        <AlertDialogDescription className="text-center gap-2 text-lg font-normal text-[#141718] dark:text-white mb-2">
+        <AlertDialogDescription className="text-center gap-2 text-xs font-normal text-[#141718] dark:text-white mb-2">
           {options.description}
         </AlertDialogDescription>
       );
     }
 
     return (
-      <AlertDialogDescription className="flex items-center gap-2 text-lg font-normal text-[#141718] dark:text-white border border-[#E8ECEF] dark:border-[#232627] rounded-xl px-4 py-3">
-        <MapIcon />
+      <AlertDialogDescription className="flex items-center gap-2.5 text-xs font-normal text-[#141718] dark:text-white border border-[#E8ECEF] dark:border-[#232627] rounded-xl px-2.5 py-2">
+        <MapIcon className="size-[18px]" />
         {options.description}
       </AlertDialogDescription>
     );
@@ -168,25 +165,25 @@ export const ConfirmProvider = ({
             open={open}
             onOpenChange={(o) => !o && handleClose("decline")}
           >
-            <AlertDialogContent className="!rounded-[18px] w-120">
-              <div className="flex justify-between">
+            <AlertDialogContent className="!rounded-sm w-80 p-5 gap-5">
+              <div className="flex justify-center">
                 <AlertDialogHeader>
-                  <AlertDialogTitle className="!text-[21px] text-black dark:text-white">
+                  <AlertDialogTitle className="!text-sm font-medium text-black dark:text-white">
                     {options.title}
                   </AlertDialogTitle>
                 </AlertDialogHeader>
-                {!options.noClose && (
+                {/* {!options.noClose && (
                   <AlertDialogCancel
                     className="size-9 rounded-4xl border-0 hover:cursor-pointer hover:opacity-75 bg-[#F3F5F7] dark:bg-[#6C7275] hover:bg-[#F3F5F7]/75 dark:hover:bg-[#6C7275]/75"
                     onClick={() => handleClose("decline")}
                   >
                     <CloseIcon className="size-6" />
                   </AlertDialogCancel>
-                )}
+                )} */}
               </div>
               {options.withLogo && (
                 <div className="flex items-center justify-center w-full mb-2 -mt-[16px]">
-                  <AidenIcon className="scale-75" />
+                  <AidenIcon className="scale-75 dark:text-white" />
                 </div>
               )}
               {renderDescription()}

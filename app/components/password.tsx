@@ -25,13 +25,13 @@ export function Password({
       <Button
         type="button"
         variant="ghost"
-        className="absolute right-2 size-10 top-1/2 transform -translate-y-1/2 bg-transparent rounded-lg hover:bg-gray-200 transition-colors dark:text-[#6C7275]"
+        className="absolute right-2 size-[18px] top-1/2 transform -translate-y-1/2 bg-transparent rounded-lg hover:bg-gray-200 transition-colors dark:text-[#6C7275] !px-[2px]"
         onClick={handleClick}
       >
         {showPassword ? (
-          <EyesIcon className="size-6" />
+          <EyesIcon type="button" className="size-[18px]" />
         ) : (
-          <HideIcon className="size-6" />
+          <HideIcon type="button" className="size-[18px]" />
         )}
       </Button>
     </div>

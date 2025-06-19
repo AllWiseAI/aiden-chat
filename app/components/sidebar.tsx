@@ -1,11 +1,7 @@
 import React, { Fragment, useEffect, useState, useMemo, useRef } from "react";
 
 import styles from "./home.module.scss";
-import {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-} from "@/app/components/shadcn/avatar";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,11 +11,12 @@ import {
 } from "@/app/components/shadcn/dropdown-menu";
 import { Button } from "@/app/components/shadcn/button";
 import { Input } from "@/app/components/shadcn/input";
+import LogoIcon from "../icons/logo-circle.svg";
 import LogoutIcon from "../icons/logout.svg";
 import SettingIcon from "../icons/setting.svg";
 import SearchIcon from "../icons/search.svg";
 import CollapseIcon from "../icons/collapse.svg";
-import PlusIcon from "../icons/plus.svg";
+import TaskIcon from "../icons/task.svg";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { useAppConfig, useAuthStore, useChatStore } from "../store";
@@ -154,9 +151,14 @@ export function SideBarContainer(props: {
   const { children, className, onDragStart, shouldNarrow } = props;
   return (
     <div
-      className={clsx(styles.sidebar, className, {
-        [styles["narrow-sidebar"]]: shouldNarrow,
-      })}
+      className={clsx(
+        styles.sidebar,
+        className,
+        {
+          [styles["narrow-sidebar"]]: shouldNarrow,
+        },
+        "bg-[#F3F5F7]/50 dark:bg-[#141718]/50",
+      )}
       style={{
         // #3016 disable transition on ios mobile screen
         transition: isMobileScreen && isIOSMobile ? "none" : undefined,
@@ -199,53 +201,60 @@ export function SideBarHeader(props: {
   };
   return (
     <Fragment>
-      <div className="flex justify-between items-center h-20 gap-4 overflow-hidden px-6 pt-10 dark:border-[#232627] select-none">
+      <div
+        className={clsx(
+          "flex items-center h-13 gap-4 overflow-hidden px-4 pt-5 dark:border-[#232627] select-none",
+          shouldNarrow ? "justify-center" : "justify-between",
+        )}
+      >
         {!shouldNarrow && (
           <>
             <div className="flex items-center gap-4">
               <DropdownMenu>
                 <DropdownMenuTrigger>
-                  <Avatar className="size-10 cursor-pointer">
+                  {/* <Avatar className="size-10 cursor-pointer">
                     <AvatarImage src={authStore.user.profile} />
                     <AvatarFallback>
                       {authStore.user.email?.[0].toUpperCase()}
                     </AvatarFallback>
-                  </Avatar>
+                  </Avatar> */}
+                  <div className="flex gap-2">
+                    <LogoIcon />
+                    <p className="text-sm">Aiden</p>
+                  </div>
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent
-                  className="px-2 py-4 rounded-xl flex flex-col gap-3 min-w-max"
+                  className="px-1.5 py-2 rounded-sm flex flex-col gap-3 min-w-max text-[#6C7275] dark:bg-[#101213]"
                   align="start"
-                  side="right"
+                  side="bottom"
                 >
                   <DropdownMenuRadioGroup>
                     <DropdownMenuRadioItem
                       value="settings"
-                      className="flex justify-start gap-4 !px-2 !py-2"
+                      className="flex justify-start gap-2 !px-1.5 !py-2"
                       onClick={() => navigate(Path.Settings)}
                     >
-                      <SettingIcon className="size-4" />
-                      <span className="-ml-1 text-xs font-medium">
-                        {t("title")}
-                      </span>
+                      <SettingIcon className="size-[18px]" />
+                      <span className="-ml-1 text-xs">{t("title")}</span>
                     </DropdownMenuRadioItem>
                     {/* <DropdownMenuRadioItem
                       value="exportlog"
-                      className="flex justify-start gap-4 !px-2 !py-2"
+                      className="flex justify-start gap-2 !px-2 !py-2"
                       onClick={exportAndDownloadLog}
                     >
                       <ExportIcon className="size-4" />
-                      <span className="-ml-1 text-xs font-medium">
+                      <span className="-ml-1 text-xs">
                         Export Logs
                       </span>
                     </DropdownMenuRadioItem> */}
                     <DropdownMenuRadioItem
                       value="logout"
-                      className="flex justify-start gap-4 !px-2 !py-2"
+                      className="flex justify-start gap-2 !px-1.5 !py-2"
                       onClick={logout}
                     >
-                      <LogoutIcon className="size-4" />
-                      <span className="-ml-1 text-xs font-medium">
+                      <LogoutIcon className="size-[18px]" />
+                      <span className="-ml-1 text-xs">
                         {t("general.logout")}
                       </span>
                     </DropdownMenuRadioItem>
@@ -258,14 +267,14 @@ export function SideBarHeader(props: {
             </span> */}
           </>
         )}
-        <div className="flex gap-2">
+        <div className="flex gap-[5px]">
           {!shouldNarrow && (
-            <Button variant="ghost" className="size-8" onClick={toggleSearch}>
-              <SearchIcon className="size-6" />
+            <Button variant="ghost" className="size-4" onClick={toggleSearch}>
+              <SearchIcon className="size-4" />
             </Button>
           )}
-          <Button variant="ghost" className="size-8" onClick={toggleSideBar}>
-            <CollapseIcon className="size-6 text-white dark:text-[#141718]" />
+          <Button variant="ghost" className="size-4" onClick={toggleSideBar}>
+            <CollapseIcon className="size-4 text-white dark:text-[#141718]" />
           </Button>
         </div>
       </div>
@@ -284,7 +293,7 @@ export function SideBarBody(props: {
   return (
     !shouldNarrow && (
       <div className="flex-1 overflow-y-auto flex flex-col">
-        <div className="flex flex-col gap-1 px-2.5 pt-2.5">{children}</div>
+        <div className="flex flex-col gap-2.5 px-2.5 pt-2.5">{children}</div>
       </div>
     )
   );
@@ -341,26 +350,26 @@ export function SideBar(props: { className?: string }) {
               {isSearchVisible && (
                 <div className="flex-center relative">
                   <Input
-                    className="h-10 !text-left placeholder:text-sm !placeholder:text-[#6C7275]/50 px-12 py-3.5 rounded-xl"
+                    className="h-9 !text-left focus:border-primary placeholder:text-sm !placeholder:text-[#6C7275]/50 pl-6 pr-2.5 py-1 rounded-sm"
                     clearable
                     value={searchValue}
                     placeholder="Search"
                     onChange={(e) => setSearchValue(e.target.value)}
                   />
 
-                  <SearchIcon className="absolute top-1/2 left-4 transform -translate-y-1/2 size-6 text-[#6C7275]/50" />
+                  <SearchIcon className="absolute top-1/2 left-1.5 transform -translate-y-1/2 size-4 text-[#6C7275]/50" />
                 </div>
               )}
               <Button
                 variant="ghost"
-                className="h-10 text-main hover:text-[#00D47E] flex justify-start items-center gap-3 px-5 py-3 rounded-full"
+                className="h-9 text-main bg-[#DBF5EC] dark:bg-[#00D47E]/6 hover:text-main hover:bg-[#BEF0DD] dark:hover:bg-[#00D47E]/12 flex justify-start items-center gap-1 !p-1.5 rounded-sm"
                 onClick={() => {
                   chatStore.newSession();
                   navigate(Path.Chat);
                 }}
               >
-                <PlusIcon className="size-4" />
-                <span className="font-medium select-none">
+                <TaskIcon className="size-4" />
+                <span className="font-medium text-sm select-none">
                   {t("home.newChat")}
                 </span>
               </Button>

@@ -227,32 +227,32 @@ export function McpTableItem({
 
   return (
     <div
-      className="flex flex-col gap-5 rounded-xl border p-4 cursor-pointer hover:bg-[#F3F5F74D] dark:hover:bg-[#232627]/30 transition-colors max-w-[400px]"
+      className="w-full h-full flex flex-col gap-5 rounded-sm border border-[#E8ECEF] dark:border-[#232627] px-2.5 py-3 cursor-pointer hover:bg-[#F3F5F74D] dark:hover:bg-[#232627]/30 transition-colors max-w-[400px]"
       key={mcp_id + mcp_key}
       onClick={onSelect}
     >
       <div className="flex items-top gap-4">
-        <div className="w-12 h-12 flex-shrink-0 flex-center bg-[#E8ECEF] dark:bg-[#343839] rounded-lg relative">
+        <div className="w-[30px] h-[30px] flex-shrink-0 flex-center bg-[#E8ECEF] dark:bg-[#343839] rounded-full relative">
           {mcp_logo ? (
-            <img src={mcp_logo} width="30" height="30"></img>
+            <img src={mcp_logo} width="18" height="18"></img>
           ) : (
-            <FetchIcon className="w-[30px] h-[30px] text-[#343839] dark:text-[#6C7275]" />
+            <FetchIcon className="w-[18px] h-[18px] text-[#343839] dark:text-[#6C7275]" />
           )}
 
           {checked && StatusIcon && (
             <StatusIcon
-              className={clsx("absolute right-0 bottom-0 size-4", {
+              className={clsx("absolute right-0 bottom-0 size-2.5", {
                 "animate-spin text-main": status === McpAction.Loading,
               })}
             />
           )}
         </div>
         <div className="flex flex-col">
-          <div className="text-base font-medium mb-1">
+          <div className="text-xs font-medium mb-1">
             {Highlight({ text: mcp_name, keyword })}
           </div>
           <div
-            className="text-sm text-[#6C7275]"
+            className="text-[10px] text-[#6C7275]"
             style={{
               display: "-webkit-box",
               WebkitLineClamp: 3,
@@ -276,7 +276,7 @@ export function McpTableItem({
         <div className="flex items-center gap-2">
           {showSetting && (
             <Button
-              className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] px-2.5"
+              className="bg-[#DBF5EC] hover:bg-[#BEF0DD] dark:bg-[#00D47E]/6 dark:hover:bg-[#00D47E]/12 rounded-sm text-xs text-main px-1.5 !py-1 h-6"
               onClick={handleShowSettingModal}
             >
               {t("mcp.setting")}
@@ -284,7 +284,7 @@ export function McpTableItem({
           )}
           {showUpdate && (
             <Button
-              className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] px-2.5"
+              className="bg-[#DBF5EC] hover:bg-[#BEF0DD] dark:bg-[#00D47E]/6 dark:hover:bg-[#00D47E]/12 rounded-sm text-xs text-main px-1.5 py-1 h-6"
               onClick={handleUpdateMcpVersion}
             >
               {t("mcp.btnUpdate")}
@@ -292,7 +292,7 @@ export function McpTableItem({
           )}
           {showDelete && (
             <Button
-              className="bg-[#EF466F]/6 hover:bg-[#EF466F]/20 text-[#EF466F] px-2.5"
+              className="bg-[#EF466F]/6 hover:bg-[#EF466F]/20 text-xs text-[#EF466F] px-1.5 py-1 h-6"
               onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
                 onDelete(e, mcp_key)
               }
@@ -302,6 +302,7 @@ export function McpTableItem({
           )}
         </div>
         <Switch
+          className="scale-80"
           id={mcp_id}
           checked={checked}
           onClick={(e) => e.stopPropagation()}

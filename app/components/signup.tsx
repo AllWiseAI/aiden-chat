@@ -44,12 +44,12 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
   const verifyPassword = () => {
     if (formData.password === confirmPassword) {
       setPasswordError("");
-    } else setPasswordError(t("signUp.inValidPassword"));
+    } else setPasswordError(t("inValidPassword"));
   };
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     if (id === "email" && value && !validateEmail(value)) {
-      setEmailError(t("signUp.inValidEmail"));
+      setEmailError(t("inValidEmail"));
     } else {
       setEmailError("");
     }
@@ -58,10 +58,10 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
     <>
       <div className="flex-center flex-col gap-4 text-black dark:text-white">
         <LogoTextIcon />
-        <span className="text-2xl font-medium">{t("signUp.to")} Aiden.ai</span>
+        <span className="text-sm font-medium">{t("signUp.to")} Aiden.ai</span>
       </div>
       <form
-        className="flex-center flex-col gap-8 w-full"
+        className="flex-center flex-col gap-5 w-full"
         onSubmit={(e) => {
           verifyPassword();
           if (!passwordError) onSubmit(e);
@@ -70,7 +70,7 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
         <div className="flex flex-col gap-2 w-full">
           <Label
             htmlFor="email"
-            className="font-bold after:content['*'] after:content-['*'] after:text-red-500 !gap-1"
+            className="font-normal after:content['*'] after:content-['*'] after:text-red-500 !gap-1 text-xs"
           >
             {t("email")}
           </Label>
@@ -78,9 +78,12 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
             id="email"
             type="email"
             placeholder="mail@aiden.com"
-            className={clsx("w-full h-13 !text-left px-4 py-3.5 rounded-xl", {
-              "border-2 border-[#EF466F]": emailError,
-            })}
+            className={clsx(
+              "w-full h-8 !text-left px-2.5 py-2 rounded-sm text-xs hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]",
+              {
+                "border-2 border-[#EF466F]": emailError,
+              },
+            )}
             value={formData.email}
             onChange={onFormChange}
             onBlur={handleBlur}
@@ -88,13 +91,13 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
             required
           />
           {emailError && (
-            <span className="text-xs text-red-500">{emailError}</span>
+            <span className="text-[10px] text-red-500">{emailError}</span>
           )}
         </div>
         <div className="flex flex-col gap-2 w-full">
           <Label
             htmlFor="password"
-            className="font-bold after:content['*'] after:content-['*'] after:text-red-500 !gap-1"
+            className="font-normal after:content['*'] after:content-['*'] after:text-red-500 !gap-1 text-xs"
           >
             {t("password")}
           </Label>
@@ -103,7 +106,7 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
             id="password"
             type="password"
             placeholder={t("enter")}
-            className="!w-full h-13 !max-w-130 !text-left !px-4 !py-3.5 !rounded-xl"
+            className="!w-full h-8 !max-w-130 !text-left !px-2.5 !py-2 !rounded-sm text-xs hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]"
             value={formData.password}
             onChange={onFormChange}
             required
@@ -112,7 +115,7 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
         <div className="flex flex-col gap-2 w-full">
           <Label
             htmlFor="password"
-            className="font-bold after:content['*'] after:content-['*'] after:text-red-500 !gap-1"
+            className="font-normal after:content['*'] after:content-['*'] after:text-red-500 !gap-1 text-xs"
           >
             {t("signUp.confirm")}
           </Label>
@@ -122,7 +125,7 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
             type="password"
             placeholder={t("signUp.confirmP")}
             className={clsx(
-              "!w-full h-12 !max-w-130 !text-left !px-4 !py-3.5 !rounded-xl",
+              "!w-full h-8 !max-w-130 !text-left !px-2.5 !py-2 !rounded-sm text-xs hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]",
               { "border-2 border-[#EF466F]": passwordError },
             )}
             value={confirmPassword}
@@ -136,10 +139,10 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
             <span className="text-xs text-red-500">{passwordError}</span>
           )}
         </div>
-        <div className="self-start flex items-center gap-2 text-xs">
+        <div className="self-start flex items-center gap-2 text-[10px]">
           <input
             type="checkbox"
-            className="!size-[18px]"
+            className="!size-[14px] !border-[#6C7275] !rounded-xs"
             checked={checked}
             onChange={(e) => setChecked(e.target.checked)}
           />
@@ -164,7 +167,7 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
         </div>
         <Button
           type="submit"
-          className="w-full h-12 !px-6 !py-3 bg-main text-white dark:text-black hover:bg-[#02C174]/90 rounded-full"
+          className="w-full h-8 !px-2.5 !py-2 bg-main hover:bg-[#009A5C] disabled:bg-[#00AB66] text-white text-xs dark:text-black font-medium rounded-sm"
           disabled={
             !(
               formData.email &&
@@ -179,7 +182,7 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
           {t("signUp.btn")}
         </Button>
       </form>
-      <span className="text-xs text-[#777E90] font-medium">
+      <span className="text-[10px] text-[#777E90] font-medium">
         {t("signUp.has")}{" "}
         <Link to={Path.Login} className="underline text-main">
           {t("signIn.btn")}
@@ -235,66 +238,68 @@ const VerifyCodeForm = ({
     }, 1000);
   };
   return (
-    <form
-      className="w-full h-full flex flex-col justify-start items-center gap-8"
-      onSubmit={onSubmit}
-    >
-      <div className=" flex-center flex-col gap-4">
+    <>
+      <div className="flex-center flex-col gap-2">
         <LogoTextIcon className="text-black dark:text-white" />
-        <span className="text-2xl font-medium">
-          {t("signUp.verifyAddress")}
-        </span>
+        <span className="text-sm font-medium">{t("signUp.verifyAddress")}</span>
       </div>
-      <div className="w-full flex flex-col gap-4">
-        <div className="w-full flex flex-col gap-2 bg-[#F3F5F7] dark:bg-[#141718] border-2 border-[#E8ECEF] dark:border-[#232627] px-4 py-3.5 rounded-xl font-bold">
-          <span className="text-[#777E90] dark:text-[#6C7275] text-sm">
+      <form
+        className="w-full h-full flex flex-col justify-start items-center gap-8"
+        onSubmit={onSubmit}
+      >
+        <div className="w-full flex flex-col gap-2.5">
+          <span className="text-[#777E90] dark:text-[#6C7275] text-xs">
             {t("email")}
           </span>
-          <span className="text-[#141416] dark:text-white">
-            {formData.email}
+          <div className="w-full h-8 flex gap-2 bg-[#F3F5F7]/50 dark:bg-[#141718] border-2 border-[#E8ECEF] dark:border-[#232627] px-2.5 py-2 rounded-sm text-xs font-normal">
+            <span className="text-[#141416] dark:text-white">
+              {formData.email}
+            </span>
+          </div>
+          <span className="text-center text-[10px] text-[#777E90] dark:text-[#6C7275]">
+            {t("signUp.tip")}
           </span>
         </div>
-        <span className="text-center text-sm font-medium text-[#777E90] dark:text-[#6C7275]">
-          {t("signUp.tip")}
-        </span>
-      </div>
 
-      <div className="relative w-full">
-        <Input
-          id="code"
-          className="bg-[#F3F5F7] h-12 w-full pl-4 pr-32 py-3.5 rounded-xl placeholder:text-[#777E90] placeholder:font-medium font-medium !text-left"
-          placeholder={t("enterCode")}
-          value={formData.code}
-          onChange={onCodeChange}
-        />
-        <Button
-          onClick={handleGetCode}
-          type="button"
-          variant="ghost"
-          disabled={countdown > 0}
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent text-main text-sm font-medium rounded-lg hover:bg-gray-200 hover:text-main transition-colors disabled:text-main disabled:font-medium disabled:opacity-100 disabled:cursor-not-allowed"
-        >
-          {countdown > 0 ? `${countdown}s` : t("getCode")}
-        </Button>
-      </div>
+        <div className="relative w-full overflow-hidden">
+          <Input
+            id="code"
+            className="h-8 w-full pl-2.5 pr-22 py-2 rounded-sm text-xs placeholder:text-[#777E90] !text-left hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]"
+            placeholder={t("enterCode")}
+            value={formData.code}
+            onChange={onCodeChange}
+          />
+          <Button
+            onClick={handleGetCode}
+            type="button"
+            variant="ghost"
+            disabled={countdown > 0}
+            className="absolute right-2 top-1/2 px-1 py-0 transform -translate-y-1/2 bg-transparent text-main text-xs font-medium rounded-xs hover:text-main transition-colors disabled:text-main disabled:font-medium disabled:opacity-100 disabled:cursor-not-allowed"
+          >
+            {countdown > 0 ? `${countdown}s` : t("getCode")}
+          </Button>
+        </div>
 
-      <Button
-        type="submit"
-        disabled={!formData.code || loading}
-        className="w-full h-12 font-semibold rounded-full bg-main hover:bg-[#02C174]/90 px-6 py-4"
-      >
-        {loading && <LoadingIcon className="size-4 animate-spin" />}
-        {t("signUp.verify")}
-      </Button>
-      <Button
-        type="button"
-        variant="outline"
-        className="w-full h-12 font-semibold rounded-full px-6 py-4"
-        onClick={() => navigate(-1)}
-      >
-        {t("back")}
-      </Button>
-    </form>
+        <div className="w-full flex flex-col gap-2.5">
+          <Button
+            type="submit"
+            disabled={!formData.code || loading}
+            className="w-full h-8 font-medium text-xs rounded-sm bg-main disabled:bg-[#00AB66] hover:bg-[#02C174]/90 px-2.5 py-2"
+          >
+            {loading && <LoadingIcon className="size-4 animate-spin" />}
+            {t("signUp.verify")}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full h-8 font-medium text-xs rounded-sm px-2.5 py-2"
+            onClick={() => navigate(-1)}
+          >
+            {t("back")}
+          </Button>
+        </div>
+      </form>
+    </>
   );
 };
 
@@ -344,7 +349,7 @@ export function SignUpPage() {
     }));
   };
   return (
-    <div className="w-full h-full p-10 my-10 bg-white dark:bg-[#141416] mx-auto flex flex-col justify-start items-center gap-8 rounded-2xl">
+    <div className="w-full h-full px-6 py-7.5 my-10 bg-white dark:bg-[#141416] mx-auto flex flex-col justify-start items-center gap-[50px] rounded-2xl">
       {isSignUp ? (
         <SignUpForm
           formData={formData}

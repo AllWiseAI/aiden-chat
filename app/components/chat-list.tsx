@@ -9,7 +9,6 @@ import { defaultTopic, useChatStore } from "../store";
 import MoreIcon from "../icons/more.svg";
 import EditIcon from "../icons/edit.svg";
 import DeleteIcon from "../icons/delete.svg";
-import CloseIcon from "../icons/close.svg";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Path } from "../constant";
@@ -79,13 +78,14 @@ export function ChatItem(props: {
       {(provided) => (
         <div
           className={clsx(
-            "p-2.5 rounded-xl group my-1",
+            "rounded-sm group h-7.5",
             props.selected &&
               (currentPath === Path.Chat || currentPath === Path.Home)
-              ? "bg-gray-200 dark:bg-[#232323]"
+              ? "bg-[#E8ECEF]/50 dark:bg-[#232323]"
               : openMenu
-              ? "bg-gray-100 dark:bg-[#2F2F2F]"
-              : "hover:bg-gray-100 dark:hover:bg-[#2F2F2F]",
+              ? "bg-bg-[#E8ECEF]/50 dark:bg-[#2F2F2F]"
+              : "hover:bg-[#E8ECEF]/50 dark:hover:bg-[#2F2F2F]",
+            !isEdit && "p-1.5",
           )}
           onClick={props.onClick}
           ref={(ele) => {
@@ -103,7 +103,7 @@ export function ChatItem(props: {
               {isEdit ? (
                 <Input
                   ref={inputRef}
-                  className="!text-start text-[#232627] dark:text-white text-sm font-semibold"
+                  className="!h-full !text-start text-[#232627] dark:text-white !text-xs font-semibold border-main dark:border-main"
                   value={props.title}
                   onChange={(e) =>
                     chatStore.updateTargetSession(
@@ -135,14 +135,21 @@ export function ChatItem(props: {
               ) : (
                 <div className="flex justify-between items-center">
                   <div className="flex justify-start items-center gap-4 leading-6">
-                    <div className="text-[#232627] dark:text-white cursor-default text-sm font-semibold w-full line-clamp-1">
+                    <div
+                      className={clsx(
+                        "text-[#232627] dark:text-[#6C7275] cursor-default text-xs w-full line-clamp-1",
+                        props.selected
+                          ? "font-semibold dark:text-white"
+                          : "font-normal",
+                      )}
+                    >
                       {props.title}
                     </div>
                   </div>
 
                   <DropdownMenu open={openMenu} onOpenChange={setOpenMenu}>
                     <DropdownMenuTrigger
-                      className="size-6 flex-center cursor-pointer"
+                      className="size-4 flex-center cursor-pointer"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <MoreIcon
@@ -162,7 +169,7 @@ export function ChatItem(props: {
                       <DropdownMenuRadioGroup>
                         <DropdownMenuRadioItem
                           value="rename"
-                          className="flex justify-start gap-4 !pl-1 !py-2"
+                          className="flex justify-start gap-2 !pl-1 !py-2"
                           onClick={(e) => {
                             e.stopPropagation();
                             e.preventDefault();
@@ -170,19 +177,19 @@ export function ChatItem(props: {
                             setOpenMenu(false);
                           }}
                         >
-                          <EditIcon className="size-4" />
+                          <EditIcon className="size-[18px]" />
                           <span className="-ml-1 font-xs">
                             {t("chat.rename")}
                           </span>
                         </DropdownMenuRadioItem>
                         <DropdownMenuRadioItem
                           value="delete"
-                          className="!text-[#D84C10] flex justify-start gap-4 !pl-1 !py-2"
+                          className="!text-[#EF466F] flex justify-start gap-2 !pl-1 !py-2"
                           onClick={() => {
                             setShowDeleteDialog(true);
                           }}
                         >
-                          <DeleteIcon className="size-4" />
+                          <DeleteIcon className="size-[18px]" />
                           <span className="-ml-1 font-xs">
                             {t("chat.delete")}
                           </span>
@@ -197,28 +204,28 @@ export function ChatItem(props: {
                   open={showDeleteDialog}
                   onOpenChange={setShowDeleteDialog}
                 >
-                  <AlertDialogContent className="!rounded-[18px] w-120 dark:text-white">
-                    <div className="flex justify-between">
+                  <AlertDialogContent className="rounded-sm w-80 dark:text-white gap-5">
+                    <div className="flex justify-center">
                       <AlertDialogHeader>
-                        <AlertDialogTitle className="!text-[21px]">
+                        <AlertDialogTitle className="text-sm">
                           {t("dialog.deleteTitle")}
                         </AlertDialogTitle>
                       </AlertDialogHeader>
 
-                      <AlertDialogCancel className="size-9 rounded-4xl border-0 hover:cursor-pointer hover:opacity-75 bg-[#F3F5F7] dark:bg-[#6C7275] hover:bg-[#F3F5F7]/75 dark:hover:bg-[#6C7275]/75">
+                      {/* <AlertDialogCancel className="size-9 rounded-4xl border-0 hover:cursor-pointer hover:opacity-75 bg-[#F3F5F7] dark:bg-[#6C7275] hover:bg-[#F3F5F7]/75 dark:hover:bg-[#6C7275]/75">
                         <CloseIcon className="size-6" />
-                      </AlertDialogCancel>
+                      </AlertDialogCancel> */}
                     </div>
-                    <AlertDialogDescription className="text-lg font-normal text-[#141718] dark:text-white">
+                    <AlertDialogDescription className="text-xs text-center font-normal text-[#141718] dark:text-white">
                       {t("dialog.alert")}
                     </AlertDialogDescription>
                     <AlertDialogFooter>
-                      <AlertDialogCancel className="rounded-xl">
+                      <AlertDialogCancel className="flex-1 rounded-sm hover:bg-[#F3F5F74D] border border-[#E8ECEF] dark:border-[#343839] font-medium">
                         {t("dialog.cancel")}
                       </AlertDialogCancel>
                       <AlertDialogAction
                         onClick={props.onDelete}
-                        className="bg-[#EF466F] hover:bg-[#EF466F]/75 rounded-full"
+                        className="flex-1 bg-[#EF466F] hover:bg-[#EF466F]/75 rounded-sm font-medium"
                       >
                         {t("dialog.delete")}
                       </AlertDialogAction>
@@ -280,7 +287,7 @@ export function ChatList(props: { narrow?: boolean; searchValue?: string }) {
         <Droppable droppableId="chat-list">
           {(provided) => (
             <div
-              className="select-none"
+              className="flex flex-col gap-[8px] select-none"
               ref={provided.innerRef}
               {...provided.droppableProps}
             >

@@ -10,6 +10,7 @@ import React, {
   useState,
 } from "react";
 import { isEmpty } from "lodash-es";
+import LogoIcon from "../icons/aiden-logo.svg";
 import DownIcon from "../icons/down.svg";
 import StopIcon from "../icons/stop.svg";
 import SendIcon from "../icons/up-arrow.svg";
@@ -57,7 +58,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/app/components/shadcn/tooltip";
-import McpTooltip from "./mcp-tooltip";
+import McpPopover from "./mcp-tooltip";
 import {
   Accordion,
   AccordionContent,
@@ -453,7 +454,7 @@ function _Chat() {
             value={message.mcpInfo.title}
             className={styles["chat-message-mcp-item"]}
           >
-            <AccordionTrigger>
+            <AccordionTrigger className="!py-0">
               <div className="flex flex-row items-center gap-2">
                 {`${message.mcpInfo.response?.length ? "Called" : "Call"} ${
                   message.mcpInfo.title
@@ -465,7 +466,7 @@ function _Chat() {
             <AccordionContent
               className={styles["chat-message-item-mcp-result"]}
             >
-              <div className="mb-4 rounded-2xl bg-white dark:bg-[#141718] border p-4">
+              <div className="mb-2.5 rounded-2xl bg-white dark:bg-[#141718] border p-4">
                 <div className="mb-2 font-medium">Request </div>
                 <div>{renderCallRequest(message.mcpInfo.request)}</div>
               </div>
@@ -508,6 +509,7 @@ function _Chat() {
                   <Button
                     data-tauri-drag-region="false"
                     variant="ghost"
+                    className="size-5 !p-0"
                     onClick={() => {
                       toast(t("chat.actions.refreshToast"), {
                         className: "w-auto max-w-max",
@@ -515,13 +517,13 @@ function _Chat() {
                       chatStore.summarizeSession(true, session);
                     }}
                   >
-                    <ReloadIcon />
+                    <ReloadIcon className="size-4 text-black dark:text-white" />
                   </Button>
                 </TooltipTrigger>
 
                 <TooltipContent
                   hasArrow={false}
-                  className="pointer-events-none bg-[#FEFEFE] dark:bg-[#232627] text-black dark:text-[#6C7275] border"
+                  className="pointer-events-none bg-[#FEFEFE] dark:bg-[#232627] text-black dark:text-white border"
                 >
                   {t("chat.actions.refreshTitle")}
                 </TooltipContent>
@@ -544,7 +546,10 @@ function _Chat() {
             {isNewChat ? (
               <>
                 <div className="w-full h-10" data-tauri-drag-region></div>
-                <div className={styles["chat-main-welcome"]}>
+                <div
+                  className={clsx(styles["chat-main-welcome"], "flex gap-2.5")}
+                >
+                  <LogoIcon className="size-7.5" />
                   {t("chat.title")} Aiden
                 </div>
               </>
@@ -573,7 +578,12 @@ function _Chat() {
                         }
                       >
                         <div className={styles["chat-message-container"]}>
-                          <div className={styles["chat-message-item"]}>
+                          <div
+                            className={clsx(
+                              styles["chat-message-item"],
+                              message.role === "user" && "p-3",
+                            )}
+                          >
                             {isMcpMsg && renderMessageMcpInfo(message)}
                             {getMessageImages(message).length == 1 && (
                               <img
@@ -637,7 +647,7 @@ function _Chat() {
               {!hitBottom && (
                 <Button
                   variant="ghost"
-                  className="absolute -top-10 right-8 size-8 z-1000 border bg-white dark:bg-[#343839] rounded-full"
+                  className="absolute -top-10 right-2 size-8 z-1 border bg-white dark:bg-[#343839] rounded-full"
                   onClick={() => scrollToBottom(true)}
                 >
                   <DownIcon className="text-black dark:text-white" />
@@ -667,7 +677,7 @@ function _Chat() {
                     fontFamily: config.fontFamily,
                   }}
                 />
-                <div className="absolute top-6 left-8 flex items-center gap-2.5">
+                <div className="absolute top-6 left-3 flex items-center gap-2.5 w-[calc(100%-24px)] bg-white dark:bg-[#141416]">
                   {images.map((img) => (
                     <div key={img.id} className="relative">
                       {img.url ? (
@@ -689,16 +699,16 @@ function _Chat() {
                     </div>
                   ))}
                 </div>
-                <div className="absolute bottom-8 left-8 flex gap-2">
+                <div className="absolute bottom-8 left-3 flex gap-2">
                   <ImageUploader />
-                  <McpTooltip
+                  <McpPopover
                     icon={
                       <McpIcon className="size-4 text-black dark:text-white" />
                     }
                   />
                 </div>
                 <Button
-                  className="absolute bottom-8 right-8 h-8 w-8 bg-main rounded-full hover:bg-[#00D47E]/90 p-0 disabled:bg-[#6C7275] dark:disabled:bg-[#343839] !disabled:cursor-not-allowed"
+                  className="absolute bottom-8 right-3 h-6 w-6 bg-main rounded-full hover:bg-[#00D47E]/90 p-0 disabled:bg-[#6C7274] dark:disabled:bg-[#343839] !disabled:cursor-not-allowed"
                   onClick={() => doSubmit(userInput)}
                   disabled={!(userInput.length || images.length) && !isChatting}
                 >
