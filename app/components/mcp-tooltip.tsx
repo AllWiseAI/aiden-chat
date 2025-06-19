@@ -139,7 +139,6 @@ function McpPopover({ icon }: { icon: ReactElement }) {
                   >
                     {mcpRenderedMap.get?.(item.name)?.renderName || item.name}
                   </p>
-                  {StatusIcon}
                 </div>
               );
             })}
