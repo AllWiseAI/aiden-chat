@@ -5,7 +5,7 @@ VERSION="${PACKAGE_VERSION}"
 PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 REPO_URL="https://github.com/AllWiseAI/aiden-chat/releases/download/v${VERSION}"
 ARTIFACT_DIR="artifacts"
-CRC_TOOL="./scripts/crc64.py"
+CRC_TOOL=".github/scripts/crc64.py"
 
 # === 路径设定 ===
 SIG_ARM64="${ARTIFACT_DIR}/aarch64-artifacts/macos/AidenChat_aarch64.app.zip.sig"
