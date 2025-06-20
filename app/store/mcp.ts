@@ -320,7 +320,7 @@ export const useMcpStore = createPersistStore(
           getRemoteMcpStatus,
         } = _get();
         if (!config) return;
-        let newConfig;
+        let newConfig = { ...config };
         let settingInfo: TSettingInfo | null = null;
         let templateInfo: TTemplateInfo | null = null;
         if (config.mcpServers[name]) {
