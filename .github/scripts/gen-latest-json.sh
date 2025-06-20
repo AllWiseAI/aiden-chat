@@ -5,13 +5,17 @@ VERSION="${PACKAGE_VERSION}"
 PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 REPO_URL="https://github.com/AllWiseAI/aiden-chat/releases/download/v${VERSION}"
 ARTIFACT_DIR="artifacts"
+CRC_TOOL="./scripts/crc64.py"
 
 # === 路径设定 ===
 SIG_ARM64="${ARTIFACT_DIR}/aarch64-artifacts/AidenChat_aarch64.app.zip.sig"
 ZIP_ARM64="${ARTIFACT_DIR}/aarch64-artifacts/AidenChat_aarch64.app.zip"
+DMG_ARM64="${ARTIFACT_DIR}/aarch64-artifacts/AidenChat_aarch64.dmg"
+
 
 SIG_X64="${ARTIFACT_DIR}/x64-artifacts/AidenChat_x64.app.zip.sig"
 ZIP_X64="${ARTIFACT_DIR}/x64-artifacts/AidenChat_x64.app.zip"
+DMG_X64="${ARTIFACT_DIR}/x64-artifacts/AidenChat_x64.dmg"
 
 # === 检查产物是否存在 ===
 for f in "$SIG_ARM64" "$ZIP_ARM64" "$SIG_X64" "$ZIP_X64"; do
@@ -25,6 +29,11 @@ done
 SIGNATURE_ARM64=$(base64 < "$SIG_ARM64" | tr -d '\n')
 SIGNATURE_X64=$(base64 < "$SIG_X64" | tr -d '\n')
 
+# === CRC64 计算 ===
+CRC64_DMG_ARM64=$(python3 "$CRC_TOOL" "$DMG_ARM64")
+CRC64_DMG_X64=$(python3 "$CRC_TOOL" "$DMG_X64")
+
+
 # === 构建 latest.json ===
 echo "📝 生成合并版 latest.json..."
 
@@ -37,11 +46,15 @@ cat > dist/latest.json <<EOF
   "platforms": {
     "darwin-aarch64": {
       "signature": "$SIGNATURE_ARM64",
-      "url": "$REPO_URL/$(basename "$ZIP_ARM64")"
+      "url": "$REPO_URL/$(basename "$ZIP_ARM64")",
+      "dmg_url": "$REPO_URL/$(basename "$DMG_ARM64")",
+      "dmg_crc64": "$CRC64_DMG_ARM64"
     },
     "darwin-x86_64": {
       "signature": "$SIGNATURE_X64",
-      "url": "$REPO_URL/$(basename "$ZIP_X64")"
+      "url": "$REPO_URL/$(basename "$ZIP_X64")",
+      "dmg_url": "$REPO_URL/$(basename "$DMG_X64")",
+      "dmg_crc64": "$CRC64_DMG_X64"
     }
   }
 }
