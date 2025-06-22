@@ -27,6 +27,7 @@ import { useAppConfig } from "../store/config";
 import { getClientConfig } from "../config/client";
 import useAppSetting from "../hooks/use-app-setting";
 import clsx from "clsx";
+import { useAuthStore } from "../store";
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -230,6 +231,7 @@ export function WindowContent(props: { children: React.ReactNode }) {
 export function Home() {
   useSwitchTheme();
   useHtmlLang();
+  const token = useAuthStore((state) => state.userToken);
   useEffect(() => {
     console.log("[Config] got config from build time", getClientConfig());
   }, []);
@@ -240,6 +242,12 @@ export function Home() {
 
   return (
     <ErrorBoundary>
+      <div className="flex flex-col gap-1 text-black bg-sky-300 absolute bottom-0 left-0 z-1000 w-full">
+        <p>{token.accessToken}</p>
+        <p>{token.refreshToken}</p>
+        <p>当前时间: {new Date().toLocaleString()}</p>
+        <p>过期时间: {new Date(token.expires * 1000).toLocaleString()}</p>
+      </div>
       <AppRouter />
     </ErrorBoundary>
   );

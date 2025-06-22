@@ -20,6 +20,8 @@ export const useAuthStore = createPersistStore(
     ...DEFAULT_AUTH_STATE,
   },
   (set, get) => {
+    let refreshing = false;
+
     function _get() {
       return {
         ...get(),
@@ -93,13 +95,18 @@ export const useAuthStore = createPersistStore(
         if (!get()._hasHydrated) return false;
         const { userToken, refreshToken } = _get();
         if (userToken.accessToken && userToken.expires * 1000 > Date.now()) {
+          // setAuth
           return true;
         }
         if (userToken.refreshToken) {
           try {
+            console.log("初始化刷新token");
             await refreshToken();
+            // setAuth
             return true;
-          } catch (e) {}
+          } catch (e: any) {
+            console.error("refresh token err:", e);
+          }
         }
         set({ _hasHydrated: get()._hasHydrated, ...DEFAULT_AUTH_STATE });
         return false;
@@ -155,7 +162,6 @@ export const useAuthStore = createPersistStore(
         try {
           const { userToken } = get();
           const { status } = (await apiLogout(
-            userToken.accessToken ?? "",
             userToken.refreshToken ?? "",
           )) as {
             status: boolean;
@@ -170,12 +176,15 @@ export const useAuthStore = createPersistStore(
       },
 
       refreshToken: async () => {
+        if (refreshing) return;
+        refreshing = true;
         try {
           const { userToken } = get();
+          console.log("userToken", userToken);
           const response = (await apiRefreshToken(
-            userToken.accessToken,
             userToken.refreshToken,
           )) as RefreshResponse;
+          console.log("refreshToken", userToken, response);
           if ("access_token" in response) {
             const { access_token, refresh_token, expires_at } = response;
             set({
@@ -194,6 +203,8 @@ export const useAuthStore = createPersistStore(
           }
         } catch (e: any) {
           throw new Error(`Refresh Token Failed: ${e.message}`);
+        } finally {
+          refreshing = false;
         }
       },
     };

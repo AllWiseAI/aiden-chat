@@ -1,18 +1,9 @@
-import { fetch } from "@tauri-apps/api/http";
-import { useSettingStore } from "../store/setting";
+import { aidenFetch as fetch, FetchBody } from "@/app/utils/fetch";
 
 const baseURL =
   process.env.NODE_ENV === "development"
     ? "https://dev.aidenai.io/app"
     : "https://prod.aidenai.io";
-
-const getCommonHeaders = () => {
-  const device_id = useSettingStore.getState().getDeviceId();
-  return {
-    "Content-Type": "application/json",
-    "X-Device-ID": device_id,
-  };
-};
 
 export async function apiGetSignUpCode(payload: { email: string }) {
   const params = {
@@ -25,7 +16,6 @@ export async function apiGetSignUpCode(payload: { email: string }) {
       type: "Json",
       payload: params,
     },
-    headers: { ...getCommonHeaders() },
   });
 
   return result.data;
@@ -49,7 +39,6 @@ export async function apiCompleteSignUp(payload: {
       type: "Json",
       payload: params,
     },
-    headers: { ...getCommonHeaders() },
   });
   return result.data;
 }
@@ -65,13 +54,12 @@ export async function apiLogin(payload: { email: string; password: string }) {
       type: "Json",
       payload: params,
     },
-    headers: { ...getCommonHeaders() },
   });
   console.log("login!", response.data);
   return response.data;
 }
 
-export async function apiLogout(accessToken: string, refreshToken: string) {
+export async function apiLogout(refreshToken: string) {
   const params = {
     refresh_token: refreshToken,
   };
@@ -81,27 +69,30 @@ export async function apiLogout(accessToken: string, refreshToken: string) {
       type: "Json",
       payload: params,
     },
-    headers: { ...getCommonHeaders(), Authorization: `Bearer ${accessToken}` },
   });
   return result.data;
 }
 
-export async function apiRefreshToken(
-  accessToken: string,
-  refreshToken: string,
-) {
+export async function apiRefreshToken(refreshToken: string) {
   const params = {
     refresh_token: refreshToken,
   };
-  const result = await fetch(`"https://dev.aidenai.io/app/auth/refresh_token`, {
+  const result = await fetch(`${baseURL}/auth/refresh_token`, {
     method: "POST",
     body: {
       type: "Json",
       payload: params,
     },
-    headers: { ...getCommonHeaders(), Authorization: `Bearer ${accessToken}` },
+    _isRefreshToken: true,
   });
+  console.log("refresh result", result);
   return result.data;
+}
+
+export function isRefreshRequest(
+  config: FetchBody & { _isRefreshToken?: boolean },
+) {
+  return !!config._isRefreshToken;
 }
 
 export async function apiResetPasswordCode(email: string) {
@@ -114,7 +105,6 @@ export async function apiResetPasswordCode(email: string) {
       type: "Json",
       payload: params,
     },
-    headers: { ...getCommonHeaders() },
   });
   return result.data;
 }
@@ -135,7 +125,6 @@ export async function apiCompleteResetPassword(payload: {
       type: "Json",
       payload: params,
     },
-    headers: { ...getCommonHeaders() },
   });
   return result.data;
 }

@@ -44,15 +44,19 @@ export function LoadingPage() {
   // if not login, redirect to login page
   useEffect(() => {
     if (!hydrated) return;
-    const ok = init();
-    setIsAuthed(true);
-    if (!ok || !isLogin) {
-      navigate(Path.Login, { replace: true });
-    } else {
-      if (!isServerReady) return;
-      navigate(Path.Chat, { replace: true });
-    }
-  }, [hydrated, isLogin, init, navigate, isServerReady]);
+    if (!isServerReady) return;
+    (async () => {
+      console.log("开始初始化");
+      const ok = await init();
+      console.log("结束初始化 ok:", ok);
+      setIsAuthed(true);
+      if (!ok || !isLogin) {
+        navigate(Path.Login, { replace: true });
+      } else if (isServerReady) {
+        navigate(Path.Chat, { replace: true });
+      }
+    })();
+  }, [hydrated, isLogin, isServerReady, init, navigate]);
 
   return (
     <div className="relative bg-white dark:bg-[#141416] flex flex-col items-center justify-center w-full h-full">
