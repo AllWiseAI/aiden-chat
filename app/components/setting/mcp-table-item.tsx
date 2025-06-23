@@ -13,13 +13,12 @@ import {
   McpAction,
   TSettingInfo,
   TTemplateInfo,
-  CustomMCPServer,
 } from "@/app/typing";
 import { useMcpStore } from "@/app/store/mcp";
 import { useTranslation } from "react-i18next";
-import { getFirstValue, parseTemplate } from "@/app/utils/mcp";
 import { toast } from "sonner";
 import { McpTemplateModal } from "./mcp-template-modal";
+import { checkShowTemplateModal } from "@/app/utils/mcp";
 
 type McpItemProps = {
   keyword: string;
@@ -133,7 +132,7 @@ export function McpTableItem({
         });
       }
     },
-    [item, updateLocalMcpVersion],
+    [item, updateLocalMcpVersion, t],
   );
 
   useEffect(() => {
@@ -142,34 +141,6 @@ export function McpTableItem({
       setStatus(current.action);
     }
   }, [mcpStatusList, mcp_key]);
-
-  const checkShowTemplateModal = useCallback(
-    (enable: boolean) => {
-      if (enable) {
-        let templateInfo = null;
-        if (config?.mcpServers[item.mcp_key]) {
-          templateInfo = parseTemplate(config.mcpServers[item.mcp_key]);
-        } else {
-          const server = getFirstValue(item.basic_config || {});
-          if (server) {
-            templateInfo = parseTemplate(server as CustomMCPServer);
-          }
-        }
-        if (templateInfo) {
-          setTemplateInfo(templateInfo);
-          const { templates, envs, multiArgs } = templateInfo;
-          const emptyEnvs = envs.filter((env) => env.value === "");
-
-          if (templates?.length || emptyEnvs?.length || multiArgs?.length) {
-            setTemplateModal(true);
-            return true;
-          }
-        }
-      }
-      return false;
-    },
-    [item, config],
-  );
 
   const initLoading = useCallback(() => {
     setStatus(McpAction.Loading);
@@ -187,9 +158,14 @@ export function McpTableItem({
       try {
         if (enable) {
           initLoading();
+          const { shouldShowTemplateModal, templateInfo } =
+            checkShowTemplateModal(config, item);
+          setTemplateInfo(templateInfo);
+          if (shouldShowTemplateModal) {
+            setTemplateModal(true);
+            return;
+          }
         }
-        const needShowTemplateModal = checkShowTemplateModal(enable);
-        if (needShowTemplateModal) return;
         await onSwitchChange(
           enable,
           mcp_id,
@@ -205,7 +181,8 @@ export function McpTableItem({
       }
     },
     [
-      checkShowTemplateModal,
+      config,
+      item,
       onSwitchChange,
       mcp_id,
       mcp_key,
@@ -306,9 +283,7 @@ export function McpTableItem({
           id={mcp_id}
           checked={checked}
           onClick={(e) => e.stopPropagation()}
-          onCheckedChange={(enable) => {
-            handleCheckedChange(enable);
-          }}
+          onCheckedChange={handleCheckedChange}
         />
       </div>
       {templateModal && templateInfo && (

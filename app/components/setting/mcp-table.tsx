@@ -10,12 +10,7 @@ import {
 } from "@/app/components/confirm-modal/confirm";
 import { McpTableItem } from "./mcp-table-item";
 import LoadingIcon from "../../icons/loading-spinner.svg";
-import {
-  McpItemInfo,
-  McpConfigKey,
-  TDetailInfo,
-  TSettingInfo,
-} from "@/app/typing";
+import { McpItemInfo, McpConfigKey, TSettingInfo } from "@/app/typing";
 import { useMcpStore } from "@/app/store/mcp";
 import SearchIcon from "../../icons/search.svg";
 import { McpSettingModal } from "./mcp-setting-modal";
@@ -45,7 +40,7 @@ type ServerTableProps = {
 };
 
 type Props = {
-  setDetail: (detailInfo: TDetailInfo) => void;
+  setDetail: (detailInfo: McpItemInfo) => void;
   setMode: (mode: McpConfigKey) => void;
 };
 
