@@ -198,6 +198,7 @@ jobs:
         with:
           name: ${{ steps.arch_map.outputs.mapped_arch }}-artifacts
           path: |
+            src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/dmg/AidenChat_${{ env.PACKAGE_VERSION }}_${{ steps.arch_map.outputs.mapped_arch }}_signed.dmg
             src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos/AidenChat_*.app.zip
             src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos/AidenChat_*.app.zip.sig
 
@@ -207,6 +208,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install crcmod
+        run: pip install crcmod
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -224,7 +233,7 @@ jobs:
       - name: Generate latest.json
         run: bash .github/scripts/gen-latest-json.sh
         env:
-          PACKAGE_VERSION: ${{ needs.build-tauri.outputs.PACKAGE_VERSION }}
+          PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
 
       - name: Output tag list for debugging
         run: |

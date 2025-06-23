@@ -89,6 +89,47 @@ function fillFlexibleArgs(oldArgs: string[], newArgs: string[]) {
   return result;
 }
 
+export function checkShowTemplateModal(
+  config: MCPConfig | null,
+  mcpItem: McpItemInfo,
+) {
+  if (!config) {
+    return {
+      templateInfo: null,
+      shouldShowTemplateModal: false,
+    };
+  }
+  let templateInfo = null;
+  if (config?.mcpServers[mcpItem.mcp_key]) {
+    templateInfo = parseTemplate(config.mcpServers[mcpItem.mcp_key]);
+  } else {
+    const server = getFirstValue(mcpItem.basic_config || {});
+    if (server) {
+      templateInfo = parseTemplate(server as CustomMCPServer);
+    }
+  }
+
+  if (!templateInfo) {
+    return {
+      templateInfo: null,
+      shouldShowTemplateModal: false,
+    };
+  }
+
+  const { templates, envs, multiArgs } = templateInfo;
+  const emptyEnvs = envs?.filter((env) => env.value === "");
+
+  let shouldShowTemplateModal = false;
+  if (templates?.length || emptyEnvs?.length || multiArgs?.length) {
+    shouldShowTemplateModal = true;
+  }
+
+  return {
+    templateInfo,
+    shouldShowTemplateModal,
+  };
+}
+
 export function updateMcpArgsEnvs(localItem: MCPServer, remoteItem: MCPServer) {
   const { args = [], env = {} } = remoteItem;
   const { args: localArgs = [], env: localEnv = {} } = localItem;
