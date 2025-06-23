@@ -5,22 +5,27 @@ import FetchIcon from "../../icons/fetch.svg";
 import { Switch } from "@/app/components/shadcn/switch";
 import { toast } from "sonner";
 import { Markdown } from "@/app/components/markdown";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useMcpStore } from "@/app/store/mcp";
 import { useTranslation } from "react-i18next";
+import { checkShowTemplateModal } from "@/app/utils/mcp";
 
-import { McpConfigKey, TDetailInfo } from "@/app/typing";
+import { McpConfigKey, McpItemInfo, TTemplateInfo } from "@/app/typing";
+import { McpTemplateModal } from "./mcp-template-modal";
 
 type Props = {
   setMode: (mode: McpConfigKey) => void;
-  detailInfo: TDetailInfo;
+  detailInfo: McpItemInfo;
 };
 
 const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
   const mcpStore = useMcpStore();
+  const config = useMcpStore((state) => state.config);
   const { switchMcpStatus } = mcpStore;
   const [checked, setChecked] = useState(detailInfo.checked);
-  const { i18n } = useTranslation("settings");
+  const { t, i18n } = useTranslation("settings");
+  const [templateModal, setTemplateModal] = useState(false);
+  const [templateInfo, setTemplateInfo] = useState<TTemplateInfo | null>(null);
 
   const {
     description,
@@ -48,6 +53,67 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
     }
     return tutorial;
   }, [i18n, tutorial, tutorial_en, tutorial_zh]);
+
+  const resolveSwitchChange = useCallback(
+    async (enable: boolean) => {
+      try {
+        setChecked(enable);
+        await switchMcpStatus({
+          id: detailInfo.mcp_id,
+          name: detailInfo.mcp_key,
+          enable: enable,
+          type: detailInfo.type,
+          version: detailInfo.current_version || "",
+        });
+        toast.success(t("mcp.update.success"));
+      } catch (e: any) {
+        toast.error(e, {
+          className: "w-auto max-w-max",
+        });
+        setChecked(!enable);
+      }
+    },
+    [detailInfo, switchMcpStatus, t],
+  );
+
+  const handleSwitchChange = useCallback(
+    async (enable: boolean) => {
+      if (enable) {
+        const { shouldShowTemplateModal, templateInfo } =
+          checkShowTemplateModal(config, detailInfo);
+        setTemplateInfo(templateInfo);
+        if (shouldShowTemplateModal) {
+          setTemplateModal(true);
+          return;
+        } else {
+          resolveSwitchChange(enable);
+        }
+      } else {
+        resolveSwitchChange(enable);
+      }
+    },
+    [detailInfo, config, resolveSwitchChange],
+  );
+
+  const handleSettingConfirm = useCallback(
+    async (templateInfo: TTemplateInfo) => {
+      setChecked(true);
+      try {
+        await mcpStore.updateTemplate(
+          detailInfo.mcp_key,
+          detailInfo.mcp_id,
+          templateInfo,
+        );
+        console.log("[Mcp status change]: update remote config done");
+        toast.success(t("mcp.update.success"));
+      } catch (e: any) {
+        setChecked(false);
+        toast.error(e);
+        console.error(e);
+      }
+    },
+    [detailInfo, mcpStore, t],
+  );
 
   return (
     <>
@@ -77,26 +143,7 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
             <Switch
               className="scale-75"
               checked={checked}
-              onCheckedChange={async (enable) => {
-                try {
-                  setChecked(enable);
-                  await switchMcpStatus({
-                    id: detailInfo.mcp_id,
-                    name: detailInfo.mcp_key,
-                    enable: enable,
-                    type: detailInfo.type,
-                    version: detailInfo.current_version || "",
-                  });
-                  toast.success("切换成功", {
-                    className: "w-auto max-w-max",
-                  });
-                } catch (e: any) {
-                  toast.error(e, {
-                    className: "w-auto max-w-max",
-                  });
-                  setChecked(!enable);
-                }
-              }}
+              onCheckedChange={handleSwitchChange}
             />
           </div>
         </div>
@@ -109,6 +156,14 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
           </div>
         )}
       </div>
+      {templateModal && templateInfo && (
+        <McpTemplateModal
+          onOpenChange={setTemplateModal}
+          open={templateModal}
+          templateInfo={templateInfo || {}}
+          onConfirm={handleSettingConfirm}
+        ></McpTemplateModal>
+      )}
     </>
   );
 };
