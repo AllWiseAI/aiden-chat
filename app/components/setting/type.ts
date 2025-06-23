@@ -1,13 +1,5 @@
 export type McpConfigKey = "table" | "edit" | "detail";
 
-export type TDetailInfo = {
-  name: string;
-  mcp_logo: string;
-  description: string;
-  tutorial: string;
-  checked: boolean;
-};
-
 export enum McpAction {
   Connecting = "connecting",
   Connected = "connected",

@@ -7,14 +7,14 @@ import McpTable from "./mcp-table";
 import McpDetail from "./mcp-detail";
 import McpEditor from "./mcp-editor";
 
-import { McpConfigKey, TDetailInfo } from "@/app/typing";
+import { McpConfigKey, McpItemInfo } from "@/app/typing";
 
 export default function McpConfig() {
   const mcpStore = useMcpStore();
   const config = useMcpStore((state) => state.config);
   const [mode, setMode] = useState<McpConfigKey>("table");
-  const [detailInfo, setDetailInfo] = useState<TDetailInfo>();
-  const handleSetDetail = (detailInfo: TDetailInfo) => {
+  const [detailInfo, setDetailInfo] = useState<McpItemInfo>();
+  const handleSetDetail = (detailInfo: McpItemInfo) => {
     setMode("detail");
     setDetailInfo(detailInfo);
   };

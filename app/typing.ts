@@ -27,22 +27,6 @@ export type McpConfigKey = "table" | "edit" | "detail";
 
 export type McpItemType = "default" | "custom" | "remote";
 
-export type TDetailInfo = {
-  mcp_id: string;
-  mcp_name: string;
-  mcp_key: string;
-  mcp_logo: string;
-  description: string;
-  tutorial: string;
-  checked: boolean;
-  description_en?: string;
-  description_zh?: string;
-  tutorial_zh?: string;
-  tutorial_en?: string;
-  type: McpItemType;
-  current_version: string;
-};
-
 export enum McpAction {
   Loading = "loading",
   Connected = "connected",
