@@ -55,7 +55,6 @@ export async function apiLogin(payload: { email: string; password: string }) {
       payload: params,
     },
   });
-  console.log("login!", response.data);
   return response.data;
 }
 
@@ -85,7 +84,6 @@ export async function apiRefreshToken(refreshToken: string) {
     },
     _isRefreshToken: true,
   });
-  console.log("refresh result", result);
   return result.data;
 }
 

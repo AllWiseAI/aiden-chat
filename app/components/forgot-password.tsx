@@ -128,15 +128,9 @@ const ResetPassword = ({
         className: "w-auto max-w-max",
       });
     } catch (e: any) {
-      if (e.message.includes("Network Error")) {
-        toast.error(t("netErr"), {
-          className: "w-auto max-w-max",
-        });
-      } else {
-        toast.error(e.message, {
-          className: "w-auto max-w-max",
-        });
-      }
+      toast.error(e.message, {
+        className: "w-auto max-w-max",
+      });
     }
   };
 
@@ -276,15 +270,9 @@ export const ForgotPasswordPage = () => {
       });
       navigate(Path.Login);
     } catch (e: any) {
-      if (e.message.includes("Network Error")) {
-        toast.error(t("netErr"), {
-          className: "w-auto max-w-max",
-        });
-      } else {
-        toast.error(e.message, {
-          className: "w-auto max-w-max",
-        });
-      }
+      toast.error(e.message, {
+        className: "w-auto max-w-max",
+      });
     } finally {
       setLoading(false);
     }

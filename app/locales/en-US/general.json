@@ -1,6 +1,7 @@
 {
   "error": {
-    "unauthorized": "Unauthorized"
+    "unauthorized": "Unauthorized",
+    "netErr": "Connection Error"
   },
   "chatItem": {
     "chatItemCount": "{{count}} messages"

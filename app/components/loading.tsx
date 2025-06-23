@@ -46,9 +46,7 @@ export function LoadingPage() {
     if (!hydrated) return;
     if (!isServerReady) return;
     (async () => {
-      console.log("开始初始化");
       const ok = await init();
-      console.log("结束初始化 ok:", ok);
       setIsAuthed(true);
       if (!ok || !isLogin) {
         navigate(Path.Login, { replace: true });

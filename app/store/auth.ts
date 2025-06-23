@@ -20,8 +20,6 @@ export const useAuthStore = createPersistStore(
     ...DEFAULT_AUTH_STATE,
   },
   (set, get) => {
-    let refreshing = false;
-
     function _get() {
       return {
         ...get(),
@@ -83,11 +81,7 @@ export const useAuthStore = createPersistStore(
           }
         } catch (e: any) {
           set({ _hasHydrated: get()._hasHydrated, ...DEFAULT_AUTH_STATE });
-          if (e.message.includes("Network Error")) {
-            throw new Error("Error: Connection Error");
-          } else {
-            throw new Error(`Signup Failed: ${e.message}`);
-          }
+          throw new Error(`Signup Failed: ${e.message}`);
         }
       },
 
@@ -100,7 +94,6 @@ export const useAuthStore = createPersistStore(
         }
         if (userToken.refreshToken) {
           try {
-            console.log("初始化刷新token");
             await refreshToken();
             // setAuth
             return true;
@@ -150,10 +143,7 @@ export const useAuthStore = createPersistStore(
           }
         } catch (e: any) {
           set({ _hasHydrated: get()._hasHydrated, ...DEFAULT_AUTH_STATE });
-          if (e.message.includes("Network Error")) {
-            throw new Error("Error: Connection Error");
-          } else if (e.message === "Invalid Credentials")
-            throw new Error("密码错误");
+          if (e.message === "Invalid Credentials") throw new Error("密码错误");
           else throw new Error(`Login Failed: ${e.message}`);
         }
       },
@@ -176,15 +166,11 @@ export const useAuthStore = createPersistStore(
       },
 
       refreshToken: async () => {
-        if (refreshing) return;
-        refreshing = true;
         try {
           const { userToken } = get();
-          console.log("userToken", userToken);
           const response = (await apiRefreshToken(
             userToken.refreshToken,
           )) as RefreshResponse;
-          console.log("refreshToken", userToken, response);
           if ("access_token" in response) {
             const { access_token, refresh_token, expires_at } = response;
             set({
@@ -203,8 +189,6 @@ export const useAuthStore = createPersistStore(
           }
         } catch (e: any) {
           throw new Error(`Refresh Token Failed: ${e.message}`);
-        } finally {
-          refreshing = false;
         }
       },
     };

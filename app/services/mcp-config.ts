@@ -1,4 +1,5 @@
-import { fetch, Body } from "@tauri-apps/api/http";
+import { Body } from "@tauri-apps/api/http";
+import { aidenFetch as fetch } from "@/app/utils/fetch";
 import { fetchNoProxy } from "@/app/utils/fetch-no-proxy";
 
 const baseURL = "http://localhost:6888";
@@ -13,7 +14,6 @@ const getCommonHeaders = () => {
 export async function getRemoteMcpItems() {
   const result = await fetch(remoteMcpURL, {
     method: "GET",
-    headers: { ...getCommonHeaders() },
   });
   return result.data;
 }

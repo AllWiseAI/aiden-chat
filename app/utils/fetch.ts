@@ -1,8 +1,8 @@
-import { fetch } from "@tauri-apps/api/http";
+import { fetch, Response } from "@tauri-apps/api/http";
 import { useSettingStore } from "../store/setting";
 import { useAuthStore } from "../store/auth";
 import { isRefreshRequest } from "../services";
-
+import { t } from "i18next";
 export interface FetchBody {
   method: "POST" | "GET" | "PUT" | "DELETE" | "OPTIONS";
   body?: {
@@ -29,24 +29,29 @@ const getCommonHeaders = () => {
 export async function aidenFetch<T = unknown>(
   url: string,
   options: FetchBody & { _isRefreshToken?: boolean },
-): Promise<ReturnType<typeof fetch<T>>> {
-  console.warn("req", {
-    method: options.method,
-    headers: { ...getCommonHeaders() },
-    body: options.body ? options.body : undefined,
-  });
-  const res = await fetch<T>(url, {
-    method: options.method,
-    headers: { ...getCommonHeaders() },
-    body: options.body ? options.body : undefined,
-  });
+): Promise<Response<T>> {
+  let res: Response<T>;
+
+  try {
+    res = await fetch<T>(url, {
+      method: options.method,
+      headers: { ...getCommonHeaders() },
+      body: options.body ? options.body : undefined,
+    });
+  } catch (err: any) {
+    // 网络错误
+    console.log(11111, err);
+    if (err.includes("Network Error")) {
+      throw t("error.netErr");
+    }
+    throw err;
+  }
 
   // 刷新 token 重新请求
   if (
     (res.status === 401 || (res.data as any)?.expire_at * 1000 < Date.now()) &&
     !isRefreshRequest(options)
   ) {
-    console.log("不是刷新token");
     try {
       await useAuthStore.getState().refreshToken();
       const retryRes = await aidenFetch<T>(url, options);
