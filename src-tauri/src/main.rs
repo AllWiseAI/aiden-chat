@@ -233,7 +233,8 @@ fn export_log_zip_cmd(app: tauri::AppHandle) -> Result<String, String> {
     logger::export_log_zip(app)
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let is_prod = !cfg!(debug_assertions);
 
     let _sentry_guard = if is_prod {
@@ -274,86 +275,86 @@ fn main() {
         .add_submenu(app_submenu)
         .add_submenu(edit_submenu);
 
-    tokio::runtime::Builder::new_multi_thread()
-        .enable_all()
-        .build()
-        .unwrap()
-        .block_on(async {
-            tauri::Builder::default()
-                .menu(menu)
-                .on_menu_event(|event| match event.menu_item_id() {
-                    "open_setting" => {
-                        let _ = event.window().emit("open-setting", {});
-                    }
-                    _ => {}
-                })
-                .manage(HostServerProcess(Mutex::new(None)))
-                .invoke_handler(tauri::generate_handler![
-                    log_from_frontend,
-                    export_log_zip_cmd,
-                    stream::stream_fetch,
-                    request::fetch_no_proxy,
-                    mcp::read_mcp_config,
-                    mcp::write_mcp_config,
-                ])
-                // 监听窗口关闭事件
-                .on_window_event(|event| {
-                    if let tauri::WindowEvent::CloseRequested { .. } = event.event() {
-                        let app = event.window().app_handle();
-                        let state: State<HostServerProcess> = app.state();
-                        cleanup_processes(&app, state);
-                    }
-                })
-                .setup(|app: &mut tauri::App| {
-                    let config: std::sync::Arc<tauri::Config> = app.config();
-                    let log_file =
-                        logger::get_log_file_path(&config).expect("Failed to get log file path");
-                    let log_dir = log_file.parent().unwrap();
-                    let log_basename = log_file.file_stem().unwrap().to_str().unwrap();
-                    let log_suffix = log_file.extension().unwrap().to_str().unwrap();
-
-                    let file_spec = FileSpec::default()
-                        .directory(log_dir)
-                        .basename(log_basename)
-                        .suffix(log_suffix);
-
-                    Logger::try_with_str("info")
-                        .unwrap()
-                        .log_to_file(file_spec)
-                        .duplicate_to_stdout(Duplicate::Info)
-                        .write_mode(WriteMode::BufferAndFlush)
-                        .start()
-                        .unwrap();
-
-                    log::info!("AidenAI started successfully!");
-                    kill_ports(PORTS_TO_KILL);
-                    let app_handle: AppHandle = app.handle();
-                    let env_path: PathBuf = get_env_path(&app_handle).expect("Cannot find .env");
-                    log::info!("Loading env from: {:?}", env_path);
-                    dotenvy::from_path(env_path).ok();
-                    for key in [
-                        "NPM_CONFIG_REGISTRY",
-                        "UV_INDEX",
-                        "UV_DEFAULT_INDEX",
-                        "UV_EXTRA_INDEX_URL",
-                        "HOST_SERVER_VERSION",
-                    ] {
-                        match env::var(key) {
-                            Ok(value) => log::info!("{key} = {value}"),
-                            Err(_) => log::info!("{key} is not set"),
-                        }
-                    }
-                    let _ = mcp::init_mcp_config(app);
-                    let state: State<'_, HostServerProcess> = app.state::<HostServerProcess>();
-                    start_host_server(&app_handle, state);
-
-                    Ok(())
-                })
-                .run(tauri::generate_context!())
-                .expect("error while running tauri application");
-
-            if let Some(sentry_guard) = _sentry_guard {
-                sentry_guard.flush(Some(std::time::Duration::from_secs(2)));
+    let context = tauri::Builder::default()
+        .menu(menu)
+        .on_menu_event(|event| match event.menu_item_id() {
+            "open_setting" => {
+                let _ = event.window().emit("open-setting", {});
             }
-        });
+            _ => {}
+        })
+        .manage(HostServerProcess(Mutex::new(None)))
+        .invoke_handler(tauri::generate_handler![
+            log_from_frontend,
+            export_log_zip_cmd,
+            stream::stream_fetch,
+            request::fetch_no_proxy,
+            mcp::read_mcp_config,
+            mcp::write_mcp_config,
+        ])
+        // 监听窗口关闭事件
+        .on_window_event(|event| {
+            if let tauri::WindowEvent::CloseRequested { api, .. } = event.event() {
+                api.prevent_close();
+                let _ = event.window().minimize();
+            }
+        })
+        .setup(|app: &mut tauri::App| {
+            let config: std::sync::Arc<tauri::Config> = app.config();
+            let log_file = logger::get_log_file_path(&config).expect("Failed to get log file path");
+            let log_dir = log_file.parent().unwrap();
+            let log_basename = log_file.file_stem().unwrap().to_str().unwrap();
+            let log_suffix = log_file.extension().unwrap().to_str().unwrap();
+
+            let file_spec = FileSpec::default()
+                .directory(log_dir)
+                .basename(log_basename)
+                .suffix(log_suffix);
+
+            Logger::try_with_str("info")
+                .unwrap()
+                .log_to_file(file_spec)
+                .duplicate_to_stdout(Duplicate::Info)
+                .write_mode(WriteMode::BufferAndFlush)
+                .start()
+                .unwrap();
+
+            log::info!("AidenAI started successfully!");
+            kill_ports(PORTS_TO_KILL);
+            let app_handle: AppHandle = app.handle();
+            let env_path: PathBuf = get_env_path(&app_handle).expect("Cannot find .env");
+            log::info!("Loading env from: {:?}", env_path);
+            dotenvy::from_path(env_path).ok();
+            for key in [
+                "NPM_CONFIG_REGISTRY",
+                "UV_INDEX",
+                "UV_DEFAULT_INDEX",
+                "UV_EXTRA_INDEX_URL",
+                "HOST_SERVER_VERSION",
+            ] {
+                match env::var(key) {
+                    Ok(value) => log::info!("{key} = {value}"),
+                    Err(_) => log::info!("{key} is not set"),
+                }
+            }
+            let _ = mcp::init_mcp_config(app);
+            let state: State<'_, HostServerProcess> = app.state::<HostServerProcess>();
+            start_host_server(&app_handle, state);
+
+            Ok(())
+        })
+        .build(tauri::generate_context!())
+        .expect("error while running tauri application");
+
+    context.run(|app_handle, event| {
+        if let tauri::RunEvent::Exit { .. } = event {
+            log::info!("App is exiting — now cleaning processes");
+            let state: State<'_, HostServerProcess> = app_handle.state::<HostServerProcess>();
+            cleanup_processes(&app_handle, state);
+        }
+    });
+
+    if let Some(sentry_guard) = _sentry_guard {
+        sentry_guard.flush(Some(std::time::Duration::from_secs(2)));
+    }
 }
