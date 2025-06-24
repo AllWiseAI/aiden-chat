@@ -5,6 +5,7 @@ import {
   OpenaiPath,
   REQUEST_TIMEOUT_MS,
   DEFAULT_CHAT_URL,
+  SECOND_CHAT_URL,
 } from "@/app/constant";
 import { ModelSize, DalleQuality, DalleStyle } from "@/app/typing";
 import {
@@ -109,7 +110,7 @@ export class ChatGPTApi implements LLMApi {
 
   async chat(options: ChatOptions) {
     const messages: ChatOptions["messages"] = [];
-    for (const v of options.messages) {
+    for (const v of options.messages || []) {
       messages.push({ role: v.role, content: v.content });
     }
     console.log("[Request] openai chat payload: ", messages);
@@ -151,6 +152,56 @@ export class ChatGPTApi implements LLMApi {
         clearTimeout(requestTimeoutId);
         const resJson = await res.json();
         console.log("[Request] openai chat resJson: ", resJson);
+        const message = resJson?.message?.content;
+        // @ts-ignore
+        options.onFinish(message, res);
+      }
+    } catch (e) {
+      console.log("[Request] failed to make a chat request", e);
+      options.onError?.(e as Error, shouldStream);
+    }
+  }
+
+  async toolCall(options: ChatOptions) {
+    const shouldStream = !!options.config.stream;
+    const controller = new AbortController();
+    options.onController?.(controller);
+    const requestPayload = {
+      ...options.toolCallInfo,
+    };
+    try {
+      if (shouldStream) {
+        streamWithThink(
+          SECOND_CHAT_URL,
+          requestPayload,
+          getHeaders(),
+          controller,
+          parseSSE,
+          options,
+        );
+      } else {
+        const requestTimeoutId = setTimeout(
+          () => controller.abort("timeout"),
+          REQUEST_TIMEOUT_MS,
+        );
+
+        const res = await tauriFetchWithSignal(
+          SECOND_CHAT_URL,
+          {
+            method: "POST",
+            body: {
+              type: "Json",
+              payload: {
+                ...options.toolCallInfo,
+              },
+            },
+          },
+          controller.signal,
+        );
+
+        clearTimeout(requestTimeoutId);
+        const resJson = await res.json();
+        console.log("[Request] openai toolcall resJson: ", resJson);
         const message = resJson?.message?.content;
         // @ts-ignore
         options.onFinish(message, res);

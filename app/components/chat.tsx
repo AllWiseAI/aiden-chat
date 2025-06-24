@@ -296,13 +296,13 @@ function _Chat() {
             m.streaming = false;
           }
 
-          if (m.content.length === 0) {
-            m.isError = true;
-            m.content = prettyObject({
-              error: true,
-              message: "empty response",
-            });
-          }
+          // if (m.content.length === 0) {
+          //   m.isError = true;
+          //   m.content = prettyObject({
+          //     error: true,
+          //     message: "empty response",
+          //   });
+          // }
         }
       });
 
@@ -467,7 +467,7 @@ function _Chat() {
               className={styles["chat-message-item-mcp-result"]}
             >
               <div className="mb-2.5 rounded-2xl bg-white dark:bg-[#141718] border p-4">
-                <div className="mb-2 font-medium">Request </div>
+                <div className="mb-2 font-medium">Request</div>
                 <div>{renderCallRequest(message.mcpInfo.request)}</div>
               </div>
               <div className="rounded-2xl bg-white dark:bg-[#141718] border p-4">
@@ -730,21 +730,6 @@ function _Chat() {
 export function Chat() {
   const chatStore = useChatStore();
   const session = chatStore.currentSession();
-  const isFirstRender = useRef(true);
 
-  useEffect(() => {
-    if (isFirstRender.current) {
-      // we should clear all the pending chat status here
-      chatStore.updateTargetSession(session, (session) => {
-        session.messages.forEach((m) => {
-          if (m.content.length === 0) {
-            m.isError = true;
-            m.content = "请求已取消，请稍后重试！";
-          }
-        });
-      });
-      isFirstRender.current = false;
-    }
-  }, [session]);
   return <_Chat key={session.id}></_Chat>;
 }

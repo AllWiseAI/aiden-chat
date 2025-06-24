@@ -6,6 +6,7 @@ import type {
   ClientApi,
   MultimodalContent,
   RequestMessage,
+  ToolCallInfo,
 } from "../client/api";
 import { getClientApi } from "../client/api";
 import { ChatControllerPool } from "../client/controller";
@@ -365,6 +366,10 @@ export const useChatStore = createPersistStore(
         api.llm.chat({
           messages: sendMessages,
           config: { ...modelConfig, stream: true },
+          onToolCall: (toolCallInfo) => {
+            console.log("[Chat store]onToolCall: ", toolCallInfo);
+            get().onToolCall(toolCallInfo);
+          },
           onUpdate(message, mcpInfo) {
             botMessage.streaming = true;
             if (message) {
@@ -372,6 +377,7 @@ export const useChatStore = createPersistStore(
             }
             if (mcpInfo) {
               botMessage.isMcpResponse = true;
+              console.log("===botmessage", botMessage);
               if (!botMessage.mcpInfo) {
                 botMessage.mcpInfo = {
                   title: mcpInfo.title ?? "",
@@ -450,6 +456,129 @@ export const useChatStore = createPersistStore(
             }
             botMessage.streaming = false;
             userMessage.isError = !isAborted;
+            botMessage.isError = !isAborted;
+            get().updateTargetSession(session, (session) => {
+              if (
+                isAborted &&
+                !isTimeout &&
+                (!shouldStream ||
+                  (shouldStream && botMessage.content.length === 0))
+              ) {
+                session.messages = session.messages.concat().slice(0, -1);
+              } else {
+                session.messages = session.messages.concat();
+              }
+            });
+            ChatControllerPool.remove(
+              session.id,
+              botMessage.id ?? messageIndex,
+            );
+
+            console.error("[Chat] failed ", error?.message);
+          },
+          onController(controller) {
+            // collect controller for stop/retry
+            ChatControllerPool.addController(
+              session.id,
+              botMessage.id ?? messageIndex,
+              controller,
+            );
+          },
+        });
+      },
+
+      onToolCall(toolCallInfo: ToolCallInfo) {
+        const session = get().currentSession();
+        const modelConfig = session.mask.modelConfig;
+        const messageIndex = session.messages.length + 1;
+
+        const botMessage: ChatMessage = createMessage({
+          role: "assistant",
+          streaming: true,
+          model: modelConfig.model,
+          mcpInfo: {
+            title: toolCallInfo.title ?? "",
+            request: toolCallInfo.request ?? "",
+            response: [],
+          },
+        });
+
+        get().updateTargetSession(session, (session) => {
+          session.messages = session.messages.concat([botMessage]);
+        });
+        const api: ClientApi = getClientApi();
+        api.llm.toolCall({
+          toolCallInfo,
+          config: { ...modelConfig, stream: true },
+          onUpdate(message, mcpInfo) {
+            console.log(
+              "[Chat store]onToolCall: update ",
+              toolCallInfo,
+              message,
+              mcpInfo,
+            );
+            console.log("[Chat store]botMessage", botMessage);
+            botMessage.streaming = true;
+            if (message) {
+              botMessage.content = message;
+            }
+            if (mcpInfo) {
+              botMessage.isMcpResponse = true;
+              if (botMessage.mcpInfo) {
+                botMessage.mcpInfo.response.push(mcpInfo.response ?? "");
+              }
+            }
+            get().updateTargetSession(session, (session) => {
+              session.messages = session.messages.concat();
+            });
+          },
+          onToolCall(toolCallInfo) {
+            console.log("[Chat store]onToolCall: onToolCall ", toolCallInfo);
+            get().onToolCall(toolCallInfo);
+          },
+          async onFinish(message, _, mcpInfo) {
+            botMessage.streaming = false;
+            if (mcpInfo) {
+              botMessage.isMcpResponse = true;
+              if (mcpInfo.response) {
+                if (botMessage.mcpInfo) {
+                  botMessage.mcpInfo.response.push(mcpInfo.response);
+                }
+              }
+              get().onNewMessage(botMessage, session);
+            }
+            if (message) {
+              botMessage.content = message;
+              botMessage.date = new Date().toLocaleString();
+              get().onNewMessage(botMessage, session);
+            }
+            ChatControllerPool.remove(session.id, botMessage.id);
+          },
+          onBeforeTool(tool: ChatMessageTool) {
+            (botMessage.tools = botMessage?.tools || []).push(tool);
+            get().updateTargetSession(session, (session) => {
+              session.messages = session.messages.concat();
+            });
+          },
+          onAfterTool(tool: ChatMessageTool) {
+            botMessage?.tools?.forEach((t, i, tools) => {
+              if (tool.id == t.id) {
+                tools[i] = { ...tool };
+              }
+            });
+            get().updateTargetSession(session, (session) => {
+              session.messages = session.messages.concat();
+            });
+          },
+          onError(error, shouldStream: boolean) {
+            const isAborted = error.message?.includes?.("canceled");
+            const isTimeout = error.message?.includes?.("timeout");
+            if (isTimeout) {
+              botMessage.content += "请求已超时，请稍后重试！";
+            } else if (!isAborted) {
+              botMessage.content += "服务器繁忙，请稍后重试！";
+            }
+            botMessage.streaming = false;
             botMessage.isError = !isAborted;
             get().updateTargetSession(session, (session) => {
               if (

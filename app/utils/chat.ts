@@ -16,7 +16,6 @@ import {
   showConfirm,
   ConfirmType,
 } from "@/app/components/confirm-modal/confirm";
-import { SECOND_CHAT_URL } from "@/app/constant";
 import { useSettingStore } from "@/app/store/setting";
 import { McpStepsAction } from "../typing";
 
@@ -584,11 +583,6 @@ export function streamWithThink(
             const { type } = chunk.mcpInfo;
             if (type === McpStepsAction.ToolCallConfirm) {
               hasConfirmRequest = true;
-              options.onUpdate?.(responseText, {
-                title: chunk.mcpInfo.tool,
-                request: prettyObject(chunk.mcpInfo || "") + "\n\n",
-              });
-
               // should check if user has approved the MCP
               const userHasApproved = settingStore.getUserMcpApproveStatus(
                 chunk.mcpInfo.tool,
@@ -627,23 +621,15 @@ export function streamWithThink(
                   });
                 }
               }
-              const controller = new AbortController();
-              options.onController?.(controller);
-              const initTemplate = responseText + remainText;
-              streamWithThink(
-                SECOND_CHAT_URL,
-                {
-                  tool_call_id: chunk.mcpInfo.id,
-                  approved,
-                  thread_id: chunk.mcpInfo.thread_id,
-                },
-                headers,
-                controller,
-                parseSSE,
-                options,
-                initTemplate,
-              );
+              options.onToolCall({
+                approved,
+                tool_call_id: chunk.mcpInfo.id,
+                thread_id: chunk.mcpInfo.thread_id,
+                title: chunk.mcpInfo.tool,
+                request: prettyObject(chunk.mcpInfo || "") + "\n\n",
+              });
             } else if (type === McpStepsAction.ToolResult) {
+              console.log("[MCP] Tool result: ", chunk.mcpInfo.result);
               options.onUpdate?.(responseText, {
                 response: chunk.mcpInfo.result,
               });
