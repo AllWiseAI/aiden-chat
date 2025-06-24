@@ -44,15 +44,17 @@ export function LoadingPage() {
   // if not login, redirect to login page
   useEffect(() => {
     if (!hydrated) return;
-    const ok = init();
-    setIsAuthed(true);
-    if (!ok || !isLogin) {
-      navigate(Path.Login, { replace: true });
-    } else {
-      if (!isServerReady) return;
-      navigate(Path.Chat, { replace: true });
-    }
-  }, [hydrated, isLogin, init, navigate, isServerReady]);
+    if (!isServerReady) return;
+    (async () => {
+      const ok = await init();
+      setIsAuthed(true);
+      if (!ok || !isLogin) {
+        navigate(Path.Login, { replace: true });
+      } else if (isServerReady) {
+        navigate(Path.Chat, { replace: true });
+      }
+    })();
+  }, [hydrated, isLogin, isServerReady, init, navigate]);
 
   return (
     <div className="relative bg-white dark:bg-[#141416] flex flex-col items-center justify-center w-full h-full">

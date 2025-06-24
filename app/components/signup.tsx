@@ -213,15 +213,9 @@ const VerifyCodeForm = ({
         className: "w-auto max-w-max",
       });
     } catch (e: any) {
-      if (e.message.includes("Network Error")) {
-        toast.error("Error: Connection Error", {
-          className: "w-auto max-w-max",
-        });
-      } else {
-        toast.error(e.message, {
-          className: "w-auto max-w-max",
-        });
-      }
+      toast.error(e.message, {
+        className: "w-auto max-w-max",
+      });
     }
   };
 

@@ -128,3 +128,41 @@ export enum McpStepsAction {
   ToolCallConfirm = "tool_call_confirm",
   ToolResult = "tool_result",
 }
+
+export interface TokenType {
+  accessToken: string;
+  refreshToken: string;
+  expires: number;
+}
+
+export interface User {
+  id: number;
+  email: string;
+  profile: string;
+}
+
+type LoginSuccessResponse = {
+  access_token: string;
+  refresh_token: string;
+  expires_at: number;
+  profile_image_url: string;
+  id: number;
+};
+
+type LoginErrorResponse = {
+  error: string;
+};
+
+type RefreshSuccessResponse = {
+  access_token: string;
+  refresh_token: string;
+  token_type: string;
+  expires_at: number;
+};
+
+type RefreshErrorResponse = {
+  error: string;
+};
+
+export type LoginResponse = LoginSuccessResponse | LoginErrorResponse;
+export type RefreshResponse = RefreshSuccessResponse | RefreshErrorResponse;
