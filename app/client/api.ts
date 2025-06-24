@@ -53,10 +53,19 @@ export interface SpeechOptions {
   onController?: (controller: AbortController) => void;
 }
 
-export interface ChatOptions {
-  messages: RequestMessage[];
-  config: LLMConfig;
+export interface ToolCallInfo {
+  approved: boolean;
+  tool_call_id: string;
+  thread_id: string;
+  title: string;
+  request: string;
+}
 
+export interface ChatOptions {
+  messages?: RequestMessage[];
+  config: LLMConfig;
+  onToolCall?: (toolCallInfo: ToolCallInfo) => void;
+  toolCallInfo?: ToolCallInfo;
   onUpdate?: (
     message: string,
     mcpInfo?: { title: string; request: string; response: string },
@@ -97,6 +106,7 @@ export abstract class LLMApi {
   abstract speech(options: SpeechOptions): Promise<ArrayBuffer>;
   abstract usage(): Promise<LLMUsage>;
   abstract models(): Promise<LLMModel[]>;
+  abstract toolCall(options: ChatOptions): Promise<void>;
 }
 
 export class ClientApi {
