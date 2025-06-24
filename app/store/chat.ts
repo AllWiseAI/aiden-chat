@@ -315,7 +315,8 @@ export const useChatStore = createPersistStore(
       ) {
         const session = get().currentSession();
         const modelConfig = session.mask.modelConfig;
-
+        const { currentModel } = useAppConfig.getState();
+        console.log("===modelConfig", modelConfig);
         // MCP Response no need to fill template
         let mContent: string | MultimodalContent[] = isMcpResponse
           ? content
@@ -364,6 +365,7 @@ export const useChatStore = createPersistStore(
         const api: ClientApi = getClientApi();
         // make request
         api.llm.chat({
+          currentModel,
           messages: sendMessages,
           config: { ...modelConfig, stream: true },
           onToolCall: (toolCallInfo) => {
@@ -764,6 +766,7 @@ export const useChatStore = createPersistStore(
               }),
             );
           api.llm.chat({
+            currentModel: "gpt-4o",
             messages: topicMessages,
             config: {
               model,
@@ -822,6 +825,7 @@ export const useChatStore = createPersistStore(
            **/
           const { max_tokens, ...modelcfg } = modelConfig;
           api.llm.chat({
+            currentModel: "gpt-4o",
             messages: toBeSummarizedMsgs.concat(
               createMessage({
                 role: "system",

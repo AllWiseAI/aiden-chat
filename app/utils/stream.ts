@@ -39,7 +39,7 @@ export function fetch(url: string, options?: RequestInit): Promise<Response> {
     const close = () => {
       if (closed) return;
       closed = true;
-      unlisten && unlisten();
+      unlisten?.();
       writer.ready.then(() => {
         writer.close().catch((e) => console.error(e));
       });
@@ -48,7 +48,7 @@ export function fetch(url: string, options?: RequestInit): Promise<Response> {
     if (signal) {
       signal.addEventListener("abort", () => close());
     }
-    // @ts-ignore 2. listen response multi times, and write to Response.body
+    // @ts-expect-error 2. listen response multi times, and write to Response.body
     window.__TAURI__.event
       .listen("stream-response", (e: ResponseEvent) =>
         requestIdPromise.then((request_id) => {
@@ -145,7 +145,7 @@ export async function tauriFetchWithSignal<T = any>(
     tauriFetch(url, options)
       .then((response) => {
         if (aborted) return;
-        // @ts-ignore
+        // @ts-expect-error
         resolve(response);
       })
       .catch((error) => {
