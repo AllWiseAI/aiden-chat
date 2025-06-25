@@ -123,7 +123,10 @@ export class ChatGPTApi implements LLMApi {
         streamWithThink(
           SECOND_CHAT_URL,
           requestPayload,
-          getHeaders(),
+          {
+            ...getHeaders(),
+            "Aiden-Model-Name": options.currentModel,
+          },
           controller,
           parseSSE,
           options,
