@@ -6,7 +6,7 @@ import LogoTextIcon from "@/app/icons/logo-text.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Path } from "../constant";
-import { useAuthStore } from "../store";
+import { useAuthStore, useSettingStore } from "../store";
 import { toast } from "sonner";
 import clsx from "clsx";
 import { shell } from "@tauri-apps/api";
@@ -14,7 +14,8 @@ import LoadingIcon from "../icons/loading-spinner.svg";
 import { useTranslation } from "react-i18next";
 
 export function LoginPage() {
-  const authStore = useAuthStore();
+  const getRegion = useSettingStore((state) => state.getRegion);
+  const login = useAuthStore((state) => state.login);
   const navigate = useNavigate();
   const { t } = useTranslation("auth");
   const [formData, setFormData] = useState({
@@ -33,7 +34,7 @@ export function LoginPage() {
     setLoading(true);
 
     try {
-      const success = await authStore.login(formData.email, formData.password);
+      const success = await login(formData.email, formData.password);
       if (success) {
         navigate(Path.Chat);
         toast.success(t("signIn.success"), {
@@ -48,6 +49,7 @@ export function LoginPage() {
     } finally {
       setLoading(false);
     }
+    getRegion();
   };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;

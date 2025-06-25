@@ -1,9 +1,11 @@
 import { StoreKey } from "../constant";
 import { createPersistStore } from "../utils/store";
 import { v4 as uuidv4 } from "uuid";
+import { apiGetRegion } from "../services/auth";
 
 const DEFAULT_SETTING_STATE = {
   device_id: "",
+  region: "",
 };
 
 export const useSettingStore = createPersistStore(
@@ -17,16 +19,30 @@ export const useSettingStore = createPersistStore(
       set({ _hasHydrated: true });
     },
     getDeviceId: () => {
-      if (!get()._hasHydrated) return false;
+      if (!get()._hasHydrated) return;
       const { device_id } = get();
       if (!device_id) {
         const device_id = uuidv4();
         set({ device_id: device_id });
-        console.log("device_id:", device_id);
         return device_id;
       }
-      console.log("device_id:", device_id);
       return device_id;
+    },
+    getRegion: async () => {
+      if (!get()._hasHydrated) return;
+      if (get().region) return get().region;
+      try {
+        const res = (await apiGetRegion()) as any;
+        if ("ip" in res) {
+          const code = res.country_code;
+          set({ region: code });
+        }
+      } catch (e) {
+        console.error("getRegion error:", e);
+      }
+    },
+    setRegion: (region: string) => {
+      set({ region });
     },
     getUserMcpApproveStatus: (name: string) => {
       if (!get()._hasHydrated) return false;
