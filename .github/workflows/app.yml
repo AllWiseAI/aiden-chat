@@ -74,6 +74,11 @@ jobs:
         with:
           key: ${{ matrix.config.arch }}
 
+      - name: Set Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20.17.0"
+
       - name: install frontend dependencies
         run: yarn install
 
