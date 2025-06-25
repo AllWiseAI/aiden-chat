@@ -3,6 +3,15 @@
   "editor.insertSpaces": true,
   "eslint.format.enable": true,
   "editor.formatOnSave": true,
+  // 启用 ESLint 插件
+  "eslint.enable": true,
+  // 对这些语言启用 ESLint 支持
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "always"
   },

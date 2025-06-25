@@ -8,7 +8,6 @@ import RehypeHighlight from "rehype-highlight";
 import { useRef, useState, RefObject, useEffect, useMemo } from "react";
 import { copyToClipboard, useWindowSize } from "../utils";
 import mermaid from "mermaid";
-import { useTranslation } from "react-i18next";
 import LoadingIcon from "../icons/three-dots.svg";
 import ReloadButtonIcon from "../icons/reload.svg";
 import React from "react";
@@ -103,8 +102,8 @@ export function PreCode(props: { children: any }) {
         "latex",
       ];
       codeElements.forEach((codeElement) => {
-        let languageClass = codeElement.className.match(/language-(\w+)/);
-        let name = languageClass ? languageClass[1] : "";
+        const languageClass = codeElement.className.match(/language-(\w+)/);
+        const name = languageClass ? languageClass[1] : "";
         if (wrapLanguages.includes(name)) {
           codeElement.style.whiteSpace = "pre-wrap";
         }
@@ -157,43 +156,8 @@ export function PreCode(props: { children: any }) {
 }
 
 function CustomCode(props: { children: any; className?: string }) {
-  const chatStore = useChatStore();
-  const session = chatStore.currentSession();
-  const config = useAppConfig();
-  const { t } = useTranslation("general");
-  const enableCodeFold =
-    session.mask?.enableCodeFold !== false && config.enableCodeFold;
-
   const ref = useRef<HTMLPreElement>(null);
-  const [collapsed, setCollapsed] = useState(true);
-  const [showToggle, setShowToggle] = useState(false);
 
-  useEffect(() => {
-    if (ref.current) {
-      const codeHeight = ref.current.scrollHeight;
-      setShowToggle(codeHeight > 400);
-      ref.current.scrollTop = ref.current.scrollHeight;
-    }
-  }, [props.children]);
-
-  const toggleCollapsed = () => {
-    setCollapsed((collapsed) => !collapsed);
-  };
-  const renderShowMoreButton = () => {
-    if (showToggle && enableCodeFold && collapsed) {
-      return (
-        <div
-          className={clsx("show-hide-button", {
-            collapsed,
-            expanded: !collapsed,
-          })}
-        >
-          <button onClick={toggleCollapsed}>{t("newChat.more")}</button>
-        </div>
-      );
-    }
-    return null;
-  };
   return (
     <>
       <code
@@ -208,8 +172,6 @@ function CustomCode(props: { children: any; className?: string }) {
       >
         {props.children}
       </code>
-
-      {/* {renderShowMoreButton()} */}
     </>
   );
 }
@@ -253,7 +215,7 @@ function tryWrapHtmlCode(text: string) {
     );
 }
 
-function _MarkDownContent(props: { content: string }) {
+function InnerMarkDownContent(props: { content: string }) {
   const escapedContent = useMemo(() => {
     return tryWrapHtmlCode(escapeBrackets(props.content));
   }, [props.content]);
@@ -296,7 +258,7 @@ function _MarkDownContent(props: { content: string }) {
   );
 }
 
-export const MarkdownContent = React.memo(_MarkDownContent);
+export const MarkdownContent = React.memo(InnerMarkDownContent);
 
 export function Markdown(
   props: {

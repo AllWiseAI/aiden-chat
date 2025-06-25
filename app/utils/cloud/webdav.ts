@@ -79,12 +79,14 @@ export function createWebDavClient(store: SyncStore) {
       const pathPrefix = "/api/webdav/";
 
       try {
-        let u = new URL(proxyUrl + pathPrefix + path);
+        const u = new URL(proxyUrl + pathPrefix + path);
         // add query params
         u.searchParams.append("endpoint", config.endpoint);
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         proxyMethod && u.searchParams.append("proxy_method", proxyMethod);
         url = u.toString();
       } catch (e) {
+        console.error("[WebDav] failed to parse url", e);
         url = pathPrefix + path + "?endpoint=" + config.endpoint;
         if (proxyMethod) {
           url += "&proxy_method=" + proxyMethod;

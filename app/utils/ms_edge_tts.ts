@@ -338,15 +338,14 @@ export class MsEdgeTTS {
 
   toArrayBuffer(input: string, options?: ProsodyOptions): Promise<ArrayBuffer> {
     return new Promise((resolve, reject) => {
-      let data: Uint8Array[] = [];
+      const data: Uint8Array[] = [];
       const readable = this.toStream(input, options);
       readable.on("data", (chunk) => {
         data.push(chunk);
       });
 
-      readable.on("end", () => {
-        resolve(Buffer.concat(data).buffer);
-      });
+      // @ts-expect-error
+      readable.on("end", () => resolve(Buffer.concat(data).buffer));
 
       readable.on("error", (err) => {
         reject(err);
@@ -376,6 +375,7 @@ export class MsEdgeTTS {
       `X-RequestId:${requestId}\r\nContent-Type:application/ssml+xml\r\nPath:ssml\r\n\r\n
                 ` + requestSSML.trim();
     // https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/speech-synthesis-markup
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
     const stream = new Readable({
       read() {},

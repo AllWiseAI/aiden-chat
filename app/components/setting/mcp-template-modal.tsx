@@ -25,7 +25,6 @@ export function McpTemplateModal({
   open,
   templateInfo,
   onConfirm,
-  onCancel,
   onOpenChange,
 }: McpTemplateModalProps) {
   const [templates, setTemplates] = useState(templateInfo.templates);
@@ -61,11 +60,6 @@ export function McpTemplateModal({
     newMultiArgs[index] = { ...newMultiArgs[index], value: value.split("\n") };
     setMultiArgs(newMultiArgs);
   };
-
-  const handleCancel = useCallback(() => {
-    onCancel?.();
-    onOpenChange?.(false);
-  }, [onOpenChange, onCancel]);
 
   const handleConfirm = useCallback(() => {
     const parsedEnvs = updateEnvs(envsText);

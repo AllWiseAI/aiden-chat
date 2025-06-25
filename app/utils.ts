@@ -31,6 +31,7 @@ export async function copyToClipboard(text: string) {
 
     showToast(t("copy.success"));
   } catch (error) {
+    console.error("Failed to copy text: ", error);
     const textArea = document.createElement("textarea");
     textArea.value = text;
     document.body.appendChild(textArea);
@@ -40,6 +41,7 @@ export async function copyToClipboard(text: string) {
       document.execCommand("copy");
       showToast(t("copy.success"));
     } catch (error) {
+      console.error("Failed to copy text: ", error);
       showToast(t("copy.success"));
     }
     document.body.removeChild(textArea);
@@ -67,6 +69,7 @@ export async function downloadAs(text: string, filename: string) {
         await window.__TAURI__.fs.writeTextFile(result, text);
         showToast(t("download.success"));
       } catch (error) {
+        console.error("Failed to download text: ", error);
         showToast(t("download.failed"));
       }
     } else {
@@ -222,7 +225,7 @@ export function getCSSVar(varName: string) {
  */
 export function isMacOS(): boolean {
   if (typeof window !== "undefined") {
-    let userAgent = window.navigator.userAgent.toLocaleLowerCase();
+    const userAgent = window.navigator.userAgent.toLocaleLowerCase();
     const macintosh = /iphone|ipad|ipod|macintosh/.test(userAgent);
     return !!macintosh;
   }
@@ -402,6 +405,7 @@ export function clientUpdate() {
         window.__TAURI__?.updater
           .installUpdate()
           .then((result) => {
+            console.log("[Install Update Result]", result);
             showToast(t("settings.update.success"));
           })
           .catch((e) => {

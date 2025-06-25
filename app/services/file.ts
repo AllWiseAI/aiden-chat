@@ -28,7 +28,7 @@ export function uploadImageWithProgress(
             reject(result.message);
           }
         } catch (err) {
-          reject("Invalid JSON response");
+          reject("Invalid JSON response" + err);
         }
       } else {
         reject(`Upload failed: ${xhr.status}`);
