@@ -136,9 +136,7 @@ export function stream(
           toolCallMessage.tool_calls.map((tool) => {
             options?.onBeforeTool?.(tool);
             return Promise.resolve(
-              // @ts-expect-error
               funcs[tool.function.name](
-                // @ts-expect-error
                 tool?.function?.arguments
                   ? JSON.parse(tool?.function?.arguments)
                   : {},
