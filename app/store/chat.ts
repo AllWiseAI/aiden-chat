@@ -310,7 +310,6 @@ export const useChatStore = createPersistStore(
         const session = get().currentSession();
         const modelConfig = session.mask.modelConfig;
         const { currentModel } = useAppConfig.getState();
-        console.log("===modelConfig", modelConfig);
         // MCP Response no need to fill template
         let mContent: string | MultimodalContent[] = isMcpResponse
           ? content
@@ -487,6 +486,7 @@ export const useChatStore = createPersistStore(
         const session = get().currentSession();
         const modelConfig = session.mask.modelConfig;
         const messageIndex = session.messages.length + 1;
+        const { currentModel } = useAppConfig.getState();
 
         const botMessage: ChatMessage = createMessage({
           role: "assistant",
@@ -504,6 +504,7 @@ export const useChatStore = createPersistStore(
         });
         const api: ClientApi = getClientApi();
         api.llm.toolCall({
+          currentModel,
           toolCallInfo,
           config: { ...modelConfig, stream: true },
           onUpdate(message, mcpInfo) {
