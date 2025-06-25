@@ -62,6 +62,7 @@ export interface ToolCallInfo {
 }
 
 export interface ChatOptions {
+  currentModel?: string;
   messages?: RequestMessage[];
   config: LLMConfig;
   onToolCall?: (toolCallInfo: ToolCallInfo) => void;
@@ -103,9 +104,6 @@ export interface LLMModelProvider {
 
 export abstract class LLMApi {
   abstract chat(options: ChatOptions): Promise<void>;
-  abstract speech(options: SpeechOptions): Promise<ArrayBuffer>;
-  abstract usage(): Promise<LLMUsage>;
-  abstract models(): Promise<LLMModel[]>;
   abstract toolCall(options: ChatOptions): Promise<void>;
 }
 

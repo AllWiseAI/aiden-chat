@@ -26,7 +26,7 @@ export type FunctionToolItem = {
   function: {
     name: string;
     description?: string;
-    parameters: Object;
+    parameters: object;
   };
 };
 
@@ -70,13 +70,15 @@ export const FunctionToolService = {
     });
     try {
       api.initSync();
-    } catch (e) {}
+    } catch (e) {
+      console.error(e);
+    }
     const operations = api.getOperations();
     return (this.tools[plugin.id] = {
       api,
       length: operations.length,
       tools: operations.map((o) => {
-        // @ts-ignore
+        // @ts-expect-error
         const parameters = o?.requestBody?.content["application/json"]
           ?.schema || {
           type: "object",
@@ -87,18 +89,18 @@ export const FunctionToolService = {
         }
         if (o.parameters instanceof Array) {
           o.parameters.forEach((p) => {
-            // @ts-ignore
+            // @ts-expect-error
             if (p?.in == "query" || p?.in == "path") {
               // const name = `${p.in}__${p.name}`
-              // @ts-ignore
+              // @ts-expect-error
               const name = p?.name;
               parameters["properties"][name] = {
-                // @ts-ignore
+                // @ts-expect-error
                 type: p.schema.type,
-                // @ts-ignore
+                // @ts-expect-error
                 description: p.description,
               };
-              // @ts-ignore
+              // @ts-expect-error
               if (p.required) {
                 parameters["required"].push(name);
               }
@@ -115,14 +117,14 @@ export const FunctionToolService = {
         } as FunctionToolItem;
       }),
       funcs: operations.reduce((s, o) => {
-        // @ts-ignore
+        // @ts-expect-error
         s[getOperationId(o)] = function (args) {
           const parameters: Record<string, any> = {};
           if (o.parameters instanceof Array) {
             o.parameters.forEach((p) => {
-              // @ts-ignore
+              // @ts-expect-error
               parameters[p?.name] = args[p?.name];
-              // @ts-ignore
+              // @ts-expect-error
               delete args[p?.name];
             });
           }
@@ -131,7 +133,7 @@ export const FunctionToolService = {
           } else if (authLocation == "body") {
             args[headerName] = tokenValue;
           }
-          // @ts-ignore if o.operationId is null, then using o.path and o.method
+          // @ts-expect-error if o.operationId is null, then using o.path and o.method
           return api.client.paths[o.path][o.method](
             parameters,
             args,
@@ -205,7 +207,7 @@ export const usePluginStore = createPersistStore(
         .filter((i) => i)
         .map((p) => FunctionToolService.add(p));
       return [
-        // @ts-ignore
+        // @ts-expect-error
         selected.reduce((s, i) => s.concat(i.tools), []),
         selected.reduce((s, i) => Object.assign(s, i.funcs), {}),
       ];

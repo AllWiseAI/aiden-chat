@@ -29,7 +29,6 @@ const config = getClientConfig();
 
 export const DEFAULT_CONFIG = {
   lastUpdate: Date.now(), // timestamp, to merge state
-
   submitKey: SubmitKey.Enter,
   avatar: "1f603",
   fontSize: 14,
@@ -49,11 +48,11 @@ export const DEFAULT_CONFIG = {
   dontShowMaskSplashScreen: true, // dont show splash screen when create chat
   hideBuiltinMasks: false, // dont add builtin masks
 
-  customModels: "",
+  currentModel: "gpt-4o",
   models: DEFAULT_MODELS as any as LLMModel[],
 
   modelConfig: {
-    model: "gpt-4o-mini" as ModelType,
+    model: "gpt-4o" as ModelType,
     providerName: "OpenAI",
     temperature: 0.5,
     top_p: 1,
@@ -116,6 +115,12 @@ export const useAppConfig = createPersistStore(
   (set, get) => ({
     reset() {
       set(() => ({ ...DEFAULT_CONFIG }));
+    },
+
+    setCurrentModel(model: string) {
+      set(() => ({
+        currentModel: model,
+      }));
     },
 
     mergeModels(newModels: LLMModel[]) {
