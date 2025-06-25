@@ -14,6 +14,7 @@ export const getBuildConfig = () => {
 
   const commitInfo = (() => {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const childProcess = require("child_process");
       const commitDate: string = childProcess
         .execSync('git log -1 --format="%at000" --date=unix')
@@ -26,7 +27,7 @@ export const getBuildConfig = () => {
 
       return { commitDate, commitHash };
     } catch (e) {
-      console.error("[Build Config] No git or not from git repo.");
+      console.error("[Build Config] No git or not from git repo.", e);
       return {
         commitDate: "unknown",
         commitHash: "unknown",

@@ -10,6 +10,7 @@ class IndexedDBStorage implements StateStorage {
       const value = (await get(name)) || localStorage.getItem(name);
       return value;
     } catch (error) {
+      console.error("getItem", name, error);
       return localStorage.getItem(name);
     }
   }
@@ -23,6 +24,7 @@ class IndexedDBStorage implements StateStorage {
       }
       await set(name, value);
     } catch (error) {
+      console.error("setItem", name, error);
       localStorage.setItem(name, value);
     }
   }
@@ -31,6 +33,7 @@ class IndexedDBStorage implements StateStorage {
     try {
       await del(name);
     } catch (error) {
+      console.error("removeItem", name, error);
       localStorage.removeItem(name);
     }
   }
@@ -39,6 +42,7 @@ class IndexedDBStorage implements StateStorage {
     try {
       await clear();
     } catch (error) {
+      console.error("clear", error);
       localStorage.clear();
     }
   }

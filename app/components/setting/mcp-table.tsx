@@ -58,7 +58,7 @@ function ServerTable({
     mcp_key: string,
   ) => {
     e.stopPropagation();
-    let result = await showConfirm({
+    const result = await showConfirm({
       title: t("mcp.delete.title"),
       description: t("mcp.delete.description"),
       type: "delete",
@@ -68,6 +68,7 @@ function ServerTable({
       await removeMcpItem(mcp_key);
       toast.success(t("mcp.delete.success"));
     } catch (e) {
+      console.error(e);
       toast.error(t("mcp.delete.fail"));
     }
   };

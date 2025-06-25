@@ -96,11 +96,12 @@ export function createUpstashClient(store: SyncStore) {
       const pathPrefix = "/api/upstash/";
 
       try {
-        let u = new URL(proxyUrl + pathPrefix + path);
+        const u = new URL(proxyUrl + pathPrefix + path);
         // add query params
         u.searchParams.append("endpoint", config.endpoint);
         url = u.toString();
       } catch (e) {
+        console.error("[Upstash] failed to parse proxy url", e);
         url = pathPrefix + path + "?endpoint=" + config.endpoint;
       }
 

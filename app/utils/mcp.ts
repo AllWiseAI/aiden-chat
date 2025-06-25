@@ -246,6 +246,7 @@ export const fetchMcpStatus = async (name: string): Promise<McpAction> => {
     if (data.status) return data.status;
     else throw new Error("No status");
   } catch (e) {
+    console.error("[fetchMcpStatus]", e);
     return McpAction.Failed;
   }
 };
@@ -303,7 +304,7 @@ export const getRenderMcpList: any = async (
   const addedInJSONIds: string[] = [];
   const mcpRemoteInfoMap = new Map();
   const mcpRenderedMap = new Map();
-  for (let item of remoteMcpList) {
+  for (const item of remoteMcpList) {
     mcpRemoteInfoMap.set(item.mcp_id, item);
   }
   if (config?.mcpServers) {
@@ -351,7 +352,7 @@ export const getRenderMcpList: any = async (
     });
   }
 
-  for (let item of remoteMcpList) {
+  for (const item of remoteMcpList) {
     if (
       !addedInJSONIds.includes(item.mcp_id) &&
       item.mcp_id &&
@@ -396,7 +397,7 @@ export const updateLocalConfig = async (config: any) => {
 export const updateConfig = async (newConfig: any) => {
   console.log("[Mcp store] updateConfig", newConfig);
   try {
-    let res = await updateLocalConfig(newConfig);
+    const res = await updateLocalConfig(newConfig);
     console.log("[Mcp store] updateLocalConfig result:", res);
     if (res) {
       console.log("[Mcp store] updateRemoteMcpConfig");

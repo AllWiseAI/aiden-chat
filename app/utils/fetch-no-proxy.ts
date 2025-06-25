@@ -36,7 +36,7 @@ export async function fetchNoProxy(
       try {
         return JSON.parse(response.body);
       } catch (e) {
-        throw new Error("Failed to parse JSON");
+        throw new Error("Failed to parse JSON" + e);
       }
     },
   };

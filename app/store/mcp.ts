@@ -103,7 +103,7 @@ export const useMcpStore = createPersistStore(
         }
 
         const newMcpStatusList = [...mcpStatusList];
-        let hasItem = mcpStatusList.some((item) => item.name === name);
+        const hasItem = mcpStatusList.some((item) => item.name === name);
         if (!hasItem) {
           newMcpStatusList.push({ name, action });
         } else {
@@ -122,13 +122,7 @@ export const useMcpStore = createPersistStore(
         if (!config) return {};
         const cleaned: Record<string, MCPServer> = {};
         Object.entries(config.mcpServers).forEach(([name, server]) => {
-          const {
-            aiden_id,
-            aiden_type,
-            aiden_enable,
-            aiden_mcp_version,
-            ...other
-          } = server as CustomMCPServer;
+          const { aiden_enable, ...other } = server as CustomMCPServer;
           if (aiden_enable) {
             cleaned[name] = other;
           }
@@ -155,6 +149,7 @@ export const useMcpStore = createPersistStore(
           set({ renderMcpList, mcpRemoteInfoMap });
           return true;
         } catch (e) {
+          console.error(e);
           return false;
         }
       },
@@ -392,11 +387,11 @@ export const useMcpStore = createPersistStore(
         const { config, renderMcpList, mcpRemoteInfoMap, getRemoteMcpStatus } =
           _get();
         if (!config || !config?.mcpServers[name]) return;
-        let localItem = config.mcpServers[name];
+        const localItem = config.mcpServers[name];
         const remoteItem =
           getFirstValue(mcpRemoteInfoMap.get(id)?.basic_config) || {};
         const newArgsEnv = updateMcpArgsEnvs(localItem, remoteItem);
-        let newConfig = {
+        const newConfig = {
           ...config,
           mcpServers: {
             ...config.mcpServers,
@@ -438,7 +433,7 @@ export const useMcpStore = createPersistStore(
         console.log("[Mcp store] removeMcpItem: ", name);
         const { config, renderMcpList, updateMcpStatusList } = _get();
         if (!config) return;
-        let beforeMcpServers = { ...config.mcpServers };
+        const beforeMcpServers = { ...config.mcpServers };
         delete beforeMcpServers[name];
         const newConfig = {
           ...config,

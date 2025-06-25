@@ -272,12 +272,6 @@ export const useChatStore = createPersistStore(
           sessions.push(createEmptySession());
         }
 
-        // for undo delete action
-        const restoreState = {
-          currentSessionIndex: get().currentSessionIndex,
-          sessions: get().sessions.slice(),
-        };
-
         set(() => ({
           currentSessionIndex: nextIndex,
           sessions,
@@ -332,7 +326,7 @@ export const useChatStore = createPersistStore(
           ];
         }
 
-        let userMessage: ChatMessage = createMessage({
+        const userMessage: ChatMessage = createMessage({
           role: "user",
           content: mContent,
           isMcpResponse,
@@ -637,7 +631,7 @@ export const useChatStore = createPersistStore(
         const contextPrompts = session.mask.context.slice();
         const shouldInjectSystemPrompts = true;
 
-        var systemPrompts: ChatMessage[] = [];
+        let systemPrompts: ChatMessage[] = [];
 
         if (shouldInjectSystemPrompts) {
           systemPrompts = [
@@ -820,10 +814,7 @@ export const useChatStore = createPersistStore(
           historyMsgLength > modelConfig.compressMessageLengthThreshold &&
           modelConfig.sendMemory
         ) {
-          /** Destruct max_tokens while summarizing
-           * this param is just shit
-           **/
-          const { max_tokens, ...modelcfg } = modelConfig;
+          const { ...modelcfg } = modelConfig;
           api.llm.chat({
             currentModel: "gpt-4o",
             messages: toBeSummarizedMsgs.concat(

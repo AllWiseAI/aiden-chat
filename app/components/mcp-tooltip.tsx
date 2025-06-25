@@ -30,22 +30,18 @@ function McpPopover({ icon }: { icon: ReactElement }) {
   const mcpStatusList = useMcpStore((state) => state.mcpStatusList);
   const mcpRenderedMap = useMcpStore((state) => state.mcpRenderedMap);
 
-  const allFailed = useMemo(() => {
-    return mcpStatusList.every((item) => item.action === McpAction.Failed);
-  }, [mcpStatusList]);
+  // const allFailed = useMemo(() => {
+  //   return mcpStatusList.every((item) => item.action === McpAction.Failed);
+  // }, [mcpStatusList]);
 
-  const hasLoading = useMemo(() => {
-    return mcpStatusList.some((item) => item.action === McpAction.Loading);
-  }, [mcpStatusList]);
+  // const hasLoading = useMemo(() => {
+  //   return mcpStatusList.some((item) => item.action === McpAction.Loading);
+  // }, [mcpStatusList]);
 
-  const hasSuccess = useMemo(() => {
-    if (hasLoading) return false;
-    return mcpStatusList.some((item) => item.action === McpAction.Connected);
-  }, [mcpStatusList, hasLoading]);
-
-  const shouldShowStatusIcon = useMemo(() => {
-    return mcpStatusList.length > 0;
-  }, [mcpStatusList]);
+  // const hasSuccess = useMemo(() => {
+  //   if (hasLoading) return false;
+  //   return mcpStatusList.some((item) => item.action === McpAction.Connected);
+  // }, [mcpStatusList, hasLoading]);
 
   const SuccessStatusIcon = useMemo(() => {
     return (
@@ -65,19 +61,19 @@ function McpPopover({ icon }: { icon: ReactElement }) {
     );
   }, []);
 
-  const renderStatusIcon = useMemo(() => {
-    if (hasSuccess) return SuccessStatusIcon;
-    if (allFailed) return FailedStatusIcon;
-    if (hasLoading) return LoadingStatusIcon;
-    return null;
-  }, [
-    hasSuccess,
-    allFailed,
-    hasLoading,
-    FailedStatusIcon,
-    SuccessStatusIcon,
-    LoadingStatusIcon,
-  ]);
+  // const renderStatusIcon = useMemo(() => {
+  //   if (hasSuccess) return SuccessStatusIcon;
+  //   if (allFailed) return FailedStatusIcon;
+  //   if (hasLoading) return LoadingStatusIcon;
+  //   return null;
+  // }, [
+  //   hasSuccess,
+  //   allFailed,
+  //   hasLoading,
+  //   FailedStatusIcon,
+  //   SuccessStatusIcon,
+  //   LoadingStatusIcon,
+  // ]);
 
   return (
     <Popover>
