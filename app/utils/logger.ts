@@ -3,7 +3,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 type LogLevel = "trace" | "debug" | "info" | "warn" | "error";
 
 interface ExtendedConsole extends Console {
-  // @ts-ignore
+  // @ts-expect-error
   [key: string]: (...args: any[]) => void;
 }
 

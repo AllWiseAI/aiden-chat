@@ -17,19 +17,17 @@ import SendIcon from "../icons/up-arrow.svg";
 import LoadingIcon from "../icons/three-dots.svg";
 import SuccessIcon from "../icons/success.svg";
 import ErrorIcon from "../icons/error.svg";
-import ReloadIcon from "../icons/reload.svg";
 import McpIcon from "../icons/mcp.svg";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 import { useAppUpdate } from "@/app/hooks/use-app-update";
 import { ImageUploader } from "./image-uploader";
 import { useImageUploadStore } from "@/app/store/image-upload";
 import CircleProgress from "./circle-progress";
+import { ModelSelect, ModelType } from "./model-select";
 
 import {
   ChatMessage,
   createMessage,
-  defaultTopic,
   SubmitKey,
   useAppConfig,
   useChatStore,
@@ -52,12 +50,7 @@ import { useChatCommand } from "../command";
 import { prettyObject } from "../utils/format";
 import clsx from "clsx";
 import { Button } from "./shadcn/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/app/components/shadcn/tooltip";
+
 import McpPopover from "./mcp-tooltip";
 import {
   Accordion,
@@ -168,7 +161,7 @@ function useScrollToBottom(
   };
 }
 
-function _Chat() {
+function InnerChat() {
   type RenderMessage = ChatMessage & { preview?: boolean };
 
   const chatStore = useChatStore();
@@ -482,53 +475,25 @@ function _Chat() {
   };
 
   const { isShowUpdate, handleUpdate, isUpdating } = useAppUpdate();
+  // const appConfig = useAppConfig();
+  const setCurrentModel = useAppConfig((state) => state.setCurrentModel);
+  const currentModel = useAppConfig((state) => state.currentModel) as ModelType;
+
+  const handleModelChange = useCallback(
+    (value: ModelType) => {
+      setCurrentModel(value);
+    },
+    [setCurrentModel],
+  );
+
   return (
     <>
       <div className={styles.chat} key={session.id}>
-        <div
-          className={clsx(
-            "window-header",
-            isNewChat ? styles["no-header"] : null,
-          )}
-          data-tauri-drag-region
-        >
+        <div className={clsx("window-header")} data-tauri-drag-region>
           <div
             className={clsx("window-header-title", styles["chat-body-title"])}
           >
-            <div
-              className={clsx(
-                "window-header-main-title",
-                styles["chat-body-main-title"],
-              )}
-            >
-              {!session.topic ? defaultTopic() : session.topic}
-            </div>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    data-tauri-drag-region="false"
-                    variant="ghost"
-                    className="size-5 !p-0"
-                    onClick={() => {
-                      toast(t("chat.actions.refreshToast"), {
-                        className: "w-auto max-w-max",
-                      });
-                      chatStore.summarizeSession(true, session);
-                    }}
-                  >
-                    <ReloadIcon className="size-4 text-black dark:text-white" />
-                  </Button>
-                </TooltipTrigger>
-
-                <TooltipContent
-                  hasArrow={false}
-                  className="pointer-events-none bg-[#FEFEFE] dark:bg-[#232627] text-black dark:text-white border"
-                >
-                  {t("chat.actions.refreshTitle")}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <ModelSelect value={currentModel} onChange={handleModelChange} />
           </div>
           {isShowUpdate && (
             <Button
@@ -731,5 +696,5 @@ export function Chat() {
   const chatStore = useChatStore();
   const session = chatStore.currentSession();
 
-  return <_Chat key={session.id}></_Chat>;
+  return <InnerChat key={session.id}></InnerChat>;
 }
