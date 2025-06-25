@@ -126,3 +126,15 @@ export async function apiCompleteResetPassword(payload: {
   });
   return result.data;
 }
+
+export async function apiGetRegion() {
+  const params = {};
+  const result = await fetch(`${baseURL}/api/country/info`, {
+    method: "GET",
+    body: {
+      type: "Json",
+      payload: params,
+    },
+  });
+  return result.data;
+}

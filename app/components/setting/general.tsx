@@ -1,10 +1,16 @@
-import { useAuthStore } from "../../store";
+import { useAuthStore, useSettingStore } from "../../store";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Path } from "../../constant";
 import { Theme, useAppConfig } from "@/app/store";
 import { useTranslation } from "react-i18next";
-import { getLang, changeLanguage, localeOptions, Locales } from "../../locales";
+import {
+  getLang,
+  changeLanguage,
+  localeOptions,
+  Locales,
+  countryList,
+} from "../../locales";
 import {
   Select,
   SelectContent,
@@ -16,6 +22,8 @@ import {
 
 export default function General() {
   const authStore = useAuthStore();
+  const setRegion = useSettingStore((state) => state.setRegion);
+  const region = useSettingStore((state) => state.region);
   const config = useAppConfig();
   const { t } = useTranslation("settings");
   const updateConfig = config.update;
@@ -36,6 +44,11 @@ export default function General() {
       });
     }
   };
+  const sortedCountryList = [...countryList].sort((a, b) => {
+    const nameA = t(`common:region.${a}`);
+    const nameB = t(`common:region.${b}`);
+    return nameA.localeCompare(nameB, "zh-CN", { sensitivity: "base" });
+  });
   return (
     <div className="w-full h-full flex flex-col gap-4 justify-start items-center text-black dark:text-white">
       <div className="w-full flex flex-col gap-3 px-2.5 pb-5 border-b">
@@ -52,36 +65,26 @@ export default function General() {
       </div>
       <div className="w-full flex justify-between items-center gap-6 px-2.5 py-5 border-b text-sm">
         <div className="font-medium">{t("general.country.title")}</div>
-        <Select defaultValue={"china"}>
+        <Select
+          defaultValue={region || "US"}
+          onValueChange={(value) => {
+            setRegion(value);
+          }}
+        >
           <SelectTrigger className="w-[180px] dark:border-[#232627] text-xs">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="bg-[#F3F5F7] dark:bg-[#232627]">
+          <SelectContent className="bg-[#F3F5F7] dark:bg-[#232627] max-w-[180px] max-h-60 overflow-y-auto">
             <SelectGroup className="space-y-2">
-              <SelectItem
-                value="china"
-                className="hover:!bg-[#E8ECEF] dark:hover:!bg-black"
-              >
-                {t("general.country.cn")}
-              </SelectItem>
-              <SelectItem
-                value="russia"
-                className="hover:!bg-[#E8ECEF] dark:hover:!bg-black"
-              >
-                {t("general.country.ru")}
-              </SelectItem>
-              <SelectItem
-                value="uk"
-                className="hover:!bg-[#E8ECEF] dark:hover:!bg-black"
-              >
-                {t("general.country.uk")}
-              </SelectItem>
-              <SelectItem
-                value="france"
-                className="hover:!bg-[#E8ECEF] dark:hover:!bg-black"
-              >
-                {t("general.country.fr")}
-              </SelectItem>
+              {sortedCountryList.map((region) => (
+                <SelectItem
+                  key={region}
+                  value={region}
+                  className="hover:!bg-[#E8ECEF] dark:hover:!bg-black"
+                >
+                  {t(`common:region.${region}`)}
+                </SelectItem>
+              ))}
             </SelectGroup>
           </SelectContent>
         </Select>

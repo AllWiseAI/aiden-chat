@@ -14,7 +14,7 @@ i18n
     supportedLngs: ['en-US', 'zh-CN'],
     load: 'currentOnly',
     debug: true,
-    ns: ['general'],
+    ns: ['auth', 'common', 'general', 'settings'],
     defaultNS: 'general',
     interpolation: {
       escapeValue: false,
