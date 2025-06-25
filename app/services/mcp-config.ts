@@ -2,7 +2,7 @@ import { Body } from "@tauri-apps/api/http";
 import { aidenFetch as fetch } from "@/app/utils/fetch";
 import { fetchNoProxy } from "@/app/utils/fetch-no-proxy";
 
-const baseURL = "http://localhost:6888";
+const baseURL = "http://127.0.0.1:6888";
 const remoteMcpURL = "https://prod-hk.aidenai.io/api/config/mcp";
 
 const getCommonHeaders = () => {
