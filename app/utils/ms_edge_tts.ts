@@ -344,7 +344,6 @@ export class MsEdgeTTS {
         data.push(chunk);
       });
 
-      // @ts-expect-error
       readable.on("end", () => resolve(Buffer.concat(data).buffer));
 
       readable.on("error", (err) => {
