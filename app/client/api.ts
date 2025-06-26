@@ -129,7 +129,10 @@ export function validString(x: string): boolean {
   return x?.length > 0;
 }
 
-export async function getHeaders(ignoreHeaders: boolean = false) {
+export async function getHeaders(
+  aiden: boolean = false,
+  ignoreHeaders: boolean = false,
+) {
   let headers: Record<string, string> = {};
   const token = useAuthStore.getState().userToken;
   const refreshToken = useAuthStore.getState().refreshToken;
@@ -145,7 +148,7 @@ export async function getHeaders(ignoreHeaders: boolean = false) {
       await refreshToken();
     }
     const latestToken = useAuthStore.getState().userToken.accessToken;
-    headers["Authorization"] = `Bearer ${latestToken}`;
+    headers[`${aiden ? "Aiden-" : ""}Authorization`] = `Bearer ${latestToken}`;
   }
   return headers;
 }

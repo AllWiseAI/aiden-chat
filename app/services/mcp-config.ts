@@ -14,9 +14,10 @@ export async function getRemoteMcpItems() {
 }
 
 export async function updateMcpConfig(configJson: object) {
+  const headers = await getHeaders(true);
   const result = await fetchNoProxy(`${baseURL}/config/update`, {
     method: "POST",
-    headers: await getHeaders(),
+    headers: headers,
     body: Body.json(configJson),
   });
   if (result.status !== 200) {
@@ -29,10 +30,10 @@ export async function updateMcpConfig(configJson: object) {
 
 export async function searchMcpServerStatus(name: string) {
   const url = `${baseURL}/mcp_servers/status/${name}`;
-
+  const headers = await getHeaders(true);
   const result = await fetchNoProxy(url, {
     method: "GET",
-    headers: await getHeaders(),
+    headers: headers,
   });
   if (result.status !== 200) {
     throw new Error("search status failed: " + result.statusText);
