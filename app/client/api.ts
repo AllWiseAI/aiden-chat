@@ -1,5 +1,5 @@
 import { ChatMessageTool, ModelType } from "../store";
-import { ChatGPTApi, DalleRequestPayload } from "./platforms/openai";
+import { ChatGPTApi } from "./platforms/openai";
 
 export const ROLES = ["system", "user", "assistant"] as const;
 export type MessageRole = (typeof ROLES)[number];
@@ -32,16 +32,7 @@ export interface RequestMessage {
 }
 
 export interface LLMConfig {
-  model: string;
-  providerName?: string;
-  temperature?: number;
-  top_p?: number;
   stream?: boolean;
-  presence_penalty?: number;
-  frequency_penalty?: number;
-  size?: DalleRequestPayload["size"];
-  quality?: DalleRequestPayload["quality"];
-  style?: DalleRequestPayload["style"];
 }
 
 export interface SpeechOptions {

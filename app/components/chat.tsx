@@ -43,7 +43,6 @@ import {
 
 import dynamic from "next/dynamic";
 import { ChatControllerPool } from "../client/controller";
-import { Prompt } from "../store/prompt";
 import styles from "./chat.module.scss";
 import { REQUEST_TIMEOUT_MS, UNFINISHED_INPUT } from "../constant";
 import { useChatCommand } from "../command";
@@ -111,8 +110,6 @@ function useSubmitHandler() {
     shouldSubmit,
   };
 }
-
-export type RenderPrompt = Pick<Prompt, "title" | "content">;
 
 function useScrollToBottom(
   scrollRef: RefObject<HTMLDivElement>,

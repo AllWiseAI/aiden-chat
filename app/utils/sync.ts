@@ -4,7 +4,6 @@ import {
   useAuthStore,
   useChatStore,
 } from "../store";
-import { usePromptStore } from "../store/prompt";
 import { StoreKey } from "../constant";
 import { merge } from "./merge";
 
@@ -32,14 +31,12 @@ export type GetStoreState<T> = T extends { getState: () => infer U }
 const LocalStateSetters = {
   [StoreKey.Chat]: useChatStore.setState,
   [StoreKey.Config]: useAppConfig.setState,
-  [StoreKey.Prompt]: usePromptStore.setState,
   [StoreKey.Auth]: useAuthStore.setState,
 } as const;
 
 const LocalStateGetters = {
   [StoreKey.Chat]: () => getNonFunctionFileds(useChatStore.getState()),
   [StoreKey.Config]: () => getNonFunctionFileds(useAppConfig.getState()),
-  [StoreKey.Prompt]: () => getNonFunctionFileds(usePromptStore.getState()),
   [StoreKey.Auth]: () => getNonFunctionFileds(useAuthStore.getState()),
 } as const;
 
@@ -95,13 +92,6 @@ const MergeStates: StateMerger = {
         new Date(b.lastUpdate).getTime() - new Date(a.lastUpdate).getTime(),
     );
 
-    return localState;
-  },
-  [StoreKey.Prompt]: (localState, remoteState) => {
-    localState.prompts = {
-      ...remoteState.prompts,
-      ...localState.prompts,
-    };
     return localState;
   },
   [StoreKey.Config]: mergeWithUpdate<AppState[StoreKey.Config]>,
