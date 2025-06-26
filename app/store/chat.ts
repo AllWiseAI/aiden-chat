@@ -330,7 +330,6 @@ export const useChatStore = createPersistStore(
         const botMessage: ChatMessage = createMessage({
           role: "assistant",
           streaming: true,
-          model: modelConfig.model,
         });
 
         // get recent messages
@@ -487,7 +486,6 @@ export const useChatStore = createPersistStore(
         const botMessage: ChatMessage = createMessage({
           role: "assistant",
           streaming: true,
-          model: modelConfig.model,
           mcpInfo: {
             title: toolCallInfo.title ?? "",
             request: toolCallInfo.request ?? "",
