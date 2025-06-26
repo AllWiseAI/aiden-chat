@@ -1,15 +1,10 @@
 import { Body } from "@tauri-apps/api/http";
 import { aidenFetch as fetch } from "@/app/utils/fetch";
 import { fetchNoProxy } from "@/app/utils/fetch-no-proxy";
+import { getHeaders } from "@/app/client/api";
 
 const baseURL = "http://127.0.0.1:6888";
 const remoteMcpURL = "https://prod-hk.aidenai.io/api/config/mcp";
-
-const getCommonHeaders = () => {
-  return {
-    "Content-Type": "application/json",
-  };
-};
 
 export async function getRemoteMcpItems() {
   const result = await fetch(remoteMcpURL, {
@@ -21,7 +16,7 @@ export async function getRemoteMcpItems() {
 export async function updateMcpConfig(configJson: object) {
   const result = await fetchNoProxy(`${baseURL}/config/update`, {
     method: "POST",
-    headers: { ...getCommonHeaders() },
+    headers: await getHeaders(),
     body: Body.json(configJson),
   });
   if (result.status !== 200) {
@@ -37,7 +32,7 @@ export async function searchMcpServerStatus(name: string) {
 
   const result = await fetchNoProxy(url, {
     method: "GET",
-    headers: { ...getCommonHeaders() },
+    headers: await getHeaders(),
   });
   if (result.status !== 200) {
     throw new Error("search status failed: " + result.statusText);

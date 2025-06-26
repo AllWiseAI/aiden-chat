@@ -1,5 +1,6 @@
 import { ChatMessageTool, ModelType } from "../store";
 import { ChatGPTApi } from "./platforms/openai";
+import { useAuthStore } from "../store";
 
 export const ROLES = ["system", "user", "assistant"] as const;
 export type MessageRole = (typeof ROLES)[number];
@@ -7,6 +8,7 @@ export type MessageRole = (typeof ROLES)[number];
 export const Models = ["gpt-3.5-turbo", "gpt-4"] as const;
 export const TTSModels = ["tts-1", "tts-1-hd"] as const;
 export type ChatModel = ModelType;
+const FIVE_MINUTES = 5 * 60 * 1000;
 
 export interface MultimodalContent {
   type: "text" | "image_url";
@@ -127,13 +129,23 @@ export function validString(x: string): boolean {
   return x?.length > 0;
 }
 
-export function getHeaders(ignoreHeaders: boolean = false) {
+export async function getHeaders(ignoreHeaders: boolean = false) {
   let headers: Record<string, string> = {};
+  const token = useAuthStore.getState().userToken;
+  const refreshToken = useAuthStore.getState().refreshToken;
   if (!ignoreHeaders) {
     headers = {
       "Content-Type": "application/json",
       Accept: "application/json",
     };
+  }
+
+  if (token.accessToken) {
+    if (token.expires - Date.now() <= FIVE_MINUTES) {
+      await refreshToken();
+    }
+    const latestToken = useAuthStore.getState().userToken.accessToken;
+    headers["Authorization"] = `Bearer ${latestToken}`;
   }
   return headers;
 }
