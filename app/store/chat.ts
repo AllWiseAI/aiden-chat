@@ -102,10 +102,6 @@ function createEmptySession(): ChatSession {
   };
 }
 
-function getSummarizeModel(): string[] {
-  return ["gpt-4o-mini", "OpenAI"];
-}
-
 function countMessages(msgs: ChatMessage[]) {
   return msgs.reduce(
     (pre, cur) => pre + estimateTokenLength(getMessageTextContent(cur)),
@@ -731,8 +727,8 @@ export const useChatStore = createPersistStore(
         const config = useAppConfig.getState();
         const session = targetSession;
         const modelConfig = session.mask.modelConfig;
-        const [model, providerName] = getSummarizeModel();
         const api: ClientApi = getClientApi();
+        const { currentModel } = useAppConfig.getState();
 
         // remove error messages if any
         const messages = session.messages;
@@ -760,14 +756,11 @@ export const useChatStore = createPersistStore(
                 content: t("store.prompt.topic"),
               }),
             );
+          console.log("summary model:", currentModel);
           api.llm.chat({
-            currentModel: "gpt-4o",
+            currentModel,
             messages: topicMessages,
-            config: {
-              model,
-              stream: false,
-              providerName,
-            },
+            config: { stream: false },
             onFinish(message, responseRes) {
               if (responseRes?.status === 200 && !message?.includes("Error")) {
                 get().updateTargetSession(
@@ -815,9 +808,8 @@ export const useChatStore = createPersistStore(
           historyMsgLength > modelConfig.compressMessageLengthThreshold &&
           modelConfig.sendMemory
         ) {
-          const { ...modelcfg } = modelConfig;
           api.llm.chat({
-            currentModel: "gpt-4o",
+            currentModel,
             messages: toBeSummarizedMsgs.concat(
               createMessage({
                 role: "system",
@@ -826,10 +818,7 @@ export const useChatStore = createPersistStore(
               }),
             ),
             config: {
-              ...modelcfg,
               stream: false,
-              model,
-              providerName,
             },
             onUpdate(message) {
               session.memoryPrompt = message;
