@@ -203,7 +203,7 @@ export function SideBarHeader(props: {
     <Fragment>
       <div
         className={clsx(
-          "flex items-center h-13 gap-4 overflow-hidden px-4 pt-5 dark:border-[#232627] select-none",
+          "flex items-center h-13 gap-4 overflow-hidden px-4 pt-8 dark:border-[#232627] select-none",
           shouldNarrow ? "justify-center" : "justify-between",
         )}
       >
