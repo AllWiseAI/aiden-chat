@@ -3,6 +3,13 @@ import { createPersistStore } from "../utils/store";
 import { v4 as uuidv4 } from "uuid";
 import { apiGetRegion } from "../services/auth";
 
+type WindowBounds = {
+  width: number;
+  height: number;
+  x: number;
+  y: number;
+};
+
 const DEFAULT_SETTING_STATE = {
   device_id: "",
   region: "",
@@ -12,11 +19,15 @@ export const useSettingStore = createPersistStore(
   {
     _hasHydrated: false,
     user_mcp_always_approve_status: <Record<string, boolean>>{},
+    windowBounds: {} as WindowBounds,
     ...DEFAULT_SETTING_STATE,
   },
   (set, get) => ({
     setHydrated: () => {
       set({ _hasHydrated: true });
+    },
+    setWindowBounds: (bounds: WindowBounds) => {
+      set({ windowBounds: bounds });
     },
     getDeviceId: () => {
       if (!get()._hasHydrated) return;

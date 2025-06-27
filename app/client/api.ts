@@ -144,7 +144,7 @@ export async function getHeaders(
   }
 
   if (token.accessToken) {
-    if (token.expires - Date.now() <= FIVE_MINUTES) {
+    if (token.expires * 1000 - Date.now() <= FIVE_MINUTES) {
       await refreshToken();
     }
     const latestToken = useAuthStore.getState().userToken.accessToken;
