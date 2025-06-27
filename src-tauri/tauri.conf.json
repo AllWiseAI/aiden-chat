@@ -40,6 +40,7 @@
         "setIcon": true,
         "setIgnoreCursorEvents": true,
         "setSize": true,
+        "setPosition": true,
         "setResizable": true,
         "show": true,
         "startDragging": true,
