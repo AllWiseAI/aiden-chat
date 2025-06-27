@@ -67,12 +67,13 @@ export class ChatGPTApi implements LLMApi {
     const controller = new AbortController();
     options.onController?.(controller);
     try {
+      const headers = await getHeaders(true);
       if (shouldStream) {
         streamWithThink(
           DEFAULT_CHAT_URL,
           requestPayload,
           {
-            ...getHeaders(),
+            ...headers,
             "Aiden-Model-Name": options.currentModel,
           },
           controller,
@@ -115,16 +116,18 @@ export class ChatGPTApi implements LLMApi {
     const shouldStream = !!options.config.stream;
     const controller = new AbortController();
     options.onController?.(controller);
+
     const requestPayload = {
       ...options.toolCallInfo,
     };
     try {
+      const headers = await getHeaders(true);
       if (shouldStream) {
         streamWithThink(
           SECOND_CHAT_URL,
           requestPayload,
           {
-            ...getHeaders(),
+            ...headers,
             "Aiden-Model-Name": options.currentModel,
           },
           controller,
