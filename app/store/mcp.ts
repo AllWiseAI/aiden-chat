@@ -77,7 +77,7 @@ export const useMcpStore = createPersistStore(
 
       reCaculateMcpList: async () => {
         console.log("[Mcp store] reCaculateMcpList");
-        const { remoteMcpList } = _get();
+        const remoteMcpList = await getRemoteMcpList();
         const config = await readMcpConfig();
         if (!config) return;
 
