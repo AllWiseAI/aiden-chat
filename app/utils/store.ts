@@ -34,10 +34,21 @@ export function createPersistStore<T extends object, M>(
   ) => M,
   persistOptions: SecondParam<typeof persist<T & M & MakeUpdater<T>>>,
 ) {
-  persistOptions.storage = createJSONStorage(() => indexedDBStorage);
-  const oldOonRehydrateStorage = persistOptions?.onRehydrateStorage;
+  persistOptions.storage = createJSONStorage(() => {
+    if (typeof window !== "undefined" && "indexedDB" in window) {
+      return indexedDBStorage;
+    }
+    // fallback
+    return {
+      getItem: async () => null,
+      setItem: async () => {},
+      removeItem: async () => {},
+    };
+  });
+
+  const oldOnRehydrateStorage = persistOptions?.onRehydrateStorage;
   persistOptions.onRehydrateStorage = (state) => {
-    oldOonRehydrateStorage?.(state);
+    oldOnRehydrateStorage?.(state);
     return () => state.setHasHydrated(true);
   };
 
@@ -52,11 +63,10 @@ export function createPersistStore<T extends object, M>(
         (set, get) => {
           return {
             ...methods(set, get as any),
-
             markUpdate() {
-              set({ lastUpdateTime: Date.now() } as Partial<
-                T & M & MakeUpdater<T>
-              >);
+              set({
+                lastUpdateTime: Date.now(),
+              } as Partial<T & M & MakeUpdater<T>>);
             },
             update(updater) {
               const state = deepClone(get());
@@ -66,7 +76,7 @@ export function createPersistStore<T extends object, M>(
                 lastUpdateTime: Date.now(),
               });
             },
-            setHasHydrated: (state: boolean) => {
+            setHasHydrated(state: boolean) {
               set({ _hasHydrated: state } as Partial<T & M & MakeUpdater<T>>);
             },
           } as M & MakeUpdater<T>;
