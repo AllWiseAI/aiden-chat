@@ -6,10 +6,16 @@ import RightIcon from "../../icons/right-arrow.svg";
 import { useAppUpdate } from "@/app/hooks/use-app-update";
 import { showConfirm } from "@/app/components/confirm-modal/confirm";
 import { useTranslation } from "react-i18next";
+import { useUpdateChecker } from "@/app/hooks/use-update-checker";
 
 export default function AboutUs() {
   const { isShowUpdate, isLatest, handleUpdate, isUpdating } = useAppUpdate();
   const { t } = useTranslation("settings");
+  const { updateInfo } = useUpdateChecker(
+    // TDOOD: 替换为最新版本的下载地址
+    "https://github.com/AllWiseAI/aiden-chat/releases/download/v0.1.27/latest.json",
+  );
+  console.log("updateInfo", updateInfo);
   const aboutUsArr = [
     { name: t("aboutUs.export"), onClick: () => exportAndDownloadLog() },
     {

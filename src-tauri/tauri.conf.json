@@ -9,11 +9,14 @@
   },
   "package": {
     "productName": "AidenChat",
-    "version": "0.1.27"
+    "version": "0.1.26"
   },
   "tauri": {
     "allowlist": {
       "all": false,
+      "os": {
+        "all": true
+      },
       "shell": {
         "all": false,
         "open": ".*"
@@ -55,7 +58,11 @@
         "relaunch": true
       },
       "fs": {
-        "all": true
+        "all": true,
+        "writeFile": true,
+        "scope": [
+          "$APPDATA/**"
+        ]
       },
       "notification": {
         "all": true
