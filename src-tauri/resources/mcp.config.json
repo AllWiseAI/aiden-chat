@@ -1,5 +1,5 @@
 {
-  "version": "0.0.12",
+  "version": "0.0.13",
   "syncVersion": "0.0.2",
   "mcpServers": {
     "aiden-search": {
@@ -17,7 +17,7 @@
       ],
       "transport": "stdio",
       "aiden_type": "default",
-      "aiden_enable": true,
+      "aiden_enable": false,
       "aiden_mcp_version": "0.2.2",
       "aiden_id": "aiden-desktop-commander"
     },
@@ -28,7 +28,7 @@
       ],
       "transport": "stdio",
       "aiden_type": "default",
-      "aiden_enable": true,
+      "aiden_enable": false,
       "aiden_mcp_version": "2025.4.7",
       "aiden_id": "aiden-fetch"
     },
@@ -51,7 +51,7 @@
       ],
       "transport": "stdio",
       "aiden_type": "default",
-      "aiden_enable": true,
+      "aiden_enable": false,
       "aiden_mcp_version": "0.6.2",
       "aiden_id": "aiden-sequential-thinking"
     },
@@ -66,7 +66,7 @@
       },
       "transport": "stdio",
       "aiden_type": "default",
-      "aiden_enable": true,
+      "aiden_enable": false,
       "aiden_mcp_version": "0.9.2",
       "aiden_id": "aiden-excel"
     },
@@ -79,7 +79,7 @@
       ],
       "transport": "stdio",
       "aiden_type": "default",
-      "aiden_enable": true,
+      "aiden_enable": false,
       "aiden_mcp_version": "1.0.0",
       "aiden_id": "aiden-ppt"
     },
@@ -90,7 +90,7 @@
       ],
       "transport": "stdio",
       "aiden_type": "default",
-      "aiden_enable": true,
+      "aiden_enable": false,
       "aiden_mcp_version": "0.0.1a4",
       "aiden_id": "aiden-markitdown"
     }
