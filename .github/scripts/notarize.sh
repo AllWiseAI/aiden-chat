@@ -80,7 +80,12 @@ echo "✅ $ARCH 架构公证完成 ✅"
 ASSET_PATH="$ZIP_PATH"
 SIG_PATH="${ZIP_PATH}.sig"
 echo "$TAURI_PRIVATE_KEY" | base64 -d > tauri_private_key.pem
-openssl dgst -sha256 -sign tauri_private_key.pem -out "$SIG_PATH" "$ASSET_PATH"
+# 使用 tauri signer
+npx tauri signer sign \
+  --private-key tauri_private_key.pem \
+  --input "$ASSET_PATH" \
+  --output "$SIG_PATH"
+  
 rm tauri_private_key.pem
 
 

@@ -108,7 +108,7 @@
       "dangerousUseHttpScheme": true
     },
     "updater": {
-      "active": false,
+      "active": true,
       "endpoints": [
         "https://github.com/AllWiseAI/aiden-chat/releases/latest/download/latest.json"
       ],
@@ -116,7 +116,7 @@
       "windows": {
         "installMode": "passive"
       },
-      "pubkey": "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUEvZ0NXcFdmdDRtL0NkZXZxaGFOZApKcG1wZGdjeThsdW1nekFGbnQ5cEU1U0lTbHVWdjlWMWxJcytSbVAvaUFBbmo5MTdtUUYzT3hObmxlcFhwM3M0Cit5SXluUmg0eVlaRDhLZWxRTDZCUW1BcHEweTlvZFFzWUJVcThINXFJL2l0eGJBYXo1b05mczBiUnlkeFFBM3IKRithaEwxaTdDNXorWnlQeG82bjRjb3JWbVQ1aXdTZjJUY3g1ZU1ESHlubTMxTUlZOHZCcmhtQzZ3bDIwM042SgppU040YXpNMlF0NWRpSUxFeXVkOHpNbG54aWdnU0gzVXdyNk9Bc2YyajBRUlFNbDVHNzhOZmFPWFJGYjBtSlU3CkRSODdmZTZuZ3hPc3F3UXVqOFNzNitYOFpDUU13V2ptWTA0ejR1MFNiQXhpandkTldtYU9UTGVGUEVGS3dZbEsKL1FJREFRQUIKLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg=="
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEM4ODM4MzkyOEUzOUU1NjAKUldSZzVUbU9rb09EeVBmRjlHSGN1bThidGVmaDVFT2tzaVYxd3ZCTTMvWUw5citiSkFTNW9LQkEK"
     },
     "windows": [
       {
