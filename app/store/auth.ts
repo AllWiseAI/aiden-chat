@@ -196,7 +196,7 @@ export const useAuthStore = createPersistStore(
   },
   {
     name: StoreKey.Auth,
-    version: 1,
+    version: 2,
     onRehydrateStorage: () => {
       return (state, error) => {
         if (error) {
