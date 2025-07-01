@@ -93,7 +93,7 @@
       "resources": [
         "bin/*",
         "resources/mcp.config.json",
-        "../node_modules/host_server_*/**/*"
+        "resources/host_server_*/**/*"
       ],
       "shortDescription": "AidenChat App",
       "targets": "all",
@@ -108,7 +108,7 @@
       "dangerousUseHttpScheme": true
     },
     "updater": {
-      "active": true,
+      "active": false,
       "endpoints": [
         "https://github.com/AllWiseAI/aiden-chat/releases/latest/download/latest.json"
       ],
@@ -116,7 +116,7 @@
       "windows": {
         "installMode": "passive"
       },
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEM4ODM4MzkyOEUzOUU1NjAKUldSZzVUbU9rb09EeVBmRjlHSGN1bThidGVmaDVFT2tzaVYxd3ZCTTMvWUw5citiSkFTNW9LQkEK"
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEQ1MkQ3RERCOUU0RUYwOTMKUldTVDhFNmUyMzB0MVE4MjE0SStVWlVpNXN4dTR0REdDQlV2eHBDUzNJUzNsa1pPNTB3TVV5RU4K"
     },
     "windows": [
       {
