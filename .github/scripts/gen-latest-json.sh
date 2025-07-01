@@ -26,8 +26,8 @@ for f in "$SIG_ARM64" "$ZIP_ARM64" "$SIG_X64" "$ZIP_X64"; do
 done
 
 # === 编码签名 ===
-SIGNATURE_ARM64=$(base64 < "$SIG_ARM64" | tr -d '\n')
-SIGNATURE_X64=$(base64 < "$SIG_X64" | tr -d '\n')
+SIGNATURE_ARM64=$(cat "$SIG_ARM64")
+SIGNATURE_X64=$(cat "$SIG_X64")
 
 # === CRC64 计算 ===
 CRC64_DMG_ARM64=$(python3 "$CRC_TOOL" "$DMG_ARM64")
