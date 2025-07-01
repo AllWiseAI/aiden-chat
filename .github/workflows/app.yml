@@ -47,11 +47,17 @@ jobs:
           - arch: x86_64
             rust_target: x86_64-apple-darwin
             artifact_arch: x64
+            os: macos-latest
           - arch: arm64
             rust_target: aarch64-apple-darwin
             artifact_arch: arm64
+            os: macos-latest
+          - arch: x86_64
+            rust_target: x86_64-pc-windows-msvc
+            artifact_arch: x64
+            os: windows-latest
 
-    runs-on: macos-latest
+    runs-on: ${{ matrix.config.os }}
     steps:
       - uses: actions/checkout@v4
 
@@ -119,6 +125,7 @@ jobs:
           args: --target ${{ matrix.config.rust_target }}
 
       - name: Setup macOS code signing
+        if: matrix.config.os == 'macos-latest'
         run: bash .github/scripts/setup-macos-codesign.sh
         env:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
@@ -126,11 +133,13 @@ jobs:
           APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
 
       - name: Sign all binaries and app
+        if: matrix.config.os == 'macos-latest'
         run: bash .github/scripts/sign-all.sh ${{ matrix.config.arch }}
         env:
           APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
 
       - name: Check missing signatures
+        if: matrix.config.os == 'macos-latest'
         run: bash .github/scripts/check-signature.sh ${{ matrix.config.arch }}
         env:
           APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
@@ -141,6 +150,7 @@ jobs:
           echo "PACKAGE_VERSION=$(node -p "require('./src-tauri/tauri.conf.json').package.version")" >> $GITHUB_ENV
 
       - name: Notarize app and DMG
+        if: matrix.config.os == 'macos-latest'
         run: bash .github/scripts/notarize.sh ${{ matrix.config.arch }}
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
@@ -167,6 +177,7 @@ jobs:
           fi
 
       - name: Zip .app for upload
+        if: matrix.config.os == 'macos-latest'
         run: |
           cd src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos
           zip -r AidenChat_${{ steps.arch_map.outputs.mapped_arch }}.app.zip AidenChat.app
@@ -197,6 +208,8 @@ jobs:
             src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos/AidenChat_${{ steps.arch_map.outputs.mapped_arch }}.app.zip
             src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos/AidenChat_${{ steps.arch_map.outputs.mapped_arch }}.app.zip.sig
             src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/dmg/AidenChat_${{ env.PACKAGE_VERSION }}_${{ steps.arch_map.outputs.mapped_arch }}_signed.dmg
+            src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/msi/*.msi
+            src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/windows/*.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
