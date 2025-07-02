@@ -87,7 +87,7 @@ export const BOT_HELLO: ChatMessage = createMessage({
 function createEmptySession(): ChatSession {
   return {
     id: nanoid(),
-    topic: defaultTopic(),
+    topic: "",
     memoryPrompt: "",
     messages: [],
     stat: {
@@ -873,6 +873,6 @@ export const useChatStore = createPersistStore(
   },
   {
     name: StoreKey.Chat,
-    version: 1,
+    version: 2,
   },
 );
