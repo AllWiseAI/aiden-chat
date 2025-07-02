@@ -42,7 +42,7 @@ jobs:
         shell: bash
 
       - name: Download host_server, uv, bun binaries
-        run: bash .github/scripts/download-bin.sh ${{ matrix.arch }}
+        run: bash .github/scripts/download-bin.sh ${{ matrix.arch }} ${{ matrix.config.os }}
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         shell: bash
