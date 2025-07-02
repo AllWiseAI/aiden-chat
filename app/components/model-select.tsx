@@ -8,26 +8,12 @@ import {
   SelectGroup,
   SelectItem,
 } from "@/app/components/shadcn/select";
-
-import { useMemo } from "react";
-
-export type ModelType =
-  | "gpt-4o"
-  | "deepseek-chat"
-  | "claude-3-7-sonnet-20250219"
-  | "claude-opus-4-20250514"
-  | "gemini-2.5-flash-preview-05-20"
-  | "qwen-plus-latest"
-  | "qwen-vl-plus-latest";
-
-interface ModelOption {
-  label: string;
-  value: ModelType;
-}
+import { ModelOption } from "@/app/typing";
+import { useAppConfig } from "../store";
 
 interface ModelSelectProps {
-  value: ModelType;
-  onChange: (value: ModelType) => void;
+  value: string;
+  onChange: (value: string) => void;
   disabled?: boolean;
   className?: string;
 }
@@ -38,18 +24,10 @@ export const ModelSelect = ({
   disabled = false,
   className = "",
 }: ModelSelectProps) => {
-  const models: ModelOption[] = useMemo(
-    () => [
-      { label: "GPT-4o", value: "gpt-4o" },
-      { label: "Deepseek Chat", value: "deepseek-chat" },
-      { label: "Claude 3.7 Sonnet", value: "claude-3-7-sonnet-20250219" },
-      { label: "Claude Opus 4", value: "claude-opus-4-20250514" },
-      { label: "Gemini 2.5 Flash", value: "gemini-2.5-flash-preview-05-20" },
-      { label: "Qwen Plus", value: "qwen-plus-latest" },
-      { label: "Qwen VL Plus", value: "qwen-vl-plus-latest" },
-    ],
-    [],
-  );
+  const modelList: ModelOption[] = useAppConfig((state) => state.models);
+  if (!modelList.length) {
+    return null;
+  }
 
   return (
     <Select value={value} onValueChange={onChange} disabled={disabled}>
@@ -58,9 +36,9 @@ export const ModelSelect = ({
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          {models.map((model) => (
-            <SelectItem key={model.value} value={model.value}>
-              {model.label}
+          {modelList.map((model) => (
+            <SelectItem key={model.model} value={model.model}>
+              {model.display}
             </SelectItem>
           ))}
         </SelectGroup>

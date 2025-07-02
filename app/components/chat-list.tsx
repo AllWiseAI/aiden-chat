@@ -58,6 +58,13 @@ export function ChatItem(props: {
     }
   }, [props.selected]);
 
+  const renderTitle = useMemo(() => {
+    if (props.title === "") {
+      return defaultTopic();
+    }
+    return props.title;
+  }, [props.title]);
+
   const { pathname: currentPath } = useLocation();
   const [isEdit, setIsEdit] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -143,7 +150,7 @@ export function ChatItem(props: {
                           : "font-normal",
                       )}
                     >
-                      {props.title}
+                      {renderTitle}
                     </div>
                   </div>
 

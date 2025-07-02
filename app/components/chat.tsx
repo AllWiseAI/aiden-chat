@@ -23,7 +23,7 @@ import { useAppUpdate } from "@/app/hooks/use-app-update";
 import { ImageUploader } from "./image-uploader";
 import { useImageUploadStore } from "@/app/store/image-upload";
 import CircleProgress from "./circle-progress";
-import { ModelSelect, ModelType } from "./model-select";
+import { ModelSelect } from "./model-select";
 
 import {
   ChatMessage,
@@ -474,10 +474,10 @@ function InnerChat() {
   const { isShowUpdate, handleUpdate, isUpdating } = useAppUpdate();
   // const appConfig = useAppConfig();
   const setCurrentModel = useAppConfig((state) => state.setCurrentModel);
-  const currentModel = useAppConfig((state) => state.currentModel) as ModelType;
+  const currentModel = useAppConfig((state) => state.currentModel);
 
   const handleModelChange = useCallback(
-    (value: ModelType) => {
+    (value: string) => {
       setCurrentModel(value);
     },
     [setCurrentModel],

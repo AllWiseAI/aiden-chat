@@ -1,15 +1,12 @@
-import { LLMModel } from "../client/api";
-import { DalleQuality, DalleStyle, ModelSize } from "../typing";
+import { DalleQuality, DalleStyle, ModelSize, ModelOption } from "../typing";
 import { getClientConfig } from "../config/client";
 import {
   DEFAULT_INPUT_TEMPLATE,
-  DEFAULT_MODELS,
   DEFAULT_SIDEBAR_WIDTH,
   StoreKey,
 } from "../constant";
 import { createPersistStore } from "../utils/store";
-
-export type ModelType = (typeof DEFAULT_MODELS)[number]["name"];
+import { getModelList } from "../services/model";
 
 export enum SubmitKey {
   Enter = "Enter",
@@ -48,11 +45,10 @@ export const DEFAULT_CONFIG = {
   dontShowMaskSplashScreen: true, // dont show splash screen when create chat
   hideBuiltinMasks: false, // dont add builtin masks
 
-  currentModel: "gpt-4o",
-  models: DEFAULT_MODELS as any as LLMModel[],
-
+  currentModel: "",
+  models: [] as ModelOption[],
   modelConfig: {
-    model: "gpt-4o" as ModelType,
+    model: "gpt-4o",
     providerName: "OpenAI",
     temperature: 0.5,
     top_p: 1,
@@ -89,30 +85,28 @@ export function limitNumber(
   return Math.min(max, Math.max(min, x));
 }
 
-export const ModalConfigValidator = {
-  model(x: string) {
-    return x as ModelType;
-  },
-  max_tokens(x: number) {
-    return limitNumber(x, 0, 512000, 1024);
-  },
-  presence_penalty(x: number) {
-    return limitNumber(x, -2, 2, 0);
-  },
-  frequency_penalty(x: number) {
-    return limitNumber(x, -2, 2, 0);
-  },
-  temperature(x: number) {
-    return limitNumber(x, 0, 2, 1);
-  },
-  top_p(x: number) {
-    return limitNumber(x, 0, 1, 1);
-  },
-};
-
 export const useAppConfig = createPersistStore(
   { ...DEFAULT_CONFIG },
   (set, get) => ({
+    initModelList: async () => {
+      const models: ModelOption[] | [] = await getModelList();
+      console.log("[Models]: remote model list", models);
+      if (models && models.length > 0) {
+        set(() => ({
+          models,
+        }));
+        const defaultModel = models?.find((model) => model.is_default)?.model;
+        const { currentModel } = get();
+        if (!currentModel) {
+          set(() => ({
+            currentModel: defaultModel,
+          }));
+        }
+      }
+    },
+    getCurrentModel() {
+      return get().models.find((model) => model.model === get().currentModel);
+    },
     reset() {
       set(() => ({ ...DEFAULT_CONFIG }));
     },
@@ -123,33 +117,10 @@ export const useAppConfig = createPersistStore(
       }));
     },
 
-    mergeModels(newModels: LLMModel[]) {
-      if (!newModels || newModels.length === 0) {
-        return;
-      }
-
-      const oldModels = get().models;
-      const modelMap: Record<string, LLMModel> = {};
-
-      for (const model of oldModels) {
-        model.available = false;
-        modelMap[`${model.name}@${model?.provider?.id}`] = model;
-      }
-
-      for (const model of newModels) {
-        model.available = true;
-        modelMap[`${model.name}@${model?.provider?.id}`] = model;
-      }
-
-      set(() => ({
-        models: Object.values(modelMap),
-      }));
-    },
-
     allModels() {},
   }),
   {
     name: StoreKey.Config,
-    version: 2,
+    version: 4,
   },
 );
