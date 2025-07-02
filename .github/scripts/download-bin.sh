@@ -98,8 +98,7 @@ BUN_FILE="bun-${BUN_OS}-${BUN_ARCH}.zip"
 
 curl -L "https://github.com/oven-sh/bun/releases/download/${BUN_VERSION}/${BUN_FILE}" \
   -o src-tauri/bin/bun.zip
-mkdir src-tauri/bin/bun-${BUN_OS}-${BUN_ARCH}
-unzip -o src-tauri/bin/bun.zip -d src-tauri/bin/bun-${BUN_OS}-${BUN_ARCH}
+unzip -o src-tauri/bin/bun.zip -d src-tauri/bin
 if [[ "$BUN_OS" == "windows" ]]; then
   mv src-tauri/bin/bun-${BUN_OS}-${BUN_ARCH}/bun.exe src-tauri/bin/bun.exe
 else
