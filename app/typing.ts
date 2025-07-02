@@ -166,3 +166,12 @@ type RefreshErrorResponse = {
 
 export type LoginResponse = LoginSuccessResponse | LoginErrorResponse;
 export type RefreshResponse = RefreshSuccessResponse | RefreshErrorResponse;
+
+export type ModelOption = {
+  display: string;
+  model: string;
+  is_default: boolean;
+  id: number;
+  endpoint: string;
+  provider: string;
+};

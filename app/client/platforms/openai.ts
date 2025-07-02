@@ -1,6 +1,5 @@
 "use client";
 import {
-  OpenaiPath,
   REQUEST_TIMEOUT_MS,
   DEFAULT_CHAT_URL,
   SECOND_CHAT_URL,
@@ -74,7 +73,9 @@ export class ChatGPTApi implements LLMApi {
           requestPayload,
           {
             ...headers,
-            "Aiden-Model-Name": options.currentModel,
+            "Aiden-Model-Name": options.modelInfo?.model,
+            "Aiden-Endpoint": options.modelInfo?.endpoint,
+            "Aiden-Model-Provider": options.modelInfo?.provider,
           },
           controller,
           parseSSE,
@@ -128,7 +129,9 @@ export class ChatGPTApi implements LLMApi {
           requestPayload,
           {
             ...headers,
-            "Aiden-Model-Name": options.currentModel,
+            "Aiden-Model-Name": options.modelInfo?.model,
+            "Aiden-Endpoint": options.modelInfo?.endpoint,
+            "Aiden-Model-Provider": options.modelInfo?.provider,
           },
           controller,
           parseSSE,
@@ -166,4 +169,3 @@ export class ChatGPTApi implements LLMApi {
     }
   }
 }
-export { OpenaiPath };

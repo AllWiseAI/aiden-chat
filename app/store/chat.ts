@@ -19,7 +19,7 @@ import { getLang } from "../locales";
 import { t } from "i18next";
 import { createPersistStore } from "../utils/store";
 import { estimateTokenLength } from "../utils/token";
-import { ModelConfig, ModelType, useAppConfig } from "./config";
+import { ModelConfig, useAppConfig } from "./config";
 import { createEmptyMask, Mask } from "./mask";
 
 const localStorage = safeLocalStorage();
@@ -42,7 +42,7 @@ export type ChatMessage = RequestMessage & {
   streaming?: boolean;
   isError?: boolean;
   id: string;
-  model?: ModelType;
+  model?: string;
   tools?: ChatMessageTool[];
   audio_url?: string;
   isMcpResponse?: boolean;
@@ -305,7 +305,8 @@ export const useChatStore = createPersistStore(
       ) {
         const session = get().currentSession();
         const modelConfig = session.mask.modelConfig;
-        const { currentModel } = useAppConfig.getState();
+        const modelInfo = useAppConfig.getState().getCurrentModel();
+        console.log("modelInfo===", modelInfo);
         // MCP Response no need to fill template
         let mContent: string | MultimodalContent[] = isMcpResponse
           ? content
@@ -334,7 +335,9 @@ export const useChatStore = createPersistStore(
 
         // get recent messages
         const recentMessages = await get().getMessagesWithMemory();
-        const sendMessages = recentMessages.concat(userMessage);
+        const sendMessages = recentMessages
+          .concat(userMessage)
+          .filter((message) => message.content !== "");
         const messageIndex = session.messages.length + 1;
 
         console.log("[Chat store]sendMessages: ", sendMessages);
@@ -353,7 +356,7 @@ export const useChatStore = createPersistStore(
         const api: ClientApi = getClientApi();
         // make request
         api.llm.chat({
-          currentModel,
+          modelInfo,
           messages: sendMessages,
           config: { ...modelConfig, stream: true },
           onToolCall: (toolCallInfo) => {
@@ -481,7 +484,7 @@ export const useChatStore = createPersistStore(
         const session = get().currentSession();
         const modelConfig = session.mask.modelConfig;
         const messageIndex = session.messages.length + 1;
-        const { currentModel } = useAppConfig.getState();
+        const modelInfo = useAppConfig.getState().getCurrentModel();
 
         const botMessage: ChatMessage = createMessage({
           role: "assistant",
@@ -498,7 +501,7 @@ export const useChatStore = createPersistStore(
         });
         const api: ClientApi = getClientApi();
         api.llm.toolCall({
-          currentModel,
+          modelInfo,
           toolCallInfo,
           config: { ...modelConfig, stream: true },
           onUpdate(message, mcpInfo) {
@@ -726,7 +729,7 @@ export const useChatStore = createPersistStore(
         const session = targetSession;
         const modelConfig = session.mask.modelConfig;
         const api: ClientApi = getClientApi();
-        const { currentModel } = useAppConfig.getState();
+        const modelInfo = useAppConfig.getState().getCurrentModel();
 
         // remove error messages if any
         const messages = session.messages;
@@ -754,9 +757,9 @@ export const useChatStore = createPersistStore(
                 content: t("store.prompt.topic"),
               }),
             );
-          console.log("summary model:", currentModel);
+          console.log("summary model:", modelInfo?.model);
           api.llm.chat({
-            currentModel,
+            modelInfo,
             messages: topicMessages,
             config: { stream: false },
             onFinish(message, responseRes) {
@@ -807,7 +810,7 @@ export const useChatStore = createPersistStore(
           modelConfig.sendMemory
         ) {
           api.llm.chat({
-            currentModel,
+            modelInfo,
             messages: toBeSummarizedMsgs.concat(
               createMessage({
                 role: "system",
