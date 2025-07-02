@@ -58,14 +58,13 @@ if [ -z "$DOWNLOAD_URL" ]; then
   exit 1
 fi
 echo "🔗 下载链接: $DOWNLOAD_URL"
-
 # 下载并解压 host_server
 curl -L -H "Authorization: token ${GH_TOKEN}" -H "Accept: application/octet-stream" \
   "$DOWNLOAD_URL" -o src-tauri/resources/$ASSET_FILE
 mkdir -p src-tauri/resources/$UNPACKED_DIR
 unzip -o src-tauri/resources/$ASSET_FILE -d src-tauri/resources/$UNPACKED_DIR
 chmod +x src-tauri/resources/$UNPACKED_DIR/$UNPACKED_DIR.exe || true
-chmod +x src-tauri/resources/$UNPACKED_DIR/$UNPACKED_DIR || true
+chmod +x src-tauri/resources/$UNPACKED_DIR || true
 rm -rf src-tauri/resources/$ASSET_FILE
 echo "✅ host_server 已下载并解压"
 
@@ -79,30 +78,27 @@ if [[ "$UV_OS" == "apple-darwin" ]]; then
     -o src-tauri/bin/uv.tar.gz
   tar -xzf src-tauri/bin/uv.tar.gz -C src-tauri/bin --strip-components=1 \
     uv-${UV_ARCH}-${UV_OS}/uv uv-${UV_ARCH}-${UV_OS}/uvx
+  rm -f src-tauri/bin/uv.tar.gz
 else
   UV_FILE="uv-${UV_ARCH}-${UV_OS}.zip"
   curl -L "https://github.com/astral-sh/uv/releases/download/${UV_VERSION}/${UV_FILE}" \
     -o src-tauri/bin/uv.zip
-  unzip -o src-tauri/bin/uv.zip -d src-tauri/bin/
+  unzip -o src-tauri/bin/uv.zip -d src-tauri/bin
+  rm -f src-tauri/bin/uv.zip 
 fi
 
 chmod +x src-tauri/bin/uv* || true
-rm -f src-tauri/bin/uv.zip src-tauri/bin/uv.tar.gz
 echo "✅ uv 已下载并解压"
 
 # === 下载 bun ===
 echo "🟡 正在下载 bun..."
 BUN_VERSION="bun-v1.2.13"
-if [[ "$BUN_OS" == "darwin" ]]; then
-  BUN_FILE="bun-${BUN_OS}-${BUN_ARCH}.zip"
-else
-  BUN_FILE="bun-${BUN_OS}-${BUN_ARCH}.zip"
-fi
+BUN_FILE="bun-${BUN_OS}-${BUN_ARCH}.zip"
 
 curl -L "https://github.com/oven-sh/bun/releases/download/${BUN_VERSION}/${BUN_FILE}" \
   -o src-tauri/bin/bun.zip
-
-unzip -o src-tauri/bin/bun.zip -d src-tauri/bin/
+mkdir src-tauri/bin/bun-${BUN_OS}-${BUN_ARCH}
+unzip -o src-tauri/bin/bun.zip -d src-tauri/bin/bun-${BUN_OS}-${BUN_ARCH}
 if [[ "$BUN_OS" == "windows" ]]; then
   mv src-tauri/bin/bun-${BUN_OS}-${BUN_ARCH}/bun.exe src-tauri/bin/bun.exe
 else
