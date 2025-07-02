@@ -1,13 +1,14 @@
-import { ChatMessageTool, ModelType } from "../store";
+import { ChatMessageTool } from "../store";
 import { ChatGPTApi } from "./platforms/openai";
 import { useAuthStore } from "../store";
+import { ModelOption } from "../typing";
 
 export const ROLES = ["system", "user", "assistant"] as const;
 export type MessageRole = (typeof ROLES)[number];
 
 export const Models = ["gpt-3.5-turbo", "gpt-4"] as const;
 export const TTSModels = ["tts-1", "tts-1-hd"] as const;
-export type ChatModel = ModelType;
+
 const FIVE_MINUTES = 5 * 60 * 1000;
 
 export interface MultimodalContent {
@@ -55,7 +56,7 @@ export interface ToolCallInfo {
 }
 
 export interface ChatOptions {
-  currentModel?: string;
+  modelInfo?: ModelOption;
   messages?: RequestMessage[];
   config: LLMConfig;
   onToolCall?: (toolCallInfo: ToolCallInfo) => void;

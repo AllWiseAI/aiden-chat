@@ -11,7 +11,7 @@ import AidenIcon from "../icons/logo-text.svg";
 import LoadingIcon from "../icons/three-dots.svg";
 import ResultIcon from "../icons/result.svg";
 // import LoadingIcon from "../icons/loading-host.svg";
-import { useAuthStore } from "../store";
+import { useAppConfig, useAuthStore } from "../store";
 import { useMcpStore } from "../store/mcp";
 import { exportAndDownloadLog } from "../utils/log";
 
@@ -20,6 +20,7 @@ export function LoadingPage() {
   const hydrated = useAuthStore((state) => state._hasHydrated);
   const isLogin = useAuthStore((state) => state.isLogin);
   const init = useAuthStore((state) => state.initialize);
+  const initModelList = useAppConfig((state) => state.initModelList);
   const [isAuthed, setIsAuthed] = useState(false);
   const [isServerReady, setIsServerReady] = useState(false);
   const [isServerTimeout, setIsServerTimeout] = useState(false);
@@ -33,6 +34,7 @@ export function LoadingPage() {
     if (ready || process.env.NODE_ENV === "development") {
       setIsServerReady(true);
       mcpStore.init();
+      initModelList();
       if (!isAuthed) return;
       navigate(Path.Chat, { replace: true });
     } else {
