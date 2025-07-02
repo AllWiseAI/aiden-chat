@@ -1,0 +1,76 @@
+name: Release Windows App
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x86_64]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: "yarn"
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Install frontend dependencies
+        run: yarn install
+
+      - name: Get package version
+        run: |
+          node -e "console.log('PACKAGE_VERSION=' + require('./src-tauri/tauri.conf.json').package.version)" >> $env:GITHUB_ENV
+        shell: pwsh
+
+      - name: Update tauri config
+        run: |
+          bash ./update_tauri_config.sh --mode release
+        shell: bash
+
+      - name: Download host_server, uv, bun binaries
+        run: bash .github/scripts/download-bin.sh ${{ matrix.arch }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        shell: bash
+
+      - name: Inject environment variables
+        run: |
+          echo "NPM_CONFIG_REGISTRY=${{ secrets.NPM_CONFIG_REGISTRY }}" | Out-File -FilePath src-tauri/bin/.env -Encoding utf8
+          echo "UV_INDEX=${{ secrets.UV_INDEX }}" | Add-Content src-tauri/bin/.env
+          echo "UV_DEFAULT_INDEX=${{ secrets.UV_DEFAULT_INDEX }}" | Add-Content src-tauri/bin/.env
+          echo "UV_EXTRA_INDEX_URL=${{ secrets.UV_EXTRA_INDEX_URL }}" | Add-Content src-tauri/bin/.env
+        shell: pwsh
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+        with:
+          args: --target x86_64-pc-windows-msvc
+
+      - name: List build artifacts
+        run: Get-ChildItem -Recurse src-tauri/target
+        shell: pwsh
+
+      - name: Upload Windows Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-artifacts
+          path: |
+            src-tauri/target/release/bundle/msi/**/*.msi
+            src-tauri/target/release/bundle/windows/**/*.exe
