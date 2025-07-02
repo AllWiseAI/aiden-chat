@@ -46,28 +46,35 @@ REPO_NAME="host-server-py"
 RELEASE_TAG=$(cat .host_server_version)
 
 # 获取 release 信息
-# echo "📦 获取 GitHub Release 信息..."
-# RELEASE_INFO=$(curl -s -H "Authorization: token ${GH_TOKEN}" \
-#   "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases/tags/$RELEASE_TAG")
+echo "📦 获取 GitHub Release 信息..."
+RELEASE_INFO=$(curl -s -H "Authorization: token ${GH_TOKEN}" \
+  "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases/tags/$RELEASE_TAG")
 
-# # 提取下载链接
-# DOWNLOAD_URL=$(echo "$RELEASE_INFO" | jq -r ".assets[] | select(.name == \"$ASSET_FILE\") | .url")
+# 提取下载链接
+DOWNLOAD_URL=$(echo "$RELEASE_INFO" | jq -r ".assets[] | select(.name == \"$ASSET_FILE\") | .url")
 
-# if [ -z "$DOWNLOAD_URL" ]; then
-#   echo "❌ 错误: 未找到下载链接 $ASSET_FILE"
-#   exit 1
-# fi
-# echo "🔗 下载链接: $DOWNLOAD_URL"
-# # 下载并解压 host_server
-# curl -L -H "Authorization: token ${GH_TOKEN}" -H "Accept: application/octet-stream" \
-#   "$DOWNLOAD_URL" -o src-tauri/resources/$ASSET_FILE
-# ls -l src-tauri/resources
-# mkdir -p src-tauri/resources/$UNPACKED_DIR
-# unzip -o src-tauri/resources/$ASSET_FILE -d src-tauri/resources/$UNPACKED_DIR
-# # chmod +x src-tauri/resources/$UNPACKED_DIR/$UNPACKED_DIR.exe || true
-# # chmod +x src-tauri/resources/$UNPACKED_DIR || true
-# # rm -rf src-tauri/resources/$ASSET_FILE
-# echo "✅ host_server 已下载并解压"
+if [ -z "$DOWNLOAD_URL" ]; then
+  echo "❌ 错误: 未找到下载链接 $ASSET_FILE"
+  exit 1
+fi
+echo "🔗 下载链接: $DOWNLOAD_URL"
+# 下载并解压 host_server
+curl -L -H "Authorization: token ${GH_TOKEN}" -H "Accept: application/octet-stream" \
+  "$DOWNLOAD_URL" -o src-tauri/resources/$ASSET_FILE
+ls -l src-tauri/resources
+mkdir -p src-tauri/resources/$UNPACKED_DIR
+unzip -qq -o src-tauri/resources/$ASSET_FILE -d src-tauri/resources/$UNPACKED_DIR
+if [[ "$OS" == "macos-latest" ]]; then
+  chmod +x src-tauri/resources/$UNPACKED_DIR
+elif [[ "$OS" == "windows-latest" ]]; then
+  echo "✅ Windows 平台，无需执行 chmod"
+else
+  echo "⚠️ 不识别的系统 $OS"
+fi
+
+rm -rf src-tauri/resources/$ASSET_FILE
+echo "✅ host_server 已下载并解压"
+
 
 # === 下载 uv ===
 echo "🟡 正在下载 uv..."
