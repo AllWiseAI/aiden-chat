@@ -15,12 +15,30 @@ mkdir -p src-tauri/bin
 echo "🟡 获取 host_server 下载链接..."
 if [ "$ARCH" == "arm64" ]; then
   ASSET_NAME="host_server_macos"
-else
+  UV_ARCH="aarch64"
+  BUN_ARCH="aarch64"
+  UV_OS="apple-darwin"
+  BUN_OS="darwin"
+elif [ "$ARCH" == "x86_64" ]; then
+  # macOS Intel
   ASSET_NAME="host_server_macos_x86_64"
+  UV_ARCH="x86_64"
+  BUN_ARCH="x64"
+  UV_OS="apple-darwin"
+  BUN_OS="darwin"
+elif [ "$ARCH" == "x86_64-pc-windows-msvc" ]; then
+  ASSET_NAME="host_server_windows"
+  UV_ARCH="x86_64"
+  BUN_ARCH="x64"
+  UV_OS="pc-windows-msvc"
+  BUN_OS="windows"
+else
+  echo "❌ 错误：未知架构 $ARCH"
+  exit 1
 fi
 
 ASSET_FILE="$ASSET_NAME.zip"
-UNPACKED_DIR="host_server_macos"
+UNPACKED_DIR="$ASSET_NAME"
 REPO_OWNER="AllWiseAI"
 REPO_NAME="host-server-py"
 RELEASE_TAG=$(cat .host_server_version)
@@ -44,38 +62,53 @@ curl -L -H "Authorization: token ${GH_TOKEN}" -H "Accept: application/octet-stre
   "$DOWNLOAD_URL" -o src-tauri/resources/$ASSET_FILE
 
 unzip -o src-tauri/resources/$ASSET_FILE -d src-tauri/resources/
-chmod +x src-tauri/resources/$UNPACKED_DIR/$UNPACKED_DIR
+chmod +x src-tauri/resources/$UNPACKED_DIR/$UNPACKED_DIR.exe || true
+chmod +x src-tauri/resources/$UNPACKED_DIR/$UNPACKED_DIR || true
 rm -rf src-tauri/resources/$ASSET_FILE
-echo "✅ host_server 已下载并解压为 $UNPACKED_DIR"
+echo "✅ host_server 已下载并解压"
 
 # === 下载 uv ===
 echo "🟡 正在下载 uv..."
-if [ "$ARCH" == "arm64" ]; then
-  UV_ARCH="aarch64"
+UV_VERSION="0.6.17"
+
+if [[ "$UV_OS" == "apple-darwin" ]]; then
+  UV_FILE="uv-${UV_ARCH}-${UV_OS}.tar.gz"
+  curl -L "https://github.com/astral-sh/uv/releases/download/${UV_VERSION}/${UV_FILE}" \
+    -o src-tauri/bin/uv.tar.gz
+  tar -xzf src-tauri/bin/uv.tar.gz -C src-tauri/bin --strip-components=1 \
+    uv-${UV_ARCH}-${UV_OS}/uv uv-${UV_ARCH}-${UV_OS}/uvx
 else
-  UV_ARCH="x86_64"
+  UV_FILE="uv-${UV_ARCH}-${UV_OS}.zip"
+  curl -L "https://github.com/astral-sh/uv/releases/download/${UV_VERSION}/${UV_FILE}" \
+    -o src-tauri/bin/uv.zip
+  unzip -o src-tauri/bin/uv.zip -d src-tauri/bin/
 fi
-curl -L https://github.com/astral-sh/uv/releases/download/0.6.17/uv-${UV_ARCH}-apple-darwin.tar.gz \
-  -o src-tauri/bin/uv.tar.gz
-tar -xzf src-tauri/bin/uv.tar.gz -C src-tauri/bin --strip-components=1 \
-  uv-${UV_ARCH}-apple-darwin/uv uv-${UV_ARCH}-apple-darwin/uvx
-chmod +x src-tauri/bin/uv src-tauri/bin/uvx
-rm -f src-tauri/bin/uv.tar.gz
+
+chmod +x src-tauri/bin/uv* || true
+rm -f src-tauri/bin/uv.zip src-tauri/bin/uv.tar.gz
 echo "✅ uv 已下载并解压"
 
 # === 下载 bun ===
 echo "🟡 正在下载 bun..."
-if [ "$ARCH" == "arm64" ]; then
-  BUN_ARCH="aarch64"
+BUN_VERSION="bun-v1.2.13"
+if [[ "$BUN_OS" == "darwin" ]]; then
+  BUN_FILE="bun-${BUN_OS}-${BUN_ARCH}.zip"
 else
-  BUN_ARCH="x64"
+  BUN_FILE="bun-${BUN_OS}-${BUN_ARCH}.zip"
 fi
-curl -L https://github.com/oven-sh/bun/releases/download/bun-v1.2.13/bun-darwin-${BUN_ARCH}.zip \
+
+curl -L "https://github.com/oven-sh/bun/releases/download/${BUN_VERSION}/${BUN_FILE}" \
   -o src-tauri/bin/bun.zip
+
 unzip -o src-tauri/bin/bun.zip -d src-tauri/bin/
-mv src-tauri/bin/bun-darwin-${BUN_ARCH}/bun src-tauri/bin/bun
-chmod +x src-tauri/bin/bun
-rm -rf src-tauri/bin/bun-darwin-${BUN_ARCH} src-tauri/bin/bun.zip
+if [[ "$BUN_OS" == "windows" ]]; then
+  mv src-tauri/bin/bun-${BUN_OS}-${BUN_ARCH}/bun.exe src-tauri/bin/bun.exe
+else
+  mv src-tauri/bin/bun-${BUN_OS}-${BUN_ARCH}/bun src-tauri/bin/bun
+fi
+
+chmod +x src-tauri/bin/bun* || true
+rm -rf src-tauri/bin/bun-${BUN_OS}-${BUN_ARCH} src-tauri/bin/bun.zip
 echo "✅ bun 已下载并解压"
 
 # 打印最终结构

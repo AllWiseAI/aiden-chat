@@ -1,4 +1,4 @@
-name: Release App
+name: Release Mac App
 
 on:
   workflow_dispatch:
