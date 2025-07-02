@@ -7,13 +7,18 @@ on:
 
 jobs:
   build-windows:
-    runs-on: windows-latest
     permissions:
       contents: write
     strategy:
       fail-fast: false
       matrix:
-        arch: [x86_64]
+        config:
+          - arch: x86_64
+            rust_target: x86_64-pc-windows-msvc
+            artifact_arch: x64
+            os: windows-latest
+
+    runs-on: ${{ matrix.config.os }}
     steps:
       - uses: actions/checkout@v4
 
@@ -26,7 +31,7 @@ jobs:
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: x86_64-pc-windows-msvc
+          targets: ${{ matrix.config.rust_target }}
 
       - name: Install frontend dependencies
         run: yarn install
@@ -42,7 +47,7 @@ jobs:
         shell: bash
 
       - name: Download host_server, uv, bun binaries
-        run: bash .github/scripts/download-bin.sh ${{ matrix.arch }} ${{ matrix.config.os }}
+        run: bash .github/scripts/download-bin.sh ${{ matrix.config.arch }} ${{ matrix.config.os }}
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         shell: bash
@@ -50,9 +55,9 @@ jobs:
       - name: Inject environment variables
         run: |
           echo "NPM_CONFIG_REGISTRY=${{ secrets.NPM_CONFIG_REGISTRY }}" | Out-File -FilePath src-tauri/bin/.env -Encoding utf8
-          echo "UV_INDEX=${{ secrets.UV_INDEX }}" | Add-Content src-tauri/bin/.env
-          echo "UV_DEFAULT_INDEX=${{ secrets.UV_DEFAULT_INDEX }}" | Add-Content src-tauri/bin/.env
-          echo "UV_EXTRA_INDEX_URL=${{ secrets.UV_EXTRA_INDEX_URL }}" | Add-Content src-tauri/bin/.env
+          Add-Content src-tauri/bin/.env "UV_INDEX=${{ secrets.UV_INDEX }}"
+          Add-Content src-tauri/bin/.env "UV_DEFAULT_INDEX=${{ secrets.UV_DEFAULT_INDEX }}"
+          Add-Content src-tauri/bin/.env "UV_EXTRA_INDEX_URL=${{ secrets.UV_EXTRA_INDEX_URL }}"
         shell: pwsh
 
       - uses: tauri-apps/tauri-action@v0
@@ -61,7 +66,7 @@ jobs:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
-          args: --target x86_64-pc-windows-msvc
+          args: --target ${{ matrix.config.rust_target }}
 
       - name: List build artifacts
         run: Get-ChildItem -Recurse src-tauri/target
