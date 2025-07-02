@@ -61,11 +61,12 @@ echo "🔗 下载链接: $DOWNLOAD_URL"
 # 下载并解压 host_server
 curl -L -H "Authorization: token ${GH_TOKEN}" -H "Accept: application/octet-stream" \
   "$DOWNLOAD_URL" -o src-tauri/resources/$ASSET_FILE
+ls -l src-tauri/resources
 mkdir -p src-tauri/resources/$UNPACKED_DIR
 unzip -o src-tauri/resources/$ASSET_FILE -d src-tauri/resources/$UNPACKED_DIR
-chmod +x src-tauri/resources/$UNPACKED_DIR/$UNPACKED_DIR.exe || true
-chmod +x src-tauri/resources/$UNPACKED_DIR || true
-rm -rf src-tauri/resources/$ASSET_FILE
+# chmod +x src-tauri/resources/$UNPACKED_DIR/$UNPACKED_DIR.exe || true
+# chmod +x src-tauri/resources/$UNPACKED_DIR || true
+# rm -rf src-tauri/resources/$ASSET_FILE
 echo "✅ host_server 已下载并解压"
 
 # === 下载 uv ===
