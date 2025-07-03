@@ -1,9 +1,12 @@
-const BASE_URL = "https://prod-hk.aidenai.io/api/image/upload";
+import { getBaseDomain } from "../utils/fetch";
 
-export function uploadImageWithProgress(
+export async function uploadImageWithProgress(
   file: File,
   onProgress: (percent: number) => void,
 ): Promise<string> {
+  const domain = await getBaseDomain();
+  const BASE_URL = `${domain}/api/image/upload`;
+
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open("POST", BASE_URL);

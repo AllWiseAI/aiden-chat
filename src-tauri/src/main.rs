@@ -185,7 +185,7 @@ fn cleanup_processes<R: Runtime>(_app: &AppHandle<R>, state: State<HostServerPro
         #[cfg(unix)]
         {
             use std::process::Command;
-            let patterns = ["aiden", "host_server"];
+            let patterns = ["host_server"];
             for pattern in patterns.iter() {
                 let cmd = format!("pgrep -f '{}' | grep -v $$ | xargs -r kill -9", pattern);
                 log::info!("Executing cleanup command: {}", cmd);
