@@ -11,6 +11,18 @@ export interface FetchBody {
   };
 }
 
+export const getBaseDomain = async () => {
+  const region = await useSettingStore.getState().region;
+  if (region === "CN") {
+    return process.env.NODE_ENV === "development"
+      ? "https://dev.aidenai.io"
+      : "https://prod.aidenai.info";
+  }
+  return process.env.NODE_ENV === "development"
+    ? "https://dev.aidenai.io"
+    : "https://prod.aidenai.io";
+};
+
 const getCommonHeaders = () => {
   const device_id = useSettingStore.getState().getDeviceId();
   const accessToken = useAuthStore.getState().userToken.accessToken;
@@ -31,16 +43,21 @@ export async function aidenFetch<T = unknown>(
   options: FetchBody & { _isRefreshToken?: boolean },
 ): Promise<Response<T>> {
   let res: Response<T>;
-
+  const domain = await getBaseDomain();
+  let finnalUrl = url;
+  if (url.startsWith("/")) {
+    finnalUrl = `${domain}${url}`;
+  }
+  console.log("[Request] fetching", finnalUrl);
   try {
-    res = await fetch<T>(url, {
+    res = await fetch<T>(finnalUrl, {
       method: options.method,
       headers: { ...getCommonHeaders() },
       body: options.body ? options.body : undefined,
     });
   } catch (err: any) {
     // 网络错误
-    console.log(11111, err);
+    console.log("[Request] fetch error occured.", err);
     if (err.includes("Network Error")) {
       throw t("error.netErr");
     }

@@ -4,7 +4,7 @@ import { fetchNoProxy } from "@/app/utils/fetch-no-proxy";
 import { getHeaders } from "@/app/client/api";
 
 const baseURL = "http://127.0.0.1:6888";
-const remoteMcpURL = "https://prod-hk.aidenai.io/api/config/mcp";
+const remoteMcpURL = "/api/config/mcp";
 
 export async function getRemoteMcpItems() {
   const result = await fetch(remoteMcpURL, {
