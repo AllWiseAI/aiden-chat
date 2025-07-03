@@ -2,7 +2,7 @@ import { aidenFetch as fetch, FetchBody } from "@/app/utils/fetch";
 
 const baseURL =
   process.env.NODE_ENV === "development"
-    ? "https://dev.aidenai.io/app"
+    ? "https://dev.aidenai.io"
     : "https://prod.aidenai.io";
 
 export async function apiGetSignUpCode(payload: { email: string }) {
