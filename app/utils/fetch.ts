@@ -12,7 +12,7 @@ export interface FetchBody {
 }
 
 export const getBaseDomain = async () => {
-  const region = await useSettingStore.getState().getRegion();
+  const region = await useSettingStore.getState().region;
   if (region === "CN") {
     return process.env.NODE_ENV === "development"
       ? "https://dev.aidenai.io"
@@ -48,7 +48,7 @@ export async function aidenFetch<T = unknown>(
   if (url.startsWith("/")) {
     finnalUrl = `${domain}${url}`;
   }
-  console.log("[Request] fetching", domain, finnalUrl);
+  console.log("[Request] fetching", finnalUrl);
   try {
     res = await fetch<T>(finnalUrl, {
       method: options.method,
