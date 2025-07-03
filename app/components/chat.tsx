@@ -472,17 +472,6 @@ function InnerChat() {
   };
 
   const { isShowUpdate, handleUpdate, isUpdating } = useAppUpdate();
-  // const appConfig = useAppConfig();
-  const setCurrentModel = useAppConfig((state) => state.setCurrentModel);
-  const currentModel = useAppConfig((state) => state.currentModel);
-
-  const handleModelChange = useCallback(
-    (value: string) => {
-      setCurrentModel(value);
-    },
-    [setCurrentModel],
-  );
-
   return (
     <>
       <div className={styles.chat} key={session.id}>
@@ -490,7 +479,7 @@ function InnerChat() {
           <div
             className={clsx("window-header-title", styles["chat-body-title"])}
           >
-            <ModelSelect value={currentModel} onChange={handleModelChange} />
+            <ModelSelect />
           </div>
           {isShowUpdate && (
             <Button
