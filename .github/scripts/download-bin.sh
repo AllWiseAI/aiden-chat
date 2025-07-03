@@ -62,8 +62,7 @@ echo "🔗 下载链接: $DOWNLOAD_URL"
 curl -L -H "Authorization: token ${GH_TOKEN}" -H "Accept: application/octet-stream" \
   "$DOWNLOAD_URL" -o src-tauri/resources/$ASSET_FILE
 ls -l src-tauri/resources
-mkdir -p src-tauri/resources/$UNPACKED_DIR
-unzip -o src-tauri/resources/$ASSET_FILE -d src-tauri/resources/$UNPACKED_DIR
+unzip -o src-tauri/resources/$ASSET_FILE -d src-tauri/resources
 echo "✅ host_server 解压成功"
 if [[ "$OS" == "macos-latest" ]]; then
   chmod +x src-tauri/resources/$UNPACKED_DIR
