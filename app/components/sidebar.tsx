@@ -11,7 +11,7 @@ import {
 } from "@/app/components/shadcn/dropdown-menu";
 import { Button } from "@/app/components/shadcn/button";
 import { Input } from "@/app/components/shadcn/input";
-import LogoIcon from "../icons/logo-circle.svg";
+import LogoIcon from "../icons/logo.svg";
 import LogoutIcon from "../icons/logout.svg";
 import SettingIcon from "../icons/setting.svg";
 import SearchIcon from "../icons/search.svg";
@@ -218,10 +218,7 @@ export function SideBarHeader(props: {
                       {authStore.user.email?.[0].toUpperCase()}
                     </AvatarFallback>
                   </Avatar> */}
-                  <div className="flex gap-2">
-                    <LogoIcon />
-                    <p className="text-sm">Aiden</p>
-                  </div>
+                  <LogoIcon />
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent

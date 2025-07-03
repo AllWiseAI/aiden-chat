@@ -67,7 +67,7 @@ export function LoginPage() {
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     if (id === "email" && value && !validateEmail(value)) {
-      setEmailError(t("signIn.success"));
+      setEmailError(t("inValidEmail"));
     } else {
       setEmailError("");
     }
