@@ -85,14 +85,14 @@ export function ChatItem(props: {
       {(provided) => (
         <div
           className={clsx(
-            "rounded-sm group h-7.5",
+            "rounded-sm group h-11",
             props.selected &&
               (currentPath === Path.Chat || currentPath === Path.Home)
               ? "bg-[#E8ECEF]/50 dark:bg-[#232323]"
               : openMenu
               ? "bg-bg-[#E8ECEF]/50 dark:bg-[#2F2F2F]"
               : "hover:bg-[#E8ECEF]/50 dark:hover:bg-[#2F2F2F]",
-            !isEdit && "p-1.5",
+            !isEdit && "p-2.5",
           )}
           onClick={props.onClick}
           ref={(ele) => {
