@@ -1,9 +1,9 @@
 {
-  "version": "0.0.13",
+  "version": "0.0.14",
   "syncVersion": "0.0.2",
   "mcpServers": {
     "aiden-search": {
-      "url": "https://dev.aidenai.io/sse",
+      "url": "https://mcp.aidenai.io/mcp/tavily/sse",
       "transport": "sse",
       "aiden_type": "default",
       "aiden_enable": true,
