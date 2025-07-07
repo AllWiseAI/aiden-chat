@@ -10,27 +10,38 @@ import {
 } from "@/app/components/shadcn/select";
 import { ModelOption } from "@/app/typing";
 import { useAppConfig } from "../store";
+import { useCallback } from "react";
 
 interface ModelSelectProps {
-  value: string;
-  onChange: (value: string) => void;
   disabled?: boolean;
   className?: string;
 }
 
 export const ModelSelect = ({
-  value,
-  onChange,
   disabled = false,
   className = "",
 }: ModelSelectProps) => {
   const modelList: ModelOption[] = useAppConfig((state) => state.models);
+
+  const setCurrentModel = useAppConfig((state) => state.setCurrentModel);
+  const currentModel = useAppConfig((state) => state.currentModel);
+
+  const handleModelChange = useCallback(
+    (value: string) => {
+      setCurrentModel(value);
+    },
+    [setCurrentModel],
+  );
   if (!modelList.length) {
     return null;
   }
 
   return (
-    <Select value={value} onValueChange={onChange} disabled={disabled}>
+    <Select
+      value={currentModel}
+      onValueChange={handleModelChange}
+      disabled={disabled}
+    >
       <SelectTrigger className={`w-full ${className} border-0 bg-[#F3F5F780]`}>
         <SelectValue placeholder="Select model" />
       </SelectTrigger>

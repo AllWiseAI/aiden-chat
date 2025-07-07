@@ -86,7 +86,7 @@ export class ChatGPTApi implements LLMApi {
           () => controller.abort("timeout"),
           REQUEST_TIMEOUT_MS,
         );
-
+        console.log("[Request] openai chat payload headers:", headers);
         const res = await tauriFetchWithSignal(
           DEFAULT_CHAT_URL,
           {
@@ -96,6 +96,12 @@ export class ChatGPTApi implements LLMApi {
               payload: {
                 messages: requestPayload.messages,
               },
+            },
+            headers: {
+              ...headers,
+              "Aiden-Model-Name": options.modelInfo?.model,
+              "Aiden-Endpoint": options.modelInfo?.endpoint,
+              "Aiden-Model-Provider": options.modelInfo?.provider,
             },
           },
           controller.signal,

@@ -48,7 +48,7 @@ export async function aidenFetch<T = unknown>(
   if (url.startsWith("/")) {
     finnalUrl = `${domain}${url}`;
   }
-  console.log("[Request] fetching", domain, finnalUrl);
+  console.log("[Request] fetching", finnalUrl);
   try {
     res = await fetch<T>(finnalUrl, {
       method: options.method,

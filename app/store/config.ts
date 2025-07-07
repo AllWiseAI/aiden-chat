@@ -101,6 +101,16 @@ export const useAppConfig = createPersistStore(
           set(() => ({
             currentModel: defaultModel,
           }));
+        } else {
+          // resolve current model not exist in models
+          const isCurrentModelExist = models?.find(
+            (model) => model.model === currentModel,
+          );
+          if (!isCurrentModelExist) {
+            set(() => ({
+              currentModel: defaultModel,
+            }));
+          }
         }
       }
     },
