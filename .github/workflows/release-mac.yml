@@ -165,12 +165,6 @@ jobs:
             echo "❌ Unknown arch: ${{ matrix.config.artifact_arch }}"
             exit 1
           fi
-
-      - name: Zip .app for upload
-        run: |
-          cd src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos
-          zip -r AidenChat_${{ steps.arch_map.outputs.mapped_arch }}.app.zip AidenChat.app
-
       - name: Output tag list for debugging
         run: |
           git fetch --tags
