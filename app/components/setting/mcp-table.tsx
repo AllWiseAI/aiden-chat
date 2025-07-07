@@ -134,7 +134,7 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
         <h2 className="text-sm font-bold">{t("tabs.mcp")}</h2>
         <div className="flex items-center gap-2 self-end h-6">
           <Button
-            className="h-full bg-[#DBF5EC] dark:bg-[#00D47E]/6 hover:bg-[#BEF0DD] dark:hover:bg-[#00D47E]/12 text-main border border-[#00D47E]/10 text-xs rounded-sm px-1.5 py-1"
+            className="h-full bg-[#DBF5EC] dark:bg-[#00D47E]/6 hover:bg-[#BEF0DD] dark:hover:bg-[#00D47E]/12 text-main border border-[#00D47E]/10 text-sm rounded-sm px-2.5 py-1"
             onClick={() => setMode("edit")}
           >
             {/* <EditIcon className="size-4" /> */}
@@ -142,7 +142,7 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
           </Button>
           <div className="flex-center relative w-40">
             <Input
-              className="h-6 !text-left !placeholder:text-[#6C7275]/50 placeholder:text-xs pl-6 pr-2.5 py-1 rounded-sm"
+              className="h-6 !text-left !placeholder:text-[#6C7275]/50 placeholder:text-sm pl-6 pr-2.5 py-1 rounded-sm"
               clearable
               value={searchValue}
               placeholder={t("mcp.search")}

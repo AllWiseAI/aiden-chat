@@ -12,7 +12,7 @@ export interface FetchBody {
 }
 
 export const getBaseDomain = async () => {
-  const region = await useSettingStore.getState().getRegion();
+  const region = await useSettingStore.getState().region;
   if (region === "CN") {
     return process.env.NODE_ENV === "development"
       ? "https://dev.aidenai.io"

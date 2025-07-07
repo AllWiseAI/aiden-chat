@@ -66,7 +66,7 @@ export function Settings() {
       data-tauri-drag-region
     >
       <div className="flex justify-between items-center">
-        <div className="w-max text-base dark:text-white font-semibold disable-select">
+        <div className="w-max text-lg dark:text-white font-semibold disable-select">
           {t("title")}
         </div>
         <Button

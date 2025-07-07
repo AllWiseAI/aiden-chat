@@ -507,11 +507,13 @@ function InnerChat() {
           <div className={styles["chat-body-container"]}>
             {isNewChat ? (
               <>
-                <div className="w-full h-10" data-tauri-drag-region></div>
                 <div
-                  className={clsx(styles["chat-main-welcome"], "flex gap-2.5")}
+                  className={clsx(
+                    styles["chat-main-welcome"],
+                    "flex gap-2.5 text-4xl",
+                  )}
                 >
-                  <LogoIcon className="size-7.5" />
+                  <LogoIcon className="size-10" />
                   {t("chat.title")} Aiden
                 </div>
               </>
@@ -661,23 +663,23 @@ function InnerChat() {
                     </div>
                   ))}
                 </div>
-                <div className="absolute bottom-8 left-3 flex gap-2">
+                <div className="absolute bottom-3 left-3 flex gap-2">
                   <ImageUploader />
                   <McpPopover
                     icon={
-                      <McpIcon className="size-4 text-black dark:text-white" />
+                      <McpIcon className="size-6 text-black dark:text-white" />
                     }
                   />
                 </div>
                 <Button
-                  className="absolute bottom-8 right-3 h-6 w-6 bg-main rounded-full hover:bg-[#00D47E]/90 p-0 disabled:bg-[#6C7274] dark:disabled:bg-[#343839] !disabled:cursor-not-allowed"
+                  className="absolute bottom-3 right-3 size-12 bg-main rounded-full hover:bg-[#00D47E]/90 p-0 disabled:bg-[#373A3B] disabled:opacity-100 dark:disabled:bg-[#343839] !disabled:cursor-not-allowed"
                   onClick={() => doSubmit(userInput)}
                   disabled={!(userInput.length || images.length) && !isChatting}
                 >
                   {isChatting ? (
                     <StopIcon className="text-white dark:text-black" />
                   ) : (
-                    <SendIcon />
+                    <SendIcon className="size-[30px]" />
                   )}
                 </Button>
               </label>

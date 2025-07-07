@@ -80,7 +80,7 @@ function McpPopover({ icon }: { icon: ReactElement }) {
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className="border border-[#E8ECEF] text-black dark:text-white dark:bg-[#141416] dark:border-[#343839] text-xs font-medium !rounded-sm p-2.5 h-[30px]"
+          className="border border-[#E8ECEF] text-black dark:text-white dark:bg-[#141416] dark:border-[#343839] font-medium !rounded-sm p-2.5 h-12"
         >
           {icon}
           MCP
@@ -140,7 +140,9 @@ function McpPopover({ icon }: { icon: ReactElement }) {
             })}
           </div>
         ) : (
-          <div className="p-5 text-gray-500">No Mcp</div>
+          <div className="p-5 text-gray-500 whitespace-nowrap">
+            No Mcp Servers
+          </div>
         )}
         <div
           className="group h-[30px] text-xs flex justify-between items-center w-full bg-[#E8ECEF]/50 dark:bg-[#232627]/50 hover:text-[#00AB66] text-center hover:opacity-80 cursor-pointer rounded-sm px-2.5"

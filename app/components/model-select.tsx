@@ -34,7 +34,7 @@ export const ModelSelect = ({
       <SelectTrigger className={`w-full ${className} border-0 bg-[#F3F5F780]`}>
         <SelectValue placeholder="Select model" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="max-h-60 max-w-50">
         <SelectGroup>
           {modelList.map((model) => (
             <SelectItem key={model.model} value={model.model}>

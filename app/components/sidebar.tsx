@@ -9,6 +9,11 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/app/components/shadcn/dropdown-menu";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/app/components/shadcn/avatar";
 import { Button } from "@/app/components/shadcn/button";
 import { Input } from "@/app/components/shadcn/input";
 import LogoIcon from "../icons/logo-text.svg";
@@ -179,99 +184,30 @@ export function SideBarHeader(props: {
   toggleSearch: () => void;
 }) {
   const { children, shouldNarrow, toggleSearch } = props;
-  const authStore = useAuthStore();
-  const navigate = useNavigate();
-  const { t } = useTranslation("settings");
+
   const { toggleSideBar } = useDragSideBar();
 
-  const logout = async () => {
-    navigate(Path.Login);
-    try {
-      const success = await authStore.logout();
-      if (success) {
-        toast.success("Logout success", {
-          className: "w-auto max-w-max",
-        });
-      }
-    } catch (e: any) {
-      toast.error(e.message, {
-        className: "w-auto max-w-max",
-      });
-    }
-  };
   return (
     <Fragment>
       <div
         className={clsx(
-          "flex items-center h-25 gap-4 overflow-hidden px-6 pt-10 dark:border-[#232627] select-none",
+          "flex items-center h-20 gap-4 overflow-hidden px-4 pt-8 dark:border-[#232627] select-none",
           shouldNarrow ? "justify-center" : "justify-between",
         )}
       >
         {!shouldNarrow && (
           <>
-            <div className="flex items-center gap-4">
-              <DropdownMenu>
-                <DropdownMenuTrigger>
-                  {/* <Avatar className="size-10 cursor-pointer">
-                    <AvatarImage src={authStore.user.profile} />
-                    <AvatarFallback>
-                      {authStore.user.email?.[0].toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar> */}
-                  <LogoIcon />
-                </DropdownMenuTrigger>
-
-                <DropdownMenuContent
-                  className="px-1.5 py-2 rounded-sm flex flex-col gap-3 min-w-max text-[#6C7275] dark:bg-[#101213]"
-                  align="start"
-                  side="bottom"
-                >
-                  <DropdownMenuRadioGroup>
-                    <DropdownMenuRadioItem
-                      value="settings"
-                      className="flex justify-start gap-2 !px-1.5 !py-2"
-                      onClick={() => navigate(Path.Settings)}
-                    >
-                      <SettingIcon className="size-[18px]" />
-                      <span className="-ml-1 text-xs">{t("title")}</span>
-                    </DropdownMenuRadioItem>
-                    {/* <DropdownMenuRadioItem
-                      value="exportlog"
-                      className="flex justify-start gap-2 !px-2 !py-2"
-                      onClick={exportAndDownloadLog}
-                    >
-                      <ExportIcon className="size-4" />
-                      <span className="-ml-1 text-xs">
-                        Export Logs
-                      </span>
-                    </DropdownMenuRadioItem> */}
-                    <DropdownMenuRadioItem
-                      value="logout"
-                      className="flex justify-start gap-2 !px-1.5 !py-2"
-                      onClick={logout}
-                    >
-                      <LogoutIcon className="size-[18px]" />
-                      <span className="-ml-1 text-xs">
-                        {t("general.logout")}
-                      </span>
-                    </DropdownMenuRadioItem>
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-            {/* <span className="text-sm font-semibold flex-1 overflow-hidden text-ellipsis cursor-default leading-6 whitespace-nowrap">
-              {authStore.user.name}
-            </span> */}
+            <LogoIcon />
           </>
         )}
-        <div className="flex gap-2.5">
+        <div className="flex gap-1.5">
           {!shouldNarrow && (
             <Button variant="ghost" className="size-6" onClick={toggleSearch}>
-              <SearchIcon className="size-6" />
+              <SearchIcon className="size-5" />
             </Button>
           )}
           <Button variant="ghost" className="size-6" onClick={toggleSideBar}>
-            <CollapseIcon className="size-6 text-white dark:text-[#141718]" />
+            <CollapseIcon className="size-5 text-white dark:text-[#141718]" />
           </Button>
         </div>
       </div>
@@ -287,12 +223,12 @@ export function SideBarBody(props: {
 }) {
   const { children, shouldNarrow = false } = props;
 
-  return (
-    !shouldNarrow && (
-      <div className="flex-1 overflow-y-auto flex flex-col">
-        <div className="flex flex-col gap-2.5 px-4">{children}</div>
-      </div>
-    )
+  return !shouldNarrow ? (
+    <div className="flex-1 overflow-y-auto flex flex-col">
+      <div className="flex flex-col gap-2.5 px-4">{children}</div>
+    </div>
+  ) : (
+    <div className="flex-1"></div>
   );
 }
 
@@ -300,12 +236,81 @@ export function SideBarFooter(props: {
   children?: React.ReactNode;
   shouldNarrow?: boolean;
 }) {
-  const { children, shouldNarrow = false } = props;
+  const { children } = props;
+  const authStore = useAuthStore();
+  const navigate = useNavigate();
+  const { t } = useTranslation("settings");
+  const logout = async () => {
+    navigate(Path.Login);
+    try {
+      const success = await authStore.logout();
+      if (success) {
+        toast.success("Logout success", {
+          className: "w-auto max-w-max",
+        });
+      }
+    } catch (e: any) {
+      toast.error(e.message, {
+        className: "w-auto max-w-max",
+      });
+    }
+  };
 
   return (
-    !shouldNarrow && (
-      <div className="flex justify-start gap-2.5 px-2.5 py-2.5">{children}</div>
-    )
+    <div className="flex gap-2.5 p-4">
+      {children}
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <Avatar className="size-10 cursor-pointer">
+            <AvatarImage src={authStore.user.profile} />
+            <AvatarFallback>
+              {authStore.user.email?.[0].toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent
+          className="px-1.5 py-2 rounded-sm flex flex-col gap-3 min-w-max"
+          align="start"
+          side="bottom"
+        >
+          <DropdownMenuRadioGroup>
+            <DropdownMenuRadioItem
+              value="logout"
+              className="flex justify-start gap-2 !px-1.5 !py-2"
+              onClick={logout}
+            >
+              <LogoutIcon className="size-[18px]" />
+              <span className="-ml-1 text-xs">{t("general.logout")}</span>
+            </DropdownMenuRadioItem>
+            <DropdownMenuRadioItem
+              value="settings"
+              className="flex justify-start gap-2 !px-1.5 !py-2"
+              onClick={() => navigate(Path.Settings)}
+            >
+              <SettingIcon className="size-[18px]" />
+              <span className="-ml-1 text-xs">{t("title")}</span>
+            </DropdownMenuRadioItem>
+          </DropdownMenuRadioGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      {/* <div className="flex flex-col gap-2 text-[#6C7275] text-sm">
+        <div
+          className="flex items-center gap-2 group hover:text-white cursor-pointer"
+          onClick={logout}
+        >
+          <LogoutIcon className="size-[18px] text-[#6C7275] group-hover:text-white" />
+          {!shouldNarrow && <span>{t("general.logout")}</span>}
+        </div>
+        <div
+          className="flex items-center gap-2 group hover:text-white cursor-pointer"
+          onClick={() => navigate(Path.Settings)}
+        >
+          <SettingIcon className="size-[18px] text-[#6C7275] group-hover:text-white" />
+          {!shouldNarrow && <span>{t("title")}</span>}
+        </div>
+      </div> */}
+    </div>
   );
 }
 
@@ -359,14 +364,14 @@ export function SideBar(props: { className?: string }) {
               )}
               <Button
                 variant="ghost"
-                className="h-12 text-main flex justify-start items-center gap-1 !px-2.5 py-4 rounded-sm"
+                className="h-9 text-main flex justify-start items-center gap-1 !px-1.5 py-1.5 rounded-sm"
                 onClick={() => {
                   chatStore.newSession();
                   navigate(Path.Chat);
                 }}
               >
-                <AddIcon className="size-4 text-main" />
-                <span className="text-main font-medium text-sm select-none">
+                <AddIcon className="size-5 text-main" />
+                <span className="text-main font-medium select-none">
                   {t("home.newChat")}
                 </span>
               </Button>
@@ -375,6 +380,7 @@ export function SideBar(props: { className?: string }) {
         )}
         <ChatList narrow={shouldNarrow} searchValue={searchValue} />
       </SideBarBody>
+      <SideBarFooter shouldNarrow={shouldNarrow} />
     </SideBarContainer>
   );
 }
