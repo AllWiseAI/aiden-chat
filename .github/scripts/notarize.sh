@@ -31,9 +31,7 @@ rm -f "$ZIP_PATH"
 
 # 用 zip -r 重新打包，保证 Tauri zip-rs 能解压
 echo "📦 使用 zip -r 打包 .app 为 .zip（兼容 Tauri 解压）"
-cd "$(dirname "$APP_PATH")"
-zip -r "$ZIP_PATH" "$(basename "$APP_PATH")"
-cd -
+zip -r "$ZIP_PATH" "$APP_PATH"
 
 # 公证 zip
 echo "🚀 提交 .zip 公证"
