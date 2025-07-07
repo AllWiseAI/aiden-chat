@@ -1,16 +1,11 @@
 import { aidenFetch as fetch, FetchBody } from "@/app/utils/fetch";
 
-const baseURL =
-  process.env.NODE_ENV === "development"
-    ? "https://dev.aidenai.io"
-    : "https://prod.aidenai.io";
-
 export async function apiGetSignUpCode(payload: { email: string }) {
   const params = {
     email: payload.email,
   };
 
-  const result = await fetch(`${baseURL}/auth/request_signup_code`, {
+  const result = await fetch("/auth/request_signup_code", {
     method: "POST",
     body: {
       type: "Json",
@@ -33,7 +28,7 @@ export async function apiCompleteSignUp(payload: {
     code: payload.code,
     profile_image_url: payload.profile_image_url,
   };
-  const result = await fetch(`${baseURL}/auth/complete_signup`, {
+  const result = await fetch("/auth/complete_signup", {
     method: "POST",
     body: {
       type: "Json",
@@ -48,7 +43,7 @@ export async function apiLogin(payload: { email: string; password: string }) {
     email: payload.email,
     password: payload.password,
   };
-  const response = await fetch(`${baseURL}/auth/login`, {
+  const response = await fetch("/auth/login", {
     method: "POST",
     body: {
       type: "Json",
@@ -62,7 +57,7 @@ export async function apiLogout(refreshToken: string) {
   const params = {
     refresh_token: refreshToken,
   };
-  const result = await fetch(`${baseURL}/auth/logout`, {
+  const result = await fetch("/auth/logout", {
     method: "POST",
     body: {
       type: "Json",
@@ -76,7 +71,7 @@ export async function apiRefreshToken(refreshToken: string) {
   const params = {
     refresh_token: refreshToken,
   };
-  const result = await fetch(`${baseURL}/auth/refresh_token`, {
+  const result = await fetch("/auth/refresh_token", {
     method: "POST",
     body: {
       type: "Json",
@@ -97,7 +92,7 @@ export async function apiResetPasswordCode(email: string) {
   const params = {
     email,
   };
-  const result = await fetch(`${baseURL}/auth/request_reset_password_code`, {
+  const result = await fetch("/auth/request_reset_password_code", {
     method: "POST",
     body: {
       type: "Json",
@@ -117,7 +112,7 @@ export async function apiCompleteResetPassword(payload: {
     password: payload.password,
     code: payload.code,
   };
-  const result = await fetch(`${baseURL}/auth/complete_reset_password`, {
+  const result = await fetch("/auth/complete_reset_password", {
     method: "POST",
     body: {
       type: "Json",
@@ -129,7 +124,7 @@ export async function apiCompleteResetPassword(payload: {
 
 export async function apiGetRegion() {
   const params = {};
-  const result = await fetch(`${baseURL}/api/country/info`, {
+  const result = await fetch("/api/country/info", {
     method: "GET",
     body: {
       type: "Json",
