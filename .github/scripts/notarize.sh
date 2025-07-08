@@ -19,6 +19,7 @@ APP_PATH="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/macos/AidenCh
 ZIP_PATH="${APP_PATH}.zip"
 APP_NAME="AidenChat.app"
 APP_DIR="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/macos"
+TAURI_RAW_ZIP_PATH="${APP_PATH}.tar.gz"
 TAURI_SIGN_ZIP_NAME="AidenChat_${ARCH_DMG_SUFFIX}.app.tar.gz"
 DMG_NAME="AidenChat_${PACKAGE_VERSION}_${ARCH_DMG_SUFFIX}_signed.dmg"
 DMG_PATH="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/dmg/${DMG_NAME}"
@@ -89,12 +90,16 @@ RENAMED_ZIP_PATH="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/macos
 # echo "📦 正确方式：进入到 ${APP_DIR} 目录压缩"
 # (cd "$APP_DIR" && zip -r "$TAURI_SIGN_ZIP_NAME" "$APP_NAME")
 
-mv "$ZIP_PATH" "$RENAMED_ZIP_PATH"
+# 查看 APP_DIR 下内容（含 zip 是否存在）
+echo "📂 查看 $APP_DIR 下所有内容"
+ls -lh "$APP_DIR"
 
+mv "$TAURI_RAW_ZIP_PATH" "$RENAMED_ZIP_PATH"
 
 # 查看 APP_DIR 下内容（含 zip 是否存在）
 echo "📂 查看 $APP_DIR 下所有内容"
 ls -lh "$APP_DIR"
+
 
 # 使用 tauri signer
 npx tauri signer sign \
