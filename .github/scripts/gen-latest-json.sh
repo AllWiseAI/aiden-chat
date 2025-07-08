@@ -8,13 +8,13 @@ ARTIFACT_DIR="artifacts"
 CRC_TOOL=".github/scripts/crc64.py"
 
 # === 路径设定 ===
-SIG_ARM64="${ARTIFACT_DIR}/aarch64-artifacts/macos/AidenChat_aarch64.app.zip.sig"
-ZIP_ARM64="${ARTIFACT_DIR}/aarch64-artifacts/macos/AidenChat_aarch64.app.zip"
+SIG_ARM64="${ARTIFACT_DIR}/aarch64-artifacts/macos/AidenChat_aarch64.app.tar.gz.sig"
+ZIP_ARM64="${ARTIFACT_DIR}/aarch64-artifacts/macos/AidenChat_aarch64.app.tar.gz"
 DMG_ARM64="${ARTIFACT_DIR}/aarch64-artifacts/dmg/AidenChat_${PACKAGE_VERSION}_aarch64_signed.dmg"
 
 
-SIG_X64="${ARTIFACT_DIR}/x64-artifacts/macos/AidenChat_x64.app.zip.sig"
-ZIP_X64="${ARTIFACT_DIR}/x64-artifacts/macos/AidenChat_x64.app.zip"
+SIG_X64="${ARTIFACT_DIR}/x64-artifacts/macos/AidenChat_x64.app.tar.gz.sig"
+ZIP_X64="${ARTIFACT_DIR}/x64-artifacts/macos/AidenChat_x64.app.tar.gz"
 DMG_X64="${ARTIFACT_DIR}/x64-artifacts/dmg/AidenChat_${PACKAGE_VERSION}_x64_signed.dmg"
 
 # === 检查产物是否存在 ===
