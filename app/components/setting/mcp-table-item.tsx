@@ -3,6 +3,7 @@
 import { Button } from "@/app/components/shadcn/button";
 import { Switch } from "@/app/components/shadcn/switch";
 import FetchIcon from "../../icons/fetch.svg";
+import MoreIcon from "../../icons/more.svg";
 import SuccessIcon from "../../icons/access.svg";
 import LoadingIcon from "../../icons/loading-spinner.svg";
 import ErrorIcon from "../../icons/error.svg";
@@ -14,6 +15,13 @@ import {
   TSettingInfo,
   TTemplateInfo,
 } from "@/app/typing";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/app/components/shadcn/dropdown-menu";
 import { useMcpStore } from "@/app/store/mcp";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -57,6 +65,7 @@ export function McpTableItem({
   const { t, i18n } = useTranslation("settings");
   const [status, setStatus] = useState<McpAction | null>(null);
   const [templateModal, setTemplateModal] = useState(false);
+  const [openMenu, setOpenMenu] = useState(false);
   const [templateInfo, setTemplateInfo] = useState<TTemplateInfo | null>(null);
   const {
     mcp_id,
@@ -225,9 +234,31 @@ export function McpTableItem({
           )}
         </div>
         <div className="flex flex-col">
-          <div className="text-xs font-medium mb-1">
-            {Highlight({ text: mcp_name, keyword })}
+          <div className="flex justify-between">
+            <div className="text-xs font-medium mb-1 max-w-8/10">
+              {Highlight({ text: mcp_name, keyword })}
+            </div>
+            <DropdownMenu open={openMenu} onOpenChange={setOpenMenu}>
+              <DropdownMenuTrigger
+                className="size-4 flex-center cursor-pointer"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <MoreIcon />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                asChild
+                className="flex flex-col p-2 min-w-max"
+                onCloseAutoFocus={(e) => {
+                  e.preventDefault();
+                }}
+              >
+                <DropdownMenuRadioGroup>
+                  <DropdownMenuRadioItem value="1">11</DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
+
           <div
             className="text-[10px] text-[#6C7275]"
             style={{

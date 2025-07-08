@@ -616,9 +616,13 @@ function InnerChat() {
                 <textarea
                   id="chat-input"
                   ref={inputRef}
-                  className={clsx(styles["chat-input"], {
-                    [styles["chat-input-with-image"]]: images.length > 0,
-                  })}
+                  className={clsx(
+                    styles["chat-input"],
+                    {
+                      [styles["chat-input-with-image"]]: images.length > 0,
+                    },
+                    "placeholder:text-[#6C7275]",
+                  )}
                   placeholder="Ask anything..."
                   onInput={(e) => onInput(e.currentTarget.value)}
                   value={userInput}
