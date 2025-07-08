@@ -116,6 +116,9 @@
     "allowAlways": "Allow always",
     "allowOnce": "Allow once",
     "mcpSetting": "MCP Setting",
-    "save": "Save"
+    "save": "Save",
+    "form": {
+      "empty": "{{fieldName}} cannot be empty."
+    }
   }
 }
