@@ -14,8 +14,12 @@ else
   exit 1
 fi
 
+
 APP_PATH="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/macos/AidenChat.app"
 ZIP_PATH="${APP_PATH}.zip"
+APP_NAME="AidenChat.app"
+APP_DIR="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/macos"
+TAURI_SIGN_ZIP_NAME="AidenChat_${ARCH_DMG_SUFFIX}.app.zip"
 DMG_NAME="AidenChat_${PACKAGE_VERSION}_${ARCH_DMG_SUFFIX}_signed.dmg"
 DMG_PATH="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/dmg/${DMG_NAME}"
 VOL_NAME="AidenChat"
@@ -77,10 +81,10 @@ xcrun stapler staple "$DMG_PATH"
 echo "✅ $ARCH 架构公证完成 ✅"
 
 # ✅ 添加后缀并重命名 zip 和 sig（防止覆盖）
-RENAMED_ZIP_PATH="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/macos/AidenChat_${ARCH_DMG_SUFFIX}.app.zip"
+RENAMED_ZIP_PATH="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/macos/$TAURI_SIGN_ZIP_NAME"
 
-ls -al
-zip -r "$RENAMED_ZIP_PATH" "$APP_PATH"
+echo "📦 正确方式：进入到 ${APP_DIR} 目录压缩"
+(cd "$APP_DIR" && zip -r "$ZIP_NAME" "$APP_NAME")
 
 ASSET_PATH="$RENAMED_ZIP_PATH"
 
