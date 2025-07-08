@@ -634,7 +634,12 @@ function InnerChat() {
                     fontFamily: config.fontFamily,
                   }}
                 />
-                <div className="absolute top-6 left-3 flex items-center gap-2.5 w-[calc(100%-24px)] bg-white dark:bg-[#141416]">
+                <div
+                  className={clsx(
+                    "absolute top-3 left-3 flex items-center gap-2.5 w-[calc(100%-24px)] bg-white dark:bg-[#141416]",
+                    images.length > 0 && "pb-2",
+                  )}
+                >
                   {images.map((img) => (
                     <div key={img.id} className="relative">
                       {img.url ? (
@@ -647,12 +652,12 @@ function InnerChat() {
                           <CircleProgress progress={img.progress} />
                         </div>
                       )}
-                      <button
+                      <Button
                         onClick={() => removeImage(img.id)}
-                        className="absolute -top-2 -right-2 bg-[#F3F5F7] text-[#343839] rounded-full w-4 h-4 flex items-center justify-center"
+                        className="absolute -top-2 -right-2 bg-[#F3F5F7] text-[#343839] rounded-full w-4 h-4 flex-center p-0"
                       >
                         ×
-                      </button>
+                      </Button>
                     </div>
                   ))}
                 </div>

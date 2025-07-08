@@ -77,7 +77,7 @@ export function Settings() {
           <CloseIcon className="size-4" />
         </Button>
       </div>
-      <div className="h-full">
+      <div className="h-full overflow-x-auto overflow-y-hidden">
         <div className="w-full h-[1px] bg-[#E8ECEF] dark:bg-[#232627]"></div>
         <div className="flex h-full">
           <ul
@@ -99,7 +99,7 @@ export function Settings() {
               </li>
             ))}
           </ul>
-          <div className="flex-1 pt-2 pl-5 h-full min-w-100">
+          <div className="flex-1 pt-2 pl-5 h-full min-w-106">
             {renderPanel()}
           </div>
         </div>

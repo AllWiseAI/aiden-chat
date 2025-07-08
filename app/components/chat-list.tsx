@@ -214,7 +214,7 @@ export function ChatItem(props: {
                   <AlertDialogContent className="rounded-sm w-80 dark:text-white gap-5">
                     <div className="flex justify-center">
                       <AlertDialogHeader>
-                        <AlertDialogTitle className="text-sm">
+                        <AlertDialogTitle className="text-[18px]">
                           {t("dialog.deleteTitle")}
                         </AlertDialogTitle>
                       </AlertDialogHeader>
@@ -223,7 +223,7 @@ export function ChatItem(props: {
                         <CloseIcon className="size-6" />
                       </AlertDialogCancel> */}
                     </div>
-                    <AlertDialogDescription className="text-xs text-center font-normal text-[#141718] dark:text-white">
+                    <AlertDialogDescription className="text-sm text-center font-normal text-[#141718] dark:text-white">
                       {t("dialog.alert")}
                     </AlertDialogDescription>
                     <AlertDialogFooter>

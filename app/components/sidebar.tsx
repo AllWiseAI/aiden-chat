@@ -3,13 +3,6 @@ import React, { Fragment, useEffect, useState, useMemo, useRef } from "react";
 import styles from "./home.module.scss";
 
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "@/app/components/shadcn/dropdown-menu";
-import {
   Avatar,
   AvatarFallback,
   AvatarImage,
@@ -33,7 +26,7 @@ import {
   Path,
 } from "../constant";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { isIOS, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
 import clsx from "clsx";
@@ -197,7 +190,7 @@ export function SideBarHeader(props: {
       >
         {!shouldNarrow && (
           <>
-            <LogoIcon />
+            <LogoIcon className="h-[23px]" />
           </>
         )}
         <div className="flex gap-1.5">
@@ -207,7 +200,7 @@ export function SideBarHeader(props: {
             </Button>
           )}
           <Button variant="ghost" className="size-6" onClick={toggleSideBar}>
-            <CollapseIcon className="size-5 text-white dark:text-[#141718]" />
+            <CollapseIcon className="size-5" />
           </Button>
         </div>
       </div>
@@ -239,7 +232,9 @@ export function SideBarFooter(props: {
   const { children } = props;
   const authStore = useAuthStore();
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation("settings");
+  const [showItem, setShowItem] = useState(false);
   const logout = async () => {
     navigate(Path.Login);
     try {
@@ -259,41 +254,45 @@ export function SideBarFooter(props: {
   return (
     <div className="flex gap-2.5 p-4">
       {children}
-      <DropdownMenu>
-        <DropdownMenuTrigger>
-          <Avatar className="size-10 cursor-pointer">
-            <AvatarImage src={authStore.user.profile} />
-            <AvatarFallback>
-              {authStore.user.email?.[0].toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-        </DropdownMenuTrigger>
 
-        <DropdownMenuContent
-          className="px-1.5 py-2 rounded-sm flex flex-col gap-3 min-w-max"
-          align="start"
-          side="bottom"
+      <div className="flex flex-col gap-2.5 w-full overflow-hidden">
+        <Avatar
+          className="size-10 cursor-pointer"
+          onClick={() => setShowItem(!showItem)}
         >
-          <DropdownMenuRadioGroup>
-            <DropdownMenuRadioItem
-              value="logout"
-              className="flex justify-start gap-2 !px-1.5 !py-2"
-              onClick={logout}
-            >
-              <LogoutIcon className="size-[18px]" />
-              <span className="-ml-1 text-xs">{t("general.logout")}</span>
-            </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem
-              value="settings"
-              className="flex justify-start gap-2 !px-1.5 !py-2"
-              onClick={() => navigate(Path.Settings)}
-            >
-              <SettingIcon className="size-[18px]" />
-              <span className="-ml-1 text-xs">{t("title")}</span>
-            </DropdownMenuRadioItem>
-          </DropdownMenuRadioGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
+          <AvatarImage src={authStore.user.profile} />
+          <AvatarFallback>
+            {authStore.user.email?.[0].toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+        <div
+          className={clsx(
+            "transition-all duration-300 ease-in-out",
+            showItem ? " max-h-40" : "max-h-0",
+          )}
+        >
+          <div
+            className="flex justify-start gap-2 !px-1.5 !py-2 w-full hover:bg-[#E8ECEF]/50 dark:hover:bg-[#232627]/50 cursor-pointer"
+            onClick={() => {
+              console.log(1111, location.pathname);
+              if (location.pathname !== Path.Settings) {
+                navigate(Path.Settings);
+              }
+            }}
+          >
+            <SettingIcon className="size-[18px]" />
+            <span className="-ml-1 text-xs">{t("title")}</span>
+          </div>
+          <div
+            className="flex justify-start gap-2 !px-1.5 !py-2 w-full hover:bg-[#E8ECEF]/50 dark:hover:bg-[#232627]/50 cursor-pointer"
+            onClick={logout}
+          >
+            <LogoutIcon className="size-[18px]" />
+            <span className="-ml-1 text-xs">{t("general.logout")}</span>
+          </div>
+        </div>
+      </div>
+
       {/* <div className="flex flex-col gap-2 text-[#6C7275] text-sm">
         <div
           className="flex items-center gap-2 group hover:text-white cursor-pointer"
@@ -352,7 +351,7 @@ export function SideBar(props: { className?: string }) {
               {isSearchVisible && (
                 <div className="flex-center relative">
                   <Input
-                    className="h-9 !text-left focus:border-primary placeholder:text-sm !placeholder:text-[#6C7275]/50 pl-6 pr-2.5 py-1 rounded-sm"
+                    className="h-9 !text-left dark:border-main placeholder:text-sm !placeholder:text-[#6C7275] pl-6 pr-2.5 py-1 rounded-sm"
                     clearable
                     value={searchValue}
                     placeholder="Search"

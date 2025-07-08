@@ -3,6 +3,7 @@
   "tabs": {
     "general": "通用",
     "mcp": "MCP",
+    "mcpManage": "MCP 管理",
     "aboutUs": "关于我们"
   },
   "general": {

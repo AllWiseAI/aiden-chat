@@ -10,7 +10,8 @@ import { Button } from "@/app/components/shadcn/button";
 import { createContext, useContext, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
 import MapIcon from "../../icons/map.svg";
-import AidenIcon from "../../icons/logo-text.svg";
+import Logo from "../../icons/logo.svg";
+import LogoText from "../../icons/logo-text.svg";
 import { t } from "i18next";
 
 export type ConfirmOptions = {
@@ -101,7 +102,7 @@ export const ConfirmProvider = ({
     return (
       <AlertDialogFooter className="flex !justify-between">
         <Button
-          className="h-7 bg-white hover:bg-[#F3F5F74D] dark:bg-[#141718] text-[#6C7275] text-xs border border-[#E8ECEF] dark:border-[#343839] flex-center gap-3 px-1.5 py-1 rounded-sm"
+          className="h-7 bg-white hover:bg-[#F3F5F74D] dark:bg-[#141718] text-[#6C7275] text-sm border border-[#E8ECEF] dark:border-[#343839] flex-center gap-3 px-1.5 py-1 rounded-sm"
           onClick={() => {
             handleClose("decline");
           }}
@@ -110,7 +111,7 @@ export const ConfirmProvider = ({
         </Button>
         <div className="flex gap-2">
           <Button
-            className="h-7 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main text-xs flex-center gap-3 px-1.5 py-1 rounded-sm"
+            className="h-7 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main text-sm flex-center gap-3 px-1.5 py-1 rounded-sm"
             onClick={() => {
               handleClose("always");
             }}
@@ -118,7 +119,7 @@ export const ConfirmProvider = ({
             {t("dialog.allowAlways")}
           </Button>
           <Button
-            className="h-7 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main text-xs flex-center gap-3 px-1.5 py-1 rounded-sm"
+            className="h-7 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main text-sm flex-center gap-3 px-1.5 py-1 rounded-sm"
             onClick={() => {
               handleClose("once");
             }}
@@ -142,14 +143,14 @@ export const ConfirmProvider = ({
 
     if (options?.type === "latestVersion") {
       return (
-        <AlertDialogDescription className="text-center gap-2 text-xs font-normal text-[#141718] dark:text-white mb-2">
+        <AlertDialogDescription className="text-center gap-2 text-sm font-normal text-[#141718] dark:text-white mb-2">
           {options.description}
         </AlertDialogDescription>
       );
     }
 
     return (
-      <AlertDialogDescription className="flex items-center gap-2.5 text-xs font-normal text-[#141718] dark:text-white border border-[#E8ECEF] dark:border-[#232627] rounded-xl px-2.5 py-2">
+      <AlertDialogDescription className="flex items-center gap-2.5 text-base font-normal text-[#141718] dark:text-white border border-[#E8ECEF] dark:border-[#232627] rounded-xl px-2.5 py-2">
         <MapIcon className="size-[18px]" />
         {options.description}
       </AlertDialogDescription>
@@ -168,7 +169,7 @@ export const ConfirmProvider = ({
             <AlertDialogContent className="!rounded-sm w-80 p-5 gap-5">
               <div className="flex justify-center">
                 <AlertDialogHeader>
-                  <AlertDialogTitle className="!text-sm font-medium text-black dark:text-white">
+                  <AlertDialogTitle className="text-[18px] font-medium text-black dark:text-white">
                     {options.title}
                   </AlertDialogTitle>
                 </AlertDialogHeader>
@@ -182,8 +183,9 @@ export const ConfirmProvider = ({
                 )} */}
               </div>
               {options.withLogo && (
-                <div className="flex items-center justify-center w-full mb-2 -mt-[16px]">
-                  <AidenIcon className="scale-75 dark:text-white" />
+                <div className="flex items-end justify-center gap-2 w-full mb-2 -mt-[16px]">
+                  <Logo className="size-[22px]" />
+                  <LogoText className="h-[17px] dark:text-white" />
                 </div>
               )}
               {renderDescription()}

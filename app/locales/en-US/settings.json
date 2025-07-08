@@ -3,6 +3,7 @@
   "tabs": {
     "general": "General",
     "mcp": "MCP",
+    "mcpManage": "MCP Management",
     "aboutUs": "About us"
   },
   "general": {

@@ -1,9 +1,10 @@
 "use client";
 
-import { Button } from "@/app/components/shadcn/button";
 import { Switch } from "@/app/components/shadcn/switch";
 import FetchIcon from "../../icons/fetch.svg";
 import MoreIcon from "../../icons/more.svg";
+import SettingIcon from "../../icons/setting.svg";
+import DeleteIcon from "../../icons/delete.svg";
 import SuccessIcon from "../../icons/access.svg";
 import LoadingIcon from "../../icons/loading-spinner.svg";
 import ErrorIcon from "../../icons/error.svg";
@@ -39,7 +40,7 @@ type McpItemProps = {
     version: string,
   ) => Promise<void>;
   onDelete: (
-    e: React.MouseEvent<HTMLButtonElement>,
+    e: React.MouseEvent<HTMLElement>,
     mcp_name: string,
   ) => Promise<void>;
   onSelect: () => void;
@@ -121,7 +122,7 @@ export function McpTableItem({
   }, [mcp_key, local_version, remote_version, config?.mcpServers]);
 
   const handleShowSettingModal = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
+    (e: React.MouseEvent<HTMLElement>) => {
       e.stopPropagation();
       onSetting(item.settingInfo, item.mcp_key);
     },
@@ -129,7 +130,7 @@ export function McpTableItem({
   );
 
   const handleUpdateMcpVersion = useCallback(
-    async (e: React.MouseEvent<HTMLButtonElement>) => {
+    async (e: React.MouseEvent<HTMLElement>) => {
       e.stopPropagation();
       const { mcp_id, mcp_key, current_version } = item;
       try {
@@ -213,7 +214,7 @@ export function McpTableItem({
 
   return (
     <div
-      className="w-full h-full flex flex-col gap-5 rounded-sm border border-[#E8ECEF] dark:border-[#232627] px-2.5 py-3 cursor-pointer hover:bg-[#F3F5F74D] dark:hover:bg-[#232627]/30 transition-colors max-w-[400px]"
+      className="w-full h-full flex flex-col gap-2.5 rounded-sm border border-[#E8ECEF] dark:border-[#232627] px-2.5 py-3 cursor-pointer hover:bg-[#F3F5F74D] dark:hover:bg-[#232627]/30 transition-colors mim-w-[207px] max-w-[336px]"
       key={mcp_id + mcp_key}
       onClick={onSelect}
     >
@@ -235,32 +236,64 @@ export function McpTableItem({
         </div>
         <div className="flex flex-col">
           <div className="flex justify-between">
-            <div className="text-xs font-medium mb-1 max-w-8/10">
+            <div className="font-medium mb-1 max-w-8/10">
               {Highlight({ text: mcp_name, keyword })}
             </div>
-            <DropdownMenu open={openMenu} onOpenChange={setOpenMenu}>
-              <DropdownMenuTrigger
-                className="size-4 flex-center cursor-pointer"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <MoreIcon />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                asChild
-                className="flex flex-col p-2 min-w-max"
-                onCloseAutoFocus={(e) => {
-                  e.preventDefault();
-                }}
-              >
-                <DropdownMenuRadioGroup>
-                  <DropdownMenuRadioItem value="1">11</DropdownMenuRadioItem>
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {(showSetting || showUpdate || showDelete) && (
+              <DropdownMenu open={openMenu} onOpenChange={setOpenMenu}>
+                <DropdownMenuTrigger
+                  className="size-4 flex-center cursor-pointer"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <MoreIcon />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  asChild
+                  className="flex flex-col p-2 min-w-max"
+                  onCloseAutoFocus={(e) => {
+                    e.preventDefault();
+                  }}
+                >
+                  <DropdownMenuRadioGroup>
+                    {showSetting && (
+                      <DropdownMenuRadioItem
+                        value="setting"
+                        className="rounded-sm text-sm px-1.5 py-2 h-6 gap-1.5"
+                        onClick={handleShowSettingModal}
+                      >
+                        <SettingIcon className="size-[18px]" />
+                        {t("mcp.setting")}
+                      </DropdownMenuRadioItem>
+                    )}
+                    {showUpdate && (
+                      <DropdownMenuRadioItem
+                        value="update"
+                        className="bg-[#DBF5EC] hover:bg-[#BEF0DD] dark:bg-[#00D47E]/6 dark:hover:bg-[#00D47E]/12 rounded-sm text-xs text-main px-1.5 py-1 h-6"
+                        onClick={handleUpdateMcpVersion}
+                      >
+                        {t("mcp.btnUpdate")}
+                      </DropdownMenuRadioItem>
+                    )}
+                    {showDelete && (
+                      <DropdownMenuRadioItem
+                        value="remove"
+                        className="bg-[#EF466F]/6 hover:bg-[#EF466F]/20 text-xs text-[#EF466F] px-1.5 py-1 h-6"
+                        onClick={(e: React.MouseEvent<HTMLElement>) =>
+                          onDelete(e, mcp_key)
+                        }
+                      >
+                        <DeleteIcon />
+                        {t("mcp.remove")}
+                      </DropdownMenuRadioItem>
+                    )}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
 
           <div
-            className="text-[10px] text-[#6C7275]"
+            className="text-xs text-[#6C7275]"
             style={{
               display: "-webkit-box",
               WebkitLineClamp: 3,
@@ -274,41 +307,7 @@ export function McpTableItem({
           </div>
         </div>
       </div>
-      <div
-        className={`flex mt-auto ${
-          showDelete || showSetting || showUpdate
-            ? "justify-between items-center"
-            : "justify-end items-center"
-        }`}
-      >
-        <div className="flex items-center gap-2">
-          {showSetting && (
-            <Button
-              className="bg-[#DBF5EC] hover:bg-[#BEF0DD] dark:bg-[#00D47E]/6 dark:hover:bg-[#00D47E]/12 rounded-sm text-xs text-main px-1.5 !py-1 h-6"
-              onClick={handleShowSettingModal}
-            >
-              {t("mcp.setting")}
-            </Button>
-          )}
-          {showUpdate && (
-            <Button
-              className="bg-[#DBF5EC] hover:bg-[#BEF0DD] dark:bg-[#00D47E]/6 dark:hover:bg-[#00D47E]/12 rounded-sm text-xs text-main px-1.5 py-1 h-6"
-              onClick={handleUpdateMcpVersion}
-            >
-              {t("mcp.btnUpdate")}
-            </Button>
-          )}
-          {showDelete && (
-            <Button
-              className="bg-[#EF466F]/6 hover:bg-[#EF466F]/20 text-xs text-[#EF466F] px-1.5 py-1 h-6"
-              onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
-                onDelete(e, mcp_key)
-              }
-            >
-              {t("mcp.remove")}
-            </Button>
-          )}
-        </div>
+      <div className="flex mt-auto justify-end items-center">
         <Switch
           className="scale-80"
           id={mcp_id}
