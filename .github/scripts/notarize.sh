@@ -83,11 +83,14 @@ echo "✅ $ARCH 架构公证完成 ✅"
 # ✅ 添加后缀并重命名 zip 和 sig（防止覆盖）
 RENAMED_ZIP_PATH="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/macos/$TAURI_SIGN_ZIP_NAME"
 
-echo "📦 重命名产物为:"
-echo "  ZIP: $RENAMED_ZIP_PATH"
+# echo "📦 重命名产物为:"
+# echo "  ZIP: $RENAMED_ZIP_PATH"
 
-echo "📦 正确方式：进入到 ${APP_DIR} 目录压缩"
-(cd "$APP_DIR" && zip -r "$TAURI_SIGN_ZIP_NAME" "$APP_NAME")
+# echo "📦 正确方式：进入到 ${APP_DIR} 目录压缩"
+# (cd "$APP_DIR" && zip -r "$TAURI_SIGN_ZIP_NAME" "$APP_NAME")
+
+mv "$ZIP_PATH" "$RENAMED_ZIP_PATH"
+
 
 # 查看 APP_DIR 下内容（含 zip 是否存在）
 echo "📂 查看 $APP_DIR 下所有内容"
