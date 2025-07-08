@@ -80,7 +80,7 @@ echo "✅ $ARCH 架构公证完成 ✅"
 RENAMED_ZIP_PATH="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/macos/AidenChat_${ARCH_DMG_SUFFIX}.app.zip"
 
 cd "$(dirname "$APP_PATH")"
-zip -r "$(basename "$ZIP_PATH")" "$(basename "$APP_PATH")"
+zip -r "$ZIP_PATH" "$(basename "$APP_PATH")"
 cd -
 
 ASSET_PATH="$RENAMED_ZIP_PATH"
