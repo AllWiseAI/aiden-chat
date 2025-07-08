@@ -79,9 +79,8 @@ echo "✅ $ARCH 架构公证完成 ✅"
 # ✅ 添加后缀并重命名 zip 和 sig（防止覆盖）
 RENAMED_ZIP_PATH="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/macos/AidenChat_${ARCH_DMG_SUFFIX}.app.zip"
 
-cd "$(dirname "$APP_PATH")"
-zip -r "$ZIP_PATH" "$(basename "$APP_PATH")"
-cd -
+ls -al
+zip -r "$RENAMED_ZIP_PATH" "$APP_PATH"
 
 ASSET_PATH="$RENAMED_ZIP_PATH"
 
