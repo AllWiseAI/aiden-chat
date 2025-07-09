@@ -35,7 +35,7 @@ export default function WindowSize() {
     const position = await appWindow.outerPosition();
     const logicalX = position.x / scaleFactor;
     const logicalY = position.y / scaleFactor;
-    if (logicalWidth <= 400 && logicalHeight <= 600) {
+    if (logicalWidth <= 426 && logicalHeight <= 750) {
       console.log("[skip] window too small, not saving");
       return;
     }

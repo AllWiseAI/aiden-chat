@@ -675,7 +675,7 @@ function InnerChat() {
                   disabled={!(userInput.length || images.length) && !isChatting}
                 >
                   {isChatting ? (
-                    <StopIcon className="text-white dark:text-black" />
+                    <StopIcon className="size-[30px] text-white dark:text-black" />
                   ) : (
                     <SendIcon className="size-[30px]" />
                   )}
