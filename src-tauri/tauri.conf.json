@@ -121,10 +121,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 564,
+        "height": 750,
         "resizable": true,
         "title": "AidenChat",
-        "width": 320,
+        "width": 426,
         "hiddenTitle": true,
         "titleBarStyle": "Overlay"
       }
