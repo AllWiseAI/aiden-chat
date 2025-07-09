@@ -217,7 +217,7 @@ export function SideBarBody(props: {
   const { children, shouldNarrow = false } = props;
 
   return !shouldNarrow ? (
-    <div className="flex-1 overflow-y-auto flex flex-col">
+    <div className="mt-2.5 flex-1 overflow-y-auto flex flex-col">
       <div className="flex flex-col gap-2.5 px-4">{children}</div>
     </div>
   ) : (
@@ -351,7 +351,7 @@ export function SideBar(props: { className?: string }) {
               {isSearchVisible && (
                 <div className="flex-center relative">
                   <Input
-                    className="h-9 !text-left dark:border-main placeholder:text-sm !placeholder:text-[#6C7275] pl-6 pr-2.5 py-1 rounded-sm"
+                    className="h-9 !text-left focus:border-[#00D47E] focus:dark:border-[#00D47E] placeholder:text-sm !placeholder:text-[#6C7275] pl-6 pr-2.5 py-1 rounded-sm"
                     clearable
                     value={searchValue}
                     placeholder="Search"

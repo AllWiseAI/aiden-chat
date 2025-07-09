@@ -90,8 +90,8 @@ export function ChatItem(props: {
               (currentPath === Path.Chat || currentPath === Path.Home)
               ? "bg-[#E8ECEF]/50 dark:bg-[#232323]"
               : openMenu
-              ? "bg-bg-[#E8ECEF]/50 dark:bg-[#2F2F2F]"
-              : "hover:bg-[#E8ECEF]/50 dark:hover:bg-[#2F2F2F]",
+              ? "bg-[#E8ECEF]/50 dark:bg-[#2F2F2F]"
+              : "hover:bg-[#E8ECEF]/50 dark:hover:bg-[#343839]",
             !isEdit && "p-1.5",
           )}
           onClick={props.onClick}

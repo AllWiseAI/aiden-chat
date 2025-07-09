@@ -142,7 +142,7 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
           </Button>
           <div className="flex-center relative w-40">
             <Input
-              className="h-7 !text-left !placeholder:text-[#6C7275]/50 placeholder:text-sm pl-6 pr-2.5 py-1 rounded-sm"
+              className="h-7 !text-left focus:border-[#00D47E] focus:dark:border-[#00D47E] !placeholder:text-[#6C7275]/50 placeholder:text-sm pl-6 pr-2.5 py-1 rounded-sm"
               clearable
               value={searchValue}
               placeholder={t("mcp.search")}
