@@ -93,7 +93,7 @@
       "resources": [
         "bin/*",
         "resources/mcp.config.json",
-        "resources/host_server_*/**/*"
+        "../node_modules/host_server_*/**/*"
       ],
       "shortDescription": "AidenChat App",
       "targets": "all",
@@ -121,10 +121,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 564,
+        "height": 750,
         "resizable": true,
         "title": "AidenChat",
-        "width": 320,
+        "width": 426,
         "hiddenTitle": true,
         "titleBarStyle": "Overlay"
       }

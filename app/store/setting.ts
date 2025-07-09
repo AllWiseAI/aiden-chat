@@ -72,7 +72,7 @@ export const useSettingStore = createPersistStore(
   }),
   {
     name: StoreKey.Setting,
-    version: 1,
+    version: 2,
     onRehydrateStorage: () => {
       return (state, error) => {
         if (error) {

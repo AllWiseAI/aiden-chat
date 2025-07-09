@@ -6,7 +6,8 @@ import { Path } from "../constant";
 import { Button } from "./shadcn/button";
 import { relaunch } from "@tauri-apps/api/process";
 import ReturnIcon from "../icons/return.svg";
-import AidenIcon from "../icons/logo-text.svg";
+import LogoIcon from "@/app/icons/logo.svg";
+import LogoTextIcon from "../icons/logo-text.svg";
 // TODO decide which loading icon to use
 import LoadingIcon from "../icons/three-dots.svg";
 import ResultIcon from "../icons/result.svg";
@@ -61,7 +62,10 @@ export function LoadingPage() {
   return (
     <div className="relative bg-white dark:bg-[#141416] flex flex-col items-center justify-center w-full h-full">
       <div className="absolute top-15">
-        <AidenIcon />
+        <div className="flex items-end gap-2">
+          <LogoIcon className="size-7.5" />
+          <LogoTextIcon className="h-5.5" />
+        </div>
       </div>
       {isServerTimeout ? (
         <div className="relative">

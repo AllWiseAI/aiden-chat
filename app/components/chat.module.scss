@@ -1,19 +1,17 @@
 @import "../styles/animation.scss";
 
-
-
 .input-img {
   height: 70px !important;
   width: 70px;
   border-radius: 4px;
   object-fit: cover;
-  background-color: #141718BF;
-} 
+  background-color: #141718bf;
+}
 .input-img-loading {
   height: 70px !important;
   width: 70px;
   border-radius: 4px;
-  background-color: #141718BF;
+  background-color: #141718bf;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -312,6 +310,8 @@
   overflow: auto;
   overflow-x: hidden;
   padding: 40px;
+  padding-left: 80px;
+  padding-right: 80px;
   padding-top: 20px;
   position: relative;
   overscroll-behavior: none;
@@ -484,7 +484,7 @@
   margin-bottom: 16px;
 }
 
-.group[data-state=open] .rotate-icon {
+.group[data-state="open"] .rotate-icon {
   transform: rotate(180deg);
 }
 
@@ -588,9 +588,9 @@
   pointer-events: none;
   z-index: 1;
 }
-.chat-message >.chat-message-container >.chat-message-item {
+.chat-message > .chat-message-container > .chat-message-item {
   width: 100%;
-} 
+}
 .chat-message-user > .chat-message-container > .chat-message-item {
   background-color: var(--gray-1);
 
@@ -602,10 +602,9 @@
 .chat-input-panel {
   position: relative;
 
-  padding-top: 10px;
-  padding-bottom: 20px;
-  margin-left: 40px;
-  margin-right: 40px;
+  margin-left: 80px;
+  margin-right: 80px;
+  margin-bottom: 20px;
   box-sizing: border-box;
   flex-direction: column;
 
@@ -700,12 +699,12 @@
   color: var(--black);
   font-family: inherit;
   padding: 10px 14px 10px 14px;
-  margin-bottom: 48px;
+  margin-bottom: 60px;
   resize: none;
   outline: none;
   box-sizing: border-box;
   overflow-y: scroll;
-  height: 50px;
+  height: 70px;
 }
 
 .chat-input:focus {
@@ -783,10 +782,13 @@
 }
 
 .chat-main-welcome {
-  font-size: 20px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--black-1);
-  margin: 25% auto 20px;
+  padding-bottom: 80px;
+  margin: 0 auto;
+  height: 45%;
+  display: flex;
+  align-items: end;
 }
 .chat-main {
   display: flex;

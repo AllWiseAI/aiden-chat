@@ -35,7 +35,7 @@ export default function WindowSize() {
     const position = await appWindow.outerPosition();
     const logicalX = position.x / scaleFactor;
     const logicalY = position.y / scaleFactor;
-    if (logicalWidth <= 400 && logicalHeight <= 600) {
+    if (logicalWidth <= 426 && logicalHeight <= 750) {
       console.log("[skip] window too small, not saving");
       return;
     }
@@ -50,7 +50,7 @@ export default function WindowSize() {
   useEffect(() => {
     async function adjustWindow() {
       if (isInitPage) {
-        await appWindow.setSize(new LogicalSize(320, 564));
+        await appWindow.setSize(new LogicalSize(426, 750));
         await appWindow.setResizable(false);
         await appWindow.center();
         return;
@@ -60,7 +60,7 @@ export default function WindowSize() {
         await appWindow.setSize(new LogicalSize(width, height));
         await appWindow.setPosition(new LogicalPosition(x, y));
       } else {
-        await appWindow.setSize(new LogicalSize(960, 600));
+        await appWindow.setSize(new LogicalSize(1200, 750));
         await appWindow.center();
       }
       await appWindow.setResizable(true);

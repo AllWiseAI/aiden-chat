@@ -63,7 +63,7 @@ export default function General() {
           </div>
         </div>
       </div>
-      <div className="w-full flex justify-between items-center gap-6 px-2.5 py-5 border-b text-sm">
+      <div className="w-full flex justify-between items-center gap-6 px-2.5 py-5 border-b">
         <div className="font-medium">{t("general.country.title")}</div>
         <Select
           defaultValue={region || "US"}
@@ -100,7 +100,7 @@ export default function General() {
           <SelectTrigger className="w-[180px] dark:border-[#232627] text-xs">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="bg-[#F3F5F7] dark:bg-[#232627]">
+          <SelectContent className="w-[180px] bg-[#F3F5F7] dark:bg-[#232627]">
             <SelectGroup className="space-y-2">
               {localeOptions.map((option) => (
                 <SelectItem
@@ -128,7 +128,7 @@ export default function General() {
           <SelectTrigger className="w-[180px] dark:border-[#232627] text-xs">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="bg-[#F3F5F7] dark:bg-[#232627]">
+          <SelectContent className="w-[180px] bg-[#F3F5F7] dark:bg-[#232627]">
             <SelectGroup className="space-y-2">
               <SelectItem
                 value="auto"

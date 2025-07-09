@@ -54,7 +54,7 @@ function ServerTable({
 }: ServerTableProps) {
   const { t } = useTranslation("settings");
   const handleDeleteMcp = async (
-    e: React.MouseEvent<HTMLButtonElement>,
+    e: React.MouseEvent<HTMLElement>,
     mcp_key: string,
   ) => {
     e.stopPropagation();
@@ -75,7 +75,7 @@ function ServerTable({
   return (
     <>
       {servers.length ? (
-        <div className="grid grid-cols-1 @xss:grid-cols-2 @sm:grid-cols-3 justify-items-center items-center gap-5">
+        <div className="grid grid-cols-1 @xss:grid-cols-2 @headerMd:grid-cols-3 justify-items-center items-center gap-5">
           {servers.map((item) => (
             <McpTableItem
               key={item.mcp_id + item.mcp_name}
@@ -131,10 +131,10 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
   return (
     <>
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-sm font-bold">{t("tabs.mcp")}</h2>
-        <div className="flex items-center gap-2 self-end h-6">
+        <h2 className="text-sm font-bold">{t("tabs.mcpManage")}</h2>
+        <div className="flex items-center gap-2 self-end h-7">
           <Button
-            className="h-full bg-[#DBF5EC] dark:bg-[#00D47E]/6 hover:bg-[#BEF0DD] dark:hover:bg-[#00D47E]/12 text-main border border-[#00D47E]/10 text-xs rounded-sm px-1.5 py-1"
+            className="h-full bg-[#DBF5EC] dark:bg-[#00D47E]/6 hover:bg-[#BEF0DD] dark:hover:bg-[#00D47E]/12 text-main border border-[#00D47E]/10 text-sm rounded-sm px-2.5 py-1"
             onClick={() => setMode("edit")}
           >
             {/* <EditIcon className="size-4" /> */}
@@ -142,7 +142,7 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
           </Button>
           <div className="flex-center relative w-40">
             <Input
-              className="h-6 !text-left !placeholder:text-[#6C7275]/50 placeholder:text-xs pl-6 pr-2.5 py-1 rounded-sm"
+              className="h-7 !text-left focus:border-[#00D47E] focus:dark:border-[#00D47E] !placeholder:text-[#6C7275]/50 placeholder:text-sm pl-6 pr-2.5 py-1 rounded-sm"
               clearable
               value={searchValue}
               placeholder={t("mcp.search")}
