@@ -116,6 +116,9 @@
     "allowAlways": "始终允许",
     "allowOnce": "仅允许一次",
     "mcpSetting": "MCP 设置",
-    "save": "保存"
+    "save": "保存",
+    "form": {
+      "empty": "{{fieldName}} 不能为空"
+    }
   }
 }

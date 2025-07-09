@@ -12,6 +12,7 @@ import {
 import { Button } from "@/app/components/shadcn/button";
 import { TTemplateInfo } from "@/app/typing";
 import { t } from "i18next";
+import clsx from "clsx";
 
 interface McpTemplateModalProps {
   open: boolean;
@@ -31,6 +32,10 @@ export function McpTemplateModal({
   const [envs, setEnvs] = useState(templateInfo.envs);
   const [multiArgs, setMultiArgs] = useState(templateInfo.multiArgs);
   const [envsText, setEnvsText] = useState<string>("");
+  const [templateEmptyError, setTemplateEmptyError] = useState<boolean>(false);
+  const [envEmptyError, setEnvEmptyError] = useState<boolean>(false);
+  const [multiArgsEmptyError, setMultiArgsEmptyError] =
+    useState<boolean>(false);
 
   useEffect(() => {
     const text = envs.map((item) => `${item.key}=${item.value}`).join("\n");
@@ -61,14 +66,65 @@ export function McpTemplateModal({
     setMultiArgs(newMultiArgs);
   };
 
+  const handleTemplateBlur = (e: any) => {
+    const { value } = e.target;
+    if (value) {
+      setTemplateEmptyError(false);
+    } else {
+      setTemplateEmptyError(true);
+    }
+  };
+
+  const handleEnvBlur = (e: any) => {
+    const { value } = e.target;
+    if (value) {
+      setEnvEmptyError(false);
+    } else {
+      setEnvEmptyError(true);
+    }
+  };
+
+  const handleArgsBlur = (e: any) => {
+    const { value } = e.target;
+    if (value) {
+      setMultiArgsEmptyError(false);
+    } else {
+      setMultiArgsEmptyError(true);
+    }
+  };
+
   const handleConfirm = useCallback(() => {
     const parsedEnvs = updateEnvs(envsText);
+    if (templates?.length) {
+      for (const template of templates) {
+        if (template.key && !template.value) {
+          setTemplateEmptyError(true);
+          return;
+        }
+      }
+    }
+    if (parsedEnvs?.length) {
+      for (const env of parsedEnvs) {
+        if (env.key && !env.value) {
+          setEnvEmptyError(true);
+          return;
+        }
+      }
+    }
+    if (multiArgs?.length) {
+      for (const arg of multiArgs) {
+        if (arg.key && !arg.value) {
+          setMultiArgsEmptyError(true);
+          return;
+        }
+      }
+    }
     onConfirm({ templates, envs: parsedEnvs, multiArgs });
     onOpenChange?.(false);
   }, [templates, onConfirm, onOpenChange, envsText, multiArgs, updateEnvs]);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open}>
       <DialogContent
         className="max-w-xl w-80 rounded-sm gap-5 p-5"
         closeIcon={false}
@@ -91,12 +147,25 @@ export function McpTemplateModal({
                     <div className="text-sm mb-2 text-[#6C7275] dark:text-[#FEFEFE]">
                       {template.key}
                     </div>
-                    <textarea
-                      className="w-full text-left whitespace-pre font-mono text-smdark:border-[#6C7275] bg-background border border-input rounded-sm px-2.5 py-2 focus:!border-primary resize-none"
-                      rows={3}
-                      value={template.value}
-                      onChange={(e) => updateTemplate(index, e.target.value)}
-                    />
+                    <div className="space-y-0.5">
+                      <textarea
+                        className={clsx(
+                          "w-full text-left whitespace-pre font-mono text-sm dark:border-[#6C7275] bg-background border border-input rounded-sm px-2.5 py-2 focus:!border-primary resize-none",
+                          {
+                            "!border-[#EF466F]": templateEmptyError,
+                          },
+                        )}
+                        rows={5}
+                        value={template.value}
+                        onBlur={handleTemplateBlur}
+                        onChange={(e) => updateTemplate(index, e.target.value)}
+                      />
+                      {templateEmptyError && (
+                        <div className="text-[10px] text-red-500">
+                          {t("dialog.form.empty", { fieldName: template.key })}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 );
               })}
@@ -111,12 +180,25 @@ export function McpTemplateModal({
                     <div className="mb-2 text-[#6C7275] dark:text-[#FEFEFE]">
                       {arg.key}
                     </div>
-                    <textarea
-                      className="w-full text-left whitespace-pre font-mono text-sm dark:border-[#6C7275] bg-background border border-input rounded-sm px-2.5 py-2 focus:!border-primary resize-y"
-                      rows={3}
-                      value={arg.value.join("\n")}
-                      onChange={(e) => updateMultiArgs(index, e.target.value)}
-                    />
+                    <div className="space-y-0.5">
+                      <textarea
+                        className={clsx(
+                          "w-full text-left whitespace-pre font-mono text-sm dark:border-[#6C7275] bg-background border border-input rounded-sm px-2.5 py-2 focus:!border-primary resize-y",
+                          {
+                            "!border-[#EF466F]": multiArgsEmptyError,
+                          },
+                        )}
+                        rows={5}
+                        value={arg.value.join("\n")}
+                        onBlur={handleArgsBlur}
+                        onChange={(e) => updateMultiArgs(index, e.target.value)}
+                      />
+                      {multiArgsEmptyError && (
+                        <div className="text-[10px] text-red-500">
+                          {t("dialog.form.empty", { fieldName: arg.key })}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 );
               })}
@@ -130,15 +212,28 @@ export function McpTemplateModal({
                   <label className="block text-sm font-medium text-[#6C7275] dark:text-white mb-2.5">
                     {item.key}
                   </label>
-                  <input
-                    className="w-full h-[34px] !text-left font-mono text-sm dark:border-[#6C7275] bg-background border border-input rounded-sm px-2.5 py-2 focus:border-primary focus:outline-none"
-                    value={item.value}
-                    onChange={(e) => {
-                      const newEnvs = [...envs];
-                      newEnvs[idx].value = e.target.value;
-                      setEnvs(newEnvs);
-                    }}
-                  />
+                  <div className="space-y-0.5">
+                    <input
+                      className={clsx(
+                        "w-full h-[34px] !text-left font-mono text-sm dark:border-[#6C7275] bg-background border border-input rounded-sm px-2.5 py-2 focus:border-primary focus:outline-none",
+                        {
+                          "!border-[#EF466F]": envEmptyError,
+                        },
+                      )}
+                      value={item.value}
+                      onBlur={handleEnvBlur}
+                      onChange={(e) => {
+                        const newEnvs = [...envs];
+                        newEnvs[idx].value = e.target.value;
+                        setEnvs(newEnvs);
+                      }}
+                    />
+                    {envEmptyError && (
+                      <div className="text-[10px] text-red-500">
+                        {t("dialog.form.empty", { fieldName: item.key })}
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>

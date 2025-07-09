@@ -14,8 +14,11 @@ else
   exit 1
 fi
 
+
 APP_PATH="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/macos/AidenChat.app"
 ZIP_PATH="${APP_PATH}.zip"
+TAURI_RAW_ZIP_PATH="${APP_PATH}.tar.gz"
+TAURI_SIGN_ZIP_NAME="AidenChat_${ARCH_DMG_SUFFIX}.app.tar.gz"
 DMG_NAME="AidenChat_${PACKAGE_VERSION}_${ARCH_DMG_SUFFIX}_signed.dmg"
 DMG_PATH="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/dmg/${DMG_NAME}"
 VOL_NAME="AidenChat"
@@ -76,19 +79,15 @@ xcrun stapler staple "$DMG_PATH"
 
 echo "✅ $ARCH 架构公证完成 ✅"
 
-# ✅ 添加后缀并重命名 zip 和 sig（防止覆盖）
-RENAMED_ZIP_PATH="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/macos/AidenChat_${ARCH_DMG_SUFFIX}.app.zip"
-
-mv "$ZIP_PATH" "$RENAMED_ZIP_PATH"
-
-# 生成 .sig 签名
-ASSET_PATH="$RENAMED_ZIP_PATH"
+# 应用内部更新使用
+RENAMED_ZIP_PATH="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/macos/$TAURI_SIGN_ZIP_NAME"
+mv "$TAURI_RAW_ZIP_PATH" "$RENAMED_ZIP_PATH"
 
 # 使用 tauri signer
 npx tauri signer sign \
   --password "$TAURI_KEY_PASSWORD" \
   --private-key "$TAURI_PRIVATE_KEY"\
-  "$ASSET_PATH" \
+  "$RENAMED_ZIP_PATH" \
 
 echo "📦 重命名产物为:"
 echo "  ZIP: $RENAMED_ZIP_PATH"

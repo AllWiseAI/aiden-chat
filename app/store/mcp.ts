@@ -81,11 +81,9 @@ export const useMcpStore = createPersistStore(
         const config = await readMcpConfig();
         if (!config) return;
 
-        const { renderMcpList, mcpRemoteInfoMap } = await getRenderMcpList(
-          config,
-          remoteMcpList,
-        );
-        set({ renderMcpList, mcpRemoteInfoMap });
+        const { renderMcpList, mcpRemoteInfoMap, mcpRenderedMap } =
+          await getRenderMcpList(config, remoteMcpList);
+        set({ renderMcpList, mcpRemoteInfoMap, mcpRenderedMap });
       },
 
       updateMcpStatusList: async (
