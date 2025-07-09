@@ -93,7 +93,7 @@ export function McpTemplateModal({
                     </div>
                     <textarea
                       className="w-full text-left whitespace-pre font-mono text-smdark:border-[#6C7275] bg-background border border-input rounded-sm px-2.5 py-2 focus:!border-primary resize-none"
-                      rows={5}
+                      rows={3}
                       value={template.value}
                       onChange={(e) => updateTemplate(index, e.target.value)}
                     />
@@ -113,7 +113,7 @@ export function McpTemplateModal({
                     </div>
                     <textarea
                       className="w-full text-left whitespace-pre font-mono text-sm dark:border-[#6C7275] bg-background border border-input rounded-sm px-2.5 py-2 focus:!border-primary resize-y"
-                      rows={5}
+                      rows={3}
                       value={arg.value.join("\n")}
                       onChange={(e) => updateMultiArgs(index, e.target.value)}
                     />
