@@ -5,7 +5,8 @@ import {
   SECOND_CHAT_URL,
 } from "@/app/constant";
 import { ModelSize, DalleQuality, DalleStyle } from "@/app/typing";
-import { ChatOptions, getHeaders, LLMApi, MultimodalContent } from "../api";
+import { ChatOptions, LLMApi, MultimodalContent } from "../api";
+import { getHeaders } from "@/app/utils/fetch";
 import { tauriFetchWithSignal } from "@/app/utils/stream";
 import { streamWithThink, parseSSE } from "@/app/utils/chat";
 
@@ -65,7 +66,7 @@ export class ChatGPTApi implements LLMApi {
 
     const controller = new AbortController();
     options.onController?.(controller);
-    const headers = await getHeaders(true);
+    const headers = await getHeaders({ aiden: true });
     try {
       if (shouldStream) {
         streamWithThink(
@@ -127,7 +128,7 @@ export class ChatGPTApi implements LLMApi {
     const requestPayload = {
       ...options.toolCallInfo,
     };
-    const headers = await getHeaders(true);
+    const headers = await getHeaders({ aiden: true });
     try {
       if (shouldStream) {
         streamWithThink(

@@ -3,6 +3,8 @@ import { useSettingStore } from "../store/setting";
 import { useAuthStore } from "../store/auth";
 import { isRefreshRequest } from "../services";
 import { t } from "i18next";
+
+const FIVE_MINUTES = 5 * 60 * 1000;
 export interface FetchBody {
   method: "POST" | "GET" | "PUT" | "DELETE" | "OPTIONS";
   body?: {
@@ -23,17 +25,34 @@ export const getBaseDomain = async () => {
     : "https://prod.aidenai.io";
 };
 
-const getCommonHeaders = () => {
+// aiden - header add Aiden-
+// refresh - should refresh token detect
+export const getHeaders = async ({
+  aiden = false,
+  ignoreHeaders = false,
+  refresh = true,
+}) => {
+  let headers: Record<string, string> = {};
+  const token = useAuthStore.getState().userToken;
+  const refreshToken = useAuthStore.getState().refreshToken;
   const device_id = useSettingStore.getState().getDeviceId();
-  const accessToken = useAuthStore.getState().userToken.accessToken;
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-  if (device_id) {
-    headers["X-Device-ID"] = device_id;
+
+  if (!ignoreHeaders) {
+    headers = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    };
+    if (device_id) {
+      headers["X-Device-ID"] = device_id;
+    }
   }
-  if (accessToken) {
-    headers["Authorization"] = `Bearer ${accessToken}`;
+
+  if (token.accessToken) {
+    if (refresh && token.expires * 1000 - Date.now() <= FIVE_MINUTES) {
+      await refreshToken();
+    }
+    const latestToken = useAuthStore.getState().userToken.accessToken;
+    headers[`${aiden ? "Aiden-" : ""}Authorization`] = `Bearer ${latestToken}`;
   }
   return headers;
 };
@@ -44,6 +63,7 @@ export async function aidenFetch<T = unknown>(
 ): Promise<Response<T>> {
   let res: Response<T>;
   const domain = await getBaseDomain();
+  const headers = await getHeaders({ refresh: false });
   let finnalUrl = url;
   if (url.startsWith("/")) {
     finnalUrl = `${domain}${url}`;
@@ -52,7 +72,7 @@ export async function aidenFetch<T = unknown>(
   try {
     res = await fetch<T>(finnalUrl, {
       method: options.method,
-      headers: { ...getCommonHeaders() },
+      headers,
       body: options.body ? options.body : undefined,
     });
   } catch (err: any) {
@@ -71,10 +91,13 @@ export async function aidenFetch<T = unknown>(
   ) {
     try {
       await useAuthStore.getState().refreshToken();
+    } catch (err) {
+      console.error("Token refresh failed", err);
+    }
+    try {
       const retryRes = await aidenFetch<T>(url, options);
       return retryRes;
     } catch (err) {
-      console.error("Token refresh failed", err);
       throw err;
     }
   }
