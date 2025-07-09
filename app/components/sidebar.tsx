@@ -229,7 +229,7 @@ export function SideBarFooter(props: {
   children?: React.ReactNode;
   shouldNarrow?: boolean;
 }) {
-  const { children } = props;
+  const { children, shouldNarrow } = props;
   const authStore = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
@@ -272,23 +272,32 @@ export function SideBarFooter(props: {
           )}
         >
           <div
-            className="flex justify-start gap-2 !px-1.5 !py-2 w-full hover:bg-[#E8ECEF]/50 dark:hover:bg-[#232627]/50 cursor-pointer"
+            className={clsx(
+              "flex items-center gap-2 !px-1.5 !py-2 w-full hover:bg-[#E8ECEF]/50 dark:hover:bg-[#232627]/50 cursor-pointer",
+              !shouldNarrow ? "justify-start" : "justify-center",
+            )}
             onClick={() => {
-              console.log(1111, location.pathname);
               if (location.pathname !== Path.Settings) {
                 navigate(Path.Settings);
               }
             }}
           >
             <SettingIcon className="size-[18px]" />
-            <span className="-ml-1 text-xs">{t("title")}</span>
+            {!shouldNarrow && (
+              <span className="-ml-1 text-xs">{t("title")}</span>
+            )}
           </div>
           <div
-            className="flex justify-start gap-2 !px-1.5 !py-2 w-full hover:bg-[#E8ECEF]/50 dark:hover:bg-[#232627]/50 cursor-pointer"
+            className={clsx(
+              "flex items-center gap-2 !px-1.5 !py-2 w-full hover:bg-[#E8ECEF]/50 dark:hover:bg-[#232627]/50 cursor-pointer",
+              !shouldNarrow ? "justify-start" : "justify-center",
+            )}
             onClick={logout}
           >
             <LogoutIcon className="size-[18px]" />
-            <span className="-ml-1 text-xs">{t("general.logout")}</span>
+            {!shouldNarrow && (
+              <span className="-ml-1 text-xs">{t("general.logout")}</span>
+            )}
           </div>
         </div>
       </div>
