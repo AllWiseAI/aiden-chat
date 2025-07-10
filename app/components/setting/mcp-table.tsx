@@ -178,7 +178,7 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
           open={showSettingModal}
           settingInfo={currentSetting}
           onConfirm={handleSettingConfirm}
-        ></McpSettingModal>
+        />
       )}
     </>
   );
