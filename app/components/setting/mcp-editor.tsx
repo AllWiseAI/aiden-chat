@@ -7,6 +7,8 @@ import { McpConfigKey } from "@/app/components/setting/type";
 import BackIcon from "../../icons/back.svg";
 import { useMcpStore } from "@/app/store/mcp";
 import { json } from "@codemirror/lang-json";
+import clsx from "clsx";
+import TipsIcon from "../../icons/tips.svg";
 import dynamic from "next/dynamic";
 import { useAppConfig, Theme } from "@/app/store";
 import { vscodeLight, vscodeDark } from "@uiw/codemirror-theme-vscode";
@@ -37,9 +39,11 @@ function ConfigEditor({ jsonStr, setJsonStr, error }: ConfigEditorProps) {
   }, [config.theme, mediaQuery]);
 
   return (
-    <div className="space-y-4 rounded-lg overflow-hidden">
+    <div className="space-y-4 rounded-sm">
       <CodeMirror
-        className=""
+        className={clsx("rounded-sm overflow-hidden", {
+          "border border-[#EF466F]": error,
+        })}
         value={jsonStr}
         height="calc(100vh - 180px)"
         extensions={[json(), foldGutter(), indentOnInput()]}
@@ -50,7 +54,7 @@ function ConfigEditor({ jsonStr, setJsonStr, error }: ConfigEditorProps) {
         }}
         onChange={setJsonStr}
       />
-      {error && <p className="text-[#EF466F]">{error}</p>}
+      {error && <p className="text-xs text-[#EF466F]">{error}</p>}
     </div>
   );
 }
@@ -60,13 +64,21 @@ const McpEditor: React.FC<Props> = ({ setMode }) => {
   const { t } = useTranslation("settings");
   const { saveEditorConfig, getCleanedConfig } = mcpStore;
   const [jsonStr, setJsonStr] = useState<string>(JSON.stringify({}, null, 2));
+  const cardObj = {
+    mcpServers: {
+      aiden_puppeteer: {
+        args: ["-y", "@xxxxxxx", "run", "@xxxxxxx", "--key", "your key xxxxxx"],
+        command: "/Users/name/.aiden/mpx",
+      },
+    },
+  };
   useEffect(() => {
     const cleanedConfig = getCleanedConfig();
     setJsonStr(JSON.stringify(cleanedConfig, null, 2));
   }, []);
 
   const [error, setError] = useState<string>("");
-
+  const [showCard, setShowCard] = useState(false);
   const handleSave = async () => {
     try {
       const parsed = JSON.parse(jsonStr);
@@ -79,7 +91,7 @@ const McpEditor: React.FC<Props> = ({ setMode }) => {
       }
     } catch (e: any) {
       setError("JSON 解析错误：" + (e.message || e));
-      toast.error(t("mcp.editor.success"), {
+      toast.error(t("mcp.editor.fail"), {
         className: "w-auto max-w-max",
       });
       console.error(e);
@@ -88,13 +100,33 @@ const McpEditor: React.FC<Props> = ({ setMode }) => {
   return (
     <>
       <div className="flex justify-between items-center mb-4">
-        <div
-          className="flex justify-between items-center cursor-pointer w-max"
-          onClick={() => setMode("table")}
-        >
-          <div className="flex items-center gap-2">
+        <div className="flex justify-between items-center gap-1 w-max">
+          <div
+            className="flex items-center gap-2 cursor-pointer"
+            onClick={() => setMode("table")}
+          >
             <BackIcon className="size-5" />
             <span className="text-sm font-medium">{t("mcp.edit")}</span>
+          </div>
+          <div
+            className="relative"
+            onMouseEnter={() => setShowCard(true)}
+            onMouseLeave={() => setShowCard(false)}
+          >
+            <TipsIcon className="size-[18px]" />
+            {showCard && (
+              <div
+                className="absolute z-1 left-0 top-5 bg-white dark:bg-[#101213] p-2.5 text-sm rounded-[4px]"
+                style={{
+                  boxShadow: `
+                          0px 0px 24px 4px rgba(0,0,0,0.05),
+                          0px 32px 48px -4px rgba(0,0,0,0.2)
+                      `,
+                }}
+              >
+                <pre>{JSON.stringify(cardObj, null, 2)}</pre>
+              </div>
+            )}
           </div>
         </div>
 

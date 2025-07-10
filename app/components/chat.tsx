@@ -496,11 +496,13 @@ function InnerChat() {
           <div className={styles["chat-body-container"]}>
             {isNewChat ? (
               <>
-                <div className="w-full h-10" data-tauri-drag-region></div>
                 <div
-                  className={clsx(styles["chat-main-welcome"], "flex gap-2.5")}
+                  className={clsx(
+                    styles["chat-main-welcome"],
+                    "flex gap-2.5 text-4xl",
+                  )}
                 >
-                  <LogoIcon className="size-7.5" />
+                  <LogoIcon className="size-10" />
                   {t("chat.title")} Aiden
                 </div>
               </>
@@ -614,9 +616,13 @@ function InnerChat() {
                 <textarea
                   id="chat-input"
                   ref={inputRef}
-                  className={clsx(styles["chat-input"], {
-                    [styles["chat-input-with-image"]]: images.length > 0,
-                  })}
+                  className={clsx(
+                    styles["chat-input"],
+                    {
+                      [styles["chat-input-with-image"]]: images.length > 0,
+                    },
+                    "placeholder:text-[#6C7275]",
+                  )}
                   placeholder="Ask anything..."
                   onInput={(e) => onInput(e.currentTarget.value)}
                   value={userInput}
@@ -628,7 +634,12 @@ function InnerChat() {
                     fontFamily: config.fontFamily,
                   }}
                 />
-                <div className="absolute top-6 left-3 flex items-center gap-2.5 w-[calc(100%-24px)] bg-white dark:bg-[#141416]">
+                <div
+                  className={clsx(
+                    "absolute top-3 left-3 flex items-center gap-2.5 w-[calc(100%-24px)] bg-white dark:bg-[#141416]",
+                    images.length > 0 && "pb-2",
+                  )}
+                >
                   {images.map((img) => (
                     <div key={img.id} className="relative">
                       {img.url ? (
@@ -641,32 +652,32 @@ function InnerChat() {
                           <CircleProgress progress={img.progress} />
                         </div>
                       )}
-                      <button
+                      <Button
                         onClick={() => removeImage(img.id)}
-                        className="absolute -top-2 -right-2 bg-[#F3F5F7] text-[#343839] rounded-full w-4 h-4 flex items-center justify-center"
+                        className="absolute -top-2 -right-2 bg-[#F3F5F7] text-[#343839] rounded-full w-4 h-4 flex-center p-0"
                       >
                         ×
-                      </button>
+                      </Button>
                     </div>
                   ))}
                 </div>
-                <div className="absolute bottom-8 left-3 flex gap-2">
+                <div className="absolute bottom-3 left-3 flex gap-2">
                   <ImageUploader />
                   <McpPopover
                     icon={
-                      <McpIcon className="size-4 text-black dark:text-white" />
+                      <McpIcon className="size-6 text-black dark:text-white" />
                     }
                   />
                 </div>
                 <Button
-                  className="absolute bottom-8 right-3 h-6 w-6 bg-main rounded-full hover:bg-[#00D47E]/90 p-0 disabled:bg-[#6C7274] dark:disabled:bg-[#343839] !disabled:cursor-not-allowed"
+                  className="absolute bottom-3 right-3 size-12 bg-main rounded-full hover:bg-[#00D47E]/90 p-0 disabled:bg-[#373A3B] disabled:opacity-100 dark:disabled:bg-[#343839] !disabled:cursor-not-allowed"
                   onClick={() => doSubmit(userInput)}
                   disabled={!(userInput.length || images.length) && !isChatting}
                 >
                   {isChatting ? (
-                    <StopIcon className="text-white dark:text-black" />
+                    <StopIcon className="size-[30px] text-white dark:text-black" />
                   ) : (
-                    <SendIcon />
+                    <SendIcon className="size-[30px]" />
                   )}
                 </Button>
               </label>

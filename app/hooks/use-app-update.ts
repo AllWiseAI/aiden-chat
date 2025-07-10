@@ -1,10 +1,11 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import {
   checkUpdate,
   installUpdate,
   onUpdaterEvent,
 } from "@tauri-apps/api/updater";
 import { relaunch } from "@tauri-apps/api/process";
+import { useUpdateStore } from "@/app/store/app-update";
 
 type UpdateStatus =
   | "PENDING"
@@ -20,9 +21,17 @@ interface UpdaterEventPayload {
 }
 
 export function useAppUpdate() {
-  const [isShowUpdate, setIsShowUpdate] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [isLatest, setIsLatest] = useState(false);
+  const {
+    isShowUpdate,
+    isUpdating,
+    isLatest,
+    error,
+    setShowUpdate,
+    setUpdating,
+    setLatest,
+    setStatus,
+    setError,
+  } = useUpdateStore();
 
   useEffect(() => {
     let unlisten: (() => void) | undefined;
@@ -31,64 +40,67 @@ export function useAppUpdate() {
       try {
         unlisten = await onUpdaterEvent((payload: UpdaterEventPayload) => {
           const { status, error } = payload;
-
           console.log("[Updater]", status);
+          setStatus(status);
 
           if (error) {
             console.error("[Updater Error]:", error);
-            setIsUpdating(false);
+            setError(error);
+            setUpdating(false);
           }
 
-          if (status === "UPDATE_AVAILABLE") {
-            setIsShowUpdate(true);
-          }
-
-          if (status === "INSTALLING") {
-            setIsUpdating(true);
-          }
-          if (status === "UPTODATE") {
-            setIsLatest(true);
-            console.log("Already latest version");
-          }
-          if (status === "DONE") {
-            setIsUpdating(false);
-            console.log("Install update success, relaunching...");
-            relaunch();
+          switch (status) {
+            case "UPDATE_AVAILABLE":
+              setShowUpdate(true);
+              break;
+            case "INSTALLING":
+              setUpdating(true);
+              break;
+            case "UPTODATE":
+              setLatest(true);
+              break;
+            case "DONE":
+              setUpdating(false);
+              relaunch();
+              break;
           }
         });
 
         const update = await checkUpdate();
         if (update.shouldUpdate) {
-          setIsShowUpdate(true);
+          setShowUpdate(true);
+        } else {
+          setLatest(true);
         }
       } catch (err) {
         console.error("Update check failed:", err);
+        setError((err as Error).message);
       }
     }
 
     listenAndCheck();
 
     return () => {
-      if (unlisten) {
-        unlisten();
-      }
+      if (unlisten) unlisten();
     };
   }, []);
 
   const handleUpdate = useCallback(async () => {
-    setIsUpdating(true);
+    setUpdating(true);
     try {
       await installUpdate();
     } catch (err) {
       console.error("Install update failed:", err);
-      setIsUpdating(false);
+      setUpdating(false);
+      setError((err as Error).message);
     }
-  }, []);
+  }, [setUpdating, setError]);
 
   return {
     isShowUpdate,
     isUpdating,
     isLatest,
+    error,
     handleUpdate,
   };
 }

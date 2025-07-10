@@ -9,7 +9,7 @@
   },
   "package": {
     "productName": "AidenChat",
-    "version": "0.1.27"
+    "version": "0.1.29"
   },
   "tauri": {
     "allowlist": {
@@ -93,7 +93,7 @@
       "resources": [
         "bin/*",
         "resources/mcp.config.json",
-        "resources/host_server_*/**/*"
+        "../node_modules/host_server_*/**/*"
       ],
       "shortDescription": "AidenChat App",
       "targets": "all",
@@ -108,7 +108,7 @@
       "dangerousUseHttpScheme": true
     },
     "updater": {
-      "active": false,
+      "active": true,
       "endpoints": [
         "https://github.com/AllWiseAI/aiden-chat/releases/latest/download/latest.json"
       ],
@@ -121,10 +121,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 564,
+        "height": 750,
         "resizable": true,
         "title": "AidenChat",
-        "width": 320,
+        "width": 426,
         "hiddenTitle": true,
         "titleBarStyle": "Overlay"
       }

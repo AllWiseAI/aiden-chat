@@ -49,7 +49,7 @@ export enum StoreKey {
   Setting = "setting-store",
 }
 
-export const DEFAULT_SIDEBAR_WIDTH = 200;
+export const DEFAULT_SIDEBAR_WIDTH = 240;
 export const MAX_SIDEBAR_WIDTH = 400;
 export const MIN_SIDEBAR_WIDTH = 200;
 export const NARROW_SIDEBAR_WIDTH = 72;

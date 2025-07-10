@@ -165,12 +165,6 @@ jobs:
             echo "❌ Unknown arch: ${{ matrix.config.artifact_arch }}"
             exit 1
           fi
-
-      - name: Zip .app for upload
-        run: |
-          cd src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos
-          zip -r AidenChat_${{ steps.arch_map.outputs.mapped_arch }}.app.zip AidenChat.app
-
       - name: Output tag list for debugging
         run: |
           git fetch --tags
@@ -194,8 +188,8 @@ jobs:
           tag_name: ${{ env.LATEST_TAG }}
           overwrite: true
           files: |
-            src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos/AidenChat_${{ steps.arch_map.outputs.mapped_arch }}.app.zip
-            src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos/AidenChat_${{ steps.arch_map.outputs.mapped_arch }}.app.zip.sig
+            src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos/AidenChat_${{ steps.arch_map.outputs.mapped_arch }}.app.tar.gz
+            src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos/AidenChat_${{ steps.arch_map.outputs.mapped_arch }}.app.tar.gz.sig
             src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/dmg/AidenChat_${{ env.PACKAGE_VERSION }}_${{ steps.arch_map.outputs.mapped_arch }}_signed.dmg
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -206,8 +200,8 @@ jobs:
           name: ${{ steps.arch_map.outputs.mapped_arch }}-artifacts
           path: |
             src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/dmg/AidenChat_${{ env.PACKAGE_VERSION }}_${{ steps.arch_map.outputs.mapped_arch }}_signed.dmg
-            src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos/AidenChat_*.app.zip
-            src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos/AidenChat_*.app.zip.sig
+            src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos/AidenChat_*.app.tar.gz
+            src-tauri/target/${{ matrix.config.rust_target }}/release/bundle/macos/AidenChat_*.app.tar.gz.sig
 
   generate-latest-json:
     runs-on: ubuntu-latest
