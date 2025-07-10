@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex
+set -e
 
 ARCH=$1
 OS=$2

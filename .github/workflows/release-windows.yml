@@ -59,7 +59,10 @@ jobs:
           Add-Content src-tauri/bin/.env "UV_DEFAULT_INDEX=${{ secrets.UV_DEFAULT_INDEX }}"
           Add-Content src-tauri/bin/.env "UV_EXTRA_INDEX_URL=${{ secrets.UV_EXTRA_INDEX_URL }}"
         shell: pwsh
-
+      - name: List src-tauri folder contents
+        run: |
+          echo "📂 src-tauri 文件夹内容:"
+          ls -al src-tauri
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
