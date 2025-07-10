@@ -47,6 +47,10 @@ export const useSettingStore = createPersistStore(
         if ("ip" in res) {
           const code = res.country_code;
           set({ region: code });
+        } else {
+          const locale = Intl.DateTimeFormat().resolvedOptions().locale;
+          const region = locale.split("-")[1]?.toUpperCase();
+          set({ region });
         }
       } catch (e) {
         console.error("getRegion error:", e);
