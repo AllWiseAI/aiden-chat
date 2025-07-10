@@ -42,7 +42,9 @@ export const ModelSelect = ({
       onValueChange={handleModelChange}
       disabled={disabled}
     >
-      <SelectTrigger className={`w-full ${className} border-0 bg-[#F3F5F780]`}>
+      <SelectTrigger
+        className={`w-full ${className} border-0 hover:bg-[#F3F5F780] data-[state=open]:bg-[#F3F5F780] dark:hover:bg-[#23262780] dark:data-[state=open]:bg-[#23262780]`}
+      >
         <SelectValue placeholder="Select model" />
       </SelectTrigger>
       <SelectContent className="max-h-60 max-w-50">
