@@ -92,8 +92,7 @@
       },
       "resources": [
         "bin/*",
-        "resources/mcp.config.json",
-        "../node_modules/host_server_*/**/*"
+        "resources/mcp.config.json"
       ],
       "shortDescription": "AidenChat App",
       "targets": "all",
