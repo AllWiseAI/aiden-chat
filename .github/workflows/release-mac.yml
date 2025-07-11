@@ -47,9 +47,11 @@ jobs:
           - arch: x86_64
             rust_target: x86_64-apple-darwin
             artifact_arch: x64
+            os: macos-latest
           - arch: arm64
             rust_target: aarch64-apple-darwin
             artifact_arch: arm64
+            os: macos-latest
 
     runs-on: macos-latest
     steps:
@@ -96,7 +98,7 @@ jobs:
           fi
 
       - name: Download host_server, uv, bun binaries
-        run: bash .github/scripts/download-bin.sh ${{ matrix.config.arch }}
+        run: bash .github/scripts/download-bin.sh ${{ matrix.config.arch }} ${{ matrix.config.os }}
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
