@@ -3,6 +3,7 @@ import { useSettingStore } from "../store/setting";
 import { useAuthStore } from "../store/auth";
 import { isRefreshRequest } from "../services";
 import { t } from "i18next";
+import { useAppConfig } from "../store";
 
 const FIVE_MINUTES = 5 * 60 * 1000;
 export interface FetchBody {
@@ -14,15 +15,13 @@ export interface FetchBody {
 }
 
 export const getBaseDomain = async () => {
+  const debugMode = useAppConfig.getState().debugMode;
   const region = await useSettingStore.getState().region;
+  const isDev = debugMode || process.env.NODE_ENV === "development";
   if (region === "CN") {
-    return process.env.NODE_ENV === "development"
-      ? "https://dev.aidenai.io"
-      : "https://prod.aidenai.info";
+    return isDev ? "https://dev.aidenai.io" : "https://prod.aidenai.info";
   }
-  return process.env.NODE_ENV === "development"
-    ? "https://dev.aidenai.io"
-    : "https://prod.aidenai.io";
+  return isDev ? "https://dev.aidenai.io" : "https://prod.aidenai.io";
 };
 
 // aiden - header add Aiden-
@@ -63,6 +62,7 @@ export async function aidenFetch<T = unknown>(
 ): Promise<Response<T>> {
   let res: Response<T>;
   const domain = await getBaseDomain();
+  console.log("[request] current domain: ", domain);
   const headers = await getHeaders({ refresh: false });
   let finnalUrl = url;
   if (url.startsWith("/")) {
