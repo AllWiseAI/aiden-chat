@@ -32,7 +32,9 @@
     "send": "Send",
     "image": {
       "tip": "Please select an image to upload",
-      "fileTypes": "The image type is not supported, please select an image file"
+      "fileTypes": "The image type is not supported, please select an image file",
+      "disabledTips1": "The current model does not",
+      "disabledTips2": "support image generation."
     }
   },
   "home": {
