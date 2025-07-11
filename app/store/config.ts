@@ -25,6 +25,7 @@ export enum Theme {
 const config = getClientConfig();
 
 export const DEFAULT_CONFIG = {
+  hostServerPort: 6888,
   debugMode: false,
   lastUpdate: Date.now(), // timestamp, to merge state
   submitKey: SubmitKey.Enter,
@@ -127,7 +128,11 @@ export const useAppConfig = createPersistStore(
     reset() {
       set(() => ({ ...DEFAULT_CONFIG }));
     },
-
+    setHostPort(port: number) {
+      set(() => ({
+        hostServerPort: port,
+      }));
+    },
     setCurrentModel(model: string) {
       set(() => ({
         currentModel: model,

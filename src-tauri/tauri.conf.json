@@ -3,7 +3,7 @@
   "build": {
     "beforeBuildCommand": "yarn export",
     "beforeDevCommand": "yarn export:dev",
-    "devPath": "http://127.0.0.1:3000",
+    "devPath": "http://127.0.0.1:3001",
     "distDir": "../out",
     "withGlobalTauri": true
   },

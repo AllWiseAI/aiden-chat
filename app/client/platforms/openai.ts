@@ -1,12 +1,12 @@
 "use client";
-import {
-  REQUEST_TIMEOUT_MS,
-  DEFAULT_CHAT_URL,
-  SECOND_CHAT_URL,
-} from "@/app/constant";
+import { REQUEST_TIMEOUT_MS } from "@/app/constant";
 import { ModelSize, DalleQuality, DalleStyle } from "@/app/typing";
 import { ChatOptions, LLMApi, MultimodalContent } from "../api";
-import { getHeaders } from "@/app/utils/fetch";
+import {
+  getBaseChatUrl,
+  getHeaders,
+  getSecondChatUrl,
+} from "@/app/utils/fetch";
 import { tauriFetchWithSignal } from "@/app/utils/stream";
 import { streamWithThink, parseSSE } from "@/app/utils/chat";
 
@@ -56,6 +56,7 @@ export class ChatGPTApi implements LLMApi {
   }
 
   async chat(options: ChatOptions) {
+    const DEFAULT_CHAT_URL = getBaseChatUrl();
     const messages: ChatOptions["messages"] = [];
     for (const v of options.messages || []) {
       messages.push({ role: v.role, content: v.content });
@@ -121,6 +122,7 @@ export class ChatGPTApi implements LLMApi {
   }
 
   async toolCall(options: ChatOptions) {
+    const SECOND_CHAT_URL = getSecondChatUrl();
     const shouldStream = !!options.config.stream;
     const controller = new AbortController();
     options.onController?.(controller);

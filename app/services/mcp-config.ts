@@ -1,9 +1,8 @@
 import { Body } from "@tauri-apps/api/http";
-import { aidenFetch as fetch } from "@/app/utils/fetch";
+import { aidenFetch as fetch, getLocalBaseDomain } from "@/app/utils/fetch";
 import { fetchNoProxy } from "@/app/utils/fetch-no-proxy";
 import { getHeaders } from "@/app/utils/fetch";
 
-const baseURL = "http://127.0.0.1:6888";
 const remoteMcpURL = "/api/config/mcp";
 
 export async function getRemoteMcpItems() {
@@ -14,6 +13,8 @@ export async function getRemoteMcpItems() {
 }
 
 export async function updateMcpConfig(configJson: object) {
+  const baseURL = getLocalBaseDomain();
+
   const headers = await getHeaders({ aiden: true });
   const result = await fetchNoProxy(`${baseURL}/config/update`, {
     method: "POST",
@@ -29,6 +30,8 @@ export async function updateMcpConfig(configJson: object) {
 }
 
 export async function searchMcpServerStatus(name: string) {
+  const baseURL = getLocalBaseDomain();
+
   const url = `${baseURL}/mcp_servers/status/${name}`;
   const headers = await getHeaders({ aiden: true });
   const result = await fetchNoProxy(url, {

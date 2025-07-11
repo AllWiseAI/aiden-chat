@@ -103,18 +103,6 @@ if (mode !== "export") {
         source: "/auth/:path*",
         destination: "https://dev.aidenai.io/auth/:path*",
       },
-      {
-        source: "/agent/:path*",
-        destination: "http://localhost:6888/agent/:path*",
-      },
-      {
-        source: "/mcp_servers/:path*",
-        destination: "http://localhost:6888/mcp_servers/:path*",
-      },
-      {
-        source: "/config/update",
-        destination: "http://localhost:6888/config/update",
-      },
     ];
 
     return {
