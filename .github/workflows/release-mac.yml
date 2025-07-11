@@ -21,7 +21,7 @@ jobs:
       - name: setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: "20.17.0"
       - name: get version
         run: |
           echo "PACKAGE_VERSION=$(node -p "require('./src-tauri/tauri.conf.json').package.version")" >> $GITHUB_ENV
@@ -58,7 +58,7 @@ jobs:
       - name: setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: "20.17.0"
           cache: "yarn"
 
       - name: install Rust stable
@@ -75,7 +75,7 @@ jobs:
           key: ${{ matrix.config.arch }}
 
       - name: Set Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: "20.17.0"
 

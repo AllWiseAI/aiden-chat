@@ -79,7 +79,8 @@
       },
       "externalBin": [],
       "icon": [
-        "icons/logo.icns"
+        "icons/logo.icns",
+        "icons/icon.ico"
       ],
       "identifier": "com.aiden.chat",
       "longDescription": "AidenChat is a cross-platform ChatGPT client, including Web/Win/Linux/OSX/PWA.",

@@ -6,27 +6,58 @@ on:
     types: [published]
 
 jobs:
-  build-windows:
+  create-release:
+    permissions:
+      contents: write
     runs-on: windows-latest
+    outputs:
+      release_id: ${{ steps.create-release.outputs.result }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.17.0"
+      - name: create release
+        id: create-release
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { data } = await github.rest.repos.getLatestRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            })
+            return data.id
+  build-windows:
+    needs: create-release
     permissions:
       contents: write
     strategy:
       fail-fast: false
       matrix:
-        arch: [x86_64]
+        config:
+          - arch: x86_64
+            rust_target: x86_64-pc-windows-msvc
+            artifact_arch: x64
+            os: windows-latest
+
+    runs-on: ${{ matrix.config.os }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: "20.17.0"
           cache: "yarn"
 
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: x86_64-pc-windows-msvc
+          targets: ${{ matrix.config.rust_target }}
 
       - name: Install frontend dependencies
         run: yarn install
@@ -42,7 +73,7 @@ jobs:
         shell: bash
 
       - name: Download host_server, uv, bun binaries
-        run: bash .github/scripts/download-bin.sh ${{ matrix.arch }}
+        run: bash .github/scripts/download-bin.sh ${{ matrix.config.arch }} ${{ matrix.config.os }}
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         shell: bash
@@ -50,10 +81,14 @@ jobs:
       - name: Inject environment variables
         run: |
           echo "NPM_CONFIG_REGISTRY=${{ secrets.NPM_CONFIG_REGISTRY }}" | Out-File -FilePath src-tauri/bin/.env -Encoding utf8
-          echo "UV_INDEX=${{ secrets.UV_INDEX }}" | Add-Content src-tauri/bin/.env
-          echo "UV_DEFAULT_INDEX=${{ secrets.UV_DEFAULT_INDEX }}" | Add-Content src-tauri/bin/.env
-          echo "UV_EXTRA_INDEX_URL=${{ secrets.UV_EXTRA_INDEX_URL }}" | Add-Content src-tauri/bin/.env
+          Add-Content src-tauri/bin/.env "UV_INDEX=${{ secrets.UV_INDEX }}"
+          Add-Content src-tauri/bin/.env "UV_DEFAULT_INDEX=${{ secrets.UV_DEFAULT_INDEX }}"
+          Add-Content src-tauri/bin/.env "UV_EXTRA_INDEX_URL=${{ secrets.UV_EXTRA_INDEX_URL }}"
         shell: pwsh
+      - name: List src-tauri folder contents
+        run: |
+          echo "📂 src-tauri 文件夹内容:"
+          dir src-tauri
 
       - uses: tauri-apps/tauri-action@v0
         env:
@@ -61,16 +96,30 @@ jobs:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
-          args: --target x86_64-pc-windows-msvc
+          releaseId: ${{ needs.create-release.outputs.release_id }}
+          args: --target ${{ matrix.config.rust_target }}
 
       - name: List build artifacts
         run: Get-ChildItem -Recurse src-tauri/target
         shell: pwsh
+  publish-release:
+    permissions:
+      contents: write
+    runs-on: windows-latest
+    needs: [create-release, build-windows]
 
-      - name: Upload Windows Artifacts
-        uses: actions/upload-artifact@v4
+    steps:
+      - name: publish release
+        id: publish-release
+        uses: actions/github-script@v6
+        env:
+          release_id: ${{ needs.create-release.outputs.release_id }}
         with:
-          name: windows-artifacts
-          path: |
-            src-tauri/target/release/bundle/msi/**/*.msi
-            src-tauri/target/release/bundle/windows/**/*.exe
+          script: |
+            github.rest.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: process.env.release_id,
+              draft: false,
+              prerelease: false
+            })

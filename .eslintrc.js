@@ -6,11 +6,13 @@ module.exports = {
     "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended",
   ],
-  plugins: ["@typescript-eslint"],
+  plugins: ["@typescript-eslint", "prettier", "unused-imports"],
   rules: {
     "prettier/prettier": "error",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/no-unsafe-function-type": "off",
+    "unused-imports/no-unused-imports": "warn",
+    "prettier/prettier": ["error", { endOfLine: "auto" }],
   },
 };
