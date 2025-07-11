@@ -179,6 +179,7 @@ export function SideBarHeader(props: {
   const { children, shouldNarrow, toggleSearch } = props;
 
   const { toggleSideBar } = useDragSideBar();
+  const debugMode = useAppConfig().debugMode;
 
   return (
     <Fragment>
@@ -189,9 +190,7 @@ export function SideBarHeader(props: {
         )}
       >
         {!shouldNarrow && (
-          <>
-            <LogoIcon className="h-[23px]" />
-          </>
+          <>{debugMode ? "AidenDebug" : <LogoIcon className="h-[23px]" />}</>
         )}
         <div className="flex gap-1.5">
           {!shouldNarrow && (

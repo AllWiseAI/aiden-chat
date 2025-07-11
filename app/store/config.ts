@@ -25,6 +25,7 @@ export enum Theme {
 const config = getClientConfig();
 
 export const DEFAULT_CONFIG = {
+  debugMode: false,
   lastUpdate: Date.now(), // timestamp, to merge state
   submitKey: SubmitKey.Enter,
   avatar: "1f603",
@@ -116,6 +117,12 @@ export const useAppConfig = createPersistStore(
     },
     getCurrentModel() {
       return get().models.find((model) => model.model === get().currentModel);
+    },
+    switchDebugMode() {
+      const debugMode = get().debugMode;
+      set(() => ({
+        debugMode: !debugMode,
+      }));
     },
     reset() {
       set(() => ({ ...DEFAULT_CONFIG }));

@@ -246,6 +246,9 @@ function InnerChat() {
     next: () => chatStore.nextSession(1),
     clear: () => chatStore.clearSessions(),
     fork: () => chatStore.forkSession(),
+    debug: () => {
+      config.switchDebugMode();
+    },
     del: () => chatStore.deleteSession(chatStore.currentSessionIndex),
   });
 
