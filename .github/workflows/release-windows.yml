@@ -12,6 +12,26 @@ jobs:
     runs-on: windows-latest
     outputs:
       release_id: ${{ steps.create-release.outputs.result }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.17.0"
+      - name: create release
+        id: create-release
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { data } = await github.rest.repos.getLatestRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            })
+            return data.id
+
   build-windows:
     permissions:
       contents: write
