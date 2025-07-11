@@ -30,7 +30,10 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
             })
+            core.setOutput("release_id", data.id)
             return data.id
+      - name: Debug release id
+        run: echo "Release ID is ${{ needs.create-release.outputs.release_id }}"
 
   build-windows:
     permissions:
