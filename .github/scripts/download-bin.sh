@@ -65,7 +65,7 @@ ls -l src-tauri/resources
 if [[ "$OS" == "macos-latest" ]]; then
   unzip -o  src-tauri/resources/$ASSET_FILE -d src-tauri/resources
   echo "✅ host_server 解压成功"
-  chmod +x src-tauri/resources/$UNPACKED_DIR
+  chmod +x src-tauri/resources/host_server_macos
 elif [[ "$OS" == "windows-latest" ]]; then
   powershell.exe -Command "Expand-Archive -Path 'src-tauri/resources/$ASSET_FILE' -DestinationPath 'src-tauri/resources' -Force"
   echo "✅ host_server 解压成功"
