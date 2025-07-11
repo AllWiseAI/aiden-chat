@@ -40,6 +40,7 @@ interface ChatCommands {
   clear?: Command;
   fork?: Command;
   del?: Command;
+  debug?: Command;
 }
 
 // Compatible with Chinese colon character "："
