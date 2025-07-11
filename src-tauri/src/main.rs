@@ -18,6 +18,8 @@ use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
 use tokio::io::AsyncBufReadExt;
 use tokio::process::{Child, Command as TokioCommand};
 use tokio::task;
+use std::net::TcpListener;
+
 
 pub struct HostServerProcess(pub Mutex<Option<Child>>);
 
@@ -102,6 +104,13 @@ fn append_bin_to_path<R: Runtime>(app: &AppHandle<R>) -> String {
     format!("{}{}{}", bin_dir_str, sep, shell_path)
 }
 
+fn find_free_port() -> Option<u16> {
+    TcpListener::bind("127.0.0.1:0")
+        .ok()
+        .and_then(|listener| listener.local_addr().ok())
+        .map(|addr| addr.port())
+}
+
 fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProcess>) {
     let binary_path: PathBuf = get_host_server_path(app);
     let config = app.config();
@@ -111,12 +120,22 @@ fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProc
 
     let new_path = append_bin_to_path(app);
     log::info!("Setting PATH to host_server: {}", new_path);
+    let port = if cfg!(debug_assertions) {
+        log::info!("Development mode, using fixed port 6888");
+        6888
+    } else {
+        let free_port = find_free_port().expect("Failed to find a free port");
+        log::info!("Production mode, using dynamic port: {}", free_port);
+        free_port
+    };
 
-    let mut child = TokioCommand::new(binary_path.to_string_lossy().to_string())
+    let mut child: Child = TokioCommand::new(binary_path.to_string_lossy().to_string())
         .args([
             "--config_file".into(),
             mcp_config_path.to_string_lossy().to_string(),
             "--disable_reload".into(),
+            "--port".into(),
+            port.to_string(),
         ])
         .envs(env::vars())
         .env("PATH", new_path)
@@ -136,8 +155,9 @@ fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProc
         let mut lines = reader.lines();
         while let Ok(Some(line)) = lines.next_line().await {
             log::info!("host_server stdout: {}", line);
-            if line.contains(HOST_SERVER_READY_TEXT) {
-                if let Err(e) = app_clone.emit_all(HOST_SERVER_EVENT_NAME, ()) {
+            let expected_ready_text = format!("{}{}", HOST_SERVER_READY_TEXT, port);
+            if line.contains(&expected_ready_text) {
+                if let Err(e) = app_clone.emit_all(HOST_SERVER_EVENT_NAME, port) {
                     log::error!("Failed to emit event to frontend: {}", e);
                 }
             }

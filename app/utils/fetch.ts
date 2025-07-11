@@ -14,6 +14,21 @@ export interface FetchBody {
   };
 }
 
+export const getLocalBaseDomain = () => {
+  const hostServerPort = useAppConfig.getState().hostServerPort;
+  return `http://127.0.0.1:${hostServerPort}`;
+};
+
+export const getBaseChatUrl = () => {
+  const baseURL = getLocalBaseDomain();
+  return `${baseURL}/agent/chat`;
+};
+
+export const getSecondChatUrl = () => {
+  const baseURL = getLocalBaseDomain();
+  return `${baseURL}/agent/continue-tool-call`;
+};
+
 export const getBaseDomain = async () => {
   const debugMode = useAppConfig.getState().debugMode;
   const region = await useSettingStore.getState().region;
