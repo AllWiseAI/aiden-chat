@@ -4,6 +4,11 @@ import { Button } from "@/app/components/shadcn/button";
 import FileIcon from "../icons/file.svg";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/app/components/shadcn/tooltip";
 
 export const ImageUploader = () => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -19,7 +24,6 @@ export const ImageUploader = () => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    console.log("file", file);
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
@@ -40,22 +44,42 @@ export const ImageUploader = () => {
     }
   };
 
-  return (
-    <div>
-      <Button
-        onClick={handleSelectFile}
-        variant="outline"
-        className="border border-[#E8ECEF] text-black dark:text-white dark:bg-[#141416] dark:border-[#343839] text-sm font-semibold rounded-sm p-2 size-12"
-      >
-        <FileIcon className="size-6 text-[#141718] dark:text-white" />
-      </Button>
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/*"
-        hidden
-        onChange={handleFileChange}
-      />
-    </div>
-  );
+  const renderButton = (disable: boolean) => {
+    return (
+      <div>
+        <Button
+          disabled={disable}
+          onClick={handleSelectFile}
+          variant="outline"
+          className="border border-[#E8ECEF] text-black dark:text-white dark:bg-[#141416] dark:border-[#343839] text-sm font-semibold rounded-sm p-2 size-12"
+        >
+          <FileIcon className="size-6 text-[#141718] dark:text-white" />
+        </Button>
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/*"
+          hidden
+          onChange={handleFileChange}
+        />
+      </div>
+    );
+  };
+
+  const renderUploadImageButton = (disable: boolean) => {
+    if (disable) {
+      return (
+        <Tooltip>
+          <TooltipTrigger>{renderButton(disable)}</TooltipTrigger>
+          <TooltipContent>
+            <p>{t("chat.image.disabledTips1")}</p>
+            <p>{t("chat.image.disabledTips2")}</p>
+          </TooltipContent>
+        </Tooltip>
+      );
+    }
+    return renderButton(disable);
+  };
+
+  return <div>{renderUploadImageButton(false)}</div>;
 };

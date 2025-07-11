@@ -32,7 +32,9 @@
     "send": "发送",
     "image": {
       "tip": "请上传图片文件",
-      "fileTypes": "不支持的图片格式"
+      "fileTypes": "不支持的图片格式",
+      "disabledTips1": "当前模型不支持",
+      "disabledTips2": "图片生成。"
     }
   },
   "home": {
