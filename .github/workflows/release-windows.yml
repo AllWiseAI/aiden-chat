@@ -6,6 +6,12 @@ on:
     types: [published]
 
 jobs:
+  create-release:
+    permissions:
+      contents: write
+    runs-on: windows-latest
+    outputs:
+      release_id: ${{ steps.create-release.outputs.result }}
   build-windows:
     permissions:
       contents: write
@@ -70,16 +76,30 @@ jobs:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
+          releaseId: ${{ needs.create-release.outputs.release_id }}
           args: --target ${{ matrix.config.rust_target }}
 
       - name: List build artifacts
         run: Get-ChildItem -Recurse src-tauri/target
         shell: pwsh
+  publish-release:
+    permissions:
+      contents: write
+    runs-on: windows-latest
+    needs: [create-release, build-windows]
 
-      - name: Upload Windows Artifacts
-        uses: actions/upload-artifact@v4
+    steps:
+      - name: publish release
+        id: publish-release
+        uses: actions/github-script@v6
+        env:
+          release_id: ${{ needs.create-release.outputs.release_id }}
         with:
-          name: windows-artifacts
-          path: |
-            src-tauri/target/release/bundle/msi/**/*.msi
-            src-tauri/target/release/bundle/windows/**/*.exe
+          script: |
+            github.rest.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: process.env.release_id,
+              draft: false,
+              prerelease: false
+            })
