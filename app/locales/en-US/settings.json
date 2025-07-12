@@ -4,6 +4,7 @@
     "general": "General",
     "mcp": "MCP",
     "mcpManage": "MCP Management",
+    "model": "Model",
     "aboutUs": "About us"
   },
   "general": {
@@ -23,6 +24,13 @@
       "light": "Light",
       "dark": "Dark"
     }
+  },
+  "model": {
+    "customModel": "Customized Model",
+    "defaultModel": "Default Model",
+    "provider": "Provider",
+    "model": "Model",
+    "operation": "Operation"
   },
   "mcp": {
     "edit": "Edit Config",

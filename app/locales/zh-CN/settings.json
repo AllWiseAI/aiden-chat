@@ -4,6 +4,7 @@
     "general": "通用",
     "mcp": "MCP",
     "mcpManage": "MCP 管理",
+    "model": "模型",
     "aboutUs": "关于我们"
   },
   "general": {
@@ -23,6 +24,13 @@
       "light": "浅色模式",
       "dark": "深色模式"
     }
+  },
+  "model": {
+    "customModel": "自定义模型",
+    "defaultModel": "默认模型",
+    "provider": "提供商",
+    "model": "模型",
+    "operation": "操作"
   },
   "mcp": {
     "edit": "编辑配置",
