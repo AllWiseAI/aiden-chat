@@ -134,6 +134,7 @@ fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProc
             "--config_file".into(),
             mcp_config_path.to_string_lossy().to_string(),
             "--disable_reload".into(),
+            "--enable_authorization".into(),
             "--port".into(),
             port.to_string(),
         ])

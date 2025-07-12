@@ -25,6 +25,7 @@ export enum Theme {
 const config = getClientConfig();
 
 export const DEFAULT_CONFIG = {
+  localToken: "",
   hostServerPort: 6888,
   debugMode: false,
   lastUpdate: Date.now(), // timestamp, to merge state
@@ -131,6 +132,11 @@ export const useAppConfig = createPersistStore(
     setHostPort(port: number) {
       set(() => ({
         hostServerPort: port,
+      }));
+    },
+    setLocalToken(token: string) {
+      set(() => ({
+        localToken: token,
       }));
     },
     setCurrentModel(model: string) {

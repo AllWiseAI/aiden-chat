@@ -1,3 +1,3 @@
 export * from "./auth";
-export * from "./mcp-config";
+export * from "./host-server";
 export * from "./model";
