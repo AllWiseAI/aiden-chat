@@ -4,6 +4,23 @@ import { fetchNoProxy } from "@/app/utils/fetch-no-proxy";
 import { getHeaders } from "@/app/utils/fetch";
 
 const remoteMcpURL = "/api/config/mcp";
+const localTokenURL = "/authorization/token";
+
+export async function getLocalToken() {
+  const baseURL = getLocalBaseDomain();
+  const headers = await getHeaders({ aiden: true });
+  const result = await fetchNoProxy(`${baseURL}${localTokenURL}`, {
+    method: "GET",
+    headers: headers,
+  });
+
+  if (result.status !== 200) {
+    throw new Error("search status failed: " + result.statusText);
+  }
+
+  const jsonResult = await result.json();
+  return jsonResult;
+}
 
 export async function getRemoteMcpItems() {
   const result = await fetch(remoteMcpURL, {

@@ -68,6 +68,9 @@ export const getHeaders = async ({
     const latestToken = useAuthStore.getState().userToken.accessToken;
     headers[`${aiden ? "Aiden-" : ""}Authorization`] = `Bearer ${latestToken}`;
   }
+  if (aiden) {
+    headers["Host-Authorization"] = useAppConfig.getState().localToken;
+  }
   return headers;
 };
 

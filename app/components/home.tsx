@@ -27,6 +27,7 @@ import { useAppConfig } from "../store/config";
 import { getClientConfig } from "../config/client";
 import useAppSetting from "../hooks/use-app-setting";
 import clsx from "clsx";
+import { useGetToken } from "../hooks/use-get-token";
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -230,6 +231,7 @@ export function WindowContent(props: { children: React.ReactNode }) {
 export function Home() {
   useSwitchTheme();
   useHtmlLang();
+  useGetToken();
   useEffect(() => {
     console.log("[Config] got config from build time", getClientConfig());
   }, []);
