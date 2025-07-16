@@ -22,6 +22,10 @@
       "system": "System match",
       "light": "Light",
       "dark": "Dark"
+    },
+    "relaunch": {
+      "title": "Restart",
+      "description": "Switching regions requires restarting the app to take effect. Please confirm whether you wish to proceed and restart the app."
     }
   },
   "mcp": {
