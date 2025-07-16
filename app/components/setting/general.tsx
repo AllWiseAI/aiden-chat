@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useAuthStore, useSettingStore } from "../../store";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -20,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/shadcn/select";
+import RestartDialog from "../restart-dialog";
 
 export default function General() {
   const authStore = useAuthStore();
@@ -30,6 +32,8 @@ export default function General() {
   const updateConfig = config.update;
   const email = useAuthStore((state) => state.user.email);
   const navigate = useNavigate();
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [currentRegion, setCurrentRegion] = useState<string>(region);
   const logout = async () => {
     navigate(Path.Login);
     try {
@@ -46,10 +50,8 @@ export default function General() {
     }
   };
   const handleRegionChange = async (value: string) => {
-    setRegion(value);
-    setTimeout(async () => {
-      await relaunch();
-    }, 1000);
+    setCurrentRegion(value);
+    setIsAlertOpen(true);
   };
   const sortedCountryList = [...countryList].sort((a, b) => {
     const nameA = t(`common:region.${a}`);
@@ -74,6 +76,7 @@ export default function General() {
         <div className="font-medium">{t("general.country.title")}</div>
         <Select
           defaultValue={region || "US"}
+          value={region}
           onValueChange={(value) => handleRegionChange(value)}
         >
           <SelectTrigger className="w-[180px] dark:border-[#232627] text-xs">
@@ -157,6 +160,23 @@ export default function General() {
           </SelectContent>
         </Select>
       </div>
+      <RestartDialog
+        title={t("general.relaunch.title")}
+        description={t("general.relaunch.description")}
+        onConfirm={async () => {
+          setRegion(currentRegion);
+          setTimeout(() => {
+            relaunch();
+          }, 1000);
+        }}
+        onOpenChange={(value) => {
+          if (!value) {
+            setCurrentRegion(region);
+          }
+          setIsAlertOpen(value);
+        }}
+        isOpen={isAlertOpen}
+      ></RestartDialog>
     </div>
   );
 }
