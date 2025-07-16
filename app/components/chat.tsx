@@ -24,6 +24,7 @@ import { ImageUploader } from "./image-uploader";
 import { useImageUploadStore } from "@/app/store/image-upload";
 import CircleProgress from "./circle-progress";
 import { ModelSelect } from "./model-select";
+import { relaunch } from "@tauri-apps/api/process";
 
 import {
   ChatMessage,
@@ -248,6 +249,9 @@ function InnerChat() {
     fork: () => chatStore.forkSession(),
     debug: () => {
       config.switchDebugMode();
+      setTimeout(async () => {
+        await relaunch();
+      }, 1000);
     },
     del: () => chatStore.deleteSession(chatStore.currentSessionIndex),
   });

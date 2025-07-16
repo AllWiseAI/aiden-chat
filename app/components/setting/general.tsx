@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Path } from "../../constant";
 import { Theme, useAppConfig } from "@/app/store";
 import { useTranslation } from "react-i18next";
+import { relaunch } from "@tauri-apps/api/process";
 import {
   getLang,
   changeLanguage,
@@ -44,6 +45,12 @@ export default function General() {
       });
     }
   };
+  const handleRegionChange = async (value: string) => {
+    setRegion(value);
+    setTimeout(async () => {
+      await relaunch();
+    }, 1000);
+  };
   const sortedCountryList = [...countryList].sort((a, b) => {
     const nameA = t(`common:region.${a}`);
     const nameB = t(`common:region.${b}`);
@@ -67,9 +74,7 @@ export default function General() {
         <div className="font-medium">{t("general.country.title")}</div>
         <Select
           defaultValue={region || "US"}
-          onValueChange={(value) => {
-            setRegion(value);
-          }}
+          onValueChange={(value) => handleRegionChange(value)}
         >
           <SelectTrigger className="w-[180px] dark:border-[#232627] text-xs">
             <SelectValue />
