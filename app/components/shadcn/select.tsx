@@ -2,8 +2,10 @@
 
 import * as React from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
-import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import AccessIcon from "../../icons/access.svg";
+import ArrowDownIcon from "../../icons/arrow-down.svg";
+import ArrowUpIcon from "../../icons/arrow-up.svg";
+
 import { cn } from "@/app/libs/shadcn/utils";
 
 function Select({
@@ -41,7 +43,7 @@ function SelectTrigger({
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        <ChevronDownIcon className="size-4 opacity-50" />
+        <ArrowDownIcon className="size-4 opacity-50" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   );
@@ -140,7 +142,7 @@ function SelectScrollUpButton({
       )}
       {...props}
     >
-      <ChevronUpIcon className="size-4" />
+      <ArrowUpIcon className="size-4" />
     </SelectPrimitive.ScrollUpButton>
   );
 }
@@ -157,7 +159,7 @@ function SelectScrollDownButton({
       )}
       {...props}
     >
-      <ChevronDownIcon className="size-4" />
+      <ArrowDownIcon className="size-4" />
     </SelectPrimitive.ScrollDownButton>
   );
 }

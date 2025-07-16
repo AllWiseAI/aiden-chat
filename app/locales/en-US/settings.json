@@ -30,7 +30,11 @@
     "defaultModel": "Default Model",
     "provider": "Provider",
     "model": "Model",
-    "operation": "Operation"
+    "apiKey": "API Key",
+    "operation": "Operation",
+    "noCustomModel": "No custom model",
+    "addModelTitle": "Add customized model",
+    "editModelTitle": "Edit customized model"
   },
   "mcp": {
     "edit": "Edit Config",

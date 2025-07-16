@@ -30,7 +30,11 @@
     "defaultModel": "默认模型",
     "provider": "提供商",
     "model": "模型",
-    "operation": "操作"
+    "apiKey": "API Key",
+    "operation": "操作",
+    "noCustomModel": "没有自定义模型",
+    "addModelTitle": "添加自定义模型",
+    "editModelTitle": "编辑自定义模型"
   },
   "mcp": {
     "edit": "编辑配置",

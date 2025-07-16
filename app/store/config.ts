@@ -50,6 +50,7 @@ export const DEFAULT_CONFIG = {
 
   currentModel: "",
   models: [] as ModelOption[],
+  localModel: [],
   modelConfig: {
     model: "gpt-4o",
     providerName: "OpenAI",
@@ -125,6 +126,36 @@ export const useAppConfig = createPersistStore(
       set(() => ({
         debugMode: !debugMode,
       }));
+    },
+    setLocalModels(modelInfo) {
+      const { localModel } = get();
+      set(() => ({
+        localModel: [...localModel, modelInfo],
+      }));
+    },
+    updateLocalModel(modelInfo) {
+      const { localModel } = get();
+      const index = localModel.findIndex(
+        (model) => model.model === modelInfo.model,
+      );
+      if (index !== -1) {
+        localModel[index] = modelInfo;
+        set(() => ({
+          localModel: [...localModel],
+        }));
+      }
+    },
+    deleteLocalModel(modelInfo) {
+      const { localModel } = get();
+      const index = localModel.findIndex(
+        (model) => model.model === modelInfo.model,
+      );
+      if (index !== -1) {
+        localModel.splice(index, 1);
+        set(() => ({
+          localModel: [...localModel],
+        }));
+      }
     },
     reset() {
       set(() => ({ ...DEFAULT_CONFIG }));
