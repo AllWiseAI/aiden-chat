@@ -175,3 +175,13 @@ export type ModelOption = {
   endpoint: string;
   provider: string;
 };
+
+export type ProviderOption = {
+  protocol: string;
+  provider: string;
+  default_endpoint: boolean;
+  id: number;
+  models_path: string;
+  logo_uri: null | string;
+  enabled: boolean;
+};

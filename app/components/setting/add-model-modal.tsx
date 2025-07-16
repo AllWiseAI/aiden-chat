@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,14 +9,15 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/app/components/shadcn/dialog";
+
 import { Button } from "@/app/components/shadcn/button";
 import { t } from "i18next";
 import { useTranslation } from "react-i18next";
 import { Label } from "@/app/components/shadcn/label";
-import { Input } from "@/app/components/shadcn/input";
 import { Password } from "@/app/components/password";
 import { ProviderSelect } from "./provider-select";
-import clsx from "clsx";
+import { MultiSelectDropdown } from "../shadcn/multi-select";
+import { getProviderList } from "@/app/services";
 
 interface ModelInfo {
   provider: string;
@@ -32,6 +33,81 @@ interface AddModelModalProps {
   onOpenChange?: (open: boolean) => void;
 }
 
+type ProviderOption = {
+  name: string;
+  value: string;
+  models: { model: string; display: string }[];
+};
+
+const providerList = [
+  {
+    name: "OpenAI",
+    value: "openai",
+    models: [
+      { model: "gpt-4", display: "GPT-4" },
+      { model: "gpt-4-turbo", display: "GPT-4 Turbo" },
+      { model: "gpt-3.5-turbo", display: "GPT-3.5 Turbo" },
+      { model: "gpt-3.5", display: "GPT-3.5" },
+      { model: "text-davinci-003", display: "Text Davinci 003" },
+    ],
+  },
+  {
+    name: "Anthropic",
+    value: "anthropic",
+    models: [
+      { model: "claude-3-opus-20240229", display: "Claude 3 Opus" },
+      { model: "claude-3-sonnet-20240229", display: "Claude 3 Sonnet" },
+      { model: "claude-3-haiku-20240307", display: "Claude 3 Haiku" },
+      { model: "claude-instant-1.2", display: "Claude Instant 1.2" },
+      { model: "claude-2.1", display: "Claude 2.1" },
+    ],
+  },
+  {
+    name: "Cohere",
+    value: "cohere",
+    models: [
+      { model: "command-r-plus", display: "Command R+" },
+      { model: "command-r", display: "Command R" },
+      { model: "command-light", display: "Command Light" },
+      { model: "command-nightly", display: "Command Nightly" },
+      { model: "embed-english-v3.0", display: "Embed English V3" },
+    ],
+  },
+  {
+    name: "Google",
+    value: "google",
+    models: [
+      { model: "gemini-1.5-pro", display: "Gemini 1.5 Pro" },
+      { model: "gemini-1.5-flash", display: "Gemini 1.5 Flash" },
+      { model: "gemini-1.0-pro", display: "Gemini 1.0 Pro" },
+      { model: "palm-2-chat-bison", display: "PaLM 2 Chat Bison" },
+      { model: "text-bison", display: "Text Bison" },
+    ],
+  },
+  {
+    name: "Azure",
+    value: "azure",
+    models: [
+      { model: "azure-gpt-35", display: "Azure GPT-3.5" },
+      { model: "azure-gpt-4", display: "Azure GPT-4" },
+      { model: "azure-gpt-4-vision", display: "Azure GPT-4 Vision" },
+      { model: "azure-embedding-ada", display: "Azure Embedding Ada" },
+      { model: "azure-davinci", display: "Azure Davinci" },
+    ],
+  },
+  {
+    name: "HuggingFace",
+    value: "huggingface",
+    models: [
+      { model: "mistral-7b", display: "Mistral 7B" },
+      { model: "mixtral-8x7b", display: "Mixtral 8x7B" },
+      { model: "llama-3-8b", display: "LLaMA 3 8B" },
+      { model: "llama-3-70b", display: "LLaMA 3 70B" },
+      { model: "bloomz", display: "BloomZ" },
+    ],
+  },
+];
+
 export function AddModelModal({
   open,
   isEdit,
@@ -39,6 +115,15 @@ export function AddModelModal({
   onOpenChange,
 }: AddModelModalProps) {
   const { t: tInner } = useTranslation("settings");
+  const [currentModels, setCurrentModels] = useState(providerList[0].models);
+  // const [providerList, setProviderList] = useState<ProviderOption[]>([]);
+  useEffect(() => {
+    async function getProviderData() {
+      const data = await getProviderList();
+      console.log("data===", data);
+    }
+    getProviderData();
+  }, []);
 
   const handleConfirm = useCallback(() => {
     const updated: ModelInfo = {};
@@ -47,7 +132,7 @@ export function AddModelModal({
   }, []);
 
   const [formData, setFormData] = useState({
-    provider: "openai",
+    provider: providerList[0].value,
     apiKey: "",
     model: "",
     customUrl: "",
@@ -62,10 +147,11 @@ export function AddModelModal({
     }));
   };
 
-  const handleProviderChange = (value: string) => {
+  const handleProviderChange = (provider: ProviderOption) => {
+    setCurrentModels(provider.models);
     setFormData((prev) => ({
       ...prev,
-      ["provider"]: value,
+      ["provider"]: provider.value,
     }));
   };
 
@@ -97,6 +183,7 @@ export function AddModelModal({
 
             <ProviderSelect
               value={formData.provider}
+              providerList={providerList}
               onChange={handleProviderChange}
             />
           </div>
@@ -126,22 +213,7 @@ export function AddModelModal({
             >
               {tInner("model.model")}
             </Label>
-            <Input
-              id="model"
-              type="email"
-              className={clsx(
-                "w-full h-9 !text-left px-2.5 py-2 rounded-sm text-sm hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]",
-                {
-                  "border border-[#EF466F]": false,
-                },
-              )}
-              value={formData.model}
-              onChange={handleChange}
-              clearable
-            />
-            {false && (
-              <span className="text-[10px] text-red-500">label error</span>
-            )}
+            <MultiSelectDropdown className="flex-1" options={currentModels} />
           </div>
         </div>
 
