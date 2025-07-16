@@ -170,7 +170,9 @@ export type RefreshResponse = RefreshSuccessResponse | RefreshErrorResponse;
 export type ModelOption = {
   display: string;
   model: string;
+  multi_model: boolean;
   is_default: boolean;
+  is_summary: boolean;
   id: number;
   endpoint: string;
   provider: string;
