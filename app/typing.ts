@@ -171,6 +171,7 @@ export type ModelOption = {
   display: string;
   model: string;
   is_default: boolean;
+  is_summary: boolean;
   id: number;
   endpoint: string;
   provider: string;

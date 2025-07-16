@@ -49,6 +49,7 @@ export const DEFAULT_CONFIG = {
   hideBuiltinMasks: false, // dont add builtin masks
 
   currentModel: "",
+  summaryModel: "",
   models: [] as ModelOption[],
   modelConfig: {
     model: "gpt-4o",
@@ -99,7 +100,13 @@ export const useAppConfig = createPersistStore(
           models,
         }));
         const defaultModel = models?.find((model) => model.is_default)?.model;
+        const summaryModel = models?.find((model) => model.is_summary)?.model;
         const { currentModel } = get();
+        if (summaryModel) {
+          set(() => ({
+            summaryModel: summaryModel || defaultModel,
+          }));
+        }
         if (!currentModel) {
           set(() => ({
             currentModel: defaultModel,
@@ -119,6 +126,9 @@ export const useAppConfig = createPersistStore(
     },
     getCurrentModel() {
       return get().models.find((model) => model.model === get().currentModel);
+    },
+    getSummaryModel() {
+      return get().models.find((model) => model.model === get().summaryModel);
     },
     switchDebugMode() {
       const debugMode = get().debugMode;
