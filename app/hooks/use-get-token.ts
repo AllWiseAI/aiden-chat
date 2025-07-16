@@ -16,7 +16,7 @@ export function useGetToken() {
         const { data } = token;
         config.setLocalToken(data);
       } catch (error) {
-        console.log("getLocalToken error", error);
+        console.error("getLocalToken error", JSON.stringify(error));
       }
     }
     getToken();
