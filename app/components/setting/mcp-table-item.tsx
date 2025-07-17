@@ -241,7 +241,11 @@ export function McpTableItem({
               {Highlight({ text: mcp_name, keyword })}
             </div>
             {(showSetting || showUpdate || showDelete) && (
-              <DropdownMenu open={openMenu} onOpenChange={setOpenMenu}>
+              <DropdownMenu
+                open={openMenu}
+                onOpenChange={setOpenMenu}
+                modal={false}
+              >
                 <DropdownMenuTrigger
                   className="size-4 flex-center cursor-pointer"
                   onClick={(e) => e.stopPropagation()}
