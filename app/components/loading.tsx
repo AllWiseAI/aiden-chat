@@ -15,6 +15,7 @@ import ResultIcon from "../icons/result.svg";
 import { useAppConfig, useAuthStore } from "../store";
 import { useMcpStore } from "../store/mcp";
 import { exportAndDownloadLog } from "../utils/log";
+import { getLocalToken } from "../services";
 
 export function LoadingPage() {
   const navigate = useNavigate();
@@ -31,7 +32,21 @@ export function LoadingPage() {
     relaunch();
   };
 
-  useHostServerReady((ready) => {
+  useHostServerReady(async (ready) => {
+    if (process.env.NODE_ENV === "development") {
+      const config = useAppConfig.getState();
+      async function getToken() {
+        try {
+          const token = await getLocalToken();
+          const { data } = token;
+          config.setLocalToken(data);
+        } catch (error) {
+          console.log("getLocalToken error", error);
+        }
+      }
+      await getToken();
+    }
+
     if (ready || process.env.NODE_ENV === "development") {
       setIsServerReady(true);
       mcpStore.init();

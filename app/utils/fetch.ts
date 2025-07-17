@@ -6,6 +6,8 @@ import { t } from "i18next";
 import { useAppConfig } from "../store";
 
 const FIVE_MINUTES = 5 * 60 * 1000;
+let refreshingTokenPromise: Promise<void> | null = null;
+
 export interface FetchBody {
   method: "POST" | "GET" | "PUT" | "DELETE" | "OPTIONS";
   body?: {
@@ -63,7 +65,13 @@ export const getHeaders = async ({
 
   if (token.accessToken) {
     if (refresh && token.expires * 1000 - Date.now() <= FIVE_MINUTES) {
-      await refreshToken();
+      // 防止多次同时触发 refresh 请求
+      if (!refreshingTokenPromise) {
+        refreshingTokenPromise = refreshToken().finally(() => {
+          refreshingTokenPromise = null;
+        });
+      }
+      await refreshingTokenPromise;
     }
     const latestToken = useAuthStore.getState().userToken.accessToken;
     headers[`${aiden ? "Aiden-" : ""}Authorization`] = `Bearer ${latestToken}`;

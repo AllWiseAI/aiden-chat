@@ -73,7 +73,7 @@ export const ConfirmProvider = ({
           </Button>
 
           <Button
-            className="flex-1 h-8 text-xs bg-[#EF466F]/6 hover:bg-[#EF466F]/20 text-[#EF466F] dark:text-black dark:bg-[#EF466F] dark:hover:bg-[#EF466F]/70 flex-center gap-3 px-2.5 py-2 rounded-sm"
+            className="flex-1 h-8 text-xs bg-[#EF466F] hover:bg-[#EF466F]/70 text-white dark:text-black dark:bg-[#EF466F] dark:hover:bg-[#EF466F]/70  flex-center gap-3 px-2.5 py-2 rounded-sm"
             onClick={() => {
               handleClose("confirm");
             }}
@@ -150,8 +150,8 @@ export const ConfirmProvider = ({
     }
 
     return (
-      <AlertDialogDescription className="flex items-center gap-2.5 text-base font-normal text-[#141718] dark:text-white border border-[#E8ECEF] dark:border-[#232627] rounded-xl px-2.5 py-2">
-        <MapIcon className="size-[18px]" />
+      <AlertDialogDescription className="break-all flex items-center gap-2.5 text-base font-normal text-[#141718] dark:text-white border border-[#E8ECEF] dark:border-[#232627] rounded-xl px-2.5 py-2">
+        <MapIcon className="size-[18px] shrink-0" />
         {options.description}
       </AlertDialogDescription>
     );

@@ -35,13 +35,6 @@ const DialogContent = React.forwardRef<
     closeIcon?: boolean;
   }
 >(({ className, children, closeIcon = true, ...props }, ref) => {
-  React.useEffect(() => {
-    return () => {
-      // 每次 Dialog 卸载时，强制清理 body 的 pointer-events
-      document.body.style.pointerEvents = "";
-    };
-  }, []);
-
   return (
     <DialogPortal>
       <DialogOverlay />
