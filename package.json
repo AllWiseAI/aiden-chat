@@ -6,7 +6,7 @@
     "dev": "concurrently -r \"next dev\"",
     "build": "cross-env BUILD_MODE=standalone next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint app --ext .ts,.tsx,.js,.jsx",
     "export": "cross-env BUILD_MODE=export BUILD_APP=1 next build",
     "export:dev": "rm -rf .next && cross-env BUILD_MODE=export BUILD_APP=1 next dev -p 3001 -H 127.0.0.1",
     "app:dev": "sh ./update_tauri_config.sh --mode dev && concurrently -r  \"yarn tauri dev\"",

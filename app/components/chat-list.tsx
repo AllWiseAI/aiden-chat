@@ -71,6 +71,7 @@ export function ChatItem(props: {
   const inputRef = useRef<HTMLInputElement>(null);
   const [openMenu, setOpenMenu] = useState(false);
   const chatStore = useChatStore();
+
   const session = chatStore.sessions.find((s) => s.id === props.id)!;
   const { t } = useTranslation("general");
 
@@ -90,8 +91,8 @@ export function ChatItem(props: {
               (currentPath === Path.Chat || currentPath === Path.Home)
               ? "bg-[#E8ECEF]/50 dark:bg-[#232323]"
               : openMenu
-                ? "bg-[#E8ECEF]/50 dark:bg-[#2F2F2F]"
-                : "hover:bg-[#E8ECEF]/50 dark:hover:bg-[#232627]/50",
+              ? "bg-[#E8ECEF]/50 dark:bg-[#2F2F2F]"
+              : "hover:bg-[#E8ECEF]/50 dark:hover:bg-[#232627]/50",
             !isEdit && "p-1.5",
           )}
           onClick={props.onClick}
