@@ -158,7 +158,7 @@ export function LoginPage() {
             <span
               className="cursor-pointer text-main underline"
               onClick={() =>
-                shell.open("https://aidenai.io/terms-of-service.html")
+                shell.open("https://docs.aidenai.io/terms-of-service.html")
               }
             >
               {t("terms")}
@@ -166,7 +166,7 @@ export function LoginPage() {
             {" " + t("and") + " "}
             <span
               className="cursor-pointer text-main underline"
-              onClick={() => shell.open("https://aidenai.io/privacy.html")}
+              onClick={() => shell.open("https://docs.aidenai.io/privacy.html")}
             >
               {t("privacy")}
             </span>

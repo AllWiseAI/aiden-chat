@@ -32,11 +32,12 @@ export default function AboutUs() {
 
     {
       name: t("aboutUs.terms"),
-      onClick: () => shell.open("https://aidenai.io/terms-of-service.html"),
+      onClick: () =>
+        shell.open("https://docs.aidenai.io/terms-of-service.html"),
     },
     {
       name: t("aboutUs.privacy"),
-      onClick: () => shell.open("https://aidenai.io/privacy.html"),
+      onClick: () => shell.open("https://docs.aidenai.io/privacy.html"),
     },
   ];
   return (
