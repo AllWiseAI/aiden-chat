@@ -40,8 +40,9 @@ export function LoadingPage() {
           const token = await getLocalToken();
           const { data } = token;
           config.setLocalToken(data);
+          console.log("getLocalToken success");
         } catch (error) {
-          console.log("getLocalToken error", error);
+          console.log("getLocalToken error", JSON.stringify(error));
         }
       }
       await getToken();

@@ -17,6 +17,7 @@ export function useHostServerReady(onReady: (ready: boolean) => void) {
       const token = await getLocalToken();
       const { data } = token;
       config.setLocalToken(data);
+      console.log("getLocalToken success");
     } catch (error) {
       console.log("getLocalToken error", error);
     }
