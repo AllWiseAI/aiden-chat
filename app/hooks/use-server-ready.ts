@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { HOST_SERVER_READY_EVENT } from "../constant";
 import { useAppConfig } from "../store/config";
-import { getLocalToken } from "../services";
 
 const LOADING_TIMEOUT = Number(
   process.env.NEXT_PUBLIC_LOADING_TIMEOUT || 40000,
@@ -12,15 +11,6 @@ let resolved = false;
 
 export function useHostServerReady(onReady: (ready: boolean) => void) {
   const config = useAppConfig.getState();
-  async function getToken() {
-    try {
-      const token = await getLocalToken();
-      const { data } = token;
-      config.setLocalToken(data);
-    } catch (error) {
-      console.log("getLocalToken error", error);
-    }
-  }
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (!resolved) {
@@ -41,7 +31,6 @@ export function useHostServerReady(onReady: (ready: boolean) => void) {
         return;
       }
       config.setHostPort(port);
-      getToken();
       if (!resolved) {
         resolved = true;
         clearTimeout(timeout);

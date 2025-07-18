@@ -8,50 +8,30 @@ import { relaunch } from "@tauri-apps/api/process";
 import ReturnIcon from "../icons/return.svg";
 import LogoIcon from "@/app/icons/logo.svg";
 import LogoTextIcon from "../icons/logo-text.svg";
-// TODO decide which loading icon to use
 import LoadingIcon from "../icons/three-dots.svg";
 import ResultIcon from "../icons/result.svg";
-// import LoadingIcon from "../icons/loading-host.svg";
-import { useAppConfig, useAuthStore } from "../store";
-import { useMcpStore } from "../store/mcp";
+import { useAuthStore } from "../store";
 import { exportAndDownloadLog } from "../utils/log";
-import { getLocalToken } from "../services";
+import { appDataInit } from "../utils/init";
 
 export function LoadingPage() {
   const navigate = useNavigate();
   const hydrated = useAuthStore((state) => state._hasHydrated);
   const isLogin = useAuthStore((state) => state.isLogin);
   const init = useAuthStore((state) => state.initialize);
-  const initModelList = useAppConfig((state) => state.initModelList);
   const [isAuthed, setIsAuthed] = useState(false);
   const [isServerReady, setIsServerReady] = useState(false);
   const [isServerTimeout, setIsServerTimeout] = useState(false);
 
-  const mcpStore = useMcpStore();
   const handleReload = () => {
     relaunch();
   };
 
   useHostServerReady(async (ready) => {
-    if (process.env.NODE_ENV === "development") {
-      const config = useAppConfig.getState();
-      async function getToken() {
-        try {
-          const token = await getLocalToken();
-          const { data } = token;
-          config.setLocalToken(data);
-        } catch (error) {
-          console.log("getLocalToken error", error);
-        }
-      }
-      await getToken();
-    }
-
     if (ready || process.env.NODE_ENV === "development") {
       setIsServerReady(true);
-      mcpStore.init();
-      initModelList();
       if (!isAuthed) return;
+      appDataInit();
       navigate(Path.Chat, { replace: true });
     } else {
       setIsServerReady(false);
@@ -69,6 +49,7 @@ export function LoadingPage() {
       if (!ok || !isLogin) {
         navigate(Path.Login, { replace: true });
       } else if (isServerReady) {
+        appDataInit();
         navigate(Path.Chat, { replace: true });
       }
     })();
