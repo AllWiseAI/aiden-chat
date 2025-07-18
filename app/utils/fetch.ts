@@ -1,7 +1,8 @@
 import { fetch, Response } from "@tauri-apps/api/http";
 import { useSettingStore } from "../store/setting";
 import { useAuthStore } from "../store/auth";
-import { isRefreshRequest } from "../services";
+import { isRefreshRequest, getLocalToken } from "../services";
+
 import { t } from "i18next";
 import { useAppConfig } from "../store";
 
@@ -15,6 +16,22 @@ export interface FetchBody {
     payload: object;
   };
 }
+
+export const initLocalToken = async () => {
+  const config = useAppConfig.getState();
+  async function getToken() {
+    try {
+      const token = await getLocalToken();
+      const { data } = token;
+      console.log("getLocalToken result", data);
+      config.setLocalToken(data);
+      console.log("getLocalToken success");
+    } catch (error) {
+      console.log("getLocalToken error", JSON.stringify(error));
+    }
+  }
+  await getToken();
+};
 
 export const getLocalBaseDomain = () => {
   const hostServerPort = useAppConfig.getState().hostServerPort;
