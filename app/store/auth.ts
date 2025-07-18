@@ -98,7 +98,7 @@ export const useAuthStore = createPersistStore(
             // setAuth
             return true;
           } catch (e: any) {
-            console.error("refresh token err:", e);
+            console.error("refresh token err:", JSON.stringify(e));
           }
         }
         set({ _hasHydrated: get()._hasHydrated, ...DEFAULT_AUTH_STATE });

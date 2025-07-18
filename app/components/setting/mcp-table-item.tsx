@@ -4,6 +4,7 @@ import { Switch } from "@/app/components/shadcn/switch";
 import FetchIcon from "../../icons/fetch.svg";
 import MoreIcon from "../../icons/more.svg";
 import SettingIcon from "../../icons/setting.svg";
+import UpdateIcon from "../../icons/update.svg";
 import DeleteIcon from "../../icons/delete.svg";
 import SuccessIcon from "../../icons/access.svg";
 import LoadingIcon from "../../icons/loading-spinner.svg";
@@ -234,13 +235,17 @@ export function McpTableItem({
             />
           )}
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col flex-1">
           <div className="flex justify-between">
-            <div className="font-medium mb-1 max-w-8/10">
+            <div className="font-medium mb-1 w-full max-w-8/10">
               {Highlight({ text: mcp_name, keyword })}
             </div>
             {(showSetting || showUpdate || showDelete) && (
-              <DropdownMenu open={openMenu} onOpenChange={setOpenMenu}>
+              <DropdownMenu
+                open={openMenu}
+                onOpenChange={setOpenMenu}
+                modal={false}
+              >
                 <DropdownMenuTrigger
                   className="size-4 flex-center cursor-pointer"
                   onClick={(e) => e.stopPropagation()}
@@ -258,7 +263,7 @@ export function McpTableItem({
                     {showSetting && (
                       <DropdownMenuRadioItem
                         value="setting"
-                        className="rounded-sm text-sm text-[#6C7275] px-1.5 py-2 h-6 gap-1.5"
+                        className="rounded-sm text-sm text-[#6C7275] px-1.5 py-2 h-9 gap-1.5"
                         onClick={handleShowSettingModal}
                       >
                         <SettingIcon className="size-[18px]" />
@@ -268,21 +273,22 @@ export function McpTableItem({
                     {showUpdate && (
                       <DropdownMenuRadioItem
                         value="update"
-                        className="bg-[#DBF5EC] hover:bg-[#BEF0DD] dark:bg-[#00D47E]/6 dark:hover:bg-[#00D47E]/12 rounded-sm text-xs text-main px-1.5 py-1 h-6"
+                        className="rounded-sm text-sm text-[#00AB66] px-1.5 py-2 h-9 gap-1.5"
                         onClick={handleUpdateMcpVersion}
                       >
+                        <UpdateIcon className="size-[18px]" />
                         {t("mcp.btnUpdate")}
                       </DropdownMenuRadioItem>
                     )}
                     {showDelete && (
                       <DropdownMenuRadioItem
                         value="remove"
-                        className="bg-[#EF466F]/6 hover:bg-[#EF466F]/20 text-xs text-[#EF466F] px-1.5 py-1 h-6"
+                        className="rounded-sm text-sm text-[#EF466F] px-1.5 py-2 h-9 gap-1.5"
                         onClick={(e: React.MouseEvent<HTMLElement>) =>
                           onDelete(e, mcp_key)
                         }
                       >
-                        <DeleteIcon />
+                        <DeleteIcon className="size-[18px]" />
                         {t("mcp.remove")}
                       </DropdownMenuRadioItem>
                     )}

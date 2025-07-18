@@ -14,6 +14,7 @@ import clsx from "clsx";
 import { shell } from "@tauri-apps/api";
 import LoadingIcon from "../icons/loading-spinner.svg";
 import { useTranslation } from "react-i18next";
+import { appDataInit } from "../utils/init";
 
 export function LoginPage() {
   const getRegion = useSettingStore((state) => state.getRegion);
@@ -38,6 +39,7 @@ export function LoginPage() {
     try {
       const success = await login(formData.email, formData.password);
       if (success) {
+        appDataInit();
         navigate(Path.Chat);
         toast.success(t("signIn.success"), {
           className: "w-auto max-w-max",

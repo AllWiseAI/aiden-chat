@@ -23,6 +23,10 @@
       "system": "跟随系统",
       "light": "浅色模式",
       "dark": "深色模式"
+    },
+    "relaunch": {
+      "title": "重启应用",
+      "description": "切换地区需重启APP后生效，请确认是否继续执行并重启APP。"
     }
   },
   "model": {

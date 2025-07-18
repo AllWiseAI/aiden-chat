@@ -1,18 +1,19 @@
-import { getBaseDomain } from "../utils/fetch";
+import { getBaseDomain, getHeaders } from "../utils/fetch";
 
 export async function uploadImageWithProgress(
   file: File,
   onProgress: (percent: number) => void,
 ): Promise<string> {
   const domain = await getBaseDomain();
+  const headers = await getHeaders({});
   const BASE_URL = `${domain}/api/image/upload`;
 
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open("POST", BASE_URL);
     xhr.setRequestHeader("Content-Type", "application/octet-stream");
+    xhr.setRequestHeader("Authorization", headers["Authorization"]!);
 
-    // 上传进度监听
     xhr.upload.onprogress = (event) => {
       if (event.lengthComputable) {
         const percent = Math.round((event.loaded / event.total) * 100);
@@ -22,7 +23,6 @@ export async function uploadImageWithProgress(
 
     xhr.onload = () => {
       if (xhr.status === 200) {
-        // 假设接口返回的是 JSON，包含图片的 URL
         try {
           const result = JSON.parse(xhr.responseText);
           if (result.status === 0) {

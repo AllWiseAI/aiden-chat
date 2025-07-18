@@ -1,11 +1,14 @@
 import { fetch, Response } from "@tauri-apps/api/http";
 import { useSettingStore } from "../store/setting";
 import { useAuthStore } from "../store/auth";
-import { isRefreshRequest } from "../services";
+import { isRefreshRequest, getLocalToken } from "../services";
+
 import { t } from "i18next";
 import { useAppConfig } from "../store";
 
 const FIVE_MINUTES = 5 * 60 * 1000;
+let refreshingTokenPromise: Promise<void> | null = null;
+
 export interface FetchBody {
   method: "POST" | "GET" | "PUT" | "DELETE" | "OPTIONS";
   body?: {
@@ -13,6 +16,22 @@ export interface FetchBody {
     payload: object;
   };
 }
+
+export const initLocalToken = async () => {
+  const config = useAppConfig.getState();
+  async function getToken() {
+    try {
+      const token = await getLocalToken();
+      const { data } = token;
+      console.log("getLocalToken result", data);
+      config.setLocalToken(data);
+      console.log("getLocalToken success");
+    } catch (error) {
+      console.log("getLocalToken error", JSON.stringify(error));
+    }
+  }
+  await getToken();
+};
 
 export const getLocalBaseDomain = () => {
   const hostServerPort = useAppConfig.getState().hostServerPort;
@@ -63,7 +82,13 @@ export const getHeaders = async ({
 
   if (token.accessToken) {
     if (refresh && token.expires * 1000 - Date.now() <= FIVE_MINUTES) {
-      await refreshToken();
+      // 防止多次同时触发 refresh 请求
+      if (!refreshingTokenPromise) {
+        refreshingTokenPromise = refreshToken().finally(() => {
+          refreshingTokenPromise = null;
+        });
+      }
+      await refreshingTokenPromise;
     }
     const latestToken = useAuthStore.getState().userToken.accessToken;
     headers[`${aiden ? "Aiden-" : ""}Authorization`] = `Bearer ${latestToken}`;

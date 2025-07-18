@@ -34,7 +34,7 @@
       "tip": "请上传图片文件",
       "fileTypes": "不支持的图片格式",
       "disabledTips1": "当前模型不支持",
-      "disabledTips2": "图片生成。"
+      "disabledTips2": "图片识别。"
     }
   },
   "home": {
@@ -114,6 +114,7 @@
     "delete": "删除",
     "mcpTitle": "请求使用 MCP",
     "confirm": "确认",
+    "restart": "重启",
     "decline": "拒绝",
     "allowAlways": "始终允许",
     "allowOnce": "仅允许一次",
