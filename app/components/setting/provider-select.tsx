@@ -10,12 +10,7 @@ import {
 } from "@/app/components/shadcn/select";
 import { useCallback } from "react";
 import GPTIcon from "@/app/icons/gpt.svg";
-
-type ProviderOption = {
-  name: string;
-  value: string;
-  models: { model: string; display: string }[];
-};
+import { ProviderOption } from "@/app/typing";
 
 interface ProviderSelectProps {
   disabled?: boolean;
@@ -35,7 +30,7 @@ export const ProviderSelect = ({
   const handleChange = useCallback(
     (value: string) => {
       const selectdInfo = providerList.find(
-        (provider) => provider.value === value,
+        (provider) => provider.provider === value,
       );
       onChange(selectdInfo);
     },
@@ -51,13 +46,13 @@ export const ProviderSelect = ({
         <SelectGroup>
           {providerList.map((provider) => (
             <SelectItem
-              key={provider.value}
-              value={provider.value}
+              key={provider.id}
+              value={provider.provider}
               className="w-full! !h-9"
             >
               <div className="flex items-center gap-2">
                 <GPTIcon />
-                <span>{provider.name}</span>
+                <span>{provider.display}</span>
               </div>
             </SelectItem>
           ))}

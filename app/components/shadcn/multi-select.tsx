@@ -10,29 +10,41 @@ import { cn } from "@/app/libs/shadcn/utils";
 import ArrowDownIcon from "@/app/icons/arrow-down.svg";
 import ArrowUpIcon from "@/app/icons/arrow-up.svg";
 import GPTIcon from "@/app/icons/gpt.svg";
+import { CustomModelOption } from "@/app/typing";
 
 type MultiSelectDropdownProps = {
   className?: string;
-  options: [];
+  options: CustomModelOption[];
+  onChange: (data: string[]) => void;
+};
+
+type Option = {
+  value: string;
+  label: string;
 };
 
 export function MultiSelectDropdown({
   className,
   options,
+  onChange,
 }: MultiSelectDropdownProps) {
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
 
   const toggleChecked = (key: string) => {
-    setCheckedItems((prev) =>
-      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
-    );
+    setCheckedItems((prev) => {
+      const updatedData = prev.includes(key)
+        ? prev.filter((k) => k !== key)
+        : [...prev, key];
+      onChange(updatedData);
+      return updatedData;
+    });
   };
 
   const selectedLabels = useMemo(() => {
     return options
-      .filter((opt) => checkedItems.includes(opt.model))
-      .map((opt) => opt.display)
+      .filter((opt: Option) => checkedItems.includes(opt.value))
+      .map((opt: Option) => opt.label)
       .join(", ");
   }, [checkedItems]);
 
@@ -55,16 +67,15 @@ export function MultiSelectDropdown({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="!w-10">
-        {options.map((opt) => (
+        {options.map((opt: Option) => (
           <DropdownMenuCheckboxItem
-            key={opt.model}
-            checked={checkedItems.includes(opt.model)}
-            onCheckedChange={() => toggleChecked(opt.model)}
-            disabled={opt.disabled}
+            key={opt.value}
+            checked={checkedItems.includes(opt.value)}
+            onCheckedChange={() => toggleChecked(opt.value)}
           >
             <div className="flex items-center gap-1">
               <GPTIcon className="h-4 w-4" />
-              {opt.display}
+              {opt.label}
             </div>
           </DropdownMenuCheckboxItem>
         ))}

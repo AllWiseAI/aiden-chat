@@ -18,6 +18,14 @@ import { Password } from "@/app/components/password";
 import { ProviderSelect } from "./provider-select";
 import { MultiSelectDropdown } from "../shadcn/multi-select";
 import { getProviderList } from "@/app/services";
+import {
+  ProviderOption,
+  CustomModelOption,
+  GeminiModelOptions,
+  OpenAIModelOptions,
+  AnthropicModelOptions,
+} from "@/app/typing";
+import { fetch } from "@tauri-apps/api/http";
 
 interface ModelInfo {
   provider: string;
@@ -29,84 +37,9 @@ interface AddModelModalProps {
   open: boolean;
   isEdit: boolean;
   modelInfo?: ModelInfo;
-  onConfirm: (updated: ModelInfo) => void;
+  onConfirm: (updated: ProviderOption) => void;
   onOpenChange?: (open: boolean) => void;
 }
-
-type ProviderOption = {
-  name: string;
-  value: string;
-  models: { model: string; display: string }[];
-};
-
-const providerList = [
-  {
-    name: "OpenAI",
-    value: "openai",
-    models: [
-      { model: "gpt-4", display: "GPT-4" },
-      { model: "gpt-4-turbo", display: "GPT-4 Turbo" },
-      { model: "gpt-3.5-turbo", display: "GPT-3.5 Turbo" },
-      { model: "gpt-3.5", display: "GPT-3.5" },
-      { model: "text-davinci-003", display: "Text Davinci 003" },
-    ],
-  },
-  {
-    name: "Anthropic",
-    value: "anthropic",
-    models: [
-      { model: "claude-3-opus-20240229", display: "Claude 3 Opus" },
-      { model: "claude-3-sonnet-20240229", display: "Claude 3 Sonnet" },
-      { model: "claude-3-haiku-20240307", display: "Claude 3 Haiku" },
-      { model: "claude-instant-1.2", display: "Claude Instant 1.2" },
-      { model: "claude-2.1", display: "Claude 2.1" },
-    ],
-  },
-  {
-    name: "Cohere",
-    value: "cohere",
-    models: [
-      { model: "command-r-plus", display: "Command R+" },
-      { model: "command-r", display: "Command R" },
-      { model: "command-light", display: "Command Light" },
-      { model: "command-nightly", display: "Command Nightly" },
-      { model: "embed-english-v3.0", display: "Embed English V3" },
-    ],
-  },
-  {
-    name: "Google",
-    value: "google",
-    models: [
-      { model: "gemini-1.5-pro", display: "Gemini 1.5 Pro" },
-      { model: "gemini-1.5-flash", display: "Gemini 1.5 Flash" },
-      { model: "gemini-1.0-pro", display: "Gemini 1.0 Pro" },
-      { model: "palm-2-chat-bison", display: "PaLM 2 Chat Bison" },
-      { model: "text-bison", display: "Text Bison" },
-    ],
-  },
-  {
-    name: "Azure",
-    value: "azure",
-    models: [
-      { model: "azure-gpt-35", display: "Azure GPT-3.5" },
-      { model: "azure-gpt-4", display: "Azure GPT-4" },
-      { model: "azure-gpt-4-vision", display: "Azure GPT-4 Vision" },
-      { model: "azure-embedding-ada", display: "Azure Embedding Ada" },
-      { model: "azure-davinci", display: "Azure Davinci" },
-    ],
-  },
-  {
-    name: "HuggingFace",
-    value: "huggingface",
-    models: [
-      { model: "mistral-7b", display: "Mistral 7B" },
-      { model: "mixtral-8x7b", display: "Mixtral 8x7B" },
-      { model: "llama-3-8b", display: "LLaMA 3 8B" },
-      { model: "llama-3-70b", display: "LLaMA 3 70B" },
-      { model: "bloomz", display: "BloomZ" },
-    ],
-  },
-];
 
 export function AddModelModal({
   open,
@@ -115,43 +48,148 @@ export function AddModelModal({
   onOpenChange,
 }: AddModelModalProps) {
   const { t: tInner } = useTranslation("settings");
-  const [currentModels, setCurrentModels] = useState(providerList[0].models);
-  // const [providerList, setProviderList] = useState<ProviderOption[]>([]);
+  const [providerList, setProviderList] = useState<ProviderOption[]>([]);
+  const [modelList, setModelList] = useState<CustomModelOption[]>([]);
   useEffect(() => {
     async function getProviderData() {
       const data = await getProviderList();
-      console.log("data===", data);
+      if (data && data.length) {
+        setProviderList(data);
+        setFormData({
+          provider: data[0].provider,
+          apiKey: "",
+          models: [],
+          customUrl: "",
+        });
+      }
     }
     getProviderData();
   }, []);
 
-  const handleConfirm = useCallback(() => {
-    const updated: ModelInfo = {};
-    onConfirm(updated);
-    onOpenChange?.(false);
-  }, []);
-
   const [formData, setFormData] = useState({
-    provider: providerList[0].value,
+    provider: "",
     apiKey: "",
-    model: "",
+    models: [],
     customUrl: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    console.log("id", id, value);
+  const handleConfirm = useCallback(() => {
+    if (!formData.provider || !formData.apiKey || !formData.models) {
+      return;
+    }
+    onConfirm({
+      ...providerList.find(
+        (provider) => provider.provider === formData.provider,
+      ),
+      // @ts-ignore
+      models: formData.models.map((model: string) =>
+        modelList.find((item: CustomModelOption) => item.value === model),
+      ),
+      apiKey: formData.apiKey,
+    });
+    onOpenChange?.(false);
+  }, [formData]);
+
+  const formatProviderModels = (
+    providerInfo: ProviderOption,
+    modelsData: [],
+  ) => {
+    const { provider } = providerInfo || {};
+    if (provider === "openai") {
+      return modelsData.map((model: OpenAIModelOptions) => ({
+        value: model.id,
+        label: model.id,
+      }));
+    }
+
+    if (provider === "anthropic") {
+      return modelsData.map((model: AnthropicModelOptions) => ({
+        value: model.id,
+        label: model.display_name,
+      }));
+    }
+
+    if (provider === "gemini") {
+      return modelsData.map((model: GeminiModelOptions) => ({
+        value: model.name,
+        label: model.displayName,
+      }));
+    }
+
+    return [];
+  };
+
+  const formatProviderToken = (providerInfo: ProviderOption) => {
+    const { provider } = providerInfo || {};
+    if (provider === "openai") {
+      return `Bearer ${formData.apiKey}`;
+    }
+
+    if (provider === "anthropic") {
+      return formData.apiKey;
+    }
+    return formData.apiKey;
+  };
+
+  const getModels = async () => {
+    const providerInfo = providerList.find(
+      (provider) => provider.provider === formData.provider,
+    );
+    const { default_endpoint, models_path, headers = {} } = providerInfo || {};
+    const requestUrl = `${default_endpoint}${models_path}`;
+    const apiKey = formData.apiKey;
+    if (!apiKey) return;
+    const replacedHeaders = Object.fromEntries(
+      Object.entries(headers).map(([key, value]) => [
+        key,
+        // @ts-ignore
+        value.includes("api-key") ? formatProviderToken(providerInfo) : value,
+      ]),
+    );
+    const modelsReturn = await fetch(requestUrl, {
+      method: "GET",
+      headers: replacedHeaders,
+    });
+    console.log("models data===", modelsReturn);
+    const { data, status } = modelsReturn;
+    if (status === 200) {
+      const models = formatProviderModels(
+        // @ts-ignore
+        providerInfo,
+        // @ts-ignore
+        data.data || data.models || [],
+      );
+      if (models.length) {
+        setModelList(models);
+      }
+    }
+  };
+
+  const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
       ...prev,
-      [id]: value,
+      ["apiKey"]: e.target.value,
     }));
   };
 
   const handleProviderChange = (provider: ProviderOption) => {
-    setCurrentModels(provider.models);
     setFormData((prev) => ({
       ...prev,
-      ["provider"]: provider.value,
+      ["apiKey"]: "",
+      ["models"]: [],
+    }));
+    setModelList([]);
+    setFormData((prev) => ({
+      ...prev,
+      ["provider"]: provider?.provider,
+    }));
+  };
+
+  const handleModelsChange = (models: string[]) => {
+    // @ts-ignore
+    setFormData((prev) => ({
+      ...prev,
+      ["models"]: models,
     }));
   };
 
@@ -201,7 +239,8 @@ export function AddModelModal({
               placeholder={t("Enter API Key")}
               className="!w-full h-9 !text-left !px-2.5 !py-2 !rounded-sm text-sm border hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]"
               value={formData.apiKey}
-              onChange={handleChange}
+              onChange={handleApiKeyChange}
+              onBlur={getModels}
               required
             />
           </div>
@@ -213,7 +252,11 @@ export function AddModelModal({
             >
               {tInner("model.model")}
             </Label>
-            <MultiSelectDropdown className="flex-1" options={currentModels} />
+            <MultiSelectDropdown
+              className="flex-1"
+              options={modelList}
+              onChange={handleModelsChange}
+            />
           </div>
         </div>
 

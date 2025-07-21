@@ -9,7 +9,7 @@ import {
 } from "@/app/components/shadcn/table";
 import { Button } from "../shadcn/button";
 import { useAppConfig } from "@/app/store";
-import { ModelOption } from "@/app/typing";
+import { ModelOption, ProviderOption } from "@/app/typing";
 import EditIcon from "@/app/icons/edit.svg";
 import PlusIcon from "@/app/icons/plus.svg";
 import DeleteIcon from "@/app/icons/delete.svg";
@@ -20,7 +20,11 @@ import NoDataIcon from "@/app/icons/no-data.svg";
 
 export default function ModelList() {
   const modelList: ModelOption[] = useAppConfig((state) => state.models);
-  const localModel = useAppConfig((state) => state.localModel);
+  const localProviders = useAppConfig((state) => state.localProviders);
+  const setLocalProviders = useAppConfig((state) => state.setLocalProviders);
+  const deleteLocalProvider = useAppConfig(
+    (state) => state.deleteLocalProviders,
+  );
   const { t } = useTranslation("settings");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -29,8 +33,12 @@ export default function ModelList() {
     setIsModalOpen(true);
   };
 
-  const handleModelConfirm = (model: ModelOption) => {
-    console.log(model);
+  const handleModelConfirm = (provider: ProviderOption) => {
+    setLocalProviders(provider);
+  };
+
+  const handleDelete = (provider: ProviderOption) => {
+    deleteLocalProvider(provider);
   };
 
   return (
@@ -76,15 +84,21 @@ export default function ModelList() {
             </TableHeader>
 
             <TableBody>
-              {localModel.map((model) => (
-                <TableRow key={model.id}>
-                  <TableCell className="font-medium">Aiden</TableCell>
-                  <TableCell>{model.display}</TableCell>
+              {localProviders.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell className="font-medium">{item.display}</TableCell>
+                  <TableCell>
+                    {item.models?.map((model) => model.label).join(",")}
+                  </TableCell>
                   <TableCell>
                     <Button variant="ghost" className="size-6 mr-2.5">
                       <EditIcon className="size-4" />
                     </Button>
-                    <Button variant="ghost" className="size-6 text-[#EF466F]">
+                    <Button
+                      variant="ghost"
+                      className="size-6 text-[#EF466F]"
+                      onClick={() => handleDelete(item)}
+                    >
                       <DeleteIcon className="size-4" />
                     </Button>
                   </TableCell>
@@ -92,7 +106,7 @@ export default function ModelList() {
               ))}
             </TableBody>
           </Table>
-          {localModel.length === 0 && (
+          {localProviders.length === 0 && (
             <div className="flex justify-center w-full py-4">
               <NoDataIcon />
             </div>
@@ -107,6 +121,7 @@ export default function ModelList() {
       </div>
       <AddModelModal
         open={isModalOpen}
+        isEdit={false}
         onConfirm={handleModelConfirm}
         onOpenChange={() => setIsModalOpen(false)}
       />

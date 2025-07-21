@@ -1,4 +1,10 @@
-import { DalleQuality, DalleStyle, ModelSize, ModelOption } from "../typing";
+import {
+  DalleQuality,
+  DalleStyle,
+  ModelSize,
+  ModelOption,
+  ProviderOption,
+} from "../typing";
 import { getClientConfig } from "../config/client";
 import {
   DEFAULT_INPUT_TEMPLATE,
@@ -51,7 +57,8 @@ export const DEFAULT_CONFIG = {
   currentModel: "",
   summaryModel: "",
   models: [] as ModelOption[],
-  localModel: [],
+  localProviders: [] as ProviderOption[],
+  groupedProviders: {},
   modelConfig: {
     model: "gpt-4o",
     providerName: "OpenAI",
@@ -125,7 +132,25 @@ export const useAppConfig = createPersistStore(
         }
       }
     },
-    getCurrentModel() {
+    setGroupedProviders: (groupedProviders: Record<string, ProviderOption>) => {
+      set(() => ({
+        groupedProviders: groupedProviders,
+      }));
+    },
+
+    getCurrentModel(): ProviderOption {
+      const { currentModel, groupedProviders } = get();
+      const res = currentModel.split(":");
+      if (res.length === 2) {
+        const providerInfo =
+          groupedProviders[res[0] as keyof typeof groupedProviders];
+        // @ts-ignore
+        return {
+          ...(providerInfo as Record<string, unknown>),
+          model: res[1],
+        };
+      }
+      // @ts-ignore
       return get().models.find((model) => model.model === get().currentModel);
     },
     getSummaryModel() {
@@ -137,33 +162,21 @@ export const useAppConfig = createPersistStore(
         debugMode: !debugMode,
       }));
     },
-    setLocalModels(modelInfo) {
-      const { localModel } = get();
+    setLocalProviders(providerInfo: ProviderOption) {
+      const { localProviders } = get();
       set(() => ({
-        localModel: [...localModel, modelInfo],
+        localProviders: [...localProviders, providerInfo],
       }));
     },
-    updateLocalModel(modelInfo) {
-      const { localModel } = get();
-      const index = localModel.findIndex(
-        (model) => model.model === modelInfo.model,
+    deleteLocalProviders(modelInfo: ProviderOption) {
+      const { localProviders } = get();
+      const index = localProviders.findIndex(
+        (provider) => provider.provider === modelInfo.provider,
       );
       if (index !== -1) {
-        localModel[index] = modelInfo;
+        localProviders.splice(index, 1);
         set(() => ({
-          localModel: [...localModel],
-        }));
-      }
-    },
-    deleteLocalModel(modelInfo) {
-      const { localModel } = get();
-      const index = localModel.findIndex(
-        (model) => model.model === modelInfo.model,
-      );
-      if (index !== -1) {
-        localModel.splice(index, 1);
-        set(() => ({
-          localModel: [...localModel],
+          localProviders: [...localProviders],
         }));
       }
     },
