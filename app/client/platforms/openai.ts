@@ -61,7 +61,6 @@ export class ChatGPTApi implements LLMApi {
     for (const v of options.messages || []) {
       messages.push({ role: v.role, content: v.content });
     }
-    console.log("[Request] openai chat payload: ", messages);
     const requestPayload: RequestPayload = { messages };
     const shouldStream = !!options.config.stream;
 
@@ -88,7 +87,6 @@ export class ChatGPTApi implements LLMApi {
           () => controller.abort("timeout"),
           REQUEST_TIMEOUT_MS,
         );
-        console.log("[Request] openai chat payload headers:", headers);
         const res = await tauriFetchWithSignal(
           DEFAULT_CHAT_URL,
           {
@@ -111,7 +109,6 @@ export class ChatGPTApi implements LLMApi {
 
         clearTimeout(requestTimeoutId);
         const resJson = await res.json();
-        console.log("[Request] openai chat resJson: ", resJson);
         const message = resJson?.message?.content;
         options.onFinish(message, res);
       }
@@ -168,7 +165,6 @@ export class ChatGPTApi implements LLMApi {
 
         clearTimeout(requestTimeoutId);
         const resJson = await res.json();
-        console.log("[Request] openai toolcall resJson: ", resJson);
         const message = resJson?.message?.content;
         options.onFinish(message, res);
       }

@@ -339,8 +339,6 @@ export const useChatStore = createPersistStore(
           .filter((message) => message.content !== "");
         const messageIndex = session.messages.length + 1;
 
-        console.log("[Chat store]sendMessages: ", sendMessages);
-
         // save user's and bot's message
         get().updateTargetSession(session, (session) => {
           const savedUserMessage = {
@@ -359,7 +357,6 @@ export const useChatStore = createPersistStore(
           messages: sendMessages,
           config: { ...modelConfig, stream: true },
           onToolCall: (toolCallInfo) => {
-            console.log("[Chat store]onToolCall: ", toolCallInfo);
             get().onToolCall(toolCallInfo);
           },
           onUpdate(message, mcpInfo) {
@@ -369,7 +366,6 @@ export const useChatStore = createPersistStore(
             }
             if (mcpInfo) {
               botMessage.isMcpResponse = true;
-              console.log("===botmessage", botMessage);
               if (!botMessage.mcpInfo) {
                 botMessage.mcpInfo = {
                   title: mcpInfo.title ?? "",
@@ -504,13 +500,6 @@ export const useChatStore = createPersistStore(
           toolCallInfo,
           config: { ...modelConfig, stream: true },
           onUpdate(message, mcpInfo) {
-            console.log(
-              "[Chat store]onToolCall: update ",
-              toolCallInfo,
-              message,
-              mcpInfo,
-            );
-            console.log("[Chat store]botMessage", botMessage);
             botMessage.streaming = true;
             if (message) {
               botMessage.content = message;
@@ -526,7 +515,6 @@ export const useChatStore = createPersistStore(
             });
           },
           onToolCall(toolCallInfo) {
-            console.log("[Chat store]onToolCall: onToolCall ", toolCallInfo);
             get().onToolCall(toolCallInfo);
           },
           async onFinish(message, _, mcpInfo) {
@@ -797,13 +785,6 @@ export const useChatStore = createPersistStore(
 
         const lastSummarizeIndex = session.messages.length;
 
-        console.log(
-          "[Chat History] ",
-          toBeSummarizedMsgs,
-          historyMsgLength,
-          modelConfig.compressMessageLengthThreshold,
-        );
-
         if (
           historyMsgLength > modelConfig.compressMessageLengthThreshold &&
           modelConfig.sendMemory
@@ -825,7 +806,6 @@ export const useChatStore = createPersistStore(
             },
             onFinish(message, responseRes) {
               if (responseRes?.status === 200) {
-                console.log("[Memory] ", message);
                 get().updateTargetSession(session, (session) => {
                   session.lastSummarizeIndex = lastSummarizeIndex;
                   session.memoryPrompt = message; // Update the memory prompt for stored it in local storage
