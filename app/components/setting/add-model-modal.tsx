@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect } from "react";
 import useState from "react-usestateref";
-
 import {
   Dialog,
   DialogContent,
@@ -58,6 +57,12 @@ export function AddModelModal({
   const [isGettingModelLoading, setIsGettingModelLoading] = useState(false);
   const [isModelsError, setIsModelsError] = useState(false);
   const [isApiKeyError, setIsApiKeyError] = useState(false);
+  const [formData, setFormData, formDataRef] = useState({
+    provider: "",
+    apiKey: "",
+    models: [],
+    customUrl: "",
+  });
 
   const providerList = useAppConfig((state) => state.providerList);
   useEffect(() => {
@@ -78,6 +83,12 @@ export function AddModelModal({
       initFormData();
     }
   }, []);
+  useEffect(() => {
+    const { models } = formDataRef.current;
+    if (models.length) {
+      setIsModelsError(false);
+    }
+  }, [formDataRef.current]);
 
   const initFormData = () => {
     const { apiKey, provider, models } = editInfo || {};
@@ -99,23 +110,18 @@ export function AddModelModal({
     }
   };
 
-  const [formData, setFormData, formDataRef] = useState({
-    provider: "",
-    apiKey: "",
-    models: [],
-    customUrl: "",
-  });
-
   const handleConfirm = useCallback(() => {
-    console.log("formDataRef.current.provider", formDataRef.current);
-    if (!formDataRef.current.apiKey) {
-      setIsApiKeyError(true);
+    const { apiKey, models } = formDataRef.current;
+    if (!apiKey || !models.length) {
+      if (!models.length) {
+        setIsModelsError(true);
+      }
+      if (!apiKey) {
+        setIsApiKeyError(true);
+      }
       return;
     }
-    if (!formDataRef.current.models.length) {
-      setIsModelsError(true);
-      return;
-    }
+
     setIsApiKeyError(false);
     setIsModelsError(false);
     if (isEdit) {
@@ -139,6 +145,7 @@ export function AddModelModal({
         apiKey: formDataRef.current.apiKey,
       });
     }
+    toast.success(tInner("model.saveSuccess"));
     onOpenChange?.(false);
   }, [formDataRef.current, modelList, isModelsError, isApiKeyError]);
 
@@ -254,6 +261,14 @@ export function AddModelModal({
     }));
   };
 
+  const handleApiKeyBlur = () => {
+    const { apiKey } = formDataRef.current;
+    if (apiKey) {
+      setIsApiKeyError(false);
+      getModels();
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -295,16 +310,26 @@ export function AddModelModal({
             >
               {tInner("model.apiKey")}
             </Label>
-            <Password
-              id="apiKey"
-              type="apiKey"
-              placeholder={t("Enter API Key")}
-              className="!w-full h-9 !text-left !px-2.5 !py-2 !rounded-sm text-sm border hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]"
-              value={formData.apiKey}
-              onChange={handleApiKeyChange}
-              onBlur={getModels}
-              required
-            />
+            <div className="flex-1 w-full">
+              <Password
+                id="apiKey"
+                type="apiKey"
+                placeholder={tInner("model.enterApiKey")}
+                className={clsx(
+                  "!w-full h-9 !text-left !px-2.5 !py-2 !rounded-sm text-sm border",
+                  isApiKeyError && "!border-[#EF466F]",
+                )}
+                value={formData.apiKey}
+                onChange={handleApiKeyChange}
+                onBlur={handleApiKeyBlur}
+                required
+              />
+              {isApiKeyError && (
+                <div className="text-sm text-[#EF466F]">
+                  {tInner("model.apiKeyErrorText")}
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="flex gap-2 w-full">
@@ -314,18 +339,24 @@ export function AddModelModal({
             >
               {tInner("model.model")}
             </Label>
-            <MultiSelectDropdown
-              className={clsx("flex-1", isModelsError && "!border-[#EF466F]")}
-              value={formData.models}
-              options={modelList}
-              onChange={handleModelsChange}
-              loading={isGettingModelLoading}
-            />
-          </div>
-          <div style={{ marginLeft: "64px" }}>
-            {isModelsError && (
-              <div className="text-sm text-[#EF466F]">please select models</div>
-            )}
+            <div className="flex-1 w-full overflow-hidden">
+              <MultiSelectDropdown
+                className={clsx(
+                  "flex-1 w-full max-w-full",
+                  isModelsError && "!border-[#EF466F]",
+                )}
+                value={formData.models}
+                options={modelList}
+                onChange={handleModelsChange}
+                loading={isGettingModelLoading}
+              />
+
+              {isModelsError && (
+                <div className="text-sm text-[#EF466F]">
+                  {tInner("model.modelErrorText")}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

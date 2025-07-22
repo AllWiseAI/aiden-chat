@@ -19,6 +19,7 @@ import { AddModelModal } from "./add-model-modal";
 import NoDataIcon from "@/app/icons/no-data.svg";
 import { getProviderList } from "@/app/services";
 import DeleteDialog from "@/app/components/delete-dialog";
+import { toast } from "sonner";
 
 export default function ModelList() {
   const modelList: ModelOption[] = useAppConfig((state) => state.models);
@@ -78,6 +79,7 @@ export default function ModelList() {
   const confirmDelete = () => {
     if (currentProviderInfo) {
       deleteLocalProvider(currentProviderInfo);
+      toast.success(t("model.deleteSuccess"));
     }
     setIsDeleteOpen(false);
   };

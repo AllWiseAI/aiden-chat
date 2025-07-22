@@ -40,7 +40,12 @@
     "addModelTitle": "Add customized model",
     "editModelTitle": "Edit customized model",
     "deleteModelTitle": "Delete customized model",
-    "deleteModelDescription": "Confirm to delete?"
+    "deleteModelDescription": "Confirm to delete?",
+    "saveSuccess": "Saved successfully.",
+    "apiKeyErrorText": "Please enter API Key",
+    "modelErrorText": "Please select models",
+    "deleteSuccess": "Deleted successfully",
+    "enterApiKey": "Enter API Key"
   },
   "mcp": {
     "edit": "Edit Config",

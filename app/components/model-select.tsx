@@ -46,11 +46,11 @@ export const ModelSelect = () => {
   const formatProvider = (inputData: ProviderOption[]) => {
     const result = inputData.reduce(
       (acc: Record<string, ProviderOption>, item) => {
-        const { models, provider } = item;
+        const { models, provider, display } = item;
 
-        if (acc[provider]) {
-          const existingModels = acc[provider].models;
-          acc[provider].models = [
+        if (acc[display]) {
+          const existingModels = acc[display].models;
+          acc[display].models = [
             ...existingModels,
             ...models
               .filter(
@@ -66,7 +66,7 @@ export const ModelSelect = () => {
               })),
           ];
         } else {
-          acc[provider] = {
+          acc[display] = {
             ...item,
             models: models.map((model) => ({
               ...model,

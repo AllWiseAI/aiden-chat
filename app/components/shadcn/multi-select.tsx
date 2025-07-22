@@ -64,7 +64,7 @@ export function MultiSelectDropdown({
         <Button
           variant="outline"
           className={cn(
-            "!hover:bg-none min-w-56 justify-between pr-3 truncate",
+            "!hover:bg-background !dark:hover:bg-background min-w-56 justify-between pr-3 truncate",
             className,
           )}
         >
