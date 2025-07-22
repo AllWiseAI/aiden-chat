@@ -48,6 +48,7 @@ export enum StoreKey {
   Mcp = "mcp-store",
   Auth = "auth-store",
   Setting = "setting-store",
+  Task = "task-store",
 }
 
 export const DEFAULT_SIDEBAR_WIDTH = 240;

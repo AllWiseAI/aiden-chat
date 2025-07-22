@@ -1,17 +1,7 @@
 "use client";
 import TaskManagement from "./task-management";
 import { useState } from "react";
-
-interface Task {
-  name: string;
-  schedule: {
-    date: Date | undefined;
-    time: string;
-  };
-  type: string;
-  notification: boolean;
-  details: string;
-}
+import { Task } from "../typing";
 
 export function NewTask() {
   const [task, setTask] = useState<Task>({

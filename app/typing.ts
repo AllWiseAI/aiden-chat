@@ -177,3 +177,23 @@ export type ModelOption = {
   endpoint: string;
   provider: string;
 };
+
+export interface Task {
+  name: string;
+  schedule: {
+    date: Date | undefined;
+    time: string;
+  };
+  type: string;
+  notification: boolean;
+  details: string;
+}
+
+export enum TaskTypeEnum {
+  OneTime = "one-time",
+  Daily = "daily",
+  Weekly = "weekly",
+  Monthly = "monthly",
+}
+
+export type TaskType = `${TaskTypeEnum}`;
