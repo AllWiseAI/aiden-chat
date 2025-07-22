@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -17,28 +17,69 @@ import DefaultModelIcon from "@/app/icons/default-model-icon.svg";
 import { useTranslation } from "react-i18next";
 import { AddModelModal } from "./add-model-modal";
 import NoDataIcon from "@/app/icons/no-data.svg";
+import { getProviderList } from "@/app/services";
+import DeleteDialog from "@/app/components/delete-dialog";
 
 export default function ModelList() {
   const modelList: ModelOption[] = useAppConfig((state) => state.models);
   const localProviders = useAppConfig((state) => state.localProviders);
   const setLocalProviders = useAppConfig((state) => state.setLocalProviders);
+  const updateLocalProviders = useAppConfig(
+    (state) => state.updateLocalProviders,
+  );
+  const setProviderList = useAppConfig((state) => state.setProviderList);
+
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const deleteLocalProvider = useAppConfig(
     (state) => state.deleteLocalProviders,
   );
   const { t } = useTranslation("settings");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalEdit, setIsModalEdit] = useState(false);
+  const [currentProviderInfo, setCurrentProviderInfo] =
+    useState<ProviderOption>({} as ProviderOption);
+
+  useEffect(() => {
+    async function getProviderData() {
+      const data = await getProviderList();
+      if (data && data.length) {
+        setProviderList(data);
+      }
+    }
+    getProviderData();
+  }, []);
 
   const handleAddModel = () => {
+    setIsModalEdit(false);
     setIsModalOpen(true);
   };
 
   const handleModelConfirm = (provider: ProviderOption) => {
-    setLocalProviders(provider);
+    console.log("provider", provider);
+    if (isModalEdit) {
+      updateLocalProviders(provider);
+    } else {
+      setLocalProviders(provider);
+    }
+  };
+
+  const handleEdit = (provider: ProviderOption) => {
+    setIsModalEdit(true);
+    setCurrentProviderInfo(provider);
+    setIsModalOpen(true);
   };
 
   const handleDelete = (provider: ProviderOption) => {
-    deleteLocalProvider(provider);
+    setIsDeleteOpen(true);
+    setCurrentProviderInfo(provider);
+  };
+
+  const confirmDelete = () => {
+    if (currentProviderInfo) {
+      deleteLocalProvider(currentProviderInfo);
+    }
+    setIsDeleteOpen(false);
   };
 
   return (
@@ -56,7 +97,7 @@ export default function ModelList() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {modelList.slice(0, 4).map((model) => (
+              {modelList.map((model) => (
                 <TableRow key={model.id}>
                   <TableCell className="font-medium text-base flex gap-2 items-center">
                     <DefaultModelIcon size="5" />
@@ -84,14 +125,31 @@ export default function ModelList() {
             </TableHeader>
 
             <TableBody>
-              {localProviders.map((item, index) => (
-                <TableRow key={index}>
-                  <TableCell className="font-medium">{item.display}</TableCell>
-                  <TableCell>
-                    {item.models?.map((model) => model.label).join(",")}
+              {localProviders.map((item) => (
+                <TableRow key={item.itemId}>
+                  <TableCell className="font-medium">
+                    <div className="flex gap-2">
+                      <img
+                        className="size-5"
+                        src={
+                          item.logo_uri ||
+                          "https://static.aidenai.io/static/1753158387.png"
+                        }
+                      />
+                      {item.display}
+                    </div>
                   </TableCell>
                   <TableCell>
-                    <Button variant="ghost" className="size-6 mr-2.5">
+                    {item.models?.map((model) => (
+                      <div key={model.value}>{model.label}</div>
+                    ))}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="ghost"
+                      className="size-6 mr-2.5"
+                      onClick={() => handleEdit(item)}
+                    >
                       <EditIcon className="size-4" />
                     </Button>
                     <Button
@@ -119,11 +177,21 @@ export default function ModelList() {
           Add
         </Button>
       </div>
-      <AddModelModal
-        open={isModalOpen}
-        isEdit={false}
-        onConfirm={handleModelConfirm}
-        onOpenChange={() => setIsModalOpen(false)}
+      {isModalOpen && (
+        <AddModelModal
+          open={isModalOpen}
+          isEdit={isModalEdit}
+          editInfo={currentProviderInfo}
+          onConfirm={handleModelConfirm}
+          onOpenChange={() => setIsModalOpen(false)}
+        />
+      )}
+      <DeleteDialog
+        title={t("model.deleteModelTitle")}
+        description={t("model.deleteModelDescription")}
+        onConfirm={confirmDelete}
+        onCancel={() => setIsDeleteOpen(false)}
+        isOpen={isDeleteOpen}
       />
     </div>
   );

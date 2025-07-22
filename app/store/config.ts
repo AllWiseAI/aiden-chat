@@ -13,6 +13,7 @@ import {
 } from "../constant";
 import { createPersistStore } from "../utils/store";
 import { getModelList } from "../services/model";
+import { v4 as uniqueId } from "uuid";
 
 export enum SubmitKey {
   Enter = "Enter",
@@ -58,7 +59,9 @@ export const DEFAULT_CONFIG = {
   summaryModel: "",
   models: [] as ModelOption[],
   localProviders: [] as ProviderOption[],
+  providerList: [] as ProviderOption[],
   groupedProviders: {},
+
   modelConfig: {
     model: "gpt-4o",
     providerName: "OpenAI",
@@ -132,6 +135,11 @@ export const useAppConfig = createPersistStore(
         }
       }
     },
+    setProviderList: async (data: ProviderOption[]) => {
+      set(() => ({
+        providerList: data,
+      }));
+    },
     setGroupedProviders: (groupedProviders: Record<string, ProviderOption>) => {
       set(() => ({
         groupedProviders: groupedProviders,
@@ -164,14 +172,29 @@ export const useAppConfig = createPersistStore(
     },
     setLocalProviders(providerInfo: ProviderOption) {
       const { localProviders } = get();
+      const id = uniqueId();
+      console.log("add ====", id);
       set(() => ({
-        localProviders: [...localProviders, providerInfo],
+        localProviders: [...localProviders, { ...providerInfo, itemId: id }],
       }));
     },
+
+    updateLocalProviders(providerInfo: ProviderOption) {
+      console.log("update providerInfo===", providerInfo);
+      const { localProviders } = get();
+      const index = localProviders.findIndex(
+        (provider) => provider.itemId === providerInfo.itemId,
+      );
+      console.log("index===", index);
+      if (index !== -1) {
+        localProviders[index] = providerInfo;
+      }
+    },
+
     deleteLocalProviders(modelInfo: ProviderOption) {
       const { localProviders } = get();
       const index = localProviders.findIndex(
-        (provider) => provider.provider === modelInfo.provider,
+        (provider) => provider.itemId === modelInfo.itemId,
       );
       if (index !== -1) {
         localProviders.splice(index, 1);

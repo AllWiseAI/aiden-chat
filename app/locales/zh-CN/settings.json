@@ -38,7 +38,9 @@
     "operation": "操作",
     "noCustomModel": "没有自定义模型",
     "addModelTitle": "添加自定义模型",
-    "editModelTitle": "编辑自定义模型"
+    "editModelTitle": "编辑自定义模型",
+    "deleteModelTitle": "删除自定义模型",
+    "deleteModelDescription": "确认删除？"
   },
   "mcp": {
     "edit": "编辑配置",

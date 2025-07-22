@@ -38,7 +38,9 @@
     "operation": "Operation",
     "noCustomModel": "No custom model",
     "addModelTitle": "Add customized model",
-    "editModelTitle": "Edit customized model"
+    "editModelTitle": "Edit customized model",
+    "deleteModelTitle": "Delete customized model",
+    "deleteModelDescription": "Confirm to delete?"
   },
   "mcp": {
     "edit": "Edit Config",

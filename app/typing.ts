@@ -186,6 +186,7 @@ export type CustomModelOption = {
 };
 
 export type ProviderOption = {
+  itemId: string;
   protocol: string;
   provider: string;
   default_endpoint: boolean;
@@ -197,6 +198,7 @@ export type ProviderOption = {
   display: string;
   model?: string;
   models: CustomModelOption[];
+  apiKey?: string;
 };
 
 export type ChatModelInfo = {

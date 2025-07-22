@@ -1,6 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
+import useState from "react-usestateref";
+
 import {
   Dialog,
   DialogContent,
@@ -9,7 +11,7 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/app/components/shadcn/dialog";
-
+import clsx from "clsx";
 import { Button } from "@/app/components/shadcn/button";
 import { t } from "i18next";
 import { useTranslation } from "react-i18next";
@@ -17,7 +19,6 @@ import { Label } from "@/app/components/shadcn/label";
 import { Password } from "@/app/components/password";
 import { ProviderSelect } from "./provider-select";
 import { MultiSelectDropdown } from "../shadcn/multi-select";
-import { getProviderList } from "@/app/services";
 import {
   ProviderOption,
   CustomModelOption,
@@ -26,17 +27,21 @@ import {
   AnthropicModelOptions,
 } from "@/app/typing";
 import { fetch } from "@tauri-apps/api/http";
+import { useAppConfig } from "@/app/store";
+import { toast } from "sonner";
 
 interface ModelInfo {
   provider: string;
   apiKey: string;
-  model: string;
+  models: [];
+  customUrl: string;
 }
 
 interface AddModelModalProps {
   open: boolean;
   isEdit: boolean;
   modelInfo?: ModelInfo;
+  editInfo?: ProviderOption;
   onConfirm: (updated: ProviderOption) => void;
   onOpenChange?: (open: boolean) => void;
 }
@@ -45,28 +50,56 @@ export function AddModelModal({
   open,
   isEdit,
   onConfirm,
+  editInfo,
   onOpenChange,
 }: AddModelModalProps) {
   const { t: tInner } = useTranslation("settings");
-  const [providerList, setProviderList] = useState<ProviderOption[]>([]);
   const [modelList, setModelList] = useState<CustomModelOption[]>([]);
+  const [isGettingModelLoading, setIsGettingModelLoading] = useState(false);
+  const [isModelsError, setIsModelsError] = useState(false);
+  const [isApiKeyError, setIsApiKeyError] = useState(false);
+
+  const providerList = useAppConfig((state) => state.providerList);
   useEffect(() => {
-    async function getProviderData() {
-      const data = await getProviderList();
-      if (data && data.length) {
-        setProviderList(data);
+    if (providerList && providerList.length) {
+      if (!isEdit) {
         setFormData({
-          provider: data[0].provider,
+          provider: providerList[0].provider,
           apiKey: "",
           models: [],
           customUrl: "",
         });
       }
     }
-    getProviderData();
+  }, [providerList]);
+
+  useEffect(() => {
+    if (isEdit) {
+      initFormData();
+    }
   }, []);
 
-  const [formData, setFormData] = useState({
+  const initFormData = () => {
+    const { apiKey, provider, models } = editInfo || {};
+    if (apiKey) {
+      // @ts-ignore
+      setFormData((prev) => {
+        const updatedFormData: ModelInfo = {
+          ...prev,
+          provider: provider || "",
+          apiKey: apiKey,
+          // @ts-ignore
+          models: models?.map((model) => model?.value),
+          customUrl: "",
+        };
+        getModels();
+
+        return updatedFormData;
+      });
+    }
+  };
+
+  const [formData, setFormData, formDataRef] = useState({
     provider: "",
     apiKey: "",
     models: [],
@@ -74,21 +107,40 @@ export function AddModelModal({
   });
 
   const handleConfirm = useCallback(() => {
-    if (!formData.provider || !formData.apiKey || !formData.models) {
+    console.log("formDataRef.current.provider", formDataRef.current);
+    if (!formDataRef.current.apiKey) {
+      setIsApiKeyError(true);
       return;
     }
-    onConfirm({
-      ...providerList.find(
-        (provider) => provider.provider === formData.provider,
-      ),
-      // @ts-ignore
-      models: formData.models.map((model: string) =>
-        modelList.find((item: CustomModelOption) => item.value === model),
-      ),
-      apiKey: formData.apiKey,
-    });
+    if (!formDataRef.current.models.length) {
+      setIsModelsError(true);
+      return;
+    }
+    setIsApiKeyError(false);
+    setIsModelsError(false);
+    if (isEdit) {
+      onConfirm({
+        ...editInfo,
+        // @ts-ignore
+        models: formDataRef.current.models.map((model: string) =>
+          modelList.find((item: CustomModelOption) => item.value === model),
+        ),
+        apiKey: formDataRef.current.apiKey,
+      });
+    } else {
+      onConfirm({
+        ...providerList.find(
+          (provider) => provider.provider === formDataRef.current.provider,
+        ),
+        // @ts-ignore
+        models: formDataRef.current.models.map((model: string) =>
+          modelList.find((item: CustomModelOption) => item.value === model),
+        ),
+        apiKey: formDataRef.current.apiKey,
+      });
+    }
     onOpenChange?.(false);
-  }, [formData]);
+  }, [formDataRef.current, modelList, isModelsError, isApiKeyError]);
 
   const formatProviderModels = (
     providerInfo: ProviderOption,
@@ -122,23 +174,23 @@ export function AddModelModal({
   const formatProviderToken = (providerInfo: ProviderOption) => {
     const { provider } = providerInfo || {};
     if (provider === "openai") {
-      return `Bearer ${formData.apiKey}`;
+      return `Bearer ${formDataRef.current.apiKey}`;
     }
 
     if (provider === "anthropic") {
-      return formData.apiKey;
+      return formDataRef.current.apiKey;
     }
-    return formData.apiKey;
+    return formDataRef.current.apiKey;
   };
 
   const getModels = async () => {
+    const apiKey = formDataRef.current.apiKey;
+    if (!apiKey) return;
     const providerInfo = providerList.find(
-      (provider) => provider.provider === formData.provider,
+      (provider) => provider.provider === formDataRef.current.provider,
     );
     const { default_endpoint, models_path, headers = {} } = providerInfo || {};
     const requestUrl = `${default_endpoint}${models_path}`;
-    const apiKey = formData.apiKey;
-    if (!apiKey) return;
     const replacedHeaders = Object.fromEntries(
       Object.entries(headers).map(([key, value]) => [
         key,
@@ -146,22 +198,31 @@ export function AddModelModal({
         value.includes("api-key") ? formatProviderToken(providerInfo) : value,
       ]),
     );
-    const modelsReturn = await fetch(requestUrl, {
-      method: "GET",
-      headers: replacedHeaders,
-    });
-    console.log("models data===", modelsReturn);
-    const { data, status } = modelsReturn;
-    if (status === 200) {
-      const models = formatProviderModels(
-        // @ts-ignore
-        providerInfo,
-        // @ts-ignore
-        data.data || data.models || [],
-      );
-      if (models.length) {
-        setModelList(models);
+    setIsGettingModelLoading(true);
+    try {
+      const modelsReturn = await fetch(requestUrl, {
+        method: "GET",
+        headers: replacedHeaders,
+      });
+      setIsGettingModelLoading(false);
+      const { data, status } = modelsReturn;
+      if (status === 200) {
+        const models = formatProviderModels(
+          // @ts-ignore
+          providerInfo,
+          // @ts-ignore
+          data.data || data.models || [],
+        );
+        if (models.length) {
+          setModelList(models);
+        }
+      } else {
+        toast.error("Failed to get models, status code is " + status);
       }
+    } catch (error) {
+      setModelList([]);
+      setIsGettingModelLoading(false);
+      console.error("Error fetching models:", error);
     }
   };
 
@@ -210,7 +271,7 @@ export function AddModelModal({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 max-h-[500px] overflow-y-auto">
+        <div className="space-y-4 overflow-hidden">
           <div className="flex gap-2 w-full">
             <Label
               htmlFor="provider"
@@ -221,6 +282,7 @@ export function AddModelModal({
 
             <ProviderSelect
               value={formData.provider}
+              disabled={isEdit}
               providerList={providerList}
               onChange={handleProviderChange}
             />
@@ -253,10 +315,17 @@ export function AddModelModal({
               {tInner("model.model")}
             </Label>
             <MultiSelectDropdown
-              className="flex-1"
+              className={clsx("flex-1", isModelsError && "!border-[#EF466F]")}
+              value={formData.models}
               options={modelList}
               onChange={handleModelsChange}
+              loading={isGettingModelLoading}
             />
+          </div>
+          <div style={{ marginLeft: "64px" }}>
+            {isModelsError && (
+              <div className="text-sm text-[#EF466F]">please select models</div>
+            )}
           </div>
         </div>
 
@@ -270,15 +339,13 @@ export function AddModelModal({
               {t("dialog.cancel")}
             </Button>
           </DialogClose>
-          <DialogClose asChild className="flex-1">
-            <Button
-              className="h-8 rounded-sm bg-[#00D47E] text-white dark:text-black px-2.5 py-2"
-              onClick={handleConfirm}
-              type="button"
-            >
-              {t("dialog.save")}
-            </Button>
-          </DialogClose>
+          <Button
+            className="flex-1 h-8 rounded-sm bg-[#00D47E] text-white dark:text-black px-2.5 py-2"
+            onClick={handleConfirm}
+            type="button"
+          >
+            {t("dialog.save")}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
