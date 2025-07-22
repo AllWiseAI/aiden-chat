@@ -19,13 +19,10 @@ import SuccessIcon from "../icons/success.svg";
 import ErrorIcon from "../icons/error.svg";
 import McpIcon from "../icons/mcp.svg";
 import { useTranslation } from "react-i18next";
-import { useAppUpdate } from "@/app/hooks/use-app-update";
 import { ImageUploader } from "./image-uploader";
 import { useImageUploadStore } from "@/app/store/image-upload";
 import CircleProgress from "./circle-progress";
-import { ModelSelect } from "./model-select";
 import { relaunch } from "@tauri-apps/api/process";
-
 import {
   ChatMessage,
   createMessage,
@@ -478,27 +475,9 @@ function InnerChat() {
     );
   };
 
-  const { isShowUpdate, handleUpdate, isUpdating } = useAppUpdate();
   return (
     <>
       <div className={styles.chat} key={session.id}>
-        <div className={clsx("window-header")} data-tauri-drag-region>
-          <div
-            className={clsx("window-header-title", styles["chat-body-title"])}
-          >
-            <ModelSelect />
-          </div>
-          {isShowUpdate && (
-            <Button
-              disabled={isUpdating}
-              data-tauri-drag-region="false"
-              className="h-9 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] rounded-xl text-xs"
-              onClick={handleUpdate}
-            >
-              {isUpdating ? "Updating..." : "Update Version"}
-            </Button>
-          )}
-        </div>
         <div className={styles["chat-main"]}>
           <div className={styles["chat-body-container"]}>
             {isNewChat ? (

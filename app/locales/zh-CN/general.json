@@ -39,6 +39,7 @@
   },
   "home": {
     "newChat": "新的聊天",
+    "newTask": "新的任务",
     "deleteChat": "确认删除选中的对话？",
     "deleteToast": "已删除会话"
   },

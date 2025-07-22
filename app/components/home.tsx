@@ -27,6 +27,7 @@ import { useAppConfig } from "../store/config";
 import { getClientConfig } from "../config/client";
 import useAppSetting from "../hooks/use-app-setting";
 import clsx from "clsx";
+import { WindowHeader } from "./window-header";
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -38,6 +39,10 @@ export function Loading(props: { noLogo?: boolean }) {
 }
 
 const Chat = dynamic(async () => (await import("./chat")).Chat, {
+  loading: () => <Loading noLogo />,
+});
+
+const NewTask = dynamic(async () => (await import("./new-task")).NewTask, {
   loading: () => <Loading noLogo />,
 });
 
@@ -194,8 +199,11 @@ function MainLayout() {
       />
       <WindowContent>
         <Routes>
-          <Route path={Path.Home} element={<Chat />} />
-          <Route path={Path.Chat} element={<Chat />} />
+          <Route element={<WindowHeader />}>
+            <Route path={Path.Home} element={<Chat />} />
+            <Route path={Path.Chat} element={<Chat />} />
+          </Route>
+          <Route path={Path.NewTask} element={<NewTask />} />
           <Route path={Path.Settings} element={<Settings />} />
         </Routes>
       </WindowContent>
