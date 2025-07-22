@@ -6,22 +6,11 @@ import RehypeKatex from "rehype-katex";
 import RemarkGfm from "remark-gfm";
 import RehypeHighlight from "rehype-highlight";
 import { useRef, useState, RefObject, useEffect, useMemo } from "react";
-import { copyToClipboard, useWindowSize } from "../utils";
+import { copyToClipboard } from "../utils";
 import mermaid from "mermaid";
 import LoadingIcon from "../icons/three-dots.svg";
-import ReloadButtonIcon from "../icons/reload.svg";
 import React from "react";
 import { useDebouncedCallback } from "use-debounce";
-import { FullScreen } from "./ui-lib";
-import {
-  ArtifactsShareButton,
-  HTMLPreview,
-  HTMLPreviewHander,
-} from "./artifacts";
-import { useChatStore } from "../store";
-import { IconButton } from "./button";
-
-import { useAppConfig } from "../store/config";
 import clsx from "clsx";
 
 export function Mermaid(props: { code: string }) {
@@ -55,12 +44,7 @@ export function Mermaid(props: { code: string }) {
 
 export function PreCode(props: { children: any }) {
   const ref = useRef<HTMLPreElement>(null);
-  const previewRef = useRef<HTMLPreviewHander>(null);
   const [mermaidCode, setMermaidCode] = useState("");
-  const [htmlCode, setHtmlCode] = useState("");
-  const { height } = useWindowSize();
-  const chatStore = useChatStore();
-  const session = chatStore.currentSession();
 
   const renderArtifacts = useDebouncedCallback(() => {
     if (!ref.current) return;
@@ -68,22 +52,7 @@ export function PreCode(props: { children: any }) {
     if (mermaidDom) {
       setMermaidCode((mermaidDom as HTMLElement).innerText);
     }
-    const htmlDom = ref.current.querySelector("code.language-html");
-    const refText = ref.current.querySelector("code")?.innerText;
-    if (htmlDom) {
-      setHtmlCode((htmlDom as HTMLElement).innerText);
-    } else if (
-      refText?.startsWith("<!DOCTYPE") ||
-      refText?.startsWith("<svg") ||
-      refText?.startsWith("<?xml")
-    ) {
-      setHtmlCode(refText);
-    }
   }, 600);
-
-  const config = useAppConfig();
-  const enableArtifacts =
-    session.mask?.enableArtifacts !== false && config.enableArtifacts;
 
   //Wrap the paragraph for plain-text
   useEffect(() => {
@@ -130,27 +99,6 @@ export function PreCode(props: { children: any }) {
       {mermaidCode.length > 0 && (
         <Mermaid code={mermaidCode} key={mermaidCode} />
       )}
-      {htmlCode.length > 0 && enableArtifacts && (
-        <FullScreen className="no-dark html" right={70}>
-          <ArtifactsShareButton
-            style={{ position: "absolute", right: 20, top: 10 }}
-            getCode={() => htmlCode}
-          />
-          <IconButton
-            style={{ position: "absolute", right: 120, top: 10 }}
-            bordered
-            icon={<ReloadButtonIcon />}
-            shadow
-            onClick={() => previewRef.current?.reload()}
-          />
-          <HTMLPreview
-            ref={previewRef}
-            code={htmlCode}
-            autoHeight={!document.fullscreenElement}
-            height={!document.fullscreenElement ? 600 : height}
-          />
-        </FullScreen>
-      )}
     </>
   );
 }
@@ -160,16 +108,7 @@ function CustomCode(props: { children: any; className?: string }) {
 
   return (
     <>
-      <code
-        className={clsx(props?.className)}
-        ref={ref}
-        style={
-          {
-            // maxHeight: enableCodeFold && collapsed ? "400px" : "none",
-            // overflowY: "hidden",
-          }
-        }
-      >
+      <code className={clsx(props?.className)} ref={ref}>
         {props.children}
       </code>
     </>
