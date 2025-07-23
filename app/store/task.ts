@@ -2,7 +2,7 @@ import { StoreKey } from "../constant";
 import { Task } from "../typing";
 import { createPersistStore } from "../utils/store";
 
-const createDefaultTask = (): Task => ({
+export const createDefaultTask = (): Task => ({
   name: "",
   schedule: {
     date: undefined,

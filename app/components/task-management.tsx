@@ -2,12 +2,19 @@ import { useState, useRef, useEffect } from "react";
 import { Input } from "./shadcn/input";
 import { Button } from "./shadcn/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./shadcn/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./shadcn/select";
 import { Calendar } from "./shadcn/calendar";
 import TimeSelect from "./time-select";
 import { useNavigate } from "react-router-dom";
 import { TaskTypeEnum, TaskType, Task } from "../typing";
-
-import GeneralIcon from "../icons/general.svg";
+import { createDefaultTask, useTaskStore } from "../store";
+import dayjs from "dayjs";
 import NotificationOnIcon from "../icons/notification-on.svg";
 import NotificationOffIcon from "../icons/notification-off.svg";
 
@@ -17,8 +24,7 @@ interface NotificationProps {
 }
 
 interface TaskManagementProps {
-  task: Task;
-  onChange: (task: Task) => void;
+  task?: Task;
 }
 
 const TaskTypeLabels: Record<TaskType, string> = {
@@ -43,13 +49,15 @@ export function Notification({ checked, onChange }: NotificationProps) {
   );
 }
 
-export default function TaskManagement({
-  task,
-  onChange,
-}: TaskManagementProps) {
+export default function TaskManagement({ task }: TaskManagementProps) {
+  const [newTask, setNewTask] = useState<Task>({
+    ...createDefaultTask(),
+    ...task,
+  });
   const [notificationEnabled, setNotificationEnabled] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const navigate = useNavigate();
+  const taskStore = useTaskStore();
 
   const handleInput = () => {
     const el = textareaRef.current;
@@ -68,49 +76,63 @@ export default function TaskManagement({
       <Input
         className="h-10 !text-left bg-white dark:bg-[#101213] !border-0"
         placeholder="Enter Task Name"
-        value={task.name}
-        onChange={(e) => onChange({ ...task, name: e.target.value })}
+        value={newTask.name}
+        onChange={(e) =>
+          setNewTask((task) => {
+            return { ...task, name: e.target.value };
+          })
+        }
       />
 
       <div className="flex gap-2.5 h-10">
         <Popover>
           <PopoverTrigger asChild>
-            <div className="flex-1 bg-white dark:bg-[#101213] rounded-sm"></div>
+            <div className="flex-1 px-2.5 py-2 bg-white dark:bg-[#101213] rounded-sm">
+              {newTask.schedule.date
+                ? dayjs(newTask.schedule.date).format("D, MMM")
+                : "Select a date"}
+            </div>
           </PopoverTrigger>
-          <PopoverContent className="flex-center p-0">
-            <Calendar
-              mode="single"
-              className="w-full"
-              selected={task.schedule.date}
-              onSelect={(date: Date | undefined) => {
-                if (!date) return;
-                onChange({
-                  ...task,
-                  schedule: {
-                    ...task.schedule,
-                    date,
-                  },
-                });
-              }}
-            />
+          <PopoverContent asChild align="start">
+            <div>
+              <Calendar
+                mode="single"
+                className="w-full h-full p-0 pb-4"
+                selected={newTask.schedule.date}
+                onSelect={(date: Date | undefined) => {
+                  if (!date) return;
+                  setNewTask((task) => {
+                    return {
+                      ...task,
+                      schedule: {
+                        ...task.schedule,
+                        date,
+                      },
+                    };
+                  });
+                }}
+              />
+            </div>
           </PopoverContent>
         </Popover>
         <div className="flex-1 bg-white dark:bg-[#101213] rounded-sm">
           <TimeSelect
-            value={task.schedule.time}
+            value={newTask.schedule.time}
             onChange={(time) =>
-              onChange({
-                ...task,
-                schedule: {
-                  ...task.schedule,
-                  time,
-                },
+              setNewTask((task) => {
+                return {
+                  ...task,
+                  schedule: {
+                    ...task.schedule,
+                    time,
+                  },
+                };
               })
             }
           />
         </div>
       </div>
-      <Popover>
+      {/* <Popover>
         <PopoverTrigger>
           <div className="flex items-center gap-2.5 p-2.5 h-10 bg-white dark:bg-[#101213] rounded-sm">
             <span className="flex-1"></span>
@@ -130,15 +152,36 @@ export default function TaskManagement({
             </div>
           ))}
         </PopoverContent>
-      </Popover>
+      </Popover> */}
+      <Select>
+        <SelectTrigger className="!w-full bg-white dark:bg-[#101213] rounded-sm border-0">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent className="w-[var(--radix-select-trigger-width)]">
+          {Object.values(TaskTypeEnum).map((type) => (
+            <SelectItem
+              value={type}
+              key={type}
+              className="hover:bg-[#F5F5F5] px-2.5 py-2 cursor-default"
+              onClick={() => {
+                console.log("clicked type:", type);
+              }}
+            >
+              {TaskTypeLabels[type]}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
       <textarea
-        className="bg-white dark:bg-[#101213] p-2.5 resize-none overflow-auto max-h-[60vh]"
+        className="bg-white dark:bg-[#101213] placeholder:text-sm placeholder:text-[#6C7275]/50 dark:placeholder:text-[#343839] rounded-sm p-2.5 resize-none overflow-auto max-h-[60vh]"
         ref={textareaRef}
         rows={1}
         placeholder="Task Description"
-        value={task.details}
+        value={newTask.details}
         onChange={(e) => {
-          onChange({ ...task, details: e.target.value });
+          setNewTask((task) => {
+            return { ...task, details: e.target.value };
+          });
           handleInput();
         }}
       ></textarea>
@@ -154,7 +197,10 @@ export default function TaskManagement({
           >
             Cancel
           </Button>
-          <Button className="h-full bg-main rounded-sm font-normal">
+          <Button
+            className="h-full bg-main rounded-sm font-normal"
+            onClick={() => taskStore.createTask(newTask)}
+          >
             Confirm
           </Button>
         </div>
