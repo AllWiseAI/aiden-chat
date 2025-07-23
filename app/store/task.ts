@@ -1,8 +1,10 @@
 import { StoreKey } from "../constant";
 import { Task } from "../typing";
 import { createPersistStore } from "../utils/store";
+import { nanoid } from "nanoid";
 
 export const createDefaultTask = (): Task => ({
+  id: nanoid(),
   name: "",
   schedule: {
     date: undefined,
@@ -28,6 +30,11 @@ export const useTaskStore = createPersistStore(
       set({
         tasks: [...get().tasks, newTask],
       });
+    },
+    deleteTask: (index: number) => {
+      const currentTasks = get().tasks;
+      const newTasks = currentTasks.filter((_, i) => i !== index);
+      set({ tasks: newTasks });
     },
   }),
   {

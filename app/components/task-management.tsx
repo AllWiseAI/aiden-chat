@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, SetStateAction, Dispatch } from "react";
 import { Input } from "./shadcn/input";
 import { Button } from "./shadcn/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./shadcn/popover";
@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { TaskTypeEnum, TaskType, Task } from "../typing";
 import { createDefaultTask, useTaskStore } from "../store";
 import dayjs from "dayjs";
+import clsx from "clsx";
 import NotificationOnIcon from "../icons/notification-on.svg";
 import NotificationOffIcon from "../icons/notification-off.svg";
 
@@ -25,6 +26,7 @@ interface NotificationProps {
 
 interface TaskManagementProps {
   task?: Task;
+  onChange?: Dispatch<SetStateAction<Task>>;
 }
 
 const TaskTypeLabels: Record<TaskType, string> = {
@@ -49,11 +51,15 @@ export function Notification({ checked, onChange }: NotificationProps) {
   );
 }
 
-export default function TaskManagement({ task }: TaskManagementProps) {
+export default function TaskManagement({
+  task,
+  onChange,
+}: TaskManagementProps) {
   const [newTask, setNewTask] = useState<Task>({
     ...createDefaultTask(),
     ...task,
   });
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [notificationEnabled, setNotificationEnabled] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const navigate = useNavigate();
@@ -72,9 +78,9 @@ export default function TaskManagement({ task }: TaskManagementProps) {
   }, []);
 
   return (
-    <div className="flex flex-col gap-2.5 bg-[#F3F5F7] dark:bg-[#202121] px-2.5 py-2">
+    <div className="flex flex-col gap-2.5 text-sm bg-[#F3F5F7] dark:bg-[#202121] px-2.5 py-2">
       <Input
-        className="h-10 !text-left bg-white dark:bg-[#101213] !border-0"
+        className="h-10 !text-left rounded-sm bg-white dark:bg-[#101213] !border-0 p-2.5"
         placeholder="Enter Task Name"
         value={newTask.name}
         onChange={(e) =>
@@ -85,16 +91,24 @@ export default function TaskManagement({ task }: TaskManagementProps) {
       />
 
       <div className="flex gap-2.5 h-10">
-        <Popover>
+        <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
           <PopoverTrigger asChild>
-            <div className="flex-1 px-2.5 py-2 bg-white dark:bg-[#101213] rounded-sm">
+            <div
+              className={clsx(
+                "flex-1 flex items-center px-2.5 py-2 bg-white dark:bg-[#101213] rounded-sm text-sm",
+                {
+                  "text-[#6C7275]/50 dark:text-[#343839]":
+                    !newTask.schedule.date,
+                },
+              )}
+            >
               {newTask.schedule.date
                 ? dayjs(newTask.schedule.date).format("D, MMM")
-                : "Select a date"}
+                : "Day/Month"}
             </div>
           </PopoverTrigger>
           <PopoverContent asChild align="start">
-            <div>
+            <div className="dark:bg-black">
               <Calendar
                 mode="single"
                 className="w-full h-full p-0 pb-4"
@@ -110,6 +124,7 @@ export default function TaskManagement({ task }: TaskManagementProps) {
                       },
                     };
                   });
+                  setCalendarOpen(false);
                 }}
               />
             </div>
@@ -132,30 +147,18 @@ export default function TaskManagement({ task }: TaskManagementProps) {
           />
         </div>
       </div>
-      {/* <Popover>
-        <PopoverTrigger>
-          <div className="flex items-center gap-2.5 p-2.5 h-10 bg-white dark:bg-[#101213] rounded-sm">
-            <span className="flex-1"></span>
-            <GeneralIcon className="text-main size-[18px]" />
-          </div>
-        </PopoverTrigger>
-        <PopoverContent className="w-[var(--radix-popover-trigger-width)]">
-          {Object.values(TaskTypeEnum).map((type) => (
-            <div
-              key={type}
-              className="hover:bg-[#F5F5F5] px-2.5 py-2 cursor-default"
-              onClick={() => {
-                console.log("clicked type:", type);
-              }}
-            >
-              {TaskTypeLabels[type]}
-            </div>
-          ))}
-        </PopoverContent>
-      </Popover> */}
-      <Select>
-        <SelectTrigger className="!w-full bg-white dark:bg-[#101213] rounded-sm border-0">
-          <SelectValue />
+      <Select
+        value={newTask.type}
+        onValueChange={(type) => {
+          setNewTask((task) => ({
+            ...task,
+            type,
+          }));
+          console.log(type);
+        }}
+      >
+        <SelectTrigger className="!w-full !h-10 bg-white dark:bg-[#101213] rounded-sm border-0">
+          <SelectValue placeholder="Select Task Type" />
         </SelectTrigger>
         <SelectContent className="w-[var(--radix-select-trigger-width)]">
           {Object.values(TaskTypeEnum).map((type) => (
@@ -163,9 +166,6 @@ export default function TaskManagement({ task }: TaskManagementProps) {
               value={type}
               key={type}
               className="hover:bg-[#F5F5F5] px-2.5 py-2 cursor-default"
-              onClick={() => {
-                console.log("clicked type:", type);
-              }}
             >
               {TaskTypeLabels[type]}
             </SelectItem>
@@ -173,7 +173,7 @@ export default function TaskManagement({ task }: TaskManagementProps) {
         </SelectContent>
       </Select>
       <textarea
-        className="bg-white dark:bg-[#101213] placeholder:text-sm placeholder:text-[#6C7275]/50 dark:placeholder:text-[#343839] rounded-sm p-2.5 resize-none overflow-auto max-h-[60vh]"
+        className="bg-white dark:bg-[#101213] placeholder:text-[#6C7275]/50 dark:placeholder:text-[#343839] rounded-sm p-2.5 resize-none overflow-auto max-h-[60vh]"
         ref={textareaRef}
         rows={1}
         placeholder="Task Description"
@@ -188,7 +188,12 @@ export default function TaskManagement({ task }: TaskManagementProps) {
       <div className="flex justify-between items-center h-8.5 pl-2.5">
         <Notification
           checked={notificationEnabled}
-          onChange={setNotificationEnabled}
+          onChange={() => {
+            setNotificationEnabled(!notificationEnabled);
+            setNewTask((task) => {
+              return { ...task, notification: !notificationEnabled };
+            });
+          }}
         />
         <div className="flex gap-2.5 h-full">
           <Button
@@ -199,7 +204,15 @@ export default function TaskManagement({ task }: TaskManagementProps) {
           </Button>
           <Button
             className="h-full bg-main rounded-sm font-normal"
-            onClick={() => taskStore.createTask(newTask)}
+            onClick={() => {
+              if (!onChange) {
+                taskStore.createTask({ ...newTask });
+              } else {
+                onChange((task) => {
+                  return { ...task, ...newTask };
+                });
+              }
+            }}
           >
             Confirm
           </Button>

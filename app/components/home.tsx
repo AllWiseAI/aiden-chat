@@ -42,6 +42,10 @@ const Chat = dynamic(async () => (await import("./chat")).Chat, {
   loading: () => <Loading noLogo />,
 });
 
+const Task = dynamic(async () => (await import("./task")).Task, {
+  loading: () => <Loading noLogo />,
+});
+
 const NewTask = dynamic(async () => (await import("./new-task")).NewTask, {
   loading: () => <Loading noLogo />,
 });
@@ -202,6 +206,7 @@ function MainLayout() {
           <Route element={<WindowHeader />}>
             <Route path={Path.Home} element={<Chat />} />
             <Route path={Path.Chat} element={<Chat />} />
+            <Route path={Path.Task} element={<Task />} />
           </Route>
           <Route path={Path.NewTask} element={<NewTask />} />
           <Route path={Path.Settings} element={<Settings />} />

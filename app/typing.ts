@@ -179,6 +179,7 @@ export type ModelOption = {
 };
 
 export interface Task {
+  id?: string;
   name: string;
   schedule: {
     date: Date | undefined;

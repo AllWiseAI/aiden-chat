@@ -51,7 +51,7 @@ export default function TimeSelect({
             }}
             onFocus={() => setOpen(true)}
             placeholder="Time"
-            className="w-full !text-left border-1"
+            className="w-full h-10 !text-left border-0"
           />
         </div>
       </PopoverTrigger>

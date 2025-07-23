@@ -46,6 +46,10 @@ const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
   loading: () => null,
 });
 
+const TaskList = dynamic(async () => (await import("./task-list")).TaskList, {
+  loading: () => null,
+});
+
 export function useHotKey() {
   const chatStore = useChatStore();
 
@@ -239,10 +243,10 @@ export function SideBarBody(props: {
   } = props;
 
   return (
-    <div className="mt-2.5 flex-1 overflow-y-auto flex flex-col ">
+    <>
       {isSearchVisible && (
-        <div className="px-4 pb-2.5">
-          <div className="flex-center relative ">
+        <div className="mt-2.5 px-4 pb-2.5">
+          <div className="flex-center relative">
             <Input
               className="h-9 !text-left focus:border-[#00D47E] focus:dark:border-[#00D47E] placeholder:text-sm !placeholder:text-[#6C7275] pl-6 pr-2.5 py-1 rounded-sm"
               clearable
@@ -255,42 +259,46 @@ export function SideBarBody(props: {
           </div>
         </div>
       )}
-      <div className="flex justify-center">
-        <div className="flex flex-col gap-3 w-16 border-r border-white dark:border-[#242424]">
-          <div
-            className={clsx(
-              "flex-center flex-col cursor-pointer",
-              tabValue === "chat"
-                ? "text-main"
-                : "text-[#BFBFBF] dark:text-[#343839] hover:opacity-80",
-            )}
-            onClick={() => setTabValue("chat")}
-          >
-            <div className="rounded-full size-10 flex-center bg-white dark:bg-[#262626]">
-              <ChatIcon />
+      <div className="mt-2.5 flex-1 flex flex-col min-h-0">
+        <div className="flex justify-center h-full">
+          <div className="flex flex-col gap-3 w-16 pt-4 border-r border-white dark:border-[#242424]">
+            <div
+              className={clsx(
+                "flex-center flex-col cursor-pointer",
+                tabValue === "chat"
+                  ? "text-main"
+                  : "text-[#BFBFBF] dark:text-[#343839] hover:opacity-80",
+              )}
+              onClick={() => setTabValue("chat")}
+            >
+              <div className="rounded-full size-10 flex-center bg-white dark:bg-[#262626]">
+                <ChatIcon />
+              </div>
+              <span className="text-xs">Chats</span>
             </div>
-            <span className="text-xs">Chats</span>
-          </div>
-          <div
-            className={clsx(
-              "flex-center flex-col cursor-pointer",
-              tabValue === "task"
-                ? "text-main"
-                : "text-[#BFBFBF] dark:text-[#343839] hover:opacity-80",
-            )}
-            onClick={() => setTabValue("task")}
-          >
-            <div className="rounded-full size-10 flex-center bg-white dark:bg-[#262626]">
-              <TaskIcon />
+            <div
+              className={clsx(
+                "flex-center flex-col cursor-pointer",
+                tabValue === "task"
+                  ? "text-main"
+                  : "text-[#BFBFBF] dark:text-[#343839] hover:opacity-80",
+              )}
+              onClick={() => setTabValue("task")}
+            >
+              <div className="rounded-full size-10 flex-center bg-white dark:bg-[#262626]">
+                <TaskIcon />
+              </div>
+              <span className="text-xs">Tasks</span>
             </div>
-            <span className="text-xs">Tasks</span>
           </div>
+          {!shouldNarrow && (
+            <div className="flex-1 flex flex-col gap-2.5 px-4 overflow-y-auto">
+              {children}
+            </div>
+          )}
         </div>
-        {!shouldNarrow && (
-          <div className="flex-1 flex flex-col gap-2.5 px-4">{children}</div>
-        )}
       </div>
-    </div>
+    </>
   );
 }
 
@@ -455,6 +463,7 @@ export function SideBar(props: { className?: string }) {
         {tabValue === "chat" && (
           <ChatList narrow={shouldNarrow} searchValue={searchValue} />
         )}
+        {tabValue === "task" && <TaskList />}
       </SideBarBody>
       <SideBarFooter shouldNarrow={shouldNarrow} />
     </SideBarContainer>

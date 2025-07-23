@@ -18,6 +18,7 @@ export enum Path {
   Loading = "/loading",
   SignUp = "/signup",
   Chat = "/chat",
+  Task = "/task",
   NewTask = "/new-task",
   Settings = "/settings",
   NewChat = "/new-chat",
