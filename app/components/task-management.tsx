@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, SetStateAction, Dispatch } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Input } from "./shadcn/input";
 import { Button } from "./shadcn/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./shadcn/popover";
@@ -26,7 +26,7 @@ interface NotificationProps {
 
 interface TaskManagementProps {
   task?: Task;
-  onChange?: Dispatch<SetStateAction<Task>>;
+  onChange?: (id: string, updatedTask: Task) => void;
 }
 
 const TaskTypeLabels: Record<TaskType, string> = {
@@ -208,9 +208,7 @@ export default function TaskManagement({
               if (!onChange) {
                 taskStore.createTask({ ...newTask });
               } else {
-                onChange((task) => {
-                  return { ...task, ...newTask };
-                });
+                onChange(newTask.id, newTask);
               }
             }}
           >

@@ -21,22 +21,47 @@ const DEFAULT_TASK_STATE = {
 
 export const useTaskStore = createPersistStore(
   DEFAULT_TASK_STATE,
-  (set, get) => ({
-    createTask: (task: Partial<Task> = {}) => {
-      const newTask: Task = {
-        ...createDefaultTask(),
-        ...task,
+  (set, _get) => {
+    function get() {
+      return {
+        ..._get(),
+        ...methods,
       };
-      set({
-        tasks: [...get().tasks, newTask],
-      });
-    },
-    deleteTask: (index: number) => {
-      const currentTasks = get().tasks;
-      const newTasks = currentTasks.filter((_, i) => i !== index);
-      set({ tasks: newTasks });
-    },
-  }),
+    }
+    const methods = {
+      createTask: (task: Partial<Task> = {}) => {
+        const newTask: Task = {
+          ...createDefaultTask(),
+          ...task,
+        };
+        set({
+          tasks: [...get().tasks, newTask],
+        });
+      },
+      getTask: (id: string) => {
+        return get().tasks.find((task) => task.id === id);
+      },
+      setTask: (id: string, updatedTask: Task) => {
+        const tasks = get().tasks.map((t) =>
+          t.id === id ? { ...updatedTask, id } : t,
+        );
+        set({ tasks });
+      },
+      setNotification: (id: string) => {
+        const tasks = get().tasks;
+        const updatedTasks = tasks.map((task) =>
+          task.id === id ? { ...task, notification: !task.notification } : task,
+        );
+        set({ tasks: updatedTasks });
+      },
+      deleteTask: (index: number) => {
+        const currentTasks = get().tasks;
+        const newTasks = currentTasks.filter((_, i) => i !== index);
+        set({ tasks: newTasks });
+      },
+    };
+    return methods;
+  },
   {
     name: StoreKey.Task,
     version: 1,
