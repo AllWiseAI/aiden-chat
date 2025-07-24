@@ -21,10 +21,13 @@ import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 import MoreIcon from "../icons/more.svg";
 import DeleteIcon from "../icons/delete.svg";
+import { useNavigate } from "react-router-dom";
+import { Path } from "../constant";
 
 export function TaskItem(props: {
   selected: boolean;
   name: string;
+  onClick: () => void;
   onDelete: () => void;
 }) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -33,6 +36,7 @@ export function TaskItem(props: {
 
   return (
     <div
+      onClick={props.onClick}
       className={clsx(
         "rounded-sm group h-7.5 p-1.5 flex flex-col justify-center cursor-default",
         props.selected
@@ -125,12 +129,19 @@ export function TaskList() {
   const deleteTask = useTaskStore((state) => state.deleteTask);
   // const selectedIndex = useState();
   console.log(122, tasks);
+  const navigate = useNavigate();
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   return (
     <div className="flex flex-col gap-[8px]">
       {tasks.map((item, index) => (
         <TaskItem
           key={item.id}
           name={item.name}
+          selected={item.id === selectedId}
+          onClick={() => {
+            setSelectedId(item.id);
+            navigate(`${Path.Task}/${item.id}`);
+          }}
           onDelete={() => deleteTask(index)}
         />
       ))}

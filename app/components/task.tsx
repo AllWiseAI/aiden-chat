@@ -1,3 +1,6 @@
+import { useParams } from "react-router-dom";
+
 export function Task() {
-  return <div>task</div>;
+  const { id } = useParams();
+  return <div>task - {id}</div>;
 }
