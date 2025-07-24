@@ -18,6 +18,7 @@ import dayjs from "dayjs";
 import clsx from "clsx";
 import NotificationOnIcon from "../icons/notification-on.svg";
 import NotificationOffIcon from "../icons/notification-off.svg";
+import { Path } from "../constant";
 
 interface NotificationProps {
   checked: boolean;
@@ -207,6 +208,7 @@ export default function TaskManagement({
             onClick={() => {
               if (!onChange) {
                 taskStore.createTask({ ...newTask });
+                navigate(`${Path.Task}/${newTask.id}`);
               } else {
                 onChange(newTask.id, newTask);
               }

@@ -1,5 +1,5 @@
 import { useTaskStore } from "../store";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -131,6 +131,9 @@ export function TaskList() {
   console.log(122, tasks);
   const navigate = useNavigate();
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  useEffect(() => {
+    // 这里要如何更新id？
+  }, [tasks]);
   return (
     <div className="flex flex-col gap-[8px]">
       {tasks.map((item, index) => (
