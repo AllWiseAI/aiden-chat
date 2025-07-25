@@ -70,6 +70,7 @@ export function Notification({
 
 export default function TaskManagement({
   task,
+  onCancel,
   onChange,
 }: TaskManagementProps) {
   const { t } = useTranslation("general");
@@ -288,7 +289,7 @@ export default function TaskManagement({
           <SelectValue placeholder={t("task.selectTaskType")} />
         </SelectTrigger>
         <SelectContent className="w-[var(--radix-select-trigger-width)]">
-          {Object.values(TaskTypeEnum).map((type) => (
+          {Object.values(TaskType).map((type) => (
             <SelectItem
               value={type}
               key={type}
