@@ -181,10 +181,9 @@ export type ModelOption = {
 export interface Task {
   id: string;
   name: string;
-  schedule: {
-    date: Date | undefined;
-    time: string;
-  };
+  date: string;
+  hour: number | null;
+  minute: number | null;
   type: string;
   notification: boolean;
   details: string;

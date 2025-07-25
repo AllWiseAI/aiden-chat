@@ -1,5 +1,5 @@
 import { useTaskStore } from "../store";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -127,13 +127,10 @@ export function TaskItem(props: {
 export function TaskList() {
   const tasks = useTaskStore((state) => state.tasks);
   const deleteTask = useTaskStore((state) => state.deleteTask);
-  // const selectedIndex = useState();
-  console.log(122, tasks);
+  const selectedId = useTaskStore((state) => state.currentTaskId);
+  const setSelectedId = useTaskStore((state) => state.setCurrentTaskId);
   const navigate = useNavigate();
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  useEffect(() => {
-    // 这里要如何更新id？
-  }, [tasks]);
+
   return (
     <div className="flex flex-col gap-[8px]">
       {tasks.map((item, index) => (

@@ -6,10 +6,9 @@ import { nanoid } from "nanoid";
 export const createDefaultTask = (): Task => ({
   id: nanoid(),
   name: "",
-  schedule: {
-    date: undefined,
-    time: "",
-  },
+  date: "",
+  hour: null,
+  minute: null,
   type: "",
   notification: false,
   details: "",
@@ -17,6 +16,7 @@ export const createDefaultTask = (): Task => ({
 
 const DEFAULT_TASK_STATE = {
   tasks: [] as Task[],
+  currentTaskId: "",
 };
 
 export const useTaskStore = createPersistStore(
@@ -34,8 +34,10 @@ export const useTaskStore = createPersistStore(
           ...createDefaultTask(),
           ...task,
         };
+
         set({
           tasks: [...get().tasks, newTask],
+          currentTaskId: newTask.id,
         });
       },
       getTask: (id: string) => {
@@ -46,6 +48,9 @@ export const useTaskStore = createPersistStore(
           t.id === id ? { ...updatedTask, id } : t,
         );
         set({ tasks });
+      },
+      setCurrentTaskId: (id: string) => {
+        set({ currentTaskId: id });
       },
       setNotification: (id: string) => {
         const tasks = get().tasks;

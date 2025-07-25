@@ -4,6 +4,12 @@ import { useState, useRef } from "react";
 import { Popover, PopoverTrigger, PopoverContent } from "./shadcn/popover";
 import { Input } from "./shadcn/input";
 
+interface TimeSelectProps {
+  hour: number | null;
+  minute: number | null;
+  onChange: (val: string) => void;
+}
+
 function generateTimeOptions(stepMinutes: number = 15): string[] {
   const times: string[] = [];
   for (let h = 0; h < 24; h++) {
@@ -19,15 +25,17 @@ function generateTimeOptions(stepMinutes: number = 15): string[] {
 const TIME_OPTIONS = generateTimeOptions();
 
 export default function TimeSelect({
-  value,
+  hour,
+  minute,
   onChange,
-}: {
-  value: string;
-  onChange: (val: string) => void;
-}) {
+}: TimeSelectProps) {
   const [open, setOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [inputVal, setInputVal] = useState(value ?? "");
+  const formatHour = hour && hour < 10 ? `0${hour}` : hour;
+  const formatMinute = minute && minute < 10 ? `0${minute}` : minute;
+  const [inputVal, setInputVal] = useState(
+    hour != null && minute != null ? `${formatHour}:${formatMinute}` : "",
+  );
 
   const filtered = TIME_OPTIONS.filter((t) => t.includes(inputVal.trim()));
 
@@ -45,6 +53,7 @@ export default function TimeSelect({
             ref={inputRef}
             value={inputVal}
             onChange={(e) => {
+              // verify
               setInputVal(e.target.value);
               onChange(e.target.value);
               setOpen(true);

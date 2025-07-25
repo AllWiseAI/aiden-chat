@@ -13,12 +13,13 @@ interface TaskPanelProps {
   updateNotification: (id: string) => void;
 }
 
-function formatCustomTime(date: Date, time: string) {
-  const dt = dayjs(`${dayjs(date).format("YYYY-MM-DD")}T${time}`);
-  const h = dt.hour();
-  const m = dt.minute().toString().padStart(2, "0");
-  const suffix = h < 12 ? "am" : "pm";
-  return `${dt.format("dddd, MMM D")} ${h < 12 ? h : h - 12}:${m}${suffix}`;
+function formatCustomTime(date: string, hour: number, minute: number): string {
+  const full = dayjs(`${dayjs(date).format("YYYY-MM-DD")}T${hour}:${minute}`);
+  const formatHour = hour % 12 === 0 ? hour : hour % 12;
+  const formatMinute = minute < 10 ? `0${minute}` : minute;
+  const suffix = hour < 12 ? "am" : "pm";
+
+  return `${full.format("dddd, MMM D")} ${formatHour}:${formatMinute}${suffix}`;
 }
 
 function TaskPanel({ task, setIsEdit, updateNotification }: TaskPanelProps) {
@@ -34,7 +35,7 @@ function TaskPanel({ task, setIsEdit, updateNotification }: TaskPanelProps) {
       <div className="flex gap-3 text-[#101213]">
         <span>Time</span>
         <span className="text-[#979797]">
-          {formatCustomTime(task.schedule.date!, task.schedule.time)}
+          {formatCustomTime(task.date, task.hour!, task.minute!)}
         </span>
       </div>
 

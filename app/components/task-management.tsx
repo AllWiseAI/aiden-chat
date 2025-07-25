@@ -98,13 +98,12 @@ export default function TaskManagement({
               className={clsx(
                 "flex-1 flex items-center px-2.5 py-2 bg-white dark:bg-[#101213] rounded-sm text-sm",
                 {
-                  "text-[#6C7275]/50 dark:text-[#343839]":
-                    !newTask.schedule.date,
+                  "text-[#6C7275]/50 dark:text-[#343839]": !newTask.date,
                 },
               )}
             >
-              {newTask.schedule.date
-                ? dayjs(newTask.schedule.date).format("D, MMM")
+              {newTask.date
+                ? dayjs(newTask.date).format("D, MMM")
                 : "Day/Month"}
             </div>
           </PopoverTrigger>
@@ -113,16 +112,13 @@ export default function TaskManagement({
               <Calendar
                 mode="single"
                 className="w-full h-full p-0 pb-4"
-                selected={newTask.schedule.date}
-                onSelect={(date: Date | undefined) => {
-                  if (!date) return;
+                selected={new Date(newTask.date)}
+                required
+                onSelect={(date: Date) => {
                   setNewTask((task) => {
                     return {
                       ...task,
-                      schedule: {
-                        ...task.schedule,
-                        date,
-                      },
+                      date: date.toISOString(),
                     };
                   });
                   setCalendarOpen(false);
@@ -133,15 +129,17 @@ export default function TaskManagement({
         </Popover>
         <div className="flex-1 bg-white dark:bg-[#101213] rounded-sm">
           <TimeSelect
-            value={newTask.schedule.time}
+            hour={newTask.hour}
+            minute={newTask.minute}
             onChange={(time) =>
               setNewTask((task) => {
+                const [hour, minute] = time
+                  .split(":")
+                  .map((item) => Number(item));
                 return {
                   ...task,
-                  schedule: {
-                    ...task.schedule,
-                    time,
-                  },
+                  hour,
+                  minute,
                 };
               })
             }
@@ -166,7 +164,7 @@ export default function TaskManagement({
             <SelectItem
               value={type}
               key={type}
-              className="hover:bg-[#F5F5F5] px-2.5 py-2 cursor-default"
+              className="hover:bg-[#F5F5F5] px-2.5 py-2 cursor-default [&_[data-select-item-indicator]]:hidden"
             >
               {TaskTypeLabels[type]}
             </SelectItem>
