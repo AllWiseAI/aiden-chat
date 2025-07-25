@@ -189,11 +189,15 @@ export interface Task {
   details: string;
 }
 
-export enum TaskTypeEnum {
+export enum TaskType {
   OneTime = "one-time",
   Daily = "daily",
   Weekly = "weekly",
   Monthly = "monthly",
 }
 
-export type TaskType = `${TaskTypeEnum}`;
+export enum TaskAction {
+  Success = "success",
+  Pending = "pending",
+  Failed = "failed",
+}

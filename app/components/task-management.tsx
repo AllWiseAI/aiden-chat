@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo, ReactNode } from "react";
 import { Input } from "./shadcn/input";
 import { Button } from "./shadcn/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./shadcn/popover";
@@ -12,7 +12,8 @@ import {
 import { Calendar } from "./shadcn/calendar";
 import TimeSelect from "./time-select";
 import { useNavigate } from "react-router-dom";
-import { TaskTypeEnum, TaskType, Task } from "../typing";
+import { useTranslation } from "react-i18next";
+import { TaskType, Task } from "../typing";
 import { createDefaultTask, useTaskStore } from "../store";
 import dayjs from "dayjs";
 import clsx from "clsx";
@@ -23,10 +24,12 @@ import { Path } from "../constant";
 interface NotificationProps {
   checked: boolean;
   onChange: (val: boolean) => void;
+  children?: ReactNode;
 }
 
 interface TaskManagementProps {
   task?: Task;
+  onCancel?: () => void;
   onChange?: (id: string, updatedTask: Task) => void;
 }
 
@@ -37,23 +40,31 @@ const TaskTypeLabels: Record<TaskType, string> = {
   monthly: "每月任务",
 };
 
-export function Notification({ checked, onChange }: NotificationProps) {
+export function Notification({
+  checked,
+  onChange,
+  children,
+}: NotificationProps) {
   return (
     <div
       onClick={() => onChange(!checked)}
-      className="cursor-pointer flex items-center justify-center size-5 text-main"
+      className="flex gap-1 cursor-pointer hover:opacity-75"
     >
-      {checked ? (
-        <NotificationOnIcon className="size-5" />
-      ) : (
-        <NotificationOffIcon className="size-5" />
-      )}
+      <div className="flex items-center justify-center size-5 text-main">
+        {checked ? (
+          <NotificationOnIcon className="size-5" />
+        ) : (
+          <NotificationOffIcon className="size-5" />
+        )}
+      </div>
+      {children}
     </div>
   );
 }
 
 export default function TaskManagement({
   task,
+  onCancel,
   onChange,
 }: TaskManagementProps) {
   const [newTask, setNewTask] = useState<Task>({
@@ -64,6 +75,7 @@ export default function TaskManagement({
   const [notificationEnabled, setNotificationEnabled] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const taskStore = useTaskStore();
 
   const handleInput = () => {
@@ -73,6 +85,15 @@ export default function TaskManagement({
       el.style.height = el.scrollHeight + "px";
     }
   };
+
+  const verifyTask = (task: Task): boolean => {
+    if (!task.date || task.hour === null || task.minute === null) return false;
+    if (!task.type) return false;
+    if (!task.details) return false;
+    return true;
+  };
+
+  const confirmBtn = useMemo(() => verifyTask(newTask), [newTask]);
 
   useEffect(() => {
     handleInput();
@@ -160,7 +181,7 @@ export default function TaskManagement({
           <SelectValue placeholder="Select Task Type" />
         </SelectTrigger>
         <SelectContent className="w-[var(--radix-select-trigger-width)]">
-          {Object.values(TaskTypeEnum).map((type) => (
+          {Object.values(TaskType).map((type) => (
             <SelectItem
               value={type}
               key={type}
@@ -197,15 +218,25 @@ export default function TaskManagement({
         <div className="flex gap-2.5 h-full">
           <Button
             className="h-full bg-transparent hover:bg-transparent hover:opacity-60 text-black dark:text-white font-normal border border-[#343839] rounded-sm"
-            onClick={() => navigate(-1)}
+            onClick={() => {
+              if (!onCancel) {
+                navigate(-1);
+              } else {
+                onCancel();
+              }
+            }}
           >
             Cancel
           </Button>
           <Button
             className="h-full bg-main rounded-sm font-normal"
+            disabled={!confirmBtn}
             onClick={() => {
               if (!onChange) {
-                taskStore.createTask({ ...newTask });
+                taskStore.createTask({
+                  ...newTask,
+                  name: newTask.name ? newTask.name : t("task.noTitle"),
+                });
                 navigate(`${Path.Task}/${newTask.id}`);
               } else {
                 onChange(newTask.id, newTask);

@@ -18,16 +18,18 @@ import {
 import { Button } from "@/app/components/shadcn/button";
 import { Input } from "@/app/components/shadcn/input";
 import LogoIcon from "../icons/logo-text.svg";
-import LogoutIcon from "../icons/logout.svg";
-import SettingIcon from "../icons/setting.svg";
 import SearchIcon from "../icons/search.svg";
 import CollapseIcon from "../icons/collapse.svg";
 import AddIcon from "../icons/add.svg";
 import ChatIcon from "../icons/chat.svg";
 import TaskIcon from "../icons/task.svg";
-import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { useAppConfig, useAuthStore, useChatStore } from "../store";
+import {
+  useAppConfig,
+  useAuthStore,
+  useChatStore,
+  useTaskStore,
+} from "../store";
 import {
   DEFAULT_SIDEBAR_WIDTH,
   MAX_SIDEBAR_WIDTH,
@@ -241,6 +243,8 @@ export function SideBarBody(props: {
     setTabValue,
     isSearchVisible,
   } = props;
+  const navigate = useNavigate();
+  const currentTaskId = useTaskStore((state) => state.currentTaskId);
 
   return (
     <>
@@ -261,7 +265,7 @@ export function SideBarBody(props: {
       )}
       <div className="mt-2.5 flex-1 flex flex-col min-h-0">
         <div className="flex justify-center h-full">
-          <div className="flex flex-col gap-3 w-16 pt-4 border-r border-white dark:border-[#242424]">
+          <div className="flex flex-col gap-3 w-16 border-r border-white dark:border-[#242424]">
             <div
               className={clsx(
                 "flex-center flex-col cursor-pointer",
@@ -269,7 +273,10 @@ export function SideBarBody(props: {
                   ? "text-main"
                   : "text-[#BFBFBF] dark:text-[#343839] hover:opacity-80",
               )}
-              onClick={() => setTabValue("chat")}
+              onClick={() => {
+                setTabValue("chat");
+                navigate(Path.Chat);
+              }}
             >
               <div className="rounded-full size-10 flex-center bg-white dark:bg-[#262626]">
                 <ChatIcon />
@@ -283,7 +290,10 @@ export function SideBarBody(props: {
                   ? "text-main"
                   : "text-[#BFBFBF] dark:text-[#343839] hover:opacity-80",
               )}
-              onClick={() => setTabValue("task")}
+              onClick={() => {
+                setTabValue("task");
+                navigate(`${Path.Task}/${currentTaskId}`);
+              }}
             >
               <div className="rounded-full size-10 flex-center bg-white dark:bg-[#262626]">
                 <TaskIcon />
@@ -306,43 +316,47 @@ export function SideBarFooter(props: {
   children?: React.ReactNode;
   shouldNarrow?: boolean;
 }) {
-  const { children, shouldNarrow } = props;
+  const { children } = props;
   const authStore = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation("settings");
-  const [showItem, setShowItem] = useState(false);
-  const logout = async () => {
-    navigate(Path.Login);
-    try {
-      const success = await authStore.logout();
-      if (success) {
-        toast.success("Logout success", {
-          className: "w-auto max-w-max",
-        });
-      }
-    } catch (e: any) {
-      toast.error(e.message, {
-        className: "w-auto max-w-max",
-      });
-    }
-  };
+  // const { t } = useTranslation("settings");
+  // const [showItem, setShowItem] = useState(false);
+  // const logout = async () => {
+  //   navigate(Path.Login);
+  //   try {
+  //     const success = await authStore.logout();
+  //     if (success) {
+  //       toast.success("Logout success", {
+  //         className: "w-auto max-w-max",
+  //       });
+  //     }
+  //   } catch (e: any) {
+  //     toast.error(e.message, {
+  //       className: "w-auto max-w-max",
+  //     });
+  //   }
+  // };
 
   return (
-    <div className="flex gap-2.5 p-4">
+    <div className="flex gap-2.5 mb-4">
       {children}
 
-      <div className="flex flex-col gap-2.5 w-full overflow-hidden">
+      <div className="flex-center flex-col gap-2.5 w-16 border-r border-white dark:border-[#242424] overflow-hidden">
         <Avatar
           className="size-10 cursor-pointer"
-          onClick={() => setShowItem(!showItem)}
+          onClick={() => {
+            if (location.pathname !== Path.Settings) {
+              navigate(Path.Settings);
+            }
+          }}
         >
           <AvatarImage src={authStore.user.profile} />
           <AvatarFallback>
             {authStore.user.email?.[0].toUpperCase()}
           </AvatarFallback>
         </Avatar>
-        <div
+        {/* <div
           className={clsx(
             "transition-all duration-300 ease-in-out",
             showItem ? " max-h-40" : "max-h-0",
@@ -376,7 +390,7 @@ export function SideBarFooter(props: {
               <span className="-ml-1 text-xs">{t("general.logout")}</span>
             )}
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* <div className="flex flex-col gap-2 text-[#6C7275] text-sm">
@@ -463,7 +477,7 @@ export function SideBar(props: { className?: string }) {
         {tabValue === "chat" && (
           <ChatList narrow={shouldNarrow} searchValue={searchValue} />
         )}
-        {tabValue === "task" && <TaskList />}
+        {tabValue === "task" && <TaskList searchValue={searchValue} />}
       </SideBarBody>
       <SideBarFooter shouldNarrow={shouldNarrow} />
     </SideBarContainer>

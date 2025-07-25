@@ -154,7 +154,7 @@ export function Modal(props: ModalProps) {
             className={styles["modal-header-action"]}
             onClick={props.onClose}
           >
-            <CloseIcon />
+            <CloseIcon className="text-[#343839]" />
           </div>
         </div>
       </div>

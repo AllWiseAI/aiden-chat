@@ -37,6 +37,15 @@
       "disabledTips2": "support image recognition."
     }
   },
+  "task": {
+    "noTitle": "Untitled",
+    "time": "Time",
+    "recurrence": "Recurrence",
+    "notification": "Notification",
+    "details": "Details",
+    "on": "On",
+    "off": "Off"
+  },
   "home": {
     "newChat": "New Chat",
     "newTask": "New Task",
@@ -110,7 +119,9 @@
   },
   "dialog": {
     "deleteTitle": "Delete chat",
+    "deleteTaskTitle": "Delete task",
     "alert": "Are you sure you want to delete chat?",
+    "alertTask": "Are you sure you want to delete task?",
     "cancel": "Cancel",
     "delete": "Delete",
     "mcpTitle": "would like to use an MCP",

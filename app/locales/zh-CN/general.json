@@ -37,6 +37,15 @@
       "disabledTips2": "图片识别。"
     }
   },
+  "task": {
+    "noTitle": "无标题",
+    "time": "时间",
+    "recurrence": "重复",
+    "notification": "通知",
+    "details": "详情",
+    "on": "开",
+    "off": "关"
+  },
   "home": {
     "newChat": "新的聊天",
     "newTask": "新的任务",
@@ -110,7 +119,9 @@
   },
   "dialog": {
     "deleteTitle": "删除聊天",
+    "deleteTaskTitle": "删除任务",
     "alert": "你确定要删除这条聊天记录吗？",
+    "alertTask": "你确定要删除这条任务吗？",
     "cancel": "取消",
     "delete": "删除",
     "mcpTitle": "请求使用 MCP",
