@@ -197,4 +197,13 @@ export enum TaskTypeEnum {
   Monthly = "monthly",
 }
 
-export type TaskType = `${TaskTypeEnum}`;
+export enum TaskAction {
+  Success = "completed",
+  Pending = "pending",
+  Failed = "failed",
+}
+
+export type TaskExecutionRecord = {
+  status: TaskAction;
+  id: number;
+};

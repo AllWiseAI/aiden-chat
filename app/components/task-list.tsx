@@ -1,5 +1,10 @@
 import { useTaskStore } from "../store";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import clsx from "clsx";
+import { useNavigate } from "react-router-dom";
+import { Path } from "../constant";
+import { TaskTypeEnum } from "../typing";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,12 +22,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/app/components/shadcn/alert-dialog";
-import { useTranslation } from "react-i18next";
-import clsx from "clsx";
 import MoreIcon from "../icons/more.svg";
 import DeleteIcon from "../icons/delete.svg";
-import { useNavigate } from "react-router-dom";
-import { Path } from "../constant";
 
 export function TaskItem(props: {
   selected: boolean;
@@ -37,18 +38,16 @@ export function TaskItem(props: {
   return (
     <div
       onClick={props.onClick}
-      className={clsx(
-        "rounded-sm group h-7.5 p-1.5 flex flex-col justify-center cursor-default",
-        props.selected
-          ? "bg-[#E8ECEF]/50 dark:bg-[#232323]"
-          : "hover:bg-[#E8ECEF]/50 dark:hover:bg-[#232627]/50",
-      )}
+      className="rounded-sm group h-7.5 p-1.5 flex flex-col justify-center cursor-default hover:bg-[#E8ECEF]/50 dark:hover:bg-[#232627]/50"
     >
       <div className="flex justify-between items-center">
         <div className="flex justify-start items-center gap-4 leading-6">
           <div
             className={clsx(
-              "text-[#232627] dark:text-[#6C7275] cursor-default text-xs w-full line-clamp-1",
+              "cursor-default font-normal text-sm w-full line-clamp-1",
+              props.selected
+                ? "text-main"
+                : "text-[#6C7275] dark:text-[#FEFEFE]",
             )}
           >
             {props.name}
@@ -98,12 +97,12 @@ export function TaskItem(props: {
               <div className="flex justify-center">
                 <AlertDialogHeader>
                   <AlertDialogTitle className="text-[18px]">
-                    {t("dialog.deleteTitle")}
+                    {t("dialog.deleteTaskTitle")}
                   </AlertDialogTitle>
                 </AlertDialogHeader>
               </div>
               <AlertDialogDescription className="text-sm text-center font-normal text-[#141718] dark:text-white">
-                {t("dialog.alert")}
+                {t("dialog.alertTask")}
               </AlertDialogDescription>
               <AlertDialogFooter>
                 <AlertDialogCancel className="flex-1 rounded-sm hover:bg-[#F3F5F74D] border border-[#E8ECEF] dark:border-[#343839] font-medium">
@@ -123,28 +122,63 @@ export function TaskItem(props: {
     </div>
   );
 }
-//{}: { narrow?: string; searchValue?: string }
-export function TaskList() {
+
+export function TaskList(props: { searchValue?: string }) {
+  const { searchValue } = props;
   const tasks = useTaskStore((state) => state.tasks);
   const deleteTask = useTaskStore((state) => state.deleteTask);
   const selectedId = useTaskStore((state) => state.currentTaskId);
   const setSelectedId = useTaskStore((state) => state.setCurrentTaskId);
   const navigate = useNavigate();
 
+  const filteredTasks = useMemo(() => {
+    if (!searchValue) return tasks;
+    return tasks.filter((item) =>
+      item.name.toLowerCase().includes(searchValue!.toLowerCase()),
+    );
+  }, [tasks, searchValue]);
+
+  const typeOrder = {
+    [TaskTypeEnum.Once]: 0,
+    [TaskTypeEnum.Daily]: 1,
+    [TaskTypeEnum.Weekly]: 2,
+    [TaskTypeEnum.Monthly]: 3,
+  };
+  const groupedTasks = Object.values(TaskTypeEnum).map((type) => ({
+    type,
+    tasks: filteredTasks
+      .filter((task) => task.type === type)
+      .sort(
+        (a, b) =>
+          typeOrder[a.type as TaskTypeEnum] - typeOrder[b.type as TaskTypeEnum],
+      ),
+  }));
+
   return (
-    <div className="flex flex-col gap-[8px]">
-      {tasks.map((item, index) => (
-        <TaskItem
-          key={item.id}
-          name={item.name}
-          selected={item.id === selectedId}
-          onClick={() => {
-            setSelectedId(item.id);
-            navigate(`${Path.Task}/${item.id}`);
-          }}
-          onDelete={() => deleteTask(index)}
-        />
-      ))}
+    <div className="flex flex-col gap-2">
+      {groupedTasks.map(({ type, tasks }) =>
+        tasks.length > 0 ? (
+          <div key={type} className="flex flex-col gap-2">
+            <span className="text-[10px] disable-select text-black/50 dark:text-[#6C7275]/50">
+              {type.charAt(0).toUpperCase() + type.slice(1) + " " + "Task"}
+            </span>
+            <div className="flex flex-col gap-2">
+              {tasks.map((item, index) => (
+                <TaskItem
+                  key={item.id}
+                  name={item.name}
+                  selected={item.id === selectedId}
+                  onClick={() => {
+                    setSelectedId(item.id);
+                    navigate(`${Path.Task}/${item.id}`);
+                  }}
+                  onDelete={() => deleteTask(index)}
+                />
+              ))}
+            </div>
+          </div>
+        ) : null,
+      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, ReactNode } from "react";
 import { Input } from "./shadcn/input";
 import { Button } from "./shadcn/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./shadcn/popover";
@@ -12,7 +12,7 @@ import {
 import { Calendar } from "./shadcn/calendar";
 import TimeSelect from "./time-select";
 import { useNavigate } from "react-router-dom";
-import { TaskTypeEnum, TaskType, Task } from "../typing";
+import { TaskTypeEnum, Task } from "../typing";
 import { createDefaultTask, useTaskStore } from "../store";
 import dayjs from "dayjs";
 import clsx from "clsx";
@@ -25,6 +25,7 @@ import { toast } from "sonner";
 interface NotificationProps {
   checked: boolean;
   onChange: (val: boolean) => void;
+  children?: ReactNode;
 }
 
 interface TaskPayload {
@@ -44,10 +45,11 @@ interface TaskPayload {
 
 interface TaskManagementProps {
   task?: Task;
+  onCancel?: () => void;
   onChange?: (id: string, updatedTask: Task) => void;
 }
 
-const TaskTypeLabels: Record<TaskType, string> = {
+const TaskTypeLabels: Record<TaskTypeEnum, string> = {
   [TaskTypeEnum.Once]: "单次任务",
   [TaskTypeEnum.Daily]: "每日任务",
   [TaskTypeEnum.Weekly]: "每周任务",
@@ -67,23 +69,31 @@ function getCurrentDateObj(startDate: string) {
   return { dayString, dayOfMonth };
 }
 
-export function Notification({ checked, onChange }: NotificationProps) {
+export function Notification({
+  checked,
+  onChange,
+  children,
+}: NotificationProps) {
   return (
     <div
       onClick={() => onChange(!checked)}
-      className="cursor-pointer flex items-center justify-center size-5 text-main"
+      className="flex gap-1 cursor-pointer hover:opacity-75"
     >
-      {checked ? (
-        <NotificationOnIcon className="size-5" />
-      ) : (
-        <NotificationOffIcon className="size-5" />
-      )}
+      <div className="flex items-center justify-center size-5 text-main">
+        {checked ? (
+          <NotificationOnIcon className="size-5" />
+        ) : (
+          <NotificationOffIcon className="size-5" />
+        )}
+      </div>
+      {children}
     </div>
   );
 }
 
 export default function TaskManagement({
   task,
+  onCancel,
   onChange,
 }: TaskManagementProps) {
   const [newTask, setNewTask] = useState<Task>({
@@ -94,6 +104,7 @@ export default function TaskManagement({
   const [notificationEnabled, setNotificationEnabled] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const navigate = useNavigate();
+  // const { t } = useTranslation();
   const taskStore = useTaskStore();
 
   const handleInput = () => {
@@ -103,6 +114,15 @@ export default function TaskManagement({
       el.style.height = el.scrollHeight + "px";
     }
   };
+
+  // const verifyTask = (task: Task): boolean => {
+  //   if (!task.date || task.hour === null || task.minute === null) return false;
+  //   if (!task.type) return false;
+  //   if (!task.details) return false;
+  //   return true;
+  // };
+
+  // const confirmBtn = useMemo(() => verifyTask(newTask), [newTask]);
 
   useEffect(() => {
     handleInput();
@@ -135,9 +155,7 @@ export default function TaskManagement({
           days_of_month: [dayOfMonth],
         };
       }
-      console.log("payload", payload);
       const res = await createTask(payload);
-      console.log("res", res);
       const { code, data, detail } = res;
       if (code === 0) {
         toast.success("创建成功");
@@ -270,7 +288,13 @@ export default function TaskManagement({
         <div className="flex gap-2.5 h-full">
           <Button
             className="h-full bg-transparent hover:bg-transparent hover:opacity-60 text-black dark:text-white font-normal border border-[#343839] rounded-sm"
-            onClick={() => navigate(-1)}
+            onClick={() => {
+              if (!onCancel) {
+                navigate(-1);
+              } else {
+                onCancel();
+              }
+            }}
           >
             Cancel
           </Button>

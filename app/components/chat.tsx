@@ -433,7 +433,7 @@ function InnerChat() {
     ) {
       return <ErrorIcon />;
     } else {
-      return <SuccessIcon />;
+      return <SuccessIcon className="size-6 text-main" />;
     }
   };
 

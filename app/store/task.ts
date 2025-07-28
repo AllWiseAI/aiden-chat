@@ -40,9 +40,6 @@ export const useTaskStore = createPersistStore(
           currentTaskId: newTask.id,
         });
       },
-      getTask: (id: string) => {
-        return get().tasks.find((task) => task.id === id);
-      },
       setTask: (id: string, updatedTask: Task) => {
         const tasks = get().tasks.map((t) =>
           t.id === id ? { ...updatedTask, id } : t,
