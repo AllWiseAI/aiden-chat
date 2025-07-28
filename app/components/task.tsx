@@ -312,6 +312,16 @@ export function Task() {
 
   if (!taskItem) return null;
 
+  const renderTaskDetail = async () => {
+    const {
+      backendData: { id },
+    } = taskItem;
+    console.log("id", id);
+    const res = await getTaskExecutionRecords(id);
+    console.log("res", res);
+    return <>123</>;
+  };
+
   return (
     <div
       className="flex flex-col h-screen min-h-0 gap-5 px-15 py-5"
