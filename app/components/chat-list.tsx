@@ -193,8 +193,11 @@ export function ChatItem(props: {
                         <DropdownMenuRadioItem
                           value="delete"
                           className="!text-[#EF466F] flex justify-start gap-2 !pl-1 !py-2"
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
                             setShowDeleteDialog(true);
+                            setOpenMenu(false);
                           }}
                         >
                           <DeleteIcon className="size-[18px]" />
