@@ -19,10 +19,27 @@ import clsx from "clsx";
 import NotificationOnIcon from "../icons/notification-on.svg";
 import NotificationOffIcon from "../icons/notification-off.svg";
 import { Path } from "../constant";
+import { createTask } from "../services/task";
+import { toast } from "sonner";
 
 interface NotificationProps {
   checked: boolean;
   onChange: (val: boolean) => void;
+}
+
+interface TaskPayload {
+  description: string;
+  repeat_every: number;
+  repeat_unit: string;
+  start_date: string; // Assuming date is stored as string, adjust to Date if needed
+  enable_notification: boolean;
+  hour: number | null;
+  minute: number | null;
+  name: string;
+  repeat_on?: {
+    weekdays?: string[];
+    days_of_month?: number[];
+  };
 }
 
 interface TaskManagementProps {
@@ -31,11 +48,24 @@ interface TaskManagementProps {
 }
 
 const TaskTypeLabels: Record<TaskType, string> = {
-  "one-time": "单次任务",
-  daily: "每日任务",
-  weekly: "每周任务",
-  monthly: "每月任务",
+  [TaskTypeEnum.Once]: "单次任务",
+  [TaskTypeEnum.Daily]: "每日任务",
+  [TaskTypeEnum.Weekly]: "每周任务",
+  [TaskTypeEnum.Monthly]: "每月任务",
 };
+
+function getCurrentDateObj(startDate: string) {
+  const date = new Date(startDate);
+
+  const dayIndex = date.getDay();
+
+  const daysMap = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+
+  const dayString = daysMap[dayIndex];
+  const dayOfMonth = date.getDate();
+
+  return { dayString, dayOfMonth };
+}
 
 export function Notification({ checked, onChange }: NotificationProps) {
   return (
@@ -77,6 +107,49 @@ export default function TaskManagement({
   useEffect(() => {
     handleInput();
   }, []);
+
+  const handleConfirmClick = async () => {
+    if (!onChange) {
+      console.log("newtask", newTask);
+
+      const { name, date, hour, minute, type, notification, details } = newTask;
+
+      const payload: TaskPayload = {
+        description: details,
+        repeat_every: 1,
+        repeat_unit: type,
+        start_date: date,
+        enable_notification: notification,
+        hour,
+        minute,
+        name,
+      };
+      const { dayString, dayOfMonth } = getCurrentDateObj(date);
+      if (type === TaskTypeEnum.Weekly) {
+        payload.repeat_on = {
+          weekdays: [dayString],
+        };
+      }
+      if (type === TaskTypeEnum.Monthly) {
+        payload.repeat_on = {
+          days_of_month: [dayOfMonth],
+        };
+      }
+      console.log("payload", payload);
+      const res = await createTask(payload);
+      console.log("res", res);
+      const { code, data, detail } = res;
+      if (code === 0) {
+        toast.success("创建成功");
+        taskStore.createTask({ ...newTask, backendData: { ...data } });
+        navigate(`${Path.Task}/${newTask.id}`);
+      } else {
+        toast.error(detail || "Create Task Error.");
+      }
+    } else {
+      onChange(newTask.id, newTask);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-2.5 text-sm bg-[#F3F5F7] dark:bg-[#202121] px-2.5 py-2">
@@ -203,14 +276,7 @@ export default function TaskManagement({
           </Button>
           <Button
             className="h-full bg-main rounded-sm font-normal"
-            onClick={() => {
-              if (!onChange) {
-                taskStore.createTask({ ...newTask });
-                navigate(`${Path.Task}/${newTask.id}`);
-              } else {
-                onChange(newTask.id, newTask);
-              }
-            }}
+            onClick={handleConfirmClick}
           >
             Confirm
           </Button>

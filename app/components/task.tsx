@@ -6,6 +6,7 @@ import { Task as TaskType } from "../typing";
 import EditIcon from "../icons/edit.svg";
 import TaskManagement, { Notification } from "./task-management";
 import dayjs from "dayjs";
+import { getTaskExecutionRecords } from "@/app/services/task";
 
 interface TaskPanelProps {
   task: TaskType;
@@ -69,7 +70,18 @@ export function Task() {
 
   const [isEdit, setIsEdit] = useState(false);
   const taskItem = id ? getTask(id) : null;
+
   if (!taskItem) return null;
+
+  const renderTaskDetail = async () => {
+    const {
+      backendData: { id },
+    } = taskItem;
+    console.log("id", id);
+    const res = await getTaskExecutionRecords(id);
+    console.log("res", res);
+    return <>123</>;
+  };
 
   return (
     <div className="px-15">
@@ -82,11 +94,14 @@ export function Task() {
           }}
         />
       ) : (
-        <TaskPanel
-          task={taskItem}
-          setIsEdit={() => setIsEdit(true)}
-          updateNotification={updateNotification}
-        />
+        <>
+          <TaskPanel
+            task={taskItem}
+            setIsEdit={() => setIsEdit(true)}
+            updateNotification={updateNotification}
+          />
+          {renderTaskDetail()}
+        </>
       )}
     </div>
   );

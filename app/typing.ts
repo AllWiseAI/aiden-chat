@@ -187,10 +187,11 @@ export interface Task {
   type: string;
   notification: boolean;
   details: string;
+  backendData: any;
 }
 
 export enum TaskTypeEnum {
-  OneTime = "one-time",
+  Once = "once",
   Daily = "daily",
   Weekly = "weekly",
   Monthly = "monthly",
