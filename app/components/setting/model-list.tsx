@@ -20,6 +20,7 @@ import NoDataIcon from "@/app/icons/no-data.svg";
 import { getProviderList } from "@/app/services";
 import DeleteDialog from "@/app/components/delete-dialog";
 import { toast } from "sonner";
+import { ProviderIcon } from "./provider-icon";
 
 export default function ModelList() {
   const modelList: ModelOption[] = useAppConfig((state) => state.models);
@@ -101,8 +102,8 @@ export default function ModelList() {
             <TableBody>
               {modelList.map((model) => (
                 <TableRow key={model.id}>
-                  <TableCell className="font-medium text-base flex gap-2 items-center">
-                    <DefaultModelIcon size="5" />
+                  <TableCell className="font-medium flex gap-2 items-center">
+                    <DefaultModelIcon size="4" />
                     Aiden
                   </TableCell>
                   <TableCell className="text-sm">{model.display}</TableCell>
@@ -130,14 +131,8 @@ export default function ModelList() {
               {localProviders.map((item) => (
                 <TableRow key={item.itemId}>
                   <TableCell className="font-medium">
-                    <div className="flex gap-2">
-                      <img
-                        className="size-5"
-                        src={
-                          item.logo_uri ||
-                          "https://static.aidenai.io/static/1753158387.png"
-                        }
-                      />
+                    <div className="flex gap-2 items-center">
+                      <ProviderIcon provider={item.provider} />
                       {item.display}
                     </div>
                   </TableCell>

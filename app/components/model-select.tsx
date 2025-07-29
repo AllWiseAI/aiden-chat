@@ -18,7 +18,7 @@ import { Path } from "../constant";
 import RightIcon from "@/app/icons/right-arrow.svg";
 import ArrowDownIcon from "@/app/icons/arrow-down.svg";
 import ArrowRightIcon from "@/app/icons/arrow-right.svg";
-import GPTIcon from "@/app/icons/gpt.svg";
+import { ProviderIcon } from "./setting/provider-icon";
 import { INNER_PROVIDER_NAME } from "@/app/constant";
 
 export const ModelSelect = () => {
@@ -28,6 +28,7 @@ export const ModelSelect = () => {
   const modelList = useAppConfig((s) => s.models);
 
   const localProviders = useAppConfig((state) => state.localProviders);
+
   const setGroupedProviders = useAppConfig(
     (state) => state.setGroupedProviders,
   );
@@ -100,7 +101,10 @@ export const ModelSelect = () => {
       const res = currentModel.split(":");
       if (res.length === 2) {
         const [provider] = res;
-        setOpenGroup(provider);
+        const labelKey = localProviders.find(
+          (item) => item.provider === provider,
+        )?.display;
+        setOpenGroup(labelKey!);
       } else {
         setOpenGroup(INNER_PROVIDER_NAME);
       }
@@ -120,7 +124,7 @@ export const ModelSelect = () => {
         <SelectValue placeholder="Select model" />
       </SelectTrigger>
       <SelectContent className="max-h-[320px] max-w-56 p-0">
-        <div className="overflow-y-auto max-h-[260px] px-1 py-2">
+        <div className="overflow-y-auto max-h-[260px] px-1 py-2 space-y-1.5">
           {Object.entries(groupedLocalProviders).map(
             ([groupLabel, provider]) => {
               const isOpen = openGroup === groupLabel;
@@ -149,7 +153,7 @@ export const ModelSelect = () => {
                     {models?.map((model: ModelOption) => (
                       <SelectItem key={model.value} value={model.value}>
                         <div className="flex items-center justify-center gap-2">
-                          <GPTIcon />
+                          <ProviderIcon provider={provider.provider} />
                           <div
                             className="text-sm font-normal truncate max-w-[120px]"
                             title={model.label}

@@ -9,7 +9,7 @@ import {
   SelectItem,
 } from "@/app/components/shadcn/select";
 import { useCallback } from "react";
-import GPTIcon from "@/app/icons/gpt.svg";
+import { ProviderIcon } from "./provider-icon";
 import { ProviderOption } from "@/app/typing";
 
 interface ProviderSelectProps {
@@ -32,9 +32,9 @@ export const ProviderSelect = ({
       const selectdInfo = providerList.find(
         (provider) => provider.provider === value,
       );
-      onChange(selectdInfo);
+      onChange(selectdInfo!);
     },
-    [onChange],
+    [onChange, providerList],
   );
 
   return (
@@ -51,7 +51,7 @@ export const ProviderSelect = ({
               className="w-full! !h-9"
             >
               <div className="flex items-center gap-2">
-                <GPTIcon />
+                <ProviderIcon provider={provider.provider} />
                 <span>{provider.display}</span>
               </div>
             </SelectItem>

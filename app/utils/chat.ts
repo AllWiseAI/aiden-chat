@@ -37,7 +37,7 @@ export function getChatHeaders(modelInfo: ChatModelInfo) {
       "Aiden-Model-Name": model,
       "Aiden-Endpoint": default_endpoint,
       "Aiden-Model-Provider": provider,
-      "Aiden-API-Key": apiKey, // TODO replace to real header name
+      "Aiden-Model-Api-Key": apiKey,
     };
   }
   return {

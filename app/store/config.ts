@@ -60,7 +60,7 @@ export const DEFAULT_CONFIG = {
   models: [] as ModelOption[],
   localProviders: [] as ProviderOption[],
   providerList: [] as ProviderOption[],
-  groupedProviders: {},
+  groupedProviders: {} as Record<string, ProviderOption>,
 
   modelConfig: {
     model: "gpt-4o",
@@ -149,9 +149,13 @@ export const useAppConfig = createPersistStore(
     getCurrentModel(): ProviderOption {
       const { currentModel, groupedProviders } = get();
       const res = currentModel.split(":");
-      if (res.length === 2) {
-        const providerInfo =
-          groupedProviders[res[0] as keyof typeof groupedProviders];
+      // custom model
+      if (res.length === 2 && Object.keys(groupedProviders).length > 0) {
+        const providerKey = Object.keys(groupedProviders).find(
+          (key) => groupedProviders[key]?.provider === res[0],
+        );
+
+        const providerInfo = groupedProviders[providerKey!];
         // @ts-ignore
         return {
           ...(providerInfo as Record<string, unknown>),
@@ -173,19 +177,16 @@ export const useAppConfig = createPersistStore(
     setLocalProviders(providerInfo: ProviderOption) {
       const { localProviders } = get();
       const id = uniqueId();
-      console.log("add ====", id);
       set(() => ({
         localProviders: [...localProviders, { ...providerInfo, itemId: id }],
       }));
     },
 
     updateLocalProviders(providerInfo: ProviderOption) {
-      console.log("update providerInfo===", providerInfo);
       const { localProviders } = get();
       const index = localProviders.findIndex(
         (provider) => provider.itemId === providerInfo.itemId,
       );
-      console.log("index===", index);
       if (index !== -1) {
         localProviders[index] = providerInfo;
       }
