@@ -169,7 +169,11 @@ export default function ModelList() {
         </div>
       </div>
       <div className="flex justify-center mt-4">
-        <Button variant="outline" className="w-30" onClick={handleAddModel}>
+        <Button
+          variant="outline"
+          className="w-30 rounded-sm hover:border hover:border-[#00AB66] hover:text-[#00AB66] dark:hover:border-[#00AB66] hover:bg-transparent"
+          onClick={handleAddModel}
+        >
           <PlusIcon className="size-4" />
           Add
         </Button>
