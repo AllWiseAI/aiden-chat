@@ -1,6 +1,11 @@
 "use client";
 import { REQUEST_TIMEOUT_MS } from "@/app/constant";
-import { ModelSize, DalleQuality, DalleStyle } from "@/app/typing";
+import {
+  ModelSize,
+  DalleQuality,
+  DalleStyle,
+  ChatModelInfo,
+} from "@/app/typing";
 import { ChatOptions, LLMApi, MultimodalContent } from "../api";
 import {
   getBaseChatUrl,
@@ -8,7 +13,7 @@ import {
   getSecondChatUrl,
 } from "@/app/utils/fetch";
 import { tauriFetchWithSignal } from "@/app/utils/stream";
-import { streamWithThink, parseSSE } from "@/app/utils/chat";
+import { streamWithThink, parseSSE, getChatHeaders } from "@/app/utils/chat";
 
 export interface OpenAIListModelResponse {
   object: string;
@@ -74,9 +79,7 @@ export class ChatGPTApi implements LLMApi {
           requestPayload,
           {
             ...headers,
-            "Aiden-Model-Name": options.modelInfo?.model,
-            "Aiden-Endpoint": options.modelInfo?.endpoint,
-            "Aiden-Model-Provider": options.modelInfo?.provider,
+            ...getChatHeaders(options.modelInfo as ChatModelInfo),
           },
           controller,
           parseSSE,
@@ -135,9 +138,7 @@ export class ChatGPTApi implements LLMApi {
           requestPayload,
           {
             ...headers,
-            "Aiden-Model-Name": options.modelInfo?.model,
-            "Aiden-Endpoint": options.modelInfo?.endpoint,
-            "Aiden-Model-Provider": options.modelInfo?.provider,
+            ...getChatHeaders(options.modelInfo as ChatModelInfo),
           },
           controller,
           parseSSE,

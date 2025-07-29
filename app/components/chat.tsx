@@ -479,6 +479,7 @@ function InnerChat() {
   };
 
   const { isShowUpdate, handleUpdate, isUpdating } = useAppUpdate();
+
   return (
     <>
       <div className={styles.chat} key={session.id}>
@@ -486,7 +487,7 @@ function InnerChat() {
           <div
             className={clsx("window-header-title", styles["chat-body-title"])}
           >
-            <ModelSelect />
+            {config.models.length && <ModelSelect />}
           </div>
           {isShowUpdate && (
             <Button

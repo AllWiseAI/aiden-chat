@@ -79,3 +79,5 @@ export const SAAS_CHAT_UTM_URL = "";
 
 export const HOST_SERVER_READY_EVENT = "host_server_ready";
 export const DEFAULT_USER_DELINETED = "User declined the tool call.";
+
+export const INNER_PROVIDER_NAME = "Built-in";

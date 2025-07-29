@@ -4,6 +4,7 @@
     "general": "通用",
     "mcp": "MCP",
     "mcpManage": "MCP 管理",
+    "model": "模型",
     "aboutUs": "关于我们"
   },
   "general": {
@@ -27,6 +28,24 @@
       "title": "重启应用",
       "description": "切换地区需重启APP后生效，请确认是否继续执行并重启APP。"
     }
+  },
+  "model": {
+    "customModel": "自定义模型",
+    "defaultModel": "默认模型",
+    "provider": "提供商",
+    "model": "模型",
+    "apiKey": "API Key",
+    "operation": "操作",
+    "noCustomModel": "没有自定义模型",
+    "addModelTitle": "添加自定义模型",
+    "editModelTitle": "编辑自定义模型",
+    "deleteModelTitle": "删除自定义模型",
+    "deleteModelDescription": "确认删除？",
+    "saveSuccess": "保存成功",
+    "apiKeyErrorText": "请输入 API Key",
+    "modelErrorText": "请选择模型",
+    "deleteSuccess": "删除成功",
+    "enterApiKey": "输入 API Key"
   },
   "mcp": {
     "edit": "编辑配置",

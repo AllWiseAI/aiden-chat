@@ -2,19 +2,21 @@ import { useState } from "react";
 import CloseIcon from "../icons/close.svg";
 import General from "./setting/general";
 import McpManagement from "./setting/mcp-management";
+import ModelList from "./setting/model-list";
 import AboutUs from "./setting/about-us";
 import { Button } from "@/app/components/shadcn/button";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import generalIcon from "../icons/general.svg";
+import modelIcon from "../icons/model.svg";
 import McpIcon from "../icons/mcp.svg";
 import InfoIcon from "../icons/info.svg";
 
 function GeneralPanel() {
   return <General />;
 }
-function ConnectedAppsPanel() {
-  return <div>这是 Connected Apps 设置面板</div>;
+function ModelPanel() {
+  return <ModelList />;
 }
 function McpServersPanel() {
   return <McpManagement />;
@@ -28,7 +30,7 @@ export function Settings() {
   const { t } = useTranslation("settings");
   const settingList = [
     { name: t("tabs.general"), value: "general", icon: generalIcon },
-    // { name: "Connected Apps", value: "connected-app"},
+    { name: t("tabs.model"), value: "model", icon: modelIcon },
     { name: t("tabs.mcp"), value: "mcp", icon: McpIcon },
     { name: t("tabs.aboutUs"), value: "about-us", icon: InfoIcon },
   ];
@@ -49,10 +51,10 @@ export function Settings() {
     switch (selected) {
       case "general":
         return <GeneralPanel />;
-      case "connected-app":
-        return <ConnectedAppsPanel />;
       case "mcp":
         return <McpServersPanel />;
+      case "model":
+        return <ModelPanel />;
       case "about-us":
         return <AboutUsPanel />;
       default:
@@ -99,7 +101,7 @@ export function Settings() {
               </li>
             ))}
           </ul>
-          <div className="flex-1 pt-2 pl-5 h-full min-w-106">
+          <div className="flex-1 pt-2 pl-5 h-full overflow-y-auto min-w-106">
             {renderPanel()}
           </div>
         </div>

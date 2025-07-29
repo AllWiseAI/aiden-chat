@@ -11,7 +11,7 @@ import {
   ConfirmType,
 } from "@/app/components/confirm-modal/confirm";
 import { useSettingStore } from "@/app/store/setting";
-import { McpStepsAction } from "../typing";
+import { McpStepsAction, ChatModelInfo } from "../typing";
 
 const settingStore = useSettingStore.getState();
 
@@ -28,6 +28,24 @@ type TParseSSEResult = {
   content?: string;
   mcpInfo?: TMcpInfo;
 };
+
+export function getChatHeaders(modelInfo: ChatModelInfo) {
+  if (modelInfo.apiKey) {
+    // custom model
+    const { default_endpoint, apiKey, provider, model } = modelInfo;
+    return {
+      "Aiden-Model-Name": model,
+      "Aiden-Endpoint": default_endpoint,
+      "Aiden-Model-Provider": provider,
+      "Aiden-Model-Api-Key": apiKey,
+    };
+  }
+  return {
+    "Aiden-Model-Name": modelInfo?.model,
+    "Aiden-Endpoint": modelInfo?.endpoint,
+    "Aiden-Model-Provider": modelInfo?.provider,
+  };
+}
 
 export function parseSSE(text: string): TParseSSEResult {
   const json = JSON.parse(text);

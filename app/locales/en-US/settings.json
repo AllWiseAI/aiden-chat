@@ -4,6 +4,7 @@
     "general": "General",
     "mcp": "MCP",
     "mcpManage": "MCP Management",
+    "model": "Model",
     "aboutUs": "About us"
   },
   "general": {
@@ -27,6 +28,24 @@
       "title": "Restart",
       "description": "Switching regions requires restarting the app to take effect. Please confirm whether you wish to proceed and restart the app."
     }
+  },
+  "model": {
+    "customModel": "Customized Model",
+    "defaultModel": "Default Model",
+    "provider": "Provider",
+    "model": "Model",
+    "apiKey": "API Key",
+    "operation": "Operation",
+    "noCustomModel": "No custom model",
+    "addModelTitle": "Add customized model",
+    "editModelTitle": "Edit customized model",
+    "deleteModelTitle": "Delete customized model",
+    "deleteModelDescription": "Confirm to delete?",
+    "saveSuccess": "Saved successfully.",
+    "apiKeyErrorText": "Please enter API Key",
+    "modelErrorText": "Please select models",
+    "deleteSuccess": "Deleted successfully",
+    "enterApiKey": "Enter API Key"
   },
   "mcp": {
     "edit": "Edit Config",
