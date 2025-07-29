@@ -147,13 +147,13 @@ export const ModelSelect = () => {
                     ) : (
                       <ArrowRightIcon className="h-4 w-4 text-muted-foreground" />
                     )}
+                    <ProviderIcon provider={provider.provider} />
                     <span>{groupLabel}</span>
                   </SelectLabel>
                   <div className={clsx("pl-2", isOpen ? "block" : "hidden")}>
                     {models?.map((model: ModelOption) => (
                       <SelectItem key={model.value} value={model.value}>
                         <div className="flex items-center justify-center gap-2">
-                          <ProviderIcon provider={provider.provider} />
                           <div
                             className="text-sm font-normal truncate max-w-[120px]"
                             title={model.label}
