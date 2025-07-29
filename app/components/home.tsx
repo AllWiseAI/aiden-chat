@@ -15,6 +15,7 @@ import { Path, SlotID } from "../constant";
 import { ErrorBoundary } from "./error";
 import i18n from "i18next";
 import { getLang } from "../locales";
+import { useWebSocket } from "../hooks/use-websocket";
 
 import {
   HashRouter as Router,
@@ -243,6 +244,7 @@ export function WindowContent(props: { children: React.ReactNode }) {
 export function Home() {
   useSwitchTheme();
   useHtmlLang();
+  useWebSocket();
   useEffect(() => {
     console.log("[Config] got config from build time", getClientConfig());
   }, []);
