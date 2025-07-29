@@ -13,6 +13,6 @@ module.exports = {
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/no-unsafe-function-type": "off",
     "unused-imports/no-unused-imports": "warn",
-    "prettier/prettier": ["error", { endOfLine: "lf" }],
+    "prettier/prettier": ["warn", { endOfLine: "lf" }],
   },
 };
