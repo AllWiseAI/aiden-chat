@@ -3,6 +3,7 @@ import GPTIcon from "@/app/icons/gpt.svg";
 import AnthropicIcon from "@/app/icons/anthropic.svg";
 import AnthropicIconDark from "@/app/icons/anthropic-dark.svg";
 import GoogleIcon from "@/app/icons/google.svg";
+import DefaultAidenIcon from "@/app/icons/default-aiden.svg";
 
 export function ProviderIcon({ provider }: { provider: string }) {
   const theme = useAppConfig((state) => state.theme);
@@ -16,5 +17,5 @@ export function ProviderIcon({ provider }: { provider: string }) {
     return <GoogleIcon />;
   }
 
-  return null;
+  return <DefaultAidenIcon />;
 }
