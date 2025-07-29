@@ -422,6 +422,16 @@ export function SideBar(props: { className?: string }) {
   const [searchValue, setSearchValue] = useState("");
   const [tabValue, setTabValue] = useState<"chat" | "task">("chat");
   const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    const pathName = location.pathname;
+    if (pathName.includes(Path.Chat)) {
+      setTabValue("chat");
+    } else if (pathName.includes(Path.Task)) {
+      setTabValue("task");
+    }
+  }, [location]);
 
   const toggleSearch = () => {
     setIsSearchVisible(!isSearchVisible);

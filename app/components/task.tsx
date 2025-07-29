@@ -12,6 +12,9 @@ import clsx from "clsx";
 import SuccessIcon from "../icons/success.svg";
 import PendingIcon from "../icons/time.svg";
 import FailedIcon from "../icons/close.svg";
+import { Path } from "../constant";
+import { useNavigate } from "react-router-dom";
+import { useChatStore } from "../store/chat";
 
 interface TaskPanelProps {
   task: TaskType;
@@ -20,7 +23,7 @@ interface TaskPanelProps {
 }
 
 interface TaskItemProps {
-  status: TaskAction;
+  taskInfo: TaskExecutionRecord;
   title: string;
 }
 
@@ -33,14 +36,55 @@ function formatCustomTime(date: string, hour: number, minute: number): string {
   return `${full.format("dddd, MMM D")} ${formatHour}:${formatMinute}${suffix}`;
 }
 
-function TaskItem({ title, status }: TaskItemProps) {
+function TaskItem({ title, taskInfo }: TaskItemProps) {
+  const { status } = taskInfo;
+  const chatStore = useChatStore();
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const StatusIcon = useMemo(() => {
     if (status === TaskAction.Pending) return PendingIcon;
     else if (status === TaskAction.Success) return SuccessIcon;
     else if (status === TaskAction.Failed) return FailedIcon;
     else return null;
   }, [status]);
+
+  const handleDetailClick = () => {
+    const { task_id, request_messages, response_data } = taskInfo;
+    // const { task_id, created_at, completed_at } = taskInfo;
+    // const response_data = {
+    //   message: {
+    //     date: completed_at,
+    //     role: "assistant",
+    //     content:
+    //       "我目前无法直接发送信息给小明。你可以通过你的通讯软件（如微信、QQ、短信等）直接联系他，并问他是否愿意一起去打球。",
+    //   },
+    //   id: "813aeee4-89e0-4e93-af4f-daaa6eaf322f",
+    //   extra: {
+    //     mcp: null,
+    //   },
+    // };
+    // const request_messages = [
+    //   {
+    //     date: created_at,
+    //     role: "user",
+    //     content: "发信息给小明，问他要不要去打球",
+    //   },
+    // ];
+    console.log("detailData", request_messages, response_data, task_id);
+    const isExist = chatStore.haveTaskSession(task_id);
+    if (!isExist) {
+      chatStore.newTaskSession({
+        taskId: task_id,
+        // @ts-ignore
+        requestData: request_messages,
+        // @ts-ignore
+        responseData: response_data,
+      });
+    } else {
+      chatStore.selectTaskSession(task_id);
+    }
+    navigate(Path.Chat);
+  };
 
   return (
     <div>
@@ -55,9 +99,20 @@ function TaskItem({ title, status }: TaskItemProps) {
             })}
           />
         </div>
-        <div className="text-main select-none cursor-pointer hover:opacity-75">
+        {status !== TaskAction.Pending && (
+          <div
+            className="text-main select-none cursor-pointer hover:opacity-75"
+            onClick={handleDetailClick}
+          >
+            {t("task.details")}
+          </div>
+        )}{" "}
+        {/* <div
+          className="text-main select-none cursor-pointer hover:opacity-75"
+          onClick={handleDetailClick}
+        >
           {t("task.details")}
-        </div>
+        </div> */}
       </div>
     </div>
   );
@@ -65,6 +120,7 @@ function TaskItem({ title, status }: TaskItemProps) {
 
 function TaskPanel({ task, setIsEdit, updateNotification }: TaskPanelProps) {
   const { t } = useTranslation();
+
   return (
     <div className="flex flex-col gap-2 py-3 px-5 text-sm bg-[#F3F5F7] dark:bg-[#232627] text-[#101213] dark:text-white rounded-xl">
       <div className="flex items-center gap-2">
@@ -130,6 +186,7 @@ export function Task() {
       const { code, data } = res;
       if (code === 0) {
         const { records } = data;
+        console.log("records", records);
         setRecordList(records);
       } else {
         setRecordList([]);
@@ -145,7 +202,7 @@ export function Task() {
     return recordList.map((record) => (
       <TaskItem
         key={record.id}
-        status={record.status}
+        taskInfo={record}
         title={formatCustomTime(date, hour!, minute!)}
       />
     ));

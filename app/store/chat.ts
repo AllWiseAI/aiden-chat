@@ -21,6 +21,7 @@ import { createPersistStore } from "../utils/store";
 import { estimateTokenLength } from "../utils/token";
 import { ModelConfig, useAppConfig } from "./config";
 import { createEmptyMask, Mask } from "./mask";
+import { taskSessionParams } from "@/app/typing";
 
 const localStorage = safeLocalStorage();
 
@@ -84,9 +85,9 @@ export const BOT_HELLO: ChatMessage = createMessage({
   content: t("store.botHello"),
 });
 
-function createEmptySession(): ChatSession {
+function createEmptySession(id?: string): ChatSession {
   return {
-    id: nanoid(),
+    id: id ? id : nanoid(),
     topic: "",
     memoryPrompt: "",
     messages: [],
@@ -193,6 +194,17 @@ export const useChatStore = createPersistStore(
           currentSessionIndex: index,
         });
       },
+      haveTaskSession(task_id: string) {
+        const { sessions } = get();
+        return sessions.some((session) => session.id === task_id);
+      },
+      selectTaskSession(task_id: string) {
+        const { sessions, selectSession } = get();
+        console.log("sessions", sessions);
+        const index = sessions.findIndex((session) => session.id === task_id);
+        console.log("index===", task_id, index);
+        selectSession(index);
+      },
 
       moveSession(from: number, to: number) {
         set((state) => {
@@ -235,6 +247,23 @@ export const useChatStore = createPersistStore(
           session.topic = mask.name;
         }
 
+        set((state) => ({
+          currentSessionIndex: 0,
+          sessions: [session].concat(state.sessions),
+        }));
+      },
+      newTaskSession({ taskId, requestData, responseData }: taskSessionParams) {
+        const session = createEmptySession(taskId);
+        session.messages = [
+          ...requestData.map((msg: any) => ({
+            ...msg,
+            date: msg.date || new Date().toLocaleString(),
+            id: msg.id || nanoid(),
+          })),
+          {
+            ...responseData.message,
+          },
+        ];
         set((state) => ({
           currentSessionIndex: 0,
           sessions: [session].concat(state.sessions),

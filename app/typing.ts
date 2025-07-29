@@ -204,6 +204,35 @@ export enum TaskAction {
 }
 
 export type TaskExecutionRecord = {
-  status: TaskAction;
+  task_id: string;
+  status: string;
+  created_at: string;
+  completed_at: string;
+  response_data: {
+    message: {
+      role: MessageRole;
+      message: string;
+    };
+  };
+  request_messages: {
+    role: MessageRole;
+    message: string;
+  }[];
   id: number;
+};
+
+export type taskSessionParams = {
+  taskId: string;
+  requestData: {
+    role: MessageRole;
+    content: string;
+    date: string;
+  }[];
+  responseData: {
+    message: {
+      date: string;
+      role: MessageRole;
+      content: string;
+    };
+  };
 };
