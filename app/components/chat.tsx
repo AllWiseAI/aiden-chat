@@ -16,7 +16,7 @@ import StopIcon from "../icons/stop.svg";
 import SendIcon from "../icons/up-arrow.svg";
 import LoadingIcon from "../icons/three-dots.svg";
 import SuccessIcon from "../icons/success.svg";
-import ErrorIcon from "../icons/error.svg";
+import ErrorIcon from "../icons/close.svg";
 import McpIcon from "../icons/mcp.svg";
 import { useTranslation } from "react-i18next";
 import { useAppUpdate } from "@/app/hooks/use-app-update";
@@ -434,9 +434,15 @@ function InnerChat() {
       (Array.isArray(result) &&
         result.some((item) => item.includes("declined")))
     ) {
-      return <ErrorIcon />;
+      return <ErrorIcon className="size-5 text-[#EF466F]" />;
+    } else if (
+      result.includes("code: -1") ||
+      (Array.isArray(result) &&
+        result.some((item) => item.includes("code: -1")))
+    ) {
+      return <ErrorIcon className="size-5 text-[#EF466F]" />;
     } else {
-      return <SuccessIcon />;
+      return <SuccessIcon className="size-5 text-main" />;
     }
   };
 
