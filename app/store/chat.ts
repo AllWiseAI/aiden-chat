@@ -334,7 +334,6 @@ export const useChatStore = createPersistStore(
       ) {
         const session = get().currentSession();
         const modelConfig = session.mask.modelConfig;
-        const modelInfo = useAppConfig.getState().getCurrentModel();
         // MCP Response no need to fill template
         let mContent: string | MultimodalContent[] = isMcpResponse
           ? content
@@ -384,7 +383,6 @@ export const useChatStore = createPersistStore(
         const api: ClientApi = getClientApi();
         // make request
         api.llm.chat({
-          modelInfo,
           messages: sendMessages,
           config: { ...modelConfig, stream: true },
           onToolCall: (toolCallInfo) => {
@@ -512,7 +510,6 @@ export const useChatStore = createPersistStore(
         const session = get().currentSession();
         const modelConfig = session.mask.modelConfig;
         const messageIndex = session.messages.length + 1;
-        const modelInfo = useAppConfig.getState().getCurrentModel();
 
         const botMessage: ChatMessage = createMessage({
           role: "assistant",
@@ -529,7 +526,6 @@ export const useChatStore = createPersistStore(
         });
         const api: ClientApi = getClientApi();
         api.llm.toolCall({
-          modelInfo,
           toolCallInfo,
           config: { ...modelConfig, stream: true },
           onUpdate(message, mcpInfo) {
@@ -757,8 +753,6 @@ export const useChatStore = createPersistStore(
         const session = targetSession;
         const modelConfig = session.mask.modelConfig;
         const api: ClientApi = getClientApi();
-        const modelInfo = useAppConfig.getState().getSummaryModel();
-
         // remove error messages if any
         const messages = session.messages;
 
@@ -785,9 +779,8 @@ export const useChatStore = createPersistStore(
                 content: t("store.prompt.topic"),
               }),
             );
-          console.log("summary model:", modelInfo?.model);
           api.llm.chat({
-            modelInfo,
+            isSummary: true,
             messages: topicMessages,
             config: { stream: false },
             onFinish(message, responseRes) {
@@ -838,7 +831,7 @@ export const useChatStore = createPersistStore(
           modelConfig.sendMemory
         ) {
           api.llm.chat({
-            modelInfo,
+            isSummary: true,
             messages: toBeSummarizedMsgs.concat(
               createMessage({
                 role: "system",
