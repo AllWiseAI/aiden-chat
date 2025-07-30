@@ -10,6 +10,26 @@
   "general": {
     "account": "账号",
     "logout": "登出",
+    "password": {
+      "change": "重置密码",
+      "success": {
+        "title": "重置成功",
+        "content": "密码将在重启后生效。",
+        "btn": "立即重启"
+      },
+      "old": {
+        "title": "旧密码",
+        "tip": "请输入旧密码"
+      },
+      "new": {
+        "title": "新密码",
+        "tip": "请输入新密码"
+      },
+      "reEnter": {
+        "title": "确认新密码",
+        "tip": "请再次输入新密码"
+      }
+    },
     "country": {
       "title": "地区",
       "cn": "中国",

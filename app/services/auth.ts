@@ -122,6 +122,26 @@ export async function apiCompleteResetPassword(payload: {
   return result.data;
 }
 
+export async function apiChangePassword(payload: {
+  oldVal: string;
+  newVal: string;
+  confirmVal: string;
+}) {
+  const params = {
+    old_password: payload.oldVal,
+    new_password: payload.newVal,
+    new_password_confirm: payload.confirmVal,
+  };
+  const result = await fetch("/auth/change_password", {
+    method: "POST",
+    body: {
+      type: "Json",
+      payload: params,
+    },
+  });
+  return result.data;
+}
+
 export async function apiGetRegion() {
   const params = {};
   const result = await fetch("/api/country/info", {

@@ -10,6 +10,26 @@
   "general": {
     "account": "Account",
     "logout": "Log Out",
+    "password": {
+      "change": "Change password",
+      "success": {
+        "title": "Reset Success",
+        "content": "Your password will take effect after a restart.",
+        "btn": "Restart"
+      },
+      "old": {
+        "title": "Old password",
+        "tip": "Enter your old password"
+      },
+      "new": {
+        "title": "New password",
+        "tip": "Enter your new password"
+      },
+      "reEnter": {
+        "title": "Re-enter new password",
+        "tip": "Re-enter your new password"
+      }
+    },
     "country": {
       "title": "Region",
       "cn": "China",

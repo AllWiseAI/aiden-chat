@@ -14,6 +14,7 @@ import { useAppConfig, Theme } from "@/app/store";
 import { vscodeLight, vscodeDark } from "@uiw/codemirror-theme-vscode";
 import { foldGutter, indentOnInput } from "@codemirror/language";
 import { useTranslation } from "react-i18next";
+import LoadingIcon from "../../icons/loading-spinner.svg";
 
 const CodeMirror = dynamic(() => import("@uiw/react-codemirror"), {
   ssr: false,
@@ -79,7 +80,9 @@ const McpEditor: React.FC<Props> = ({ setMode }) => {
 
   const [error, setError] = useState<string>("");
   const [showCard, setShowCard] = useState(false);
+  const [loading, setLoading] = useState(false);
   const handleSave = async () => {
+    setLoading(true);
     try {
       const parsed = JSON.parse(jsonStr);
       const res = await saveEditorConfig(parsed);
@@ -95,6 +98,8 @@ const McpEditor: React.FC<Props> = ({ setMode }) => {
         className: "w-auto max-w-max",
       });
       console.error(e);
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -132,8 +137,10 @@ const McpEditor: React.FC<Props> = ({ setMode }) => {
 
         <Button
           onClick={handleSave}
-          className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] text-xs w-[54px] h-6"
+          disabled={loading}
+          className="bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-[#00D47E] text-xs min-w-[54px] h-6 flex items-center gap-1 px-1.5 py-1"
         >
+          {loading && <LoadingIcon className="size-3 animate-spin" />}
           {t("mcp.save")}
         </Button>
       </div>
