@@ -12,6 +12,7 @@ export const createDefaultTask = (): Task => ({
   type: "",
   notification: false,
   details: "",
+  backendData: {},
 });
 
 const DEFAULT_TASK_STATE = {
