@@ -70,7 +70,6 @@ export function Notification({
 
 export default function TaskManagement({
   task,
-  onCancel,
   onChange,
 }: TaskManagementProps) {
   const { t } = useTranslation("general");
