@@ -21,6 +21,7 @@ import NotificationOffIcon from "../icons/notification-off.svg";
 import { Path } from "../constant";
 import { createTask, testTask } from "../services/task";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface NotificationProps {
   checked: boolean;
@@ -29,6 +30,7 @@ interface NotificationProps {
 }
 
 interface TaskPayload {
+  task_id?: string;
   description: string;
   repeat_every: number;
   repeat_unit: string;
@@ -95,12 +97,15 @@ export default function TaskManagement({
   task,
   onChange,
 }: TaskManagementProps) {
+  const { t } = useTranslation("general");
   const [newTask, setNewTask] = useState<Task>({
     ...createDefaultTask(),
     ...task,
   });
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const [notificationEnabled, setNotificationEnabled] = useState(false);
+  const [notificationEnabled, setNotificationEnabled] = useState(
+    task?.notification ?? false,
+  );
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const navigate = useNavigate();
   // const { t } = useTranslation();
@@ -141,53 +146,59 @@ export default function TaskManagement({
       name,
     };
     const res = await testTask(payload);
-    console.log("res", res);
     const { code, detail } = res;
     if (code === 0) {
-      toast.success("测试成功");
+      toast.success(t("task.testSuccess"));
     } else {
-      toast.error(detail || "测试失败");
+      toast.error(detail || t("task.testFailed"));
     }
   };
 
   const handleConfirmClick = async () => {
-    if (!onChange) {
-      console.log("newtask", newTask);
+    const { name, date, hour, minute, type, notification, details } = newTask;
 
-      const { name, date, hour, minute, type, notification, details } = newTask;
+    const payload: TaskPayload = {
+      description: details,
+      repeat_every: 1,
+      repeat_unit: type,
+      start_date: date,
+      enable_notification: notification,
+      hour,
+      minute,
+      name,
+    };
 
-      const payload: TaskPayload = {
-        description: details,
-        repeat_every: 1,
-        repeat_unit: type,
-        start_date: date,
-        enable_notification: notification,
-        hour,
-        minute,
-        name,
+    if (task) {
+      payload.task_id = task.backendData.id;
+    }
+
+    console.log("payload", payload);
+
+    const { dayString, dayOfMonth } = getCurrentDateObj(date);
+    if (type === TaskTypeEnum.Weekly) {
+      payload.repeat_on = {
+        weekdays: [dayString],
       };
-      const { dayString, dayOfMonth } = getCurrentDateObj(date);
-      if (type === TaskTypeEnum.Weekly) {
-        payload.repeat_on = {
-          weekdays: [dayString],
-        };
-      }
-      if (type === TaskTypeEnum.Monthly) {
-        payload.repeat_on = {
-          days_of_month: [dayOfMonth],
-        };
-      }
-      const res = await createTask(payload);
-      const { code, data, detail } = res;
-      if (code === 0) {
-        toast.success("创建成功");
-        taskStore.createTask({ ...newTask, backendData: { ...data } });
-        navigate(`${Path.Task}/${newTask.id}`);
+    }
+    if (type === TaskTypeEnum.Monthly) {
+      payload.repeat_on = {
+        days_of_month: [dayOfMonth],
+      };
+    }
+    const res = await createTask(payload);
+    const { code, data, detail } = res;
+    if (code === 0) {
+      toast.success(task ? t("task.updateSuccess") : t("task.createSuccess"));
+      if (task) {
+        onChange?.(newTask.id, { ...newTask, backendData: { ...data } });
       } else {
-        toast.error(detail || "Create Task Error.");
+        taskStore.createTask({ ...newTask, backendData: { ...data } });
       }
+      navigate(`${Path.Task}/${newTask.id}`);
     } else {
-      onChange(newTask.id, newTask);
+      toast.error(
+        detail || task ? t("task.updateFailed") : t("task.createFailed"),
+      );
     }
   };
 
@@ -195,7 +206,7 @@ export default function TaskManagement({
     <div className="flex flex-col gap-2.5 text-sm bg-[#F3F5F7] dark:bg-[#202121] px-2.5 py-2">
       <Input
         className="h-10 !text-left rounded-sm bg-white dark:bg-[#101213] !border-0 p-2.5"
-        placeholder="Enter Task Name"
+        placeholder={t("task.enterTaskName")}
         value={newTask.name}
         onChange={(e) =>
           setNewTask((task) => {
@@ -217,7 +228,7 @@ export default function TaskManagement({
             >
               {newTask.date
                 ? dayjs(newTask.date).format("D, MMM")
-                : "Day/Month"}
+                : t("task.date")}
             </div>
           </PopoverTrigger>
           <PopoverContent asChild align="start">
@@ -270,7 +281,7 @@ export default function TaskManagement({
         }}
       >
         <SelectTrigger className="!w-full !h-10 bg-white dark:bg-[#101213] rounded-sm border-0">
-          <SelectValue placeholder="Select Task Type" />
+          <SelectValue placeholder={t("task.selectTaskType")} />
         </SelectTrigger>
         <SelectContent className="w-[var(--radix-select-trigger-width)]">
           {Object.values(TaskTypeEnum).map((type) => (
@@ -288,7 +299,7 @@ export default function TaskManagement({
         className="bg-white dark:bg-[#101213] placeholder:text-[#6C7275]/50 dark:placeholder:text-[#343839] rounded-sm p-2.5 resize-none overflow-auto max-h-[60vh]"
         ref={textareaRef}
         rows={1}
-        placeholder="Task Description"
+        placeholder={t("task.taskDesp")}
         value={newTask.details}
         onChange={(e) => {
           setNewTask((task) => {
@@ -309,18 +320,18 @@ export default function TaskManagement({
         />
         <div className="flex gap-2.5 h-full">
           <Button
-            className="h-full text-main bg-transparent hover:bg-transparent hover:opacity-60 text-black dark:text-white font-normal border border-main rounded-sm"
+            className="h-full bg-transparent hover:bg-transparent hover:opacity-60 text-black dark:text-white font-normal border border-[#343839] rounded-sm"
             onClick={handleTestClick}
             disabled={!confirmBtn}
           >
-            Test
+            {t("task.test")}
           </Button>
           <Button
             disabled={!confirmBtn}
             className="h-full bg-main rounded-sm font-normal"
             onClick={handleConfirmClick}
           >
-            Confirm
+            {t("task.confirm")}
           </Button>
         </div>
       </div>

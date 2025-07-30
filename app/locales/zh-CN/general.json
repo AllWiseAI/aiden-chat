@@ -40,11 +40,23 @@
   "task": {
     "noTitle": "无标题",
     "time": "时间",
+    "date": "日/月",
     "recurrence": "重复",
     "notification": "通知",
     "details": "详情",
     "on": "开",
-    "off": "关"
+    "off": "关",
+    "test": "测试",
+    "confirm": "确认",
+    "createSuccess": "创建成功",
+    "createFailed": "创建失败",
+    "updateSuccess": "更新成功",
+    "updateFailed": "更新失败",
+    "testSuccess": "测试成功",
+    "testFailed": "测试失败",
+    "enterTaskName": "请输入任务名称",
+    "selectTaskType": "请选择任务类型",
+    "taskDesp": "任务描述"
   },
   "home": {
     "newChat": "新的聊天",

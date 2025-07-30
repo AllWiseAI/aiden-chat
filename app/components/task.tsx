@@ -70,7 +70,6 @@ function TaskItem({ title, taskInfo }: TaskItemProps) {
     //     content: "发信息给小明，问他要不要去打球",
     //   },
     // ];
-    console.log("detailData", request_messages, response_data, task_id);
     const isExist = chatStore.haveTaskSession(task_id);
     if (!isExist) {
       chatStore.newTaskSession({
@@ -114,6 +113,45 @@ function TaskItem({ title, taskInfo }: TaskItemProps) {
           {t("task.details")}
         </div> */}
       </div>
+    </div>
+  );
+}
+
+function TaskRecords({ taskItem }: { taskItem: TaskType }) {
+  const [recordList, setRecordList] = useState<TaskExecutionRecord[]>([]);
+  const { date, hour, minute } = taskItem || {};
+
+  useEffect(() => {
+    const getRecord = async () => {
+      if (!taskItem) return;
+      const {
+        backendData: { id },
+      } = taskItem;
+      const res = await getTaskExecutionRecords(id);
+      const { code, data } = res;
+      if (code === 0) {
+        const { records } = data;
+        if (records && records.length) {
+          setRecordList(records);
+        } else {
+          setRecordList([]);
+        }
+      } else {
+        setRecordList([]);
+      }
+    };
+    getRecord();
+  }, [taskItem]);
+
+  return (
+    <div>
+      {recordList.map((item) => (
+        <TaskItem
+          key={item.id}
+          taskInfo={item}
+          title={formatCustomTime(date!, hour!, minute!)}
+        />
+      ))}
     </div>
   );
 }
@@ -174,39 +212,13 @@ export function Task() {
 
   const [isEdit, setIsEdit] = useState(false);
   const taskItem = tasks.find((task) => task.id === id);
-  const [recordList, setRecordList] = useState<TaskExecutionRecord[]>([]);
 
   useEffect(() => {
-    const getRecord = async () => {
-      if (!taskItem) return;
-      const {
-        backendData: { id },
-      } = taskItem;
-      const res = await getTaskExecutionRecords(id);
-      const { code, data } = res;
-      if (code === 0) {
-        const { records } = data;
-        console.log("records", records);
-        setRecordList(records);
-      } else {
-        setRecordList([]);
-      }
-    };
-    getRecord();
+    if (!taskItem) return;
+    setIsEdit(false);
   }, [taskItem]);
 
   if (!taskItem) return null;
-
-  const renderTaskDetail = async () => {
-    const { date, hour, minute } = taskItem || {};
-    return recordList.map((record) => (
-      <TaskItem
-        key={record.id}
-        taskInfo={record}
-        title={formatCustomTime(date, hour!, minute!)}
-      />
-    ));
-  };
 
   return (
     <div className="flex flex-col min-h-0 gap-5 px-15 pb-10">
@@ -226,7 +238,7 @@ export function Task() {
             setIsEdit={() => setIsEdit(true)}
             updateNotification={updateNotification}
           />
-          {renderTaskDetail()}
+          <TaskRecords taskItem={taskItem} />
         </>
       )}
     </div>

@@ -40,11 +40,23 @@
   "task": {
     "noTitle": "Untitled",
     "time": "Time",
+    "date": "Day/Month",
     "recurrence": "Recurrence",
     "notification": "Notification",
     "details": "Details",
     "on": "On",
-    "off": "Off"
+    "off": "Off",
+    "test": "Test",
+    "confirm": "Confirm",
+    "createSuccess": "Create Success",
+    "createFailed": "Create Failed",
+    "updateSuccess": "Update Success",
+    "updateFailed": "Update Failed",
+    "testSuccess": "Test Success",
+    "testFailed": "Test Failed",
+    "enterTaskName": "Enter Task Name",
+    "selectTaskType": "Select Task Type",
+    "taskDesp": "Task Description"
   },
   "home": {
     "newChat": "New Chat",

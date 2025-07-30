@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { Popover, PopoverTrigger, PopoverContent } from "./shadcn/popover";
 import { Input } from "./shadcn/input";
+import { useTranslation } from "react-i18next";
 
 interface TimeSelectProps {
   hour: number | null;
@@ -29,6 +30,7 @@ export default function TimeSelect({
   minute,
   onChange,
 }: TimeSelectProps) {
+  const { t } = useTranslation("general");
   const [open, setOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const formatHour = hour && hour < 10 ? `0${hour}` : hour;
@@ -59,7 +61,7 @@ export default function TimeSelect({
               setOpen(true);
             }}
             onFocus={() => setOpen(true)}
-            placeholder="Time"
+            placeholder={t("task.time")}
             className="w-full h-10 !text-left border-0"
           />
         </div>
