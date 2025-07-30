@@ -11,6 +11,17 @@ async function getLocalFetchOptions() {
   return { baseURL, headers };
 }
 
+// 测试任务
+export async function testTask(task: object) {
+  const { baseURL, headers } = await getLocalFetchOptions();
+  const res = await fetchNoProxy(`${baseURL}${TASK_API_PREFIX}/test_task`, {
+    method: "POST",
+    headers,
+    body: Body.json(task),
+  });
+  return res.json();
+}
+
 // 创建任务
 export async function createTask(task: object) {
   const { baseURL, headers } = await getLocalFetchOptions();

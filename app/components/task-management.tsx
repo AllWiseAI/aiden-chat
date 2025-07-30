@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, ReactNode } from "react";
+import { useState, useRef, useEffect, ReactNode, useMemo } from "react";
 import { Input } from "./shadcn/input";
 import { Button } from "./shadcn/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./shadcn/popover";
@@ -19,7 +19,7 @@ import clsx from "clsx";
 import NotificationOnIcon from "../icons/notification-on.svg";
 import NotificationOffIcon from "../icons/notification-off.svg";
 import { Path } from "../constant";
-import { createTask } from "../services/task";
+import { createTask, testTask } from "../services/task";
 import { toast } from "sonner";
 
 interface NotificationProps {
@@ -93,7 +93,6 @@ export function Notification({
 
 export default function TaskManagement({
   task,
-  onCancel,
   onChange,
 }: TaskManagementProps) {
   const [newTask, setNewTask] = useState<Task>({
@@ -115,18 +114,41 @@ export default function TaskManagement({
     }
   };
 
-  // const verifyTask = (task: Task): boolean => {
-  //   if (!task.date || task.hour === null || task.minute === null) return false;
-  //   if (!task.type) return false;
-  //   if (!task.details) return false;
-  //   return true;
-  // };
+  const verifyTask = (task: Task): boolean => {
+    if (!task.date || task.hour === null || task.minute === null) return false;
+    if (!task.type) return false;
+    if (!task.details) return false;
+    return true;
+  };
 
-  // const confirmBtn = useMemo(() => verifyTask(newTask), [newTask]);
+  const confirmBtn = useMemo(() => verifyTask(newTask), [newTask]);
 
   useEffect(() => {
     handleInput();
   }, []);
+
+  const handleTestClick = async () => {
+    const { name, date, hour, minute, type, notification, details } = newTask;
+
+    const payload: TaskPayload = {
+      description: details,
+      repeat_every: 1,
+      repeat_unit: type,
+      start_date: date,
+      enable_notification: notification,
+      hour,
+      minute,
+      name,
+    };
+    const res = await testTask(payload);
+    console.log("res", res);
+    const { code, detail } = res;
+    if (code === 0) {
+      toast.success("测试成功");
+    } else {
+      toast.error(detail || "测试失败");
+    }
+  };
 
   const handleConfirmClick = async () => {
     if (!onChange) {
@@ -287,18 +309,14 @@ export default function TaskManagement({
         />
         <div className="flex gap-2.5 h-full">
           <Button
-            className="h-full bg-transparent hover:bg-transparent hover:opacity-60 text-black dark:text-white font-normal border border-[#343839] rounded-sm"
-            onClick={() => {
-              if (!onCancel) {
-                navigate(-1);
-              } else {
-                onCancel();
-              }
-            }}
+            className="h-full text-main bg-transparent hover:bg-transparent hover:opacity-60 text-black dark:text-white font-normal border border-main rounded-sm"
+            onClick={handleTestClick}
+            disabled={!confirmBtn}
           >
-            Cancel
+            Test
           </Button>
           <Button
+            disabled={!confirmBtn}
             className="h-full bg-main rounded-sm font-normal"
             onClick={handleConfirmClick}
           >
