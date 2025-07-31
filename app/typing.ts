@@ -208,6 +208,7 @@ export type TaskExecutionRecord = {
   status: string;
   created_at: string;
   completed_at: string;
+  next_run_at: string | null;
   response_data: {
     message: {
       role: MessageRole;

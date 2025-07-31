@@ -93,9 +93,23 @@ function TaskItem({ title, taskInfo }: TaskItemProps) {
   );
 }
 
+function formatDateToReadableString(isoString: string) {
+  const date = new Date(isoString);
+
+  const weekday = date.toLocaleDateString("en-US", { weekday: "long" });
+  const month = date.toLocaleDateString("en-US", { month: "short" });
+  const day = date.getDate();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const hour12 = hours % 12 || 12;
+  const ampm = hours >= 12 ? "pm" : "am";
+  const paddedMinutes = String(minutes).padStart(2, "0");
+
+  return `${weekday}, ${month} ${day} ${hour12}:${paddedMinutes}${ampm}`;
+}
+
 function TaskRecords({ taskItem }: { taskItem: TaskType }) {
   const [recordList, setRecordList] = useState<TaskExecutionRecord[]>([]);
-  const { date, hour, minute } = taskItem || {};
 
   useEffect(() => {
     const getRecord = async () => {
@@ -120,12 +134,14 @@ function TaskRecords({ taskItem }: { taskItem: TaskType }) {
   }, [taskItem]);
 
   return (
-    <div>
+    <div className="space-y-2">
       {recordList.map((item) => (
         <TaskItem
           key={item.id}
           taskInfo={item}
-          title={formatCustomTime(date!, hour!, minute!)}
+          title={formatDateToReadableString(
+            item.next_run_at || item.completed_at,
+          )}
         />
       ))}
     </div>
@@ -197,7 +213,7 @@ export function Task() {
   if (!taskItem) return null;
 
   return (
-    <div className="flex flex-col min-h-0 gap-5 px-15 pb-10">
+    <div className="flex flex-col min-h-0 gap-5 px-15 py-10">
       {isEdit ? (
         <TaskManagement
           task={taskItem}
