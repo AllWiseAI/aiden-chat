@@ -135,7 +135,7 @@ function TaskRecords({ taskItem }: { taskItem: TaskType }) {
   }, [taskItem]);
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-5 mt-5">
       {recordList.map((item) => (
         <TaskItem
           key={item.id}

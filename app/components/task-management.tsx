@@ -191,7 +191,7 @@ export default function TaskManagement({
   };
 
   return (
-    <div className="flex flex-col gap-2.5 text-sm bg-[#F3F5F7] dark:bg-[#202121] px-2.5 py-2">
+    <div className="flex flex-col gap-2.5 text-sm bg-[#F3F5F7] dark:bg-[#202121] px-2.5 py-2 border border-[#E8ECEF] rounded-sm">
       <Input
         className="h-10 !text-left rounded-sm bg-white dark:bg-[#101213] !border-0 p-2.5"
         placeholder={t("task.enterTaskName")}
