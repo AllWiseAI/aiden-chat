@@ -150,7 +150,7 @@ export const ConfirmProvider = ({
     }
 
     return (
-      <AlertDialogDescription className="break-all flex items-center gap-2.5 text-base font-normal text-[#141718] dark:text-white border border-[#E8ECEF] dark:border-[#232627] rounded-xl px-2.5 py-2">
+      <AlertDialogDescription className="flex items-center gap-2.5 text-base font-normal text-[#141718] dark:text-white border border-[#E8ECEF] dark:border-[#232627] rounded-xl px-2.5 py-2 whitespace-nowrap">
         <MapIcon className="size-[18px] shrink-0" />
         {options.description}
       </AlertDialogDescription>
@@ -166,7 +166,7 @@ export const ConfirmProvider = ({
             open={open}
             onOpenChange={(o) => !o && handleClose("decline")}
           >
-            <AlertDialogContent className="!rounded-sm w-80 p-5 gap-5">
+            <AlertDialogContent className="!rounded-sm w-max min-w-80 p-5 gap-5">
               <div className="flex justify-center">
                 <AlertDialogHeader>
                   <AlertDialogTitle className="text-[18px] font-medium text-black dark:text-white">

@@ -1,6 +1,11 @@
 "use client";
 import { REQUEST_TIMEOUT_MS } from "@/app/constant";
-import { ModelSize, DalleQuality, DalleStyle } from "@/app/typing";
+import {
+  ModelSize,
+  DalleQuality,
+  DalleStyle,
+  ChatModelInfo,
+} from "@/app/typing";
 import { ChatOptions, LLMApi, MultimodalContent } from "../api";
 import {
   getBaseChatUrl,
@@ -8,7 +13,7 @@ import {
   getSecondChatUrl,
 } from "@/app/utils/fetch";
 import { tauriFetchWithSignal } from "@/app/utils/stream";
-import { streamWithThink, parseSSE } from "@/app/utils/chat";
+import { streamWithThink, parseSSE, getChatHeaders } from "@/app/utils/chat";
 
 export interface OpenAIListModelResponse {
   object: string;
@@ -61,7 +66,6 @@ export class ChatGPTApi implements LLMApi {
     for (const v of options.messages || []) {
       messages.push({ role: v.role, content: v.content });
     }
-    console.log("[Request] openai chat payload: ", messages);
     const requestPayload: RequestPayload = { messages };
     const shouldStream = !!options.config.stream;
 
@@ -74,7 +78,10 @@ export class ChatGPTApi implements LLMApi {
         streamWithThink(
           DEFAULT_CHAT_URL,
           requestPayload,
-          headers,
+          {
+            ...headers,
+            ...getChatHeaders(options.modelInfo as ChatModelInfo),
+          },
           controller,
           parseSSE,
           options,
@@ -84,7 +91,6 @@ export class ChatGPTApi implements LLMApi {
           () => controller.abort("timeout"),
           REQUEST_TIMEOUT_MS,
         );
-        console.log("[Request] openai chat payload headers:", headers);
         const res = await tauriFetchWithSignal(
           DEFAULT_CHAT_URL,
           {
@@ -102,7 +108,6 @@ export class ChatGPTApi implements LLMApi {
 
         clearTimeout(requestTimeoutId);
         const resJson = await res.json();
-        console.log("[Request] openai chat resJson: ", resJson);
         const message = resJson?.message?.content;
         options.onFinish(message, res);
       }
@@ -127,7 +132,10 @@ export class ChatGPTApi implements LLMApi {
         streamWithThink(
           SECOND_CHAT_URL,
           requestPayload,
-          headers,
+          {
+            ...headers,
+            ...getChatHeaders(options.modelInfo as ChatModelInfo),
+          },
           controller,
           parseSSE,
           options,
@@ -154,7 +162,6 @@ export class ChatGPTApi implements LLMApi {
 
         clearTimeout(requestTimeoutId);
         const resJson = await res.json();
-        console.log("[Request] openai toolcall resJson: ", resJson);
         const message = resJson?.message?.content;
         options.onFinish(message, res);
       }

@@ -50,13 +50,6 @@ export const useTaskStore = createPersistStore(
       setCurrentTaskId: (id: string) => {
         set({ currentTaskId: id });
       },
-      setNotification: (id: string) => {
-        const tasks = get().tasks;
-        const updatedTasks = tasks.map((task) =>
-          task.id === id ? { ...task, notification: !task.notification } : task,
-        );
-        set({ tasks: updatedTasks });
-      },
       deleteTask: (index: number) => {
         const currentTasks = get().tasks;
         const newTasks = currentTasks.filter((_, i) => i !== index);

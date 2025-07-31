@@ -176,6 +176,52 @@ export type ModelOption = {
   id: number;
   endpoint: string;
   provider: string;
+  value: string;
+  label: string;
+};
+
+export type CustomModelOption = {
+  value: string;
+  label: string;
+};
+
+export type ProviderOption = {
+  multi_model?: boolean;
+  itemId: string;
+  protocol: string;
+  provider: string;
+  default_endpoint: boolean;
+  id: number;
+  models_path: string;
+  logo_uri: null | string;
+  enabled: boolean;
+  headers: Record<string, string>;
+  display: string;
+  model?: string;
+  models: CustomModelOption[];
+  apiKey?: string;
+};
+
+export type ChatModelInfo = {
+  provider: string;
+  default_endpoint?: string;
+  apiKey?: string;
+  model?: string;
+  endpoint?: string;
+};
+
+export type OpenAIModelOptions = {
+  id: string;
+};
+
+export type AnthropicModelOptions = {
+  id: string;
+  display_name: string;
+};
+
+export type GeminiModelOptions = {
+  name: string;
+  displayName: string;
 };
 
 export interface Task {
