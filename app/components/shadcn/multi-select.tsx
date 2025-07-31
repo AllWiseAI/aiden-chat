@@ -63,6 +63,7 @@ export function MultiSelectDropdown({
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
+          disabled={options && options.length === 0}
           className={cn(
             "!hover:bg-background !dark:hover:bg-background min-w-56 justify-between pr-3 truncate",
             className,
@@ -80,7 +81,7 @@ export function MultiSelectDropdown({
             ))}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
+      <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)]">
         {options.map((opt: Option) => (
           <DropdownMenuCheckboxItem
             key={opt.value}
