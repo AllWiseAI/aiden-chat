@@ -89,9 +89,9 @@ export function ChatItem(props: {
             "rounded-sm group h-7.5 flex flex-col justify-center",
             props.selected &&
               (currentPath === Path.Chat || currentPath === Path.Home)
-              ? "bg-[#E8ECEF]/50 dark:bg-[#232323]"
+              ? ""
               : openMenu
-              ? "bg-[#E8ECEF]/50 dark:bg-[#2F2F2F]"
+              ? "bg-[#E8ECEF]/50 dark:bg-[#2F2F2F]/50"
               : "hover:bg-[#E8ECEF]/50 dark:hover:bg-[#232627]/50",
             !isEdit && "p-1.5",
           )}
@@ -145,10 +145,10 @@ export function ChatItem(props: {
                   <div className="flex justify-start items-center gap-4 leading-6">
                     <div
                       className={clsx(
-                        "text-[#232627] dark:text-[#6C7275] cursor-default text-xs w-full line-clamp-1",
+                        "cursor-default text-xs w-full line-clamp-1",
                         props.selected
-                          ? "font-semibold dark:text-white"
-                          : "font-normal",
+                          ? "text-main"
+                          : "text-[#232627] dark:text-white",
                       )}
                     >
                       {renderTitle}

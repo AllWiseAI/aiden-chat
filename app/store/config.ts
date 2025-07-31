@@ -1,4 +1,10 @@
-import { DalleQuality, DalleStyle, ModelSize, ModelOption } from "../typing";
+import {
+  DalleQuality,
+  DalleStyle,
+  ModelSize,
+  ModelOption,
+  ProviderOption,
+} from "../typing";
 import { getClientConfig } from "../config/client";
 import {
   DEFAULT_INPUT_TEMPLATE,
@@ -7,6 +13,7 @@ import {
 } from "../constant";
 import { createPersistStore } from "../utils/store";
 import { getModelList } from "../services/model";
+import { v4 as uniqueId } from "uuid";
 
 export enum SubmitKey {
   Enter = "Enter",
@@ -51,6 +58,10 @@ export const DEFAULT_CONFIG = {
   currentModel: "",
   summaryModel: "",
   models: [] as ModelOption[],
+  localProviders: [] as ProviderOption[],
+  providerList: [] as ProviderOption[],
+  groupedProviders: {} as Record<string, ProviderOption>,
+
   modelConfig: {
     model: "gpt-4o",
     providerName: "OpenAI",
@@ -124,7 +135,34 @@ export const useAppConfig = createPersistStore(
         }
       }
     },
-    getCurrentModel() {
+    setProviderList: async (data: ProviderOption[]) => {
+      set(() => ({
+        providerList: data,
+      }));
+    },
+    setGroupedProviders: (groupedProviders: Record<string, ProviderOption>) => {
+      set(() => ({
+        groupedProviders: groupedProviders,
+      }));
+    },
+
+    getCurrentModel(): ProviderOption {
+      const { currentModel, groupedProviders } = get();
+      const res = currentModel.split(":");
+      // custom model
+      if (res.length === 2 && Object.keys(groupedProviders).length > 0) {
+        const providerKey = Object.keys(groupedProviders).find(
+          (key) => groupedProviders[key]?.provider === res[0],
+        );
+
+        const providerInfo = groupedProviders[providerKey!];
+        // @ts-ignore
+        return {
+          ...(providerInfo as Record<string, unknown>),
+          model: res[1],
+        };
+      }
+      // @ts-ignore
       return get().models.find((model) => model.model === get().currentModel);
     },
     getSummaryModel() {
@@ -135,6 +173,36 @@ export const useAppConfig = createPersistStore(
       set(() => ({
         debugMode: !debugMode,
       }));
+    },
+    setLocalProviders(providerInfo: ProviderOption) {
+      const { localProviders } = get();
+      const id = uniqueId();
+      set(() => ({
+        localProviders: [...localProviders, { ...providerInfo, itemId: id }],
+      }));
+    },
+
+    updateLocalProviders(providerInfo: ProviderOption) {
+      const { localProviders } = get();
+      const index = localProviders.findIndex(
+        (provider) => provider.itemId === providerInfo.itemId,
+      );
+      if (index !== -1) {
+        localProviders[index] = providerInfo;
+      }
+    },
+
+    deleteLocalProviders(modelInfo: ProviderOption) {
+      const { localProviders } = get();
+      const index = localProviders.findIndex(
+        (provider) => provider.itemId === modelInfo.itemId,
+      );
+      if (index !== -1) {
+        localProviders.splice(index, 1);
+        set(() => ({
+          localProviders: [...localProviders],
+        }));
+      }
     },
     reset() {
       set(() => ({ ...DEFAULT_CONFIG }));

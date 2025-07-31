@@ -16,7 +16,7 @@ export function Password({
   };
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <Input
         {...props}
         type={showPassword ? "text" : "password"}

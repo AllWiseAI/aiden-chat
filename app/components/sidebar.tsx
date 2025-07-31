@@ -171,7 +171,7 @@ export function SideBarContainer(props: {
         {
           [styles["narrow-sidebar"]]: shouldNarrow,
         },
-        "bg-[#F3F5F7]/50 dark:bg-[#141718]/50",
+        "bg-[#F3F5F7]/50 dark:bg-[#101010]",
       )}
       style={{
         // #3016 disable transition on ios mobile screen
