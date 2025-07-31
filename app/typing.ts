@@ -186,6 +186,7 @@ export type CustomModelOption = {
 };
 
 export type ProviderOption = {
+  endpoint?: string;
   multi_model?: boolean;
   itemId: string;
   protocol: string;

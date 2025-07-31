@@ -381,8 +381,6 @@ export const useChatStore = createPersistStore(
         const api: ClientApi = getClientApi();
         // make request
         api.llm.chat({
-          // @ts-ignore
-          modelInfo,
           messages: sendMessages,
           config: { ...modelConfig, stream: true },
           onToolCall: (toolCallInfo) => {
@@ -524,8 +522,6 @@ export const useChatStore = createPersistStore(
         });
         const api: ClientApi = getClientApi();
         api.llm.toolCall({
-          // @ts-ignore
-          modelInfo,
           toolCallInfo,
           config: { ...modelConfig, stream: true },
           onUpdate(message, mcpInfo) {

@@ -60,6 +60,6 @@ export const useTaskStore = createPersistStore(
   },
   {
     name: StoreKey.Task,
-    version: 1,
+    version: 1.1,
   },
 );

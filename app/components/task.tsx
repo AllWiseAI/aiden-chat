@@ -122,6 +122,7 @@ function TaskRecords({ taskItem }: { taskItem: TaskType }) {
       const { code, data } = res;
       if (code === 0) {
         const { records } = data;
+        console.log("records", records);
         if (records && records.length) {
           setRecordList(records);
         } else {

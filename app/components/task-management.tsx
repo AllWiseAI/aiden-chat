@@ -87,6 +87,7 @@ export default function TaskManagement({
     ...task,
   });
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [isTestLoading, setIsTestLoading] = useState(false);
   const [notificationEnabled, setNotificationEnabled] = useState(
     task?.notification ?? false,
   );
@@ -129,7 +130,9 @@ export default function TaskManagement({
       minute,
       name,
     };
+    setIsTestLoading(true);
     const res = await testTask(payload);
+    setIsTestLoading(false);
     const { code, detail } = res;
     if (code === 0) {
       toast.success(t("task.testSuccess"));
@@ -310,7 +313,7 @@ export default function TaskManagement({
           <Button
             className="h-full bg-transparent hover:bg-transparent hover:opacity-60 text-black dark:text-white font-normal border border-[#343839] rounded-sm"
             onClick={handleTestClick}
-            disabled={!confirmBtn}
+            disabled={!confirmBtn || isTestLoading}
           >
             {t("task.test")}
           </Button>
