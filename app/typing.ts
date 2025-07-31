@@ -198,7 +198,7 @@ export enum TaskTypeEnum {
 }
 
 export enum TaskAction {
-  Success = "completed",
+  Success = "success",
   Pending = "pending",
   Failed = "failed",
 }

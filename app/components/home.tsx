@@ -207,8 +207,8 @@ function MainLayout() {
             <Route path={Path.Home} element={<Chat />} />
             <Route path={Path.Chat} element={<Chat />} />
             <Route path={`${Path.Task}/:id`} element={<Task />} />
+            <Route path={Path.NewTask} element={<NewTask />} />
           </Route>
-          <Route path={Path.NewTask} element={<NewTask />} />
           <Route path={Path.Settings} element={<Settings />} />
         </Routes>
       </WindowContent>

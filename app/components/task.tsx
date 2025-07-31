@@ -50,26 +50,6 @@ function TaskItem({ title, taskInfo }: TaskItemProps) {
 
   const handleDetailClick = () => {
     const { task_id, request_messages, response_data } = taskInfo;
-    // const { task_id, created_at, completed_at } = taskInfo;
-    // const response_data = {
-    //   message: {
-    //     date: completed_at,
-    //     role: "assistant",
-    //     content:
-    //       "我目前无法直接发送信息给小明。你可以通过你的通讯软件（如微信、QQ、短信等）直接联系他，并问他是否愿意一起去打球。",
-    //   },
-    //   id: "813aeee4-89e0-4e93-af4f-daaa6eaf322f",
-    //   extra: {
-    //     mcp: null,
-    //   },
-    // };
-    // const request_messages = [
-    //   {
-    //     date: created_at,
-    //     role: "user",
-    //     content: "发信息给小明，问他要不要去打球",
-    //   },
-    // ];
     const isExist = chatStore.haveTaskSession(task_id);
     if (!isExist) {
       chatStore.newTaskSession({
@@ -90,13 +70,15 @@ function TaskItem({ title, taskInfo }: TaskItemProps) {
       <div className="flex justify-between items-center px-5 py-3 bg-[#F3F5F7] dark:bg-[#232627] rounded-xl">
         <div className="flex items-center gap-2">
           <p>{title}</p>
-          <StatusIcon
-            className={clsx("size-[18px]", {
-              "text-main": status === TaskAction.Success,
-              "text-[#F5BF4F]": status === TaskAction.Pending,
-              "text-[#EF466F]": status === TaskAction.Failed,
-            })}
-          />
+          {StatusIcon && (
+            <StatusIcon
+              className={clsx("size-[18px]", {
+                "text-main": status === TaskAction.Success,
+                "text-[#F5BF4F]": status === TaskAction.Pending,
+                "text-[#EF466F]": status === TaskAction.Failed,
+              })}
+            />
+          )}
         </div>
         {status !== TaskAction.Pending && (
           <div
@@ -105,13 +87,7 @@ function TaskItem({ title, taskInfo }: TaskItemProps) {
           >
             {t("task.details")}
           </div>
-        )}{" "}
-        {/* <div
-          className="text-main select-none cursor-pointer hover:opacity-75"
-          onClick={handleDetailClick}
-        >
-          {t("task.details")}
-        </div> */}
+        )}
       </div>
     </div>
   );
