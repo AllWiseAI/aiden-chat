@@ -197,7 +197,7 @@ export default function TaskManagement({
       navigate(`${Path.Task}/${newTask.id}`);
     } else {
       toast.error(
-        detail || task ? t("task.updateFailed") : t("task.createFailed"),
+        detail || (task ? t("task.updateFailed") : t("task.createFailed")),
       );
     }
   };
@@ -242,7 +242,7 @@ export default function TaskManagement({
                   setNewTask((task) => {
                     return {
                       ...task,
-                      date: date.toISOString(),
+                      date: date.toLocaleDateString(),
                     };
                   });
                   setCalendarOpen(false);
