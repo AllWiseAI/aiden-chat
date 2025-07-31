@@ -67,7 +67,7 @@ export function Settings() {
       className="flex flex-col px-10 py-5 gap-5 h-full dark:bg-[#111214]"
       data-tauri-drag-region
     >
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center" data-tauri-drag-region>
         <div className="w-max text-lg dark:text-white font-semibold disable-select">
           {t("title")}
         </div>

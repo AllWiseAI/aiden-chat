@@ -1,7 +1,8 @@
 {
   "error": {
     "unauthorized": "未授权",
-    "netErr": "连接异常"
+    "netErr": "连接异常",
+    "passwordErr": "密码错误"
   },
   "chatItem": {
     "chatItemCount": "{{count}} 条对话"

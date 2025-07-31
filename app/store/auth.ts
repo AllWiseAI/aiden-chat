@@ -7,6 +7,7 @@ import {
   apiRefreshToken,
 } from "@/app/services";
 import { TokenType, User, LoginResponse, RefreshResponse } from "../typing";
+import { t } from "i18next";
 
 const DEFAULT_AUTH_STATE = {
   isLogin: false,
@@ -31,12 +32,16 @@ export const useAuthStore = createPersistStore(
       setHydrated: () => {
         set({ _hasHydrated: true });
       },
+      setDefaultState: () => {
+        set({ ...DEFAULT_AUTH_STATE });
+      },
       signup: async (
         code: string,
         email: string,
         password: string,
         profile: string,
       ) => {
+        const { setDefaultState } = _get();
         try {
           const res = (await apiCompleteSignUp({
             code,
@@ -80,14 +85,14 @@ export const useAuthStore = createPersistStore(
             return true;
           }
         } catch (e: any) {
-          set({ _hasHydrated: get()._hasHydrated, ...DEFAULT_AUTH_STATE });
+          setDefaultState();
           throw new Error(`Signup Failed: ${e.message}`);
         }
       },
 
       initialize: async () => {
         if (!get()._hasHydrated) return false;
-        const { userToken, refreshToken } = _get();
+        const { userToken, refreshToken, setDefaultState } = _get();
         if (userToken.accessToken && userToken.expires * 1000 > Date.now()) {
           // setAuth
           return true;
@@ -101,11 +106,12 @@ export const useAuthStore = createPersistStore(
             console.error("refresh token err:", JSON.stringify(e));
           }
         }
-        set({ _hasHydrated: get()._hasHydrated, ...DEFAULT_AUTH_STATE });
+        setDefaultState();
         return false;
       },
 
       login: async (email: string, password: string) => {
+        const { setDefaultState } = _get();
         try {
           const response = (await apiLogin({
             email,
@@ -142,15 +148,16 @@ export const useAuthStore = createPersistStore(
             throw new Error("Token not found in response");
           }
         } catch (e: any) {
-          set({ _hasHydrated: get()._hasHydrated, ...DEFAULT_AUTH_STATE });
-          if (e.message === "Invalid Credentials") throw new Error("密码错误");
+          setDefaultState();
+          if (e.message === "Invalid Credentials")
+            throw new Error(t("error.passwordErr"));
           else throw new Error(`Login Failed: ${e.message}`);
         }
       },
 
       logout: async () => {
+        const { userToken, setDefaultState } = _get();
         try {
-          const { userToken } = get();
           const { status } = (await apiLogout(
             userToken.refreshToken ?? "",
           )) as {
@@ -161,7 +168,7 @@ export const useAuthStore = createPersistStore(
         } catch (e: any) {
           throw new Error(`Logout Failed: ${e.message}`);
         } finally {
-          set({ _hasHydrated: get()._hasHydrated, ...DEFAULT_AUTH_STATE });
+          setDefaultState();
         }
       },
 
@@ -196,7 +203,7 @@ export const useAuthStore = createPersistStore(
   },
   {
     name: StoreKey.Auth,
-    version: 2,
+    version: 3,
     onRehydrateStorage: () => {
       return (state, error) => {
         if (error) {
