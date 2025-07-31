@@ -33,7 +33,7 @@ export const useAuthStore = createPersistStore(
         set({ _hasHydrated: true });
       },
       setDefaultState: () => {
-        set({ _hasHydrated: get()._hasHydrated, ...DEFAULT_AUTH_STATE });
+        set({ ...DEFAULT_AUTH_STATE });
       },
       signup: async (
         code: string,
