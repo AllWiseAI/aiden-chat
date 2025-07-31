@@ -236,3 +236,19 @@ export type taskSessionParams = {
     };
   };
 };
+
+export interface TaskPayload {
+  task_id?: string;
+  description: string;
+  repeat_every: number;
+  repeat_unit: string;
+  start_date: string; // Assuming date is stored as string, adjust to Date if needed
+  enable_notification: boolean;
+  hour: number | null;
+  minute: number | null;
+  name: string;
+  repeat_on?: {
+    weekdays?: string[];
+    days_of_month?: number[];
+  };
+}

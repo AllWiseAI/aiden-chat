@@ -54,6 +54,7 @@
     "updateFailed": "Update Failed",
     "testSuccess": "Test Success",
     "testFailed": "Test Failed",
+    "deleteFailed": "Delete Failed",
     "enterTaskName": "Enter Task Name",
     "selectTaskType": "Select Task Type",
     "taskDesp": "Task Description"

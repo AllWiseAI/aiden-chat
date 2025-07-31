@@ -12,14 +12,14 @@ import {
 import { Calendar } from "./shadcn/calendar";
 import TimeSelect from "./time-select";
 import { useNavigate } from "react-router-dom";
-import { TaskTypeEnum, Task } from "../typing";
+import { TaskTypeEnum, Task, TaskPayload } from "../typing";
 import { createDefaultTask, useTaskStore } from "../store";
 import dayjs from "dayjs";
 import clsx from "clsx";
 import NotificationOnIcon from "../icons/notification-on.svg";
 import NotificationOffIcon from "../icons/notification-off.svg";
 import { Path } from "../constant";
-import { createTask, testTask } from "../services/task";
+import { createTask, testTask, updateTask } from "../services/task";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
@@ -27,22 +27,6 @@ interface NotificationProps {
   checked: boolean;
   onChange: (val: boolean) => void;
   children?: ReactNode;
-}
-
-interface TaskPayload {
-  task_id?: string;
-  description: string;
-  repeat_every: number;
-  repeat_unit: string;
-  start_date: string; // Assuming date is stored as string, adjust to Date if needed
-  enable_notification: boolean;
-  hour: number | null;
-  minute: number | null;
-  name: string;
-  repeat_on?: {
-    weekdays?: string[];
-    days_of_month?: number[];
-  };
 }
 
 interface TaskManagementProps {
@@ -172,8 +156,6 @@ export default function TaskManagement({
       payload.task_id = task.backendData.id;
     }
 
-    console.log("payload", payload);
-
     const { dayString, dayOfMonth } = getCurrentDateObj(date);
     if (type === TaskTypeEnum.Weekly) {
       payload.repeat_on = {
@@ -185,7 +167,13 @@ export default function TaskManagement({
         days_of_month: [dayOfMonth],
       };
     }
-    const res = await createTask(payload);
+    let res;
+    if (task) {
+      res = await updateTask(payload);
+    } else {
+      res = await createTask(payload);
+    }
+
     const { code, data, detail } = res;
     if (code === 0) {
       toast.success(task ? t("task.updateSuccess") : t("task.createSuccess"));

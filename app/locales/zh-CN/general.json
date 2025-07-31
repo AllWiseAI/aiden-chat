@@ -54,6 +54,7 @@
     "updateFailed": "更新失败",
     "testSuccess": "测试成功",
     "testFailed": "测试失败",
+    "deleteFailed": "删除失败",
     "enterTaskName": "请输入任务名称",
     "selectTaskType": "请选择任务类型",
     "taskDesp": "任务描述"

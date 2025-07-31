@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 import { useNavigate } from "react-router-dom";
 import { Path } from "../constant";
-import { TaskTypeEnum } from "../typing";
+import { TaskTypeEnum, Task } from "../typing";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,6 +24,8 @@ import {
 } from "@/app/components/shadcn/alert-dialog";
 import MoreIcon from "../icons/more.svg";
 import DeleteIcon from "../icons/delete.svg";
+import { deleteTask as deleteTaskService } from "../services/task";
+import { toast } from "sonner";
 
 export function TaskItem(props: {
   selected: boolean;
@@ -125,11 +127,27 @@ export function TaskItem(props: {
 
 export function TaskList(props: { searchValue?: string }) {
   const { searchValue } = props;
+  const { t } = useTranslation("general");
   const tasks = useTaskStore((state) => state.tasks);
   const deleteTask = useTaskStore((state) => state.deleteTask);
   const selectedId = useTaskStore((state) => state.currentTaskId);
   const setSelectedId = useTaskStore((state) => state.setCurrentTaskId);
   const navigate = useNavigate();
+
+  const handleDeleteTask = async (index: number, item: Task) => {
+    console.log(index, item);
+    const {
+      backendData: { id },
+    } = item;
+    const res = await deleteTaskService(id);
+    const { code } = res;
+    if (code === 0) {
+      deleteTask(index);
+    } else {
+      toast.error(t("task.deleteFailed"));
+    }
+    return;
+  };
 
   const filteredTasks = useMemo(() => {
     if (!searchValue) return tasks;
@@ -172,7 +190,7 @@ export function TaskList(props: { searchValue?: string }) {
                     setSelectedId(item.id);
                     navigate(`${Path.Task}/${item.id}`);
                   }}
-                  onDelete={() => deleteTask(index)}
+                  onDelete={() => handleDeleteTask(index, item)}
                 />
               ))}
             </div>

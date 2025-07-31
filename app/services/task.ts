@@ -2,6 +2,7 @@ import { Body } from "@tauri-apps/api/http";
 import { getLocalBaseDomain } from "@/app/utils/fetch";
 import { fetchNoProxy } from "@/app/utils/fetch-no-proxy";
 import { getHeaders } from "@/app/utils/fetch";
+import { TaskPayload } from "@/app/typing";
 
 const TASK_API_PREFIX = "/scheduler";
 
@@ -23,7 +24,7 @@ export async function testTask(task: object) {
 }
 
 // 创建任务
-export async function createTask(task: object) {
+export async function createTask(task: TaskPayload) {
   const { baseURL, headers } = await getLocalFetchOptions();
   const res = await fetchNoProxy(`${baseURL}${TASK_API_PREFIX}/add_task`, {
     method: "POST",
@@ -34,9 +35,9 @@ export async function createTask(task: object) {
 }
 
 // 更新任务
-export async function updateTask(task: object & { task_id: string }) {
+export async function updateTask(task: TaskPayload) {
   const { baseURL, headers } = await getLocalFetchOptions();
-  const res = await fetchNoProxy(`${baseURL}${TASK_API_PREFIX}/add_task`, {
+  const res = await fetchNoProxy(`${baseURL}${TASK_API_PREFIX}/update_task`, {
     method: "PUT",
     headers,
     body: Body.json(task),
