@@ -33,10 +33,11 @@ class WebSocketManager {
 
   private port: number = 6888;
   private retryCount = 0;
+  private localToken: string = "";
 
   private readonly maxRetries = 5;
 
-  connect(port: number) {
+  connect(port: number, localToken: string) {
     if (
       this.socket &&
       (this.socket.readyState === WebSocket.OPEN ||
@@ -51,7 +52,8 @@ class WebSocketManager {
     }
 
     this.port = port;
-    const url = `${this.baseUrl}:${this.port}/ws`;
+    this.localToken = localToken;
+    const url = `${this.baseUrl}:${this.port}/ws?token=${this.localToken}`;
 
     this.socket = new WebSocket(url);
 
@@ -77,7 +79,10 @@ class WebSocketManager {
     this.socket.onclose = () => {
       this.retryCount++;
       console.warn("[WebSocket] Connection closed. Reconnecting in 3s...");
-      setTimeout(() => this.connect(this.port), this.reconnectInterval);
+      setTimeout(
+        () => this.connect(this.port, this.localToken),
+        this.reconnectInterval,
+      );
     };
 
     this.socket.onerror = (err) => {
