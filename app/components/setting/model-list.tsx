@@ -16,7 +16,6 @@ import DeleteIcon from "@/app/icons/delete.svg";
 import DefaultModelIcon from "@/app/icons/default-model-icon.svg";
 import { useTranslation } from "react-i18next";
 import { AddModelModal } from "./add-model-modal";
-import NoDataIcon from "@/app/icons/no-data.svg";
 import { getProviderList } from "@/app/services";
 import DeleteDialog from "@/app/components/delete-dialog";
 import { toast } from "sonner";
@@ -161,11 +160,6 @@ export default function ModelList() {
               ))}
             </TableBody>
           </Table>
-          {localProviders.length === 0 && (
-            <div className="flex justify-center w-full py-4">
-              <NoDataIcon />
-            </div>
-          )}
         </div>
       </div>
       <div className="flex justify-center mt-4">
