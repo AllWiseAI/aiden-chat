@@ -5,10 +5,12 @@ import { useState, useMemo, useEffect } from "react";
 import { Button } from "./shadcn/button";
 import { Task as TaskType, TaskAction, TaskExecutionRecord } from "../typing";
 import EditIcon from "../icons/edit.svg";
-import TaskManagement, { Notification } from "./task-management";
+import TaskManagement from "./task-management";
 import dayjs from "dayjs";
 import { getTaskExecutionRecords } from "@/app/services/task";
 import clsx from "clsx";
+import NotificationOnIcon from "../icons/notification-on.svg";
+import NotificationOffIcon from "../icons/notification-off.svg";
 import SuccessIcon from "../icons/success.svg";
 import PendingIcon from "../icons/time.svg";
 import FailedIcon from "../icons/close.svg";
@@ -19,7 +21,6 @@ import { useChatStore } from "../store/chat";
 interface TaskPanelProps {
   task: TaskType;
   setIsEdit: () => void;
-  updateNotification: (id: string) => void;
 }
 
 interface TaskItemProps {
@@ -156,7 +157,7 @@ function TaskRecords({ taskItem }: { taskItem: TaskType }) {
   );
 }
 
-function TaskPanel({ task, setIsEdit, updateNotification }: TaskPanelProps) {
+function TaskPanel({ task, setIsEdit }: TaskPanelProps) {
   const { t } = useTranslation();
 
   return (
@@ -182,15 +183,19 @@ function TaskPanel({ task, setIsEdit, updateNotification }: TaskPanelProps) {
 
       <div className="flex gap-3">
         <span>{t("task.notification")}</span>
-        <div className="flex gap-1 text-main">
-          <Notification
-            checked={task.notification}
-            onChange={() => updateNotification(task.id)}
-          >
-            <span className="select-none">
-              {task.notification ? t("task.on") : t("task.off")}
-            </span>
-          </Notification>
+
+        <div className="flex items-center justify-center gap-1 text-[#979797]">
+          {task.notification ? (
+            <>
+              <NotificationOnIcon className="size-5" />
+              {t("task.on")}
+            </>
+          ) : (
+            <>
+              <NotificationOffIcon className="size-5" />
+              {t("task.off")}
+            </>
+          )}
         </div>
       </div>
 
@@ -208,7 +213,6 @@ export function Task() {
   const { id } = useParams<{ id: string }>();
   const tasks = useTaskStore((state) => state.tasks);
   const setTask = useTaskStore((state) => state.setTask);
-  const updateNotification = useTaskStore((state) => state.setNotification);
 
   const [isEdit, setIsEdit] = useState(false);
   const taskItem = tasks.find((task) => task.id === id);
@@ -221,26 +225,29 @@ export function Task() {
   if (!taskItem) return null;
 
   return (
-    <div className="flex flex-col min-h-0 gap-5 px-15 pb-10">
-      {isEdit ? (
-        <TaskManagement
-          task={taskItem}
-          onCancel={() => setIsEdit(false)}
-          onChange={(id, updatedTask) => {
-            setTask(id, updatedTask);
-            setIsEdit(false);
-          }}
-        />
-      ) : (
-        <>
-          <TaskPanel
+    <div
+      className="flex flex-col h-screen min-h-0 gap-5 px-15 pb-10"
+      onClick={() => setIsEdit(false)}
+    >
+      <div onClick={(e) => e.stopPropagation()}>
+        {isEdit ? (
+          <TaskManagement
             task={taskItem}
-            setIsEdit={() => setIsEdit(true)}
-            updateNotification={updateNotification}
+            onCancel={() => {
+              setIsEdit(false);
+            }}
+            onChange={(id, updatedTask) => {
+              setTask(id, updatedTask);
+              setIsEdit(false);
+            }}
           />
-          <TaskRecords taskItem={taskItem} />
-        </>
-      )}
+        ) : (
+          <>
+            <TaskPanel task={taskItem} setIsEdit={() => setIsEdit(true)} />
+            <TaskRecords taskItem={taskItem} />
+          </>
+        )}
+      </div>
     </div>
   );
 }
