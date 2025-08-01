@@ -51,9 +51,9 @@ export const useTaskStore = createPersistStore(
       setCurrentTaskId: (id: string) => {
         set({ currentTaskId: id });
       },
-      deleteTask: (index: number) => {
+      deleteTask: (id: string) => {
         const currentTasks = get().tasks;
-        const newTasks = currentTasks.filter((_, i) => i !== index);
+        const newTasks = currentTasks.filter((t) => t.id !== id);
         set({ tasks: newTasks });
       },
     };
@@ -61,6 +61,6 @@ export const useTaskStore = createPersistStore(
   },
   {
     name: StoreKey.Task,
-    version: 1.2,
+    version: 1.3,
   },
 );

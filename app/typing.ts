@@ -256,6 +256,7 @@ export enum TaskAction {
   Success = "success",
   Pending = "pending",
   Failed = "failed",
+  Idle = "idle",
 }
 
 export type TaskExecutionRecord = {

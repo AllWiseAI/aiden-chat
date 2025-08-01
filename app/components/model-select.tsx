@@ -146,7 +146,7 @@ export const ModelSelect = ({ mode = "inner", onChange, value }: Props) => {
 
   return (
     <Select value={bindValue} onValueChange={handleModelChange}>
-      <SelectTrigger className="w-full border-0 hover:bg-muted/20 dark:hover:bg-muted/30">
+      <SelectTrigger className="w-full border-0 hover:bg-muted/20 dark:hover:bg-muted/30 shadow-none">
         <SelectValue placeholder="Select model" />
       </SelectTrigger>
       <SelectContent className="max-h-[320px] dark:bg-[#101213] max-w-56 p-0">

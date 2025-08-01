@@ -91,7 +91,7 @@ function TaskItem({ title, taskInfo }: TaskItemProps) {
             />
           )}
         </div>
-        {status !== TaskAction.Pending && (
+        {status !== TaskAction.Pending && status !== TaskAction.Idle && (
           <div
             className="text-main select-none cursor-pointer hover:opacity-75"
             onClick={handleDetailClick}
@@ -152,7 +152,7 @@ function TaskRecords({ taskItem }: { taskItem: TaskType }) {
           key={item.id}
           taskInfo={item}
           title={formatDateToReadableString(
-            item.next_run_at || item.completed_at,
+            item.next_run_at || item.completed_at || item.created_at,
           )}
         />
       ))}
@@ -221,7 +221,8 @@ export function Task() {
   const taskItem = tasks.find((task) => task.id === id);
 
   useEffect(() => {
-    const { modelInfo } = taskItem as TaskType;
+    const { modelInfo } = (taskItem as TaskType) || {};
+    if (!modelInfo) return;
     const {
       "Aiden-Model-Name": modelName,
       "Aiden-Model-Provider": provider,
@@ -253,7 +254,7 @@ export function Task() {
     const {
       id,
       backendData: { id: backendId },
-    } = taskItem as TaskType;
+    } = (taskItem as TaskType) || {};
 
     const modelInfo = getModelInfo(
       modelRef.current,
@@ -283,6 +284,13 @@ export function Task() {
       onClick={() => setIsEdit(false)}
     >
       <div onClick={(e) => e.stopPropagation()}>
+        <div className="w-fit mb-5">
+          <ModelSelect
+            mode="custom"
+            onChange={handleModelChange}
+            value={model}
+          />
+        </div>
         {isEdit ? (
           <TaskManagement
             task={taskItem}
@@ -296,13 +304,6 @@ export function Task() {
           />
         ) : (
           <>
-            <div className="w-fit mb-5">
-              <ModelSelect
-                mode="custom"
-                onChange={handleModelChange}
-                value={model}
-              />
-            </div>
             <TaskPanel task={taskItem} setIsEdit={() => setIsEdit(true)} />
             <TaskRecords taskItem={taskItem} />
           </>

@@ -134,19 +134,17 @@ export function TaskList(props: { searchValue?: string }) {
   const setSelectedId = useTaskStore((state) => state.setCurrentTaskId);
   const navigate = useNavigate();
 
-  const handleDeleteTask = async (index: number, item: Task) => {
-    console.log(index, item);
-    const {
-      backendData: { id },
-    } = item;
-    const res = await deleteTaskService(id);
+  const handleDeleteTask = async (item: Task) => {
+    const { backendData, id } = item || {};
+    const res = await deleteTaskService(backendData?.id);
     const { code } = res;
     if (code === 0) {
-      deleteTask(index);
+      deleteTask(id);
+      setSelectedId(tasks[0]?.id || "");
+      navigate(`${Path.Task}/${tasks[0]?.id || ""}`);
     } else {
       toast.error(t("task.deleteFailed"));
     }
-    return;
   };
 
   const filteredTasks = useMemo(() => {
@@ -181,7 +179,7 @@ export function TaskList(props: { searchValue?: string }) {
               {type.charAt(0).toUpperCase() + type.slice(1) + " " + "Task"}
             </span>
             <div className="flex flex-col gap-2">
-              {tasks.map((item, index) => (
+              {tasks.map((item) => (
                 <TaskItem
                   key={item.id}
                   name={item.name}
@@ -190,7 +188,7 @@ export function TaskList(props: { searchValue?: string }) {
                     setSelectedId(item.id);
                     navigate(`${Path.Task}/${item.id}`);
                   }}
-                  onDelete={() => handleDeleteTask(index, item)}
+                  onDelete={() => handleDeleteTask(item)}
                 />
               ))}
             </div>
