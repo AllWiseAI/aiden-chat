@@ -12,8 +12,8 @@ import {
 import { Calendar } from "./shadcn/calendar";
 import TimeSelect from "./time-select";
 import { useNavigate } from "react-router-dom";
-import { TaskTypeEnum, Task, TaskPayload } from "../typing";
-import { createDefaultTask, useTaskStore } from "../store";
+import { TaskTypeEnum, Task, TaskPayload, ModelHeaderInfo } from "../typing";
+import { createDefaultTask, useAppConfig, useTaskStore } from "../store";
 import dayjs from "dayjs";
 import clsx from "clsx";
 import NotificationOnIcon from "../icons/notification-on.svg";
@@ -86,6 +86,7 @@ export default function TaskManagement({
     ...createDefaultTask(),
     ...task,
   });
+  const currentModelInfo = useAppConfig((state) => state.getCurrentModel());
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [isTestLoading, setIsTestLoading] = useState(false);
   const [notificationEnabled, setNotificationEnabled] = useState(
@@ -183,7 +184,20 @@ export default function TaskManagement({
       if (task) {
         onChange?.(newTask.id, { ...newTask, backendData: { ...data } });
       } else {
-        taskStore.createTask({ ...newTask, backendData: { ...data } });
+        const modelInfo = {
+          "Aiden-Model-Name": currentModelInfo?.model,
+          "Aiden-Endpoint": currentModelInfo?.endpoint,
+          "Aiden-Model-Provider": currentModelInfo?.provider,
+        } as ModelHeaderInfo;
+
+        if (currentModelInfo?.apiKey) {
+          modelInfo["Aiden-Model-Api-Key"] = currentModelInfo?.apiKey;
+        }
+        taskStore.createTask({
+          ...newTask,
+          modelInfo,
+          backendData: { ...data },
+        });
       }
       navigate(`${Path.Task}/${newTask.id}`);
     } else {

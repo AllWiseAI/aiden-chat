@@ -2,7 +2,8 @@ import { Body } from "@tauri-apps/api/http";
 import { getLocalBaseDomain } from "@/app/utils/fetch";
 import { fetchNoProxy } from "@/app/utils/fetch-no-proxy";
 import { getHeaders } from "@/app/utils/fetch";
-import { TaskPayload } from "@/app/typing";
+import { TaskPayload, ChatModelInfo } from "@/app/typing";
+import { getChatHeaders } from "../utils/chat";
 
 const TASK_API_PREFIX = "/scheduler";
 
@@ -97,21 +98,18 @@ export async function getTaskExecutionRecords(
 // 切换任务模型
 export async function switchTaskModel(
   task_id: string,
-  model: {
-    endpoint: string;
-    model_name: string;
-    provider: string;
-  },
+  modelInfo: ChatModelInfo,
 ) {
-  const { baseURL } = await getLocalFetchOptions();
+  const { baseURL, headers } = await getLocalFetchOptions();
+  const chatHeaders = getChatHeaders(modelInfo);
+
   const res = await fetchNoProxy(
     `${baseURL}${TASK_API_PREFIX}/switch_task_model`,
     {
       method: "POST",
       headers: {
-        "Aiden-Endpoint": model.endpoint,
-        "Aiden-Model-Name": model.model_name,
-        "Aiden-Model-Provider": model.provider,
+        ...chatHeaders,
+        "Host-Authorization": headers["Host-Authorization"],
       },
       body: Body.json({ task_id }),
     },

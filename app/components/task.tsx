@@ -1,13 +1,19 @@
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useTaskStore } from "../store";
-import { useState, useMemo, useEffect } from "react";
+import { useAppConfig, useTaskStore, getModelInfo } from "../store";
+import { useMemo, useEffect } from "react";
 import { Button } from "./shadcn/button";
-import { Task as TaskType, TaskAction, TaskExecutionRecord } from "../typing";
+import {
+  Task as TaskType,
+  TaskAction,
+  TaskExecutionRecord,
+  ChatModelInfo,
+  ModelHeaderInfo,
+} from "../typing";
 import EditIcon from "../icons/edit.svg";
 import TaskManagement from "./task-management";
 import dayjs from "dayjs";
-import { getTaskExecutionRecords } from "@/app/services/task";
+import { getTaskExecutionRecords, switchTaskModel } from "@/app/services/task";
 import clsx from "clsx";
 import NotificationOnIcon from "../icons/notification-on.svg";
 import NotificationOffIcon from "../icons/notification-off.svg";
@@ -17,6 +23,10 @@ import FailedIcon from "../icons/close.svg";
 import { Path } from "../constant";
 import { useNavigate } from "react-router-dom";
 import { useChatStore } from "../store/chat";
+import { ModelSelect } from "./model-select";
+import { toast } from "sonner";
+import useState from "react-usestateref";
+import { getChatHeaders } from "../utils/chat";
 
 interface TaskPanelProps {
   task: TaskType;
@@ -206,9 +216,59 @@ export function Task() {
   const { id } = useParams<{ id: string }>();
   const tasks = useTaskStore((state) => state.tasks);
   const setTask = useTaskStore((state) => state.setTask);
-
+  const [model, setModel, modelRef] = useState("");
   const [isEdit, setIsEdit] = useState(false);
   const taskItem = tasks.find((task) => task.id === id);
+
+  useEffect(() => {
+    const { modelInfo } = taskItem as TaskType;
+    const {
+      "Aiden-Model-Name": modelName,
+      "Aiden-Model-Provider": provider,
+      "Aiden-Model-Api-Key": apiKey,
+    } = modelInfo;
+
+    if (apiKey) {
+      setModel(`${provider}:${modelName}`);
+    } else {
+      setModel(modelName);
+    }
+  }, [taskItem]);
+
+  const groupedProviders = useAppConfig((state) => state.groupedProviders);
+  const models = useAppConfig((state) => state.models);
+
+  const updateTaskModelInfo = (id: string, modelInfo: ChatModelInfo) => {
+    const modelHeaders = getChatHeaders(
+      modelInfo,
+    ) as unknown as ModelHeaderInfo;
+    setTask(id, {
+      ...(taskItem as TaskType),
+      modelInfo: modelHeaders,
+    });
+  };
+
+  const handleModelChange = async (value: string) => {
+    setModel(value);
+    const {
+      id,
+      backendData: { id: backendId },
+    } = taskItem as TaskType;
+
+    const modelInfo = getModelInfo(
+      modelRef.current,
+      groupedProviders,
+      models,
+    ) as ChatModelInfo;
+    const res = await switchTaskModel(backendId, modelInfo);
+    const { code } = res;
+    if (code === 0) {
+      toast.success("切换成功");
+      updateTaskModelInfo(id, modelInfo);
+    } else {
+      console.error("qiehuan shibai");
+    }
+  };
 
   useEffect(() => {
     if (!taskItem) return;
@@ -219,7 +279,7 @@ export function Task() {
 
   return (
     <div
-      className="flex flex-col h-screen min-h-0 gap-5 px-15 py-10"
+      className="flex flex-col h-screen min-h-0 gap-5 px-15 py-5"
       onClick={() => setIsEdit(false)}
     >
       <div onClick={(e) => e.stopPropagation()}>
@@ -236,6 +296,13 @@ export function Task() {
           />
         ) : (
           <>
+            <div className="w-fit mb-5">
+              <ModelSelect
+                mode="custom"
+                onChange={handleModelChange}
+                value={model}
+              />
+            </div>
             <TaskPanel task={taskItem} setIsEdit={() => setIsEdit(true)} />
             <TaskRecords taskItem={taskItem} />
           </>

@@ -207,7 +207,7 @@ export type ChatModelInfo = {
   provider: string;
   default_endpoint?: string;
   apiKey?: string;
-  model?: string;
+  model: string;
   endpoint?: string;
 };
 
@@ -225,6 +225,13 @@ export type GeminiModelOptions = {
   displayName: string;
 };
 
+export type ModelHeaderInfo = {
+  "Aiden-Model-Name": string;
+  "Aiden-Endpoint": string;
+  "Aiden-Model-Provider": string;
+  "Aiden-Model-Api-Key"?: string;
+};
+
 export interface Task {
   id: string;
   name: string;
@@ -235,6 +242,7 @@ export interface Task {
   notification: boolean;
   details: string;
   backendData: any;
+  modelInfo: ModelHeaderInfo;
 }
 
 export enum TaskTypeEnum {
