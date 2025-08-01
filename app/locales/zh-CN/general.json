@@ -38,6 +38,10 @@
     }
   },
   "task": {
+    "daily": "每日任务",
+    "weekly": "每周任务",
+    "monthly": "每月任务",
+    "once": "单次任务",
     "noTitle": "无标题",
     "time": "时间",
     "date": "日/月",

@@ -9,10 +9,13 @@ import {
   TaskExecutionRecord,
   ChatModelInfo,
   ModelHeaderInfo,
+  TaskTypeEnum,
 } from "../typing";
 import EditIcon from "../icons/edit.svg";
 import TaskManagement from "./task-management";
 import dayjs from "dayjs";
+import advancedFormat from "dayjs/plugin/advancedFormat";
+
 import { getTaskExecutionRecords, switchTaskModel } from "@/app/services/task";
 import clsx from "clsx";
 import NotificationOnIcon from "../icons/notification-on.svg";
@@ -27,6 +30,7 @@ import { ModelSelect } from "./model-select";
 import { toast } from "sonner";
 import useState from "react-usestateref";
 import { getChatHeaders } from "../utils/chat";
+dayjs.extend(advancedFormat);
 
 interface TaskPanelProps {
   task: TaskType;
@@ -40,11 +44,13 @@ interface TaskItemProps {
 
 function formatCustomTime(date: string, hour: number, minute: number): string {
   const full = dayjs(`${dayjs(date).format("YYYY-MM-DD")}T${hour}:${minute}`);
-  const formatHour = hour % 12 === 0 ? hour : hour % 12;
+  const formatHour = hour % 12 === 0 ? 12 : hour % 12;
   const formatMinute = minute < 10 ? `0${minute}` : minute;
   const suffix = hour < 12 ? "am" : "pm";
 
-  return `${full.format("dddd, MMM D")} ${formatHour}:${formatMinute}${suffix}`;
+  return `${formatHour}:${formatMinute} ${suffix}, ${full.format(
+    "dddd, MMMM D, YYYY",
+  )}`;
 }
 
 function TaskItem({ title, taskInfo }: TaskItemProps) {
@@ -108,15 +114,17 @@ function formatDateToReadableString(isoString: string) {
   const date = new Date(isoString);
 
   const weekday = date.toLocaleDateString("en-US", { weekday: "long" });
-  const month = date.toLocaleDateString("en-US", { month: "short" });
+  const month = date.toLocaleDateString("en-US", { month: "long" });
   const day = date.getDate();
+  const year = date.getFullYear();
   const hours = date.getHours();
   const minutes = date.getMinutes();
+
   const hour12 = hours % 12 || 12;
   const ampm = hours >= 12 ? "pm" : "am";
   const paddedMinutes = String(minutes).padStart(2, "0");
 
-  return `${weekday}, ${month} ${day} ${hour12}:${paddedMinutes}${ampm}`;
+  return `${hour12}:${paddedMinutes} ${ampm}, ${weekday}, ${month} ${day}, ${year}`;
 }
 
 function TaskRecords({ taskItem }: { taskItem: TaskType }) {
@@ -132,7 +140,6 @@ function TaskRecords({ taskItem }: { taskItem: TaskType }) {
       const { code, data } = res;
       if (code === 0) {
         const { records } = data;
-        console.log("records", records);
         if (records && records.length) {
           setRecordList(records);
         } else {
@@ -181,7 +188,15 @@ function TaskPanel({ task, setIsEdit }: TaskPanelProps) {
 
       <div className="flex gap-3">
         <span>{t("task.recurrence")}</span>
-        <span className="text-[#979797]">{task.type + " task"}</span>
+        <span className="text-[#979797]">
+          {task.type === TaskTypeEnum.Daily
+            ? t("task.daily")
+            : task.type === TaskTypeEnum.Weekly
+            ? t("task.weekly")
+            : task.type === TaskTypeEnum.Monthly
+            ? t("task.monthly")
+            : t("task.once")}
+        </span>
       </div>
 
       <div className="flex gap-3">

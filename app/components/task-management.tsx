@@ -35,20 +35,10 @@ interface TaskManagementProps {
   onChange?: (id: string, updatedTask: Task) => void;
 }
 
-const TaskTypeLabels: Record<TaskTypeEnum, string> = {
-  [TaskTypeEnum.Once]: "单次任务",
-  [TaskTypeEnum.Daily]: "每日任务",
-  [TaskTypeEnum.Weekly]: "每周任务",
-  [TaskTypeEnum.Monthly]: "每月任务",
-};
-
 function getCurrentDateObj(startDate: string) {
   const date = new Date(startDate);
-
   const dayIndex = date.getDay();
-
   const daysMap = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
-
   const dayString = daysMap[dayIndex];
   const dayOfMonth = date.getDate();
 
@@ -208,7 +198,7 @@ export default function TaskManagement({
   };
 
   return (
-    <div className="flex flex-col gap-2.5 text-sm bg-[#F3F5F7] dark:bg-[#202121] px-2.5 py-2 border border-[#E8ECEF] rounded-sm">
+    <div className="flex flex-col gap-2.5 text-sm bg-[#F3F5F7] dark:bg-[#202121] px-2.5 py-2 border border-[#E8ECEF] dark:border-[#343839]  rounded-sm">
       <Input
         className="h-10 !text-left rounded-sm bg-white dark:bg-[#101213] !border-0 p-2.5"
         placeholder={t("task.enterTaskName")}
@@ -282,10 +272,9 @@ export default function TaskManagement({
             ...task,
             type,
           }));
-          console.log(type);
         }}
       >
-        <SelectTrigger className="!w-full !h-10 bg-white dark:bg-[#101213] rounded-sm border-0">
+        <SelectTrigger className="!w-full !h-10 bg-white dark:bg-[#101213] rounded-sm border-0 !data-[placeholder]:text-black">
           <SelectValue placeholder={t("task.selectTaskType")} />
         </SelectTrigger>
         <SelectContent className="w-[var(--radix-select-trigger-width)]">
@@ -295,7 +284,7 @@ export default function TaskManagement({
               key={type}
               className="hover:bg-[#F5F5F5] px-2.5 py-2 cursor-default [&_[data-select-item-indicator]]:hidden"
             >
-              {TaskTypeLabels[type]}
+              {t(`task.${type}`)}
             </SelectItem>
           ))}
         </SelectContent>

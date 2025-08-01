@@ -38,6 +38,10 @@
     }
   },
   "task": {
+    "daily": "Daily task",
+    "weekly": "Weekly task",
+    "monthly": "Monthly task",
+    "once": "Once task",
     "noTitle": "Untitled",
     "time": "Time",
     "date": "Day/Month",
