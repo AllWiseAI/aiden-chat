@@ -349,13 +349,6 @@ export function Task() {
           />
         ) : (
           <>
-            <div className="w-fit mb-5">
-              <ModelSelect
-                mode="custom"
-                onChange={handleModelChange}
-                value={model}
-              />
-            </div>
             <TaskPanel task={taskItem} setIsEdit={() => setIsEdit(true)} />
             <TaskRecords taskItem={taskItem} />
           </>
