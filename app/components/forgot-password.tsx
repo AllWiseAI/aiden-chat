@@ -148,14 +148,26 @@ const ResetPassword = ({
     }, 1000);
   };
 
-  const verifyPassword = () => {
-    if (formData.password === confirmPassword) {
+  const verifyPassword = (valA: string, valB: string) => {
+    if (valA === valB) {
       setPasswordError("");
-    } else setPasswordError(t("inValidPassword"));
+      return true;
+    } else {
+      setPasswordError(t("inValidPassword"));
+      return false;
+    }
   };
 
   return (
-    <form className="w-full flex-center flex-col gap-8" onSubmit={onSubmit}>
+    <form
+      className="w-full flex-center flex-col gap-8"
+      onSubmit={(e: React.FormEvent) => {
+        e.preventDefault();
+        const isValid = verifyPassword(formData.password, confirmPassword);
+        if (!isValid) return;
+        onSubmit(e);
+      }}
+    >
       <div className="w-full flex flex-col gap-4">
         <span className="text-[#777E90] text-sm dark:text-[#6C7275]">
           {t("email")}
@@ -173,9 +185,17 @@ const ResetPassword = ({
           id="password"
           type="password"
           placeholder={t("forgot.enter")}
-          className="!w-full h-9 !max-w-130 !text-left !px-2.5 !py-2 text-sm hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]"
+          className={clsx(
+            "!w-full h-9 !max-w-130 !text-left !px-2.5 !py-2 text-sm hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]",
+            passwordError && "border-[#EF466F]",
+          )}
           value={formData.password}
-          onChange={onFormChange}
+          onChange={(e) => {
+            onFormChange(e);
+            if (passwordError) {
+              verifyPassword(e.target.value, confirmPassword);
+            }
+          }}
           required
         />
 
@@ -183,16 +203,23 @@ const ResetPassword = ({
           id="confirm-password"
           type="password"
           placeholder={t("forgot.confirm")}
-          className="!w-full h-9 !max-w-130 !text-left !px-2.5 !py-2 text-sm hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]"
+          className={clsx(
+            "!w-full h-9 !max-w-130 !text-left !px-2.5 !py-2 text-sm hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]",
+            passwordError && "border-[#EF466F]",
+          )}
           value={confirmPassword}
           onChange={(e) => {
             setConfirmPassword(e.target.value);
+            if (passwordError) {
+              verifyPassword(formData.password, e.target.value);
+            }
           }}
-          onBlur={verifyPassword}
           required
         />
         {passwordError && (
-          <span className="text-sm text-red-500">{passwordError}</span>
+          <span className="text-xs text-[#EF466F] font-light">
+            {passwordError}
+          </span>
         )}
         <div className="relative w-full overflow-hidden">
           <Input

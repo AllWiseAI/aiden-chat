@@ -7,9 +7,15 @@ interface InputProps extends React.ComponentProps<"input"> {
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, clearable, ...props }, forwardedRef) => {
+  ({ className, type, value, onChange, clearable, ...props }, forwardedRef) => {
     const inputRef = React.useRef<HTMLInputElement | null>(null);
-    const hasContent = (props.value?.toString() ?? "").length > 0;
+    const hasContent = (value?.toString() ?? "").length > 0;
+    const [innerValue, setInnerValue] = React.useState(value ?? "");
+    const isComposing = React.useRef(false);
+
+    React.useEffect(() => {
+      setInnerValue(value ?? "");
+    }, [value]);
 
     const mergedRef = React.useCallback(
       (node: HTMLInputElement | null) => {
@@ -44,6 +50,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           ref={mergedRef}
           type={type}
           data-slot="input"
+          value={innerValue}
           className={cn(
             "file:text-foreground placeholder:text-[#6C7275]/50 dark:placeholder:text-[#343839] selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-[#E8ECEF] dark:border-[#232627] flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
             // "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
@@ -51,6 +58,22 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             { "!pr-10": clearable },
             className,
           )}
+          onCompositionStart={() => {
+            isComposing.current = true;
+          }}
+          onCompositionEnd={(e) => {
+            isComposing.current = false;
+            const v = e.currentTarget.value;
+            setInnerValue(v);
+            onChange?.(e as any);
+          }}
+          onChange={(e) => {
+            const v = e.currentTarget.value;
+            setInnerValue(v);
+            if (!isComposing.current) {
+              onChange?.(e);
+            }
+          }}
           {...props}
         />
         {clearable && hasContent && (
