@@ -107,6 +107,7 @@ export async function switchTaskModel(
     `${baseURL}${TASK_API_PREFIX}/switch_task_model`,
     {
       method: "POST",
+      // @ts-ignore
       headers: {
         ...chatHeaders,
         "Host-Authorization": headers["Host-Authorization"],

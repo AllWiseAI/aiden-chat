@@ -4,7 +4,6 @@ import {
   ModelSize,
   ModelOption,
   ProviderOption,
-  ChatModelInfo,
 } from "../typing";
 import { getClientConfig } from "../config/client";
 import {
@@ -169,13 +168,13 @@ export const useAppConfig = createPersistStore(
       }));
     },
 
-    getCurrentModel(): ChatModelInfo {
+    getCurrentModel(): ProviderOption {
       const { currentModel, groupedProviders, models } = get();
       return getModelInfo(
         currentModel,
         groupedProviders,
         models,
-      ) as ChatModelInfo;
+      ) as ProviderOption;
     },
     getSummaryModel() {
       return get().models.find((model) => model.model === get().summaryModel);
