@@ -60,11 +60,11 @@ function TaskItem({ title, taskInfo }: TaskItemProps) {
   }, [status]);
 
   const handleDetailClick = () => {
-    const { task_id, request_messages, response_data } = taskInfo;
+    const { id, task_id, request_messages, response_data } = taskInfo;
     const isExist = chatStore.haveTaskSession(task_id);
     if (!isExist) {
       chatStore.newTaskSession({
-        taskId: task_id,
+        taskId: task_id + "-" + id,
         // @ts-ignore
         requestData: request_messages,
         // @ts-ignore

@@ -1,5 +1,5 @@
 import { StoreKey } from "../constant";
-import { Task } from "../typing";
+import { Task, ModelHeaderInfo } from "../typing";
 import { createPersistStore } from "../utils/store";
 import { nanoid } from "nanoid";
 
@@ -13,6 +13,7 @@ export const createDefaultTask = (): Task => ({
   notification: false,
   details: "",
   backendData: {},
+  modelInfo: {} as ModelHeaderInfo,
 });
 
 const DEFAULT_TASK_STATE = {
@@ -60,6 +61,6 @@ export const useTaskStore = createPersistStore(
   },
   {
     name: StoreKey.Task,
-    version: 1.1,
+    version: 1.2,
   },
 );
