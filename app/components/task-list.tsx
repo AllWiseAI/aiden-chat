@@ -2,7 +2,7 @@ import { useTaskStore } from "../store";
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Path } from "../constant";
 import { TaskTypeEnum, Task } from "../typing";
 import {
@@ -33,6 +33,7 @@ export function TaskItem(props: {
   onClick: () => void;
   onDelete: () => void;
 }) {
+  const location = useLocation();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
   const { t } = useTranslation("general");
@@ -47,7 +48,7 @@ export function TaskItem(props: {
           <div
             className={clsx(
               "cursor-default font-normal text-sm w-full line-clamp-1",
-              props.selected
+              props.selected && location.pathname !== Path.NewTask
                 ? "text-main"
                 : "text-[#6C7275] dark:text-[#FEFEFE]",
             )}
@@ -80,7 +81,6 @@ export function TaskItem(props: {
                 value="delete"
                 className="!text-[#EF466F] flex justify-start gap-2 !pl-1 !py-2"
                 onClick={() => {
-                  console.log(111);
                   setShowDeleteDialog(true);
                 }}
               >
@@ -175,7 +175,7 @@ export function TaskList(props: { searchValue?: string }) {
       {groupedTasks.map(({ type, tasks }) =>
         tasks.length > 0 ? (
           <div key={type} className="flex flex-col gap-2">
-            <span className="text-[10px] disable-select text-black/50 dark:text-[#6C7275]/50">
+            <span className="text-[10px] disable-select text-[#232627]/50 dark:text-[#E8ECEF]/50">
               {type.charAt(0).toUpperCase() + type.slice(1) + " " + "Task"}
             </span>
             <div className="flex flex-col gap-2">

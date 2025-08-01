@@ -44,7 +44,7 @@ interface TaskItemProps {
 
 function formatCustomTime(date: string, hour: number, minute: number): string {
   const full = dayjs(`${dayjs(date).format("YYYY-MM-DD")}T${hour}:${minute}`);
-  const formatHour = hour % 12 === 0 ? 12 : hour % 12;
+  const formatHour = hour <= 12 ? hour : hour - 12;
   const formatMinute = minute < 10 ? `0${minute}` : minute;
   const suffix = hour < 12 ? "am" : "pm";
 

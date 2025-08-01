@@ -198,7 +198,7 @@ export default function TaskManagement({
   };
 
   return (
-    <div className="flex flex-col gap-2.5 text-sm bg-[#F3F5F7] dark:bg-[#202121] px-2.5 py-2 border border-[#E8ECEF] dark:border-[#343839]  rounded-sm">
+    <div className="flex flex-col gap-2.5 text-sm bg-[#F3F5F7] dark:bg-[#232627]/50 px-2.5 py-2 border border-[#E8ECEF] dark:border-[#343839] rounded-sm">
       <Input
         className="h-10 !text-left rounded-sm bg-white dark:bg-[#101213] !border-0 p-2.5"
         placeholder={t("task.enterTaskName")}
@@ -217,7 +217,7 @@ export default function TaskManagement({
               className={clsx(
                 "flex-1 flex items-center px-2.5 py-2 bg-white dark:bg-[#101213] rounded-sm text-sm",
                 {
-                  "text-[#6C7275]/50 dark:text-[#343839]": !newTask.date,
+                  "text-[#6C7275]/50 dark:text-[#E8ECEF]/50": !newTask.date,
                 },
               )}
             >
@@ -274,7 +274,7 @@ export default function TaskManagement({
           }));
         }}
       >
-        <SelectTrigger className="!w-full !h-10 bg-white dark:bg-[#101213] rounded-sm border-0 !data-[placeholder]:text-black">
+        <SelectTrigger className="!w-full !h-10 bg-white dark:bg-[#101213] dark:hover:bg-[#101213] rounded-sm border-0 !data-[placeholder]:text-black">
           <SelectValue placeholder={t("task.selectTaskType")} />
         </SelectTrigger>
         <SelectContent className="w-[var(--radix-select-trigger-width)]">
@@ -290,7 +290,7 @@ export default function TaskManagement({
         </SelectContent>
       </Select>
       <textarea
-        className="bg-white dark:bg-[#101213] placeholder:text-[#6C7275]/50 dark:placeholder:text-[#343839] rounded-sm p-2.5 resize-none overflow-auto max-h-[60vh]"
+        className="bg-white dark:bg-[#101213] placeholder:text-[#6C7275]/50 dark:placeholder:text-[#E8ECEF]/50 rounded-sm p-2.5 resize-none overflow-auto max-h-[60vh]"
         ref={textareaRef}
         rows={1}
         placeholder={t("task.taskDesp")}

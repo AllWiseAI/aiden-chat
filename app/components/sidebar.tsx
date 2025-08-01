@@ -271,7 +271,7 @@ export function SideBarBody(props: {
                 "flex-center flex-col cursor-pointer",
                 tabValue === "chat"
                   ? "text-main"
-                  : "text-[#BFBFBF] dark:text-[#343839] hover:opacity-80",
+                  : "text-[#232627]/50 dark:text-[#E8ECEF]/50 hover:opacity-80",
               )}
               onClick={() => {
                 setTabValue("chat");
@@ -288,7 +288,7 @@ export function SideBarBody(props: {
                 "flex-center flex-col cursor-pointer",
                 tabValue === "task"
                   ? "text-main"
-                  : "text-[#BFBFBF] dark:text-[#343839] hover:opacity-80",
+                  : "text-[#232627]/50 dark:text-[#E8ECEF]/50 hover:opacity-80",
               )}
               onClick={() => {
                 setTabValue("task");
