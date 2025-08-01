@@ -43,10 +43,14 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
     const reg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return reg.test(email);
   };
-  const verifyPassword = () => {
-    if (formData.password === confirmPassword) {
+  const verifyPassword = (valA: string, valB: string) => {
+    if (valA === valB) {
       setPasswordError("");
-    } else setPasswordError(t("inValidPassword"));
+      return true;
+    } else {
+      setPasswordError(t("inValidPassword"));
+      return false;
+    }
   };
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -68,8 +72,10 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
       <form
         className="flex-center flex-col gap-5 w-full"
         onSubmit={(e) => {
-          verifyPassword();
-          if (!passwordError) onSubmit(e);
+          e.preventDefault();
+          const isValid = verifyPassword(formData.password, confirmPassword);
+          if (!isValid) return;
+          onSubmit(e);
         }}
       >
         <div className="flex flex-col gap-2 w-full">
@@ -136,8 +142,10 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
             value={confirmPassword}
             onChange={(e) => {
               setConfirmPassword(e.target.value);
+              if (passwordError) {
+                verifyPassword(formData.password, e.target.value);
+              }
             }}
-            onBlur={verifyPassword}
             required
           />
           {passwordError && (
@@ -182,9 +190,7 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
               formData.password &&
               confirmPassword &&
               checked
-            ) ||
-            !!emailError ||
-            !!passwordError
+            ) || !!emailError
           }
         >
           {t("signUp.btn")}

@@ -8,13 +8,14 @@ import {
 } from "../shadcn/dialog";
 import { Button } from "../shadcn/button";
 import { Password } from "../password";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { apiChangePassword } from "../../services";
 import { useAuthStore } from "../../store/auth";
 import { useNavigate } from "react-router-dom";
 import { Path } from "../../constant";
+import clsx from "clsx";
 import LoadingIcon from "../../icons/loading-spinner.svg";
 
 interface ChangePasswordModalProps {
@@ -74,13 +75,15 @@ export function ChangePasswordModal({
   const [newVal, setNewVal] = useState("");
   const [confirmVal, setConfirmVal] = useState("");
   const [loading, setLoading] = useState(false);
-  const isMatch = useMemo(() => {
-    if (newVal === confirmVal) return true;
-    else return false;
-  }, [newVal, confirmVal]);
+  const [error, setError] = useState("");
 
   const handleSubmit = async () => {
     setLoading(true);
+    if (newVal !== confirmVal) {
+      setError(t("auth:inValidPassword"));
+      setLoading(false);
+      return;
+    }
     try {
       const res = (await apiChangePassword({
         oldVal,
@@ -137,8 +140,14 @@ export function ChangePasswordModal({
               onChange={(e) => {
                 const value = e.target.value.replace(/\s/g, "");
                 setNewVal(value);
+                if (error && value === confirmVal) {
+                  setError("");
+                }
               }}
-              className="!text-left rounded-sm"
+              className={clsx(
+                "!text-left rounded-sm",
+                error && "border-[#EF466F]",
+              )}
               placeholder={t("general.password.new.tip")}
             />
           </div>
@@ -151,12 +160,21 @@ export function ChangePasswordModal({
               onChange={(e) => {
                 const value = e.target.value.replace(/\s/g, "");
                 setConfirmVal(value);
+                if (error && newVal === value) {
+                  setError("");
+                }
               }}
-              className="!text-left rounded-sm"
+              className={clsx(
+                "!text-left rounded-sm",
+                error && "border-[#EF466F]",
+              )}
               placeholder={t("general.password.reEnter.tip")}
             />
           </div>
         </div>
+        {error && (
+          <span className="text-[#EF466F] text-sm font-light">{error}</span>
+        )}
         <DialogFooter>
           <DialogClose asChild className="flex-1">
             <Button
@@ -167,7 +185,7 @@ export function ChangePasswordModal({
             </Button>
           </DialogClose>
           <Button
-            disabled={!(oldVal && newVal && confirmVal && isMatch && !loading)}
+            disabled={!(oldVal && newVal && confirmVal && !loading)}
             className="flex-1 h-8 rounded-sm bg-main text-white dark:text-black px-2.5 py-2 flex items-center gap-2"
             onClick={handleSubmit}
             type="submit"
