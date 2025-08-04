@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, Dispatch, SetStateAction } from "react";
 import { Popover, PopoverTrigger, PopoverContent } from "./shadcn/popover";
 import { Input } from "./shadcn/input";
 import { useTranslation } from "react-i18next";
@@ -9,6 +9,8 @@ import clsx from "clsx";
 interface TimeSelectProps {
   hour: number | null;
   minute: number | null;
+  timeErr: string;
+  setTimeErr: Dispatch<SetStateAction<string>>;
   onChange: (val: string) => void;
 }
 
@@ -24,11 +26,21 @@ function generateTimeOptions(stepMinutes: number = 15): string[] {
   return times;
 }
 
+function verifyTime(time: string): boolean {
+  const [h, m] = time.split(":").map((item: string) => Number(item));
+  if (Number.isNaN(h) || Number.isNaN(m)) return false;
+  if (h < 0 || h > 23) return false;
+  if (m < 0 || m > 60) return false;
+  return true;
+}
+
 const TIME_OPTIONS = generateTimeOptions();
 
 export default function TimeSelect({
   hour,
   minute,
+  timeErr,
+  setTimeErr,
   onChange,
 }: TimeSelectProps) {
   const { t } = useTranslation("general");
@@ -36,7 +48,6 @@ export default function TimeSelect({
   const inputRef = useRef<HTMLInputElement>(null);
   const formatHour = hour !== null && hour < 10 ? `0${hour}` : hour;
   const formatMinute = minute !== null && minute < 10 ? `0${minute}` : minute;
-
   const [inputVal, setInputVal] = useState(
     hour != null && minute != null ? `${formatHour}:${formatMinute}` : "",
   );
@@ -60,11 +71,17 @@ export default function TimeSelect({
               const val = e.target.value;
               setInputVal(val);
               onChange(e.target.value);
+              if (!verifyTime(val)) {
+                setTimeErr("time format error!");
+              } else setTimeErr("");
               setOpen(true);
             }}
             onFocus={() => setOpen(true)}
             placeholder={t("task.time")}
-            className={clsx("w-full h-10 !text-left border-0")}
+            className={clsx(
+              "w-full h-10 !text-left border-0",
+              timeErr && "border border-[#EF466F]",
+            )}
           />
         </div>
       </PopoverTrigger>

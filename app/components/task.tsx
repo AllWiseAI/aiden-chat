@@ -14,6 +14,7 @@ import {
 import EditIcon from "../icons/edit.svg";
 import TaskManagement from "./task-management";
 import dayjs from "dayjs";
+import "dayjs/locale/zh-cn";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 
 import { getTaskExecutionRecords, switchTaskModel } from "@/app/services/task";
@@ -30,6 +31,7 @@ import { useChatStore } from "../store/chat";
 import { ModelSelect } from "./model-select";
 import { toast } from "sonner";
 import useState from "react-usestateref";
+import { getLang } from "../locales";
 import { getChatHeaders } from "../utils/chat";
 dayjs.extend(advancedFormat);
 
@@ -44,14 +46,36 @@ interface TaskItemProps {
 }
 
 function formatCustomTime(date: string, hour: number, minute: number): string {
+  const locale = getLang();
+  dayjs.locale(locale);
   const full = dayjs(`${dayjs(date).format("YYYY-MM-DD")}T${hour}:${minute}`);
-  const formatHour = hour <= 12 ? hour : hour - 12;
-  const formatMinute = minute < 10 ? `0${minute}` : minute;
-  const suffix = hour < 12 ? "am" : "pm";
 
-  return `${formatHour}:${formatMinute} ${suffix}, ${full.format(
-    "dddd, MMMM D, YYYY",
-  )}`;
+  const formatMinute = minute < 10 ? `0${minute}` : minute;
+
+  if (locale === "zh-CN") {
+    let suffix = "";
+    if (hour < 6) {
+      suffix = "凌晨";
+    } else if (hour < 12) {
+      suffix = "上午";
+    } else if (hour === 12) {
+      suffix = "中午";
+    } else if (hour < 18) {
+      suffix = "下午";
+    } else {
+      suffix = "晚上";
+    }
+    const formatHour = hour <= 12 ? hour : hour - 12;
+    return `${full.format(
+      "YYYY年, M月D日, dddd",
+    )}, ${suffix}${formatHour}:${formatMinute}`;
+  } else {
+    const formatHour = hour % 12 || 12;
+    const suffix = hour < 12 ? "am" : "pm";
+    return `${formatHour}:${formatMinute} ${suffix}, ${full.format(
+      "dddd, MMMM D, YYYY",
+    )}`;
+  }
 }
 
 function TaskItem({ title, taskInfo }: TaskItemProps) {
@@ -116,20 +140,10 @@ function TaskItem({ title, taskInfo }: TaskItemProps) {
 }
 
 function formatDateToReadableString(isoString: string) {
-  const date = new Date(isoString);
-
-  const weekday = date.toLocaleDateString("en-US", { weekday: "long" });
-  const month = date.toLocaleDateString("en-US", { month: "long" });
-  const day = date.getDate();
-  const year = date.getFullYear();
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
-
-  const hour12 = hours % 12 || 12;
-  const ampm = hours >= 12 ? "pm" : "am";
-  const paddedMinutes = String(minutes).padStart(2, "0");
-
-  return `${hour12}:${paddedMinutes} ${ampm}, ${weekday}, ${month} ${day}, ${year}`;
+  const date = dayjs(isoString);
+  const hour = date.hour();
+  const minute = date.minute();
+  return formatCustomTime(date.toISOString(), hour, minute);
 }
 
 function TaskRecords({ taskItem }: { taskItem: TaskType }) {

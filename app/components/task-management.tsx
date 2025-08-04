@@ -82,6 +82,7 @@ export default function TaskManagement({
   const [notificationEnabled, setNotificationEnabled] = useState(
     task?.notification ?? false,
   );
+  const [timeErr, setTimeErr] = useState<string>("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const navigate = useNavigate();
   // const { t } = useTranslation();
@@ -99,6 +100,7 @@ export default function TaskManagement({
     if (!task.date || task.hour === null || task.minute === null) return false;
     if (!task.type) return false;
     if (!task.details) return false;
+    if (timeErr) return false;
     return true;
   };
 
@@ -250,6 +252,8 @@ export default function TaskManagement({
           <TimeSelect
             hour={newTask.hour}
             minute={newTask.minute}
+            timeErr={timeErr}
+            setTimeErr={setTimeErr}
             onChange={(time) =>
               setNewTask((task) => {
                 const [hour, minute] = time
@@ -312,7 +316,8 @@ export default function TaskManagement({
             });
           }}
         />
-        <div className="flex gap-2.5 h-full">
+        <div className="flex items-center gap-2.5 h-full">
+          <p className="text-[#EF466F]">{timeErr}</p>
           <Button
             className="h-full bg-transparent hover:bg-transparent hover:opacity-60 text-black dark:text-white font-normal border border-[#343839] rounded-sm"
             onClick={handleTestClick}
