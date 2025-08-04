@@ -98,7 +98,7 @@ function TaskItem({ title, taskInfo }: TaskItemProps) {
             />
           )}
         </div>
-        {status !== TaskAction.Pending && status !== TaskAction.Idle && (
+        {status === TaskAction.Success && (
           <div
             className="text-main select-none cursor-pointer hover:opacity-75"
             onClick={handleDetailClick}
