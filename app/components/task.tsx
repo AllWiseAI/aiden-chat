@@ -68,16 +68,17 @@ function TaskItem({ title, taskInfo }: TaskItemProps) {
   const handleDetailClick = () => {
     const { id, task_id, request_messages, response_data } = taskInfo;
     const isExist = chatStore.haveTaskSession(task_id);
+    const singleKey = task_id + "-" + id;
     if (!isExist) {
       chatStore.newTaskSession({
-        taskId: task_id + "-" + id,
+        taskId: singleKey,
         // @ts-ignore
         requestData: request_messages,
         // @ts-ignore
         responseData: response_data,
       });
     } else {
-      chatStore.selectTaskSession(task_id);
+      chatStore.selectTaskSession(singleKey);
     }
     navigate(Path.Chat);
   };
