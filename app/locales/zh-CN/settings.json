@@ -10,6 +10,26 @@
   "general": {
     "account": "账号",
     "logout": "登出",
+    "password": {
+      "change": "重置密码",
+      "success": {
+        "title": "重置成功",
+        "content": "密码将在重启后生效。",
+        "btn": "立即重启"
+      },
+      "old": {
+        "title": "旧密码",
+        "tip": "请输入旧密码"
+      },
+      "new": {
+        "title": "新密码",
+        "tip": "请输入新密码"
+      },
+      "reEnter": {
+        "title": "确认新密码",
+        "tip": "请再次输入新密码"
+      }
+    },
     "country": {
       "title": "地区",
       "cn": "中国",
@@ -26,7 +46,7 @@
     },
     "relaunch": {
       "title": "重启应用",
-      "description": "切换地区需重启APP后生效，请确认是否继续执行并重启APP。"
+      "description": "切换区域将导致可用模型发生变化，此修改需要重新启动应用程序才能生效。请确认您是否希望继续并重新启动应用程序。"
     }
   },
   "model": {
