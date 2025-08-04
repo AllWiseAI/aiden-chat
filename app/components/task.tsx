@@ -22,6 +22,7 @@ import NotificationOnIcon from "../icons/notification-on.svg";
 import NotificationOffIcon from "../icons/notification-off.svg";
 import SuccessIcon from "../icons/success.svg";
 import PendingIcon from "../icons/time.svg";
+import LoadingIcon from "../icons/loading-spinner.svg";
 import FailedIcon from "../icons/close.svg";
 import { Path } from "../constant";
 import { useNavigate } from "react-router-dom";
@@ -62,6 +63,7 @@ function TaskItem({ title, taskInfo }: TaskItemProps) {
     if (status === TaskAction.Pending) return PendingIcon;
     else if (status === TaskAction.Success) return SuccessIcon;
     else if (status === TaskAction.Failed) return FailedIcon;
+    else if (status === TaskAction.Idle) return LoadingIcon;
     else return null;
   }, [status]);
 
@@ -92,8 +94,10 @@ function TaskItem({ title, taskInfo }: TaskItemProps) {
             <StatusIcon
               className={clsx("size-[18px]", {
                 "text-main": status === TaskAction.Success,
-                "text-[#F5BF4F]": status === TaskAction.Pending,
+                "text-[#F5BF4F]":
+                  status === TaskAction.Pending || status === TaskAction.Idle,
                 "text-[#EF466F]": status === TaskAction.Failed,
+                "animate-spin": status === TaskAction.Idle,
               })}
             />
           )}
