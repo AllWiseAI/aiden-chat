@@ -268,6 +268,7 @@ export const useChatStore = createPersistStore(
           currentSessionIndex: 0,
           sessions: [session].concat(state.sessions),
         }));
+        get().summarizeSession(true, session);
       },
 
       nextSession(delta: number) {
