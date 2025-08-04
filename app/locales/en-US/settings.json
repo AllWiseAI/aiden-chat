@@ -46,7 +46,7 @@
     },
     "relaunch": {
       "title": "Restart",
-      "description": "Switching regions requires restarting the app to take effect. Please confirm whether you wish to proceed and restart the app."
+      "description": "Switching regions will result in changes to the available models, and this modification requires restarting the app to take effect. Please confirm whether you wish to proceed and restart the app."
     }
   },
   "model": {
