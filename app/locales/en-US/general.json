@@ -44,6 +44,7 @@
     "once": "Once task",
     "noTitle": "Untitled",
     "time": "Time",
+    "invalidTime": "Invalid time!",
     "date": "Day/Month",
     "recurrence": "Recurrence",
     "notification": "Notification",

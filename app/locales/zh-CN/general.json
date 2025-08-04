@@ -44,6 +44,7 @@
     "once": "单次任务",
     "noTitle": "无标题",
     "time": "时间",
+    "invalidTime": "时间无效！",
     "date": "日/月",
     "recurrence": "重复",
     "notification": "通知",

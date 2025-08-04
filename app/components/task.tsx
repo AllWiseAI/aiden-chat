@@ -67,8 +67,8 @@ function formatCustomTime(date: string, hour: number, minute: number): string {
     }
     const formatHour = hour <= 12 ? hour : hour - 12;
     return `${full.format(
-      "YYYY年, M月D日, dddd",
-    )}, ${suffix}${formatHour}:${formatMinute}`;
+      "YYYY年 M月D日 dddd",
+    )} ${suffix}${formatHour}:${formatMinute}`;
   } else {
     const formatHour = hour % 12 || 12;
     const suffix = hour < 12 ? "am" : "pm";

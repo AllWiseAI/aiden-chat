@@ -72,7 +72,7 @@ export default function TimeSelect({
               setInputVal(val);
               onChange(e.target.value);
               if (!verifyTime(val)) {
-                setTimeErr("time format error!");
+                setTimeErr(t("task.invalidTime"));
               } else setTimeErr("");
               setOpen(true);
             }}
@@ -80,13 +80,18 @@ export default function TimeSelect({
             placeholder={t("task.time")}
             className={clsx(
               "w-full h-10 !text-left border-0",
-              timeErr && "border border-[#EF466F]",
+              timeErr && "border border-[#EF466F] dark:border-[#EF466F]",
             )}
           />
         </div>
       </PopoverTrigger>
 
-      <PopoverContent className="p-0 w-[var(--radix-popover-trigger-width)] max-h-60 overflow-auto">
+      <PopoverContent
+        className={clsx(
+          "p-0 w-[var(--radix-popover-trigger-width)] max-h-60 overflow-auto",
+          !filtered.length && "hidden",
+        )}
+      >
         {filtered.map((time) => (
           <div
             className="hover:bg-[#F5F5F5] dark:hover:bg-[#101213] px-2.5 py-2 cursor-default"

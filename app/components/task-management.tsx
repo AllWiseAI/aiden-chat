@@ -21,6 +21,7 @@ import NotificationOffIcon from "../icons/notification-off.svg";
 import { Path } from "../constant";
 import { createTask, testTask, updateTask } from "../services/task";
 import { toast } from "sonner";
+import { getLang } from "../locales";
 import { useTranslation } from "react-i18next";
 
 interface NotificationProps {
@@ -215,17 +216,18 @@ export default function TaskManagement({
       <div className="flex gap-2.5 h-10">
         <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
           <PopoverTrigger asChild>
-            <div
-              className={clsx(
-                "flex-1 flex items-center px-2.5 py-2 bg-white dark:bg-[#101213] rounded-sm text-sm",
-                {
+            <div className="flex-1 flex items-center bg-white dark:bg-[#101213] rounded-sm">
+              <div
+                className={clsx("flex items-center px-2.5 py-2 text-sm", {
                   "text-[#6C7275]/50 dark:text-[#E8ECEF]/50": !newTask.date,
-                },
-              )}
-            >
-              {newTask.date
-                ? dayjs(newTask.date).format("D, MMM")
-                : t("task.date")}
+                })}
+              >
+                {newTask.date
+                  ? getLang() === "zh-CN"
+                    ? dayjs(newTask.date).format("M月D日")
+                    : dayjs(newTask.date).format("D, MMM")
+                  : t("task.date")}
+              </div>
             </div>
           </PopoverTrigger>
           <PopoverContent asChild align="start">
@@ -269,6 +271,10 @@ export default function TaskManagement({
           />
         </div>
       </div>
+      <div className="flex justify-end">
+        <p className="w-1/2 pl-2.5 text-[#EF466F] text-sm">{timeErr}</p>
+      </div>
+
       <Select
         value={newTask.type}
         onValueChange={(type) => {
@@ -316,8 +322,7 @@ export default function TaskManagement({
             });
           }}
         />
-        <div className="flex items-center gap-2.5 h-full">
-          <p className="text-[#EF466F]">{timeErr}</p>
+        <div className="flex gap-2.5 h-full">
           <Button
             className="h-full bg-transparent hover:bg-transparent hover:opacity-60 text-black dark:text-white font-normal border border-[#343839] rounded-sm"
             onClick={handleTestClick}
