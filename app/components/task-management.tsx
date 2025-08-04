@@ -322,8 +322,7 @@ export default function TaskManagement({
             });
           }}
         />
-        <div className="flex items-center gap-2.5 h-full">
-          <p className="text-[#EF466F]">{timeErr}</p>
+        <div className="flex gap-2.5 h-full">
           <Button
             className="h-full bg-transparent hover:bg-transparent hover:opacity-60 text-black dark:text-white font-normal border border-[#343839] rounded-sm"
             onClick={handleTestClick}
