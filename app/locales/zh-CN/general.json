@@ -38,8 +38,36 @@
       "disabledTips2": "图片识别。"
     }
   },
+  "task": {
+    "daily": "每日任务",
+    "weekly": "每周任务",
+    "monthly": "每月任务",
+    "once": "单次任务",
+    "noTitle": "无标题",
+    "time": "时间",
+    "invalidTime": "时间无效！",
+    "date": "日/月",
+    "recurrence": "重复",
+    "notification": "通知",
+    "details": "详情",
+    "on": "开",
+    "off": "关",
+    "test": "测试",
+    "confirm": "确认",
+    "createSuccess": "创建成功",
+    "createFailed": "创建失败",
+    "updateSuccess": "更新成功",
+    "updateFailed": "更新失败",
+    "testSuccess": "测试成功",
+    "testFailed": "测试失败",
+    "deleteFailed": "删除失败",
+    "enterTaskName": "请输入任务名称",
+    "selectTaskType": "请选择任务类型",
+    "taskDesp": "任务描述"
+  },
   "home": {
     "newChat": "新的聊天",
+    "newTask": "新的任务",
     "deleteChat": "确认删除选中的对话？",
     "deleteToast": "已删除会话"
   },
@@ -110,7 +138,9 @@
   },
   "dialog": {
     "deleteTitle": "删除聊天",
+    "deleteTaskTitle": "删除任务",
     "alert": "你确定要删除这条聊天记录吗？",
+    "alertTask": "你确定要删除这条任务吗？",
     "cancel": "取消",
     "delete": "删除",
     "mcpTitle": "请求使用 MCP",

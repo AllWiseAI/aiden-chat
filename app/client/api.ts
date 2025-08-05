@@ -1,6 +1,5 @@
 import { ChatMessageTool } from "../store";
 import { ChatGPTApi } from "./platforms/openai";
-import { ModelOption } from "../typing";
 
 export const ROLES = ["system", "user", "assistant"] as const;
 export type MessageRole = (typeof ROLES)[number];
@@ -53,7 +52,7 @@ export interface ToolCallInfo {
 }
 
 export interface ChatOptions {
-  modelInfo?: ModelOption;
+  isSummary?: boolean;
   messages?: RequestMessage[];
   config: LLMConfig;
   onToolCall?: (toolCallInfo: ToolCallInfo) => void;

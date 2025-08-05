@@ -72,7 +72,7 @@ export const ImageUploader = () => {
     if (disable) {
       return (
         <Tooltip>
-          <TooltipTrigger>{renderButton(disable)}</TooltipTrigger>
+          <TooltipTrigger asChild>{renderButton(disable)}</TooltipTrigger>
           <TooltipContent>
             <p>{t("chat.image.disabledTips1")}</p>
             <p>{t("chat.image.disabledTips2")}</p>

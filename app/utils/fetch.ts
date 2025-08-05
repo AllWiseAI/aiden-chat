@@ -5,6 +5,7 @@ import { isRefreshRequest, getLocalToken } from "../services";
 
 import { t } from "i18next";
 import { useAppConfig } from "../store";
+import { ProviderOption } from "../typing";
 
 const FIVE_MINUTES = 5 * 60 * 1000;
 let refreshingTokenPromise: Promise<void> | null = null;
@@ -62,6 +63,7 @@ export const getBaseDomain = async () => {
 // refresh - should refresh token detect
 export const getHeaders = async ({
   aiden = false,
+  isSummary = false,
   ignoreHeaders = false,
   refresh = true,
 }) => {
@@ -94,7 +96,21 @@ export const getHeaders = async ({
     headers[`${aiden ? "Aiden-" : ""}Authorization`] = `Bearer ${latestToken}`;
   }
   if (aiden) {
-    headers["Host-Authorization"] = useAppConfig.getState().localToken;
+    const localToken = useAppConfig.getState().localToken;
+    let modelInfo = useAppConfig.getState().getCurrentModel();
+    if (isSummary) {
+      modelInfo = useAppConfig
+        .getState()
+        .getSummaryModel() as unknown as ProviderOption;
+    }
+    headers["Host-Authorization"] = localToken;
+    headers["Aiden-Model-Name"] = modelInfo?.model ?? "";
+    headers["Aiden-Endpoint"] = modelInfo?.endpoint ?? "";
+    headers["Aiden-Model-Provider"] = modelInfo?.provider ?? "";
+
+    if (modelInfo?.apiKey) {
+      headers["Aiden-Model-Api-Key"] = modelInfo?.apiKey;
+    }
   }
   return headers;
 };

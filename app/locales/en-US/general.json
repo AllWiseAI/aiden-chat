@@ -38,8 +38,36 @@
       "disabledTips2": "support image recognition."
     }
   },
+  "task": {
+    "daily": "Daily task",
+    "weekly": "Weekly task",
+    "monthly": "Monthly task",
+    "once": "Once task",
+    "noTitle": "Untitled",
+    "time": "Time",
+    "invalidTime": "Invalid time!",
+    "date": "Day/Month",
+    "recurrence": "Recurrence",
+    "notification": "Notification",
+    "details": "Details",
+    "on": "On",
+    "off": "Off",
+    "test": "Test",
+    "confirm": "Confirm",
+    "createSuccess": "Create Success",
+    "createFailed": "Create Failed",
+    "updateSuccess": "Update Success",
+    "updateFailed": "Update Failed",
+    "testSuccess": "Test Success",
+    "testFailed": "Test Failed",
+    "deleteFailed": "Delete Failed",
+    "enterTaskName": "Enter Task Name",
+    "selectTaskType": "Select Task Type",
+    "taskDesp": "Task Description"
+  },
   "home": {
     "newChat": "New Chat",
+    "newTask": "New Task",
     "deleteChat": "Confirm to delete the selected conversation?",
     "deleteToast": "Chat Deleted"
   },
@@ -110,7 +138,9 @@
   },
   "dialog": {
     "deleteTitle": "Delete chat",
+    "deleteTaskTitle": "Delete task",
     "alert": "Are you sure you want to delete chat?",
+    "alertTask": "Are you sure you want to delete task?",
     "cancel": "Cancel",
     "delete": "Delete",
     "mcpTitle": "would like to use an MCP",

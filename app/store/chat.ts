@@ -21,6 +21,7 @@ import { createPersistStore } from "../utils/store";
 import { estimateTokenLength } from "../utils/token";
 import { ModelConfig, useAppConfig } from "./config";
 import { createEmptyMask, Mask } from "./mask";
+import { taskSessionParams } from "@/app/typing";
 
 const localStorage = safeLocalStorage();
 
@@ -84,9 +85,9 @@ export const BOT_HELLO: ChatMessage = createMessage({
   content: t("store.botHello"),
 });
 
-function createEmptySession(): ChatSession {
+function createEmptySession(id?: string): ChatSession {
   return {
-    id: nanoid(),
+    id: id ? id : nanoid(),
     topic: "",
     memoryPrompt: "",
     messages: [],
@@ -193,6 +194,17 @@ export const useChatStore = createPersistStore(
           currentSessionIndex: index,
         });
       },
+      haveTaskSession(task_id: string) {
+        const { sessions } = get();
+        return sessions.some((session) => session.id === task_id);
+      },
+      selectTaskSession(task_id: string) {
+        const { sessions, selectSession } = get();
+        console.log("sessions", sessions);
+        const index = sessions.findIndex((session) => session.id === task_id);
+        console.log("index===", task_id, index);
+        selectSession(index);
+      },
 
       moveSession(from: number, to: number) {
         set((state) => {
@@ -239,6 +251,24 @@ export const useChatStore = createPersistStore(
           currentSessionIndex: 0,
           sessions: [session].concat(state.sessions),
         }));
+      },
+      newTaskSession({ taskId, requestData, responseData }: taskSessionParams) {
+        const session = createEmptySession(taskId);
+        session.messages = [
+          ...requestData.map((msg: any) => ({
+            ...msg,
+            date: msg.date || new Date().toLocaleString(),
+            id: msg.id || nanoid(),
+          })),
+          {
+            ...responseData.message,
+          },
+        ];
+        set((state) => ({
+          currentSessionIndex: 0,
+          sessions: [session].concat(state.sessions),
+        }));
+        get().summarizeSession(true, session);
       },
 
       nextSession(delta: number) {
@@ -305,7 +335,6 @@ export const useChatStore = createPersistStore(
       ) {
         const session = get().currentSession();
         const modelConfig = session.mask.modelConfig;
-        const modelInfo = useAppConfig.getState().getCurrentModel();
         // MCP Response no need to fill template
         let mContent: string | MultimodalContent[] = isMcpResponse
           ? content
@@ -353,8 +382,6 @@ export const useChatStore = createPersistStore(
         const api: ClientApi = getClientApi();
         // make request
         api.llm.chat({
-          // @ts-ignore
-          modelInfo,
           messages: sendMessages,
           config: { ...modelConfig, stream: true },
           onToolCall: (toolCallInfo) => {
@@ -480,7 +507,6 @@ export const useChatStore = createPersistStore(
         const session = get().currentSession();
         const modelConfig = session.mask.modelConfig;
         const messageIndex = session.messages.length + 1;
-        const modelInfo = useAppConfig.getState().getCurrentModel();
 
         const botMessage: ChatMessage = createMessage({
           role: "assistant",
@@ -497,8 +523,6 @@ export const useChatStore = createPersistStore(
         });
         const api: ClientApi = getClientApi();
         api.llm.toolCall({
-          // @ts-ignore
-          modelInfo,
           toolCallInfo,
           config: { ...modelConfig, stream: true },
           onUpdate(message, mcpInfo) {
@@ -718,8 +742,6 @@ export const useChatStore = createPersistStore(
         const session = targetSession;
         const modelConfig = session.mask.modelConfig;
         const api: ClientApi = getClientApi();
-        const modelInfo = useAppConfig.getState().getSummaryModel();
-
         // remove error messages if any
         const messages = session.messages;
 
@@ -746,9 +768,8 @@ export const useChatStore = createPersistStore(
                 content: t("store.prompt.topic"),
               }),
             );
-          console.log("summary model:", modelInfo?.model);
           api.llm.chat({
-            modelInfo,
+            isSummary: true,
             messages: topicMessages,
             config: { stream: false },
             onFinish(message, responseRes) {
@@ -792,7 +813,7 @@ export const useChatStore = createPersistStore(
           modelConfig.sendMemory
         ) {
           api.llm.chat({
-            modelInfo,
+            isSummary: true,
             messages: toBeSummarizedMsgs.concat(
               createMessage({
                 role: "system",
@@ -854,6 +875,6 @@ export const useChatStore = createPersistStore(
   },
   {
     name: StoreKey.Chat,
-    version: 2,
+    version: 2.1,
   },
 );

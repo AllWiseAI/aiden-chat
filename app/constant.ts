@@ -18,6 +18,8 @@ export enum Path {
   Loading = "/loading",
   SignUp = "/signup",
   Chat = "/chat",
+  Task = "/task",
+  NewTask = "/new-task",
   Settings = "/settings",
   NewChat = "/new-chat",
   Auth = "/auth",
@@ -47,11 +49,12 @@ export enum StoreKey {
   Mcp = "mcp-store",
   Auth = "auth-store",
   Setting = "setting-store",
+  Task = "task-store",
 }
 
-export const DEFAULT_SIDEBAR_WIDTH = 240;
+export const DEFAULT_SIDEBAR_WIDTH = 280;
 export const MAX_SIDEBAR_WIDTH = 400;
-export const MIN_SIDEBAR_WIDTH = 200;
+export const MIN_SIDEBAR_WIDTH = 220;
 export const NARROW_SIDEBAR_WIDTH = 72;
 
 export const ACCESS_CODE_PREFIX = "nk-";

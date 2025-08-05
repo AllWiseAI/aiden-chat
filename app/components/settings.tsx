@@ -76,7 +76,7 @@ export function Settings() {
           className="rounded-full size-6 bg-[#F3F5F7] dark:bg-[#6C7275] hover:bg-[#F3F5F7]/75 dark:hover:bg-[#6C7275]/75"
           onClick={() => navigate(-1)}
         >
-          <CloseIcon className="size-4" />
+          <CloseIcon className="size-4 text-[#343839]" />
         </Button>
       </div>
       <div className="h-full overflow-x-auto overflow-y-hidden">

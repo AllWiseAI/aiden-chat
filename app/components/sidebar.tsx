@@ -1,4 +1,12 @@
-import React, { Fragment, useEffect, useState, useMemo, useRef } from "react";
+import React, {
+  Fragment,
+  useEffect,
+  useState,
+  useMemo,
+  useRef,
+  Dispatch,
+  SetStateAction,
+} from "react";
 
 import styles from "./home.module.scss";
 
@@ -10,14 +18,18 @@ import {
 import { Button } from "@/app/components/shadcn/button";
 import { Input } from "@/app/components/shadcn/input";
 import LogoIcon from "../icons/logo-text.svg";
-import LogoutIcon from "../icons/logout.svg";
-import SettingIcon from "../icons/setting.svg";
 import SearchIcon from "../icons/search.svg";
 import CollapseIcon from "../icons/collapse.svg";
 import AddIcon from "../icons/add.svg";
-import { toast } from "sonner";
+import ChatIcon from "../icons/chat.svg";
+import TaskIcon from "../icons/task.svg";
 import { useTranslation } from "react-i18next";
-import { useAppConfig, useAuthStore, useChatStore } from "../store";
+import {
+  useAppConfig,
+  useAuthStore,
+  useChatStore,
+  useTaskStore,
+} from "../store";
 import {
   DEFAULT_SIDEBAR_WIDTH,
   MAX_SIDEBAR_WIDTH,
@@ -33,6 +45,10 @@ import clsx from "clsx";
 // import { exportAndDownloadLog } from "../utils/log";
 
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
+  loading: () => null,
+});
+
+const TaskList = dynamic(async () => (await import("./task-list")).TaskList, {
   loading: () => null,
 });
 
@@ -210,17 +226,89 @@ export function SideBarHeader(props: {
 
 export function SideBarBody(props: {
   children: React.ReactNode;
+  searchValue: string;
+  setSearchValue: Dispatch<SetStateAction<string>>;
+  tabValue: string;
+  setTabValue: Dispatch<SetStateAction<"task" | "chat">>;
+  isSearchVisible: boolean;
   shouldNarrow?: boolean;
   onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }) {
-  const { children, shouldNarrow = false } = props;
+  const {
+    children,
+    shouldNarrow = false,
+    searchValue,
+    setSearchValue,
+    tabValue,
+    setTabValue,
+    isSearchVisible,
+  } = props;
+  const navigate = useNavigate();
+  const currentTaskId = useTaskStore((state) => state.currentTaskId);
 
-  return !shouldNarrow ? (
-    <div className="mt-2.5 flex-1 overflow-y-auto flex flex-col">
-      <div className="flex flex-col gap-2.5 px-4">{children}</div>
-    </div>
-  ) : (
-    <div className="flex-1"></div>
+  return (
+    <>
+      {isSearchVisible && (
+        <div className="mt-2.5 px-4 pb-2.5">
+          <div className="flex-center relative">
+            <Input
+              className="h-9 !text-left focus:border-[#00D47E] focus:dark:border-[#00D47E] placeholder:text-sm !placeholder:text-[#6C7275] pl-6 pr-2.5 py-1 rounded-sm"
+              clearable
+              value={searchValue}
+              placeholder="Search"
+              onChange={(e) => setSearchValue(e.target.value)}
+            />
+
+            <SearchIcon className="absolute top-1/2 left-1.5 transform -translate-y-1/2 size-4 text-[#6C7275]/50" />
+          </div>
+        </div>
+      )}
+      <div className="mt-2.5 flex-1 flex flex-col min-h-0">
+        <div className="flex justify-center h-full">
+          <div className="flex flex-col gap-3 w-16 border-r border-white dark:border-[#242424]">
+            <div
+              className={clsx(
+                "flex-center flex-col cursor-pointer",
+                tabValue === "chat"
+                  ? "text-main"
+                  : "text-[#232627]/50 dark:text-[#E8ECEF]/50 hover:opacity-80",
+              )}
+              onClick={() => {
+                setTabValue("chat");
+                navigate(Path.Chat);
+              }}
+            >
+              <div className="rounded-full size-10 flex-center bg-white dark:bg-[#262626]">
+                <ChatIcon />
+              </div>
+              <span className="text-xs">Chats</span>
+            </div>
+            <div
+              className={clsx(
+                "flex-center flex-col cursor-pointer",
+                tabValue === "task"
+                  ? "text-main"
+                  : "text-[#232627]/50 dark:text-[#E8ECEF]/50 hover:opacity-80",
+              )}
+              onClick={() => {
+                setTabValue("task");
+                navigate(`${Path.Task}/${currentTaskId}`);
+              }}
+            >
+              <div className="rounded-full size-10 flex-center bg-white dark:bg-[#262626]">
+                <TaskIcon />
+              </div>
+              <span className="text-xs">Tasks</span>
+            </div>
+          </div>
+          {!shouldNarrow && (
+            <div className="flex-1 flex flex-col gap-2.5 px-4 overflow-y-auto">
+              {children}
+            </div>
+          )}
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -228,43 +316,47 @@ export function SideBarFooter(props: {
   children?: React.ReactNode;
   shouldNarrow?: boolean;
 }) {
-  const { children, shouldNarrow } = props;
+  const { children } = props;
   const authStore = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation("settings");
-  const [showItem, setShowItem] = useState(false);
-  const logout = async () => {
-    navigate(Path.Login);
-    try {
-      const success = await authStore.logout();
-      if (success) {
-        toast.success("Logout success", {
-          className: "w-auto max-w-max",
-        });
-      }
-    } catch (e: any) {
-      toast.error(e.message, {
-        className: "w-auto max-w-max",
-      });
-    }
-  };
+  // const { t } = useTranslation("settings");
+  // const [showItem, setShowItem] = useState(false);
+  // const logout = async () => {
+  //   navigate(Path.Login);
+  //   try {
+  //     const success = await authStore.logout();
+  //     if (success) {
+  //       toast.success("Logout success", {
+  //         className: "w-auto max-w-max",
+  //       });
+  //     }
+  //   } catch (e: any) {
+  //     toast.error(e.message, {
+  //       className: "w-auto max-w-max",
+  //     });
+  //   }
+  // };
 
   return (
-    <div className="flex gap-2.5 p-4">
+    <div className="flex gap-2.5 mb-4">
       {children}
 
-      <div className="flex flex-col gap-2.5 w-full overflow-hidden">
+      <div className="flex-center flex-col gap-2.5 w-16 border-r border-white dark:border-[#242424] overflow-hidden">
         <Avatar
           className="size-10 cursor-pointer"
-          onClick={() => setShowItem(!showItem)}
+          onClick={() => {
+            if (location.pathname !== Path.Settings) {
+              navigate(Path.Settings);
+            }
+          }}
         >
           <AvatarImage src={authStore.user.profile} />
           <AvatarFallback>
             {authStore.user.email?.[0].toUpperCase()}
           </AvatarFallback>
         </Avatar>
-        <div
+        {/* <div
           className={clsx(
             "transition-all duration-300 ease-in-out",
             showItem ? " max-h-40" : "max-h-0",
@@ -298,7 +390,7 @@ export function SideBarFooter(props: {
               <span className="-ml-1 text-xs">{t("general.logout")}</span>
             )}
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* <div className="flex flex-col gap-2 text-[#6C7275] text-sm">
@@ -328,7 +420,18 @@ export function SideBar(props: { className?: string }) {
   const navigate = useNavigate();
   const { t } = useTranslation("general");
   const [searchValue, setSearchValue] = useState("");
+  const [tabValue, setTabValue] = useState<"chat" | "task">("chat");
   const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    const pathName = location.pathname;
+    if (pathName.includes(Path.Chat)) {
+      setTabValue("chat");
+    } else if (pathName.includes(Path.Task)) {
+      setTabValue("task");
+    }
+  }, [location]);
 
   const toggleSearch = () => {
     setIsSearchVisible(!isSearchVisible);
@@ -347,6 +450,11 @@ export function SideBar(props: { className?: string }) {
       ></SideBarHeader>
       <SideBarBody
         shouldNarrow={shouldNarrow}
+        tabValue={tabValue}
+        setTabValue={setTabValue}
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
+        isSearchVisible={isSearchVisible}
         onClick={(e) => {
           if (e.target === e.currentTarget) {
             navigate(Path.Chat);
@@ -356,36 +464,30 @@ export function SideBar(props: { className?: string }) {
         {!shouldNarrow && (
           <>
             <div className="flex flex-col gap-2 sticky top-0 bg-[#F9FAFB] dark:bg-[#141416]">
-              {isSearchVisible && (
-                <div className="flex-center relative">
-                  <Input
-                    className="h-9 !text-left focus:border-[#00D47E] focus:dark:border-[#00D47E] placeholder:text-sm !placeholder:text-[#6C7275] pl-6 pr-2.5 py-1 rounded-sm"
-                    clearable
-                    value={searchValue}
-                    placeholder="Search"
-                    onChange={(e) => setSearchValue(e.target.value)}
-                  />
-
-                  <SearchIcon className="absolute top-1/2 left-1.5 transform -translate-y-1/2 size-4 text-[#6C7275]/50" />
-                </div>
-              )}
               <Button
                 variant="ghost"
                 className="h-9 text-main flex justify-start items-center gap-1 !px-1.5 py-1.5 rounded-sm"
                 onClick={() => {
-                  chatStore.newSession();
-                  navigate(Path.Chat);
+                  if (tabValue === "chat") {
+                    chatStore.newSession();
+                    navigate(Path.Chat);
+                  } else if (tabValue === "task") {
+                    navigate(Path.NewTask);
+                  }
                 }}
               >
                 <AddIcon className="size-5 text-main" />
                 <span className="text-main font-medium select-none">
-                  {t("home.newChat")}
+                  {tabValue === "chat" ? t("home.newChat") : t("home.newTask")}
                 </span>
               </Button>
             </div>
           </>
         )}
-        <ChatList narrow={shouldNarrow} searchValue={searchValue} />
+        {tabValue === "chat" && (
+          <ChatList narrow={shouldNarrow} searchValue={searchValue} />
+        )}
+        {tabValue === "task" && <TaskList searchValue={searchValue} />}
       </SideBarBody>
       <SideBarFooter shouldNarrow={shouldNarrow} />
     </SideBarContainer>

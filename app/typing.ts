@@ -186,6 +186,7 @@ export type CustomModelOption = {
 };
 
 export type ProviderOption = {
+  endpoint?: string;
   multi_model?: boolean;
   itemId: string;
   protocol: string;
@@ -206,7 +207,7 @@ export type ChatModelInfo = {
   provider: string;
   default_endpoint?: string;
   apiKey?: string;
-  model?: string;
+  model: string;
   endpoint?: string;
 };
 
@@ -223,3 +224,88 @@ export type GeminiModelOptions = {
   name: string;
   displayName: string;
 };
+
+export type ModelHeaderInfo = {
+  "Aiden-Model-Name": string;
+  "Aiden-Endpoint": string;
+  "Aiden-Model-Provider": string;
+  "Aiden-Model-Api-Key"?: string;
+};
+
+export interface Task {
+  id: string;
+  name: string;
+  date: string;
+  hour: number | null;
+  minute: number | null;
+  type: string;
+  notification: boolean;
+  details: string;
+  backendData: any;
+  modelInfo: ModelHeaderInfo;
+}
+
+export enum TaskTypeEnum {
+  Once = "once",
+  Daily = "daily",
+  Weekly = "weekly",
+  Monthly = "monthly",
+}
+
+export enum TaskAction {
+  Success = "success",
+  Pending = "pending",
+  Failed = "failed",
+  Idle = "idle",
+}
+
+export type TaskExecutionRecord = {
+  task_id: string;
+  status: string;
+  created_at: string;
+  completed_at: string;
+  next_run_at: string | null;
+  response_data: {
+    message: {
+      role: MessageRole;
+      message: string;
+    };
+  };
+  request_messages: {
+    role: MessageRole;
+    message: string;
+  }[];
+  id: number;
+};
+
+export type taskSessionParams = {
+  taskId: string;
+  requestData: {
+    role: MessageRole;
+    content: string;
+    date: string;
+  }[];
+  responseData: {
+    message: {
+      date: string;
+      role: MessageRole;
+      content: string;
+    };
+  };
+};
+
+export interface TaskPayload {
+  task_id?: string;
+  description: string;
+  repeat_every: number;
+  repeat_unit: string;
+  start_date: string; // Assuming date is stored as string, adjust to Date if needed
+  enable_notification: boolean;
+  hour: number | null;
+  minute: number | null;
+  name: string;
+  repeat_on?: {
+    weekdays?: string[];
+    days_of_month?: number[];
+  };
+}

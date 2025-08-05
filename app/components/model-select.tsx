@@ -21,11 +21,31 @@ import ArrowRightIcon from "@/app/icons/arrow-right.svg";
 import { ProviderIcon } from "./setting/provider-icon";
 import { INNER_PROVIDER_NAME } from "@/app/constant";
 
-export const ModelSelect = () => {
+type Props = {
+  mode?: "custom" | "inner";
+  onChange?: (value: string) => void;
+  value?: string;
+};
+
+export const ModelSelect = ({ mode = "inner", onChange, value }: Props) => {
   const navigate = useNavigate();
   const setCurrentModel = useAppConfig((s) => s.setCurrentModel);
   const currentModel = useAppConfig((s) => s.currentModel);
   const modelList = useAppConfig((s) => s.models);
+
+  const [bindValue, setBindValue] = useState(value);
+
+  useEffect(() => {
+    if (mode === "custom" && value) {
+      setBindValue(value);
+    }
+  }, [value]);
+
+  useEffect(() => {
+    if (mode === "inner" && currentModel) {
+      setBindValue(currentModel);
+    }
+  }, [currentModel]);
 
   const localProviders = useAppConfig((state) => state.localProviders);
 
@@ -98,6 +118,7 @@ export const ModelSelect = () => {
 
   useEffect(() => {
     if (currentModel) {
+      console.log("currentmodel===", currentModel);
       const res = currentModel.split(":");
       if (res.length === 2) {
         const [provider] = res;
@@ -113,14 +134,19 @@ export const ModelSelect = () => {
 
   const handleModelChange = useCallback(
     (value: string) => {
-      setCurrentModel(value);
+      console.log("value:===", value);
+      if (mode === "inner") {
+        setCurrentModel(value);
+      } else {
+        onChange?.(value);
+      }
     },
-    [setCurrentModel],
+    [setCurrentModel, mode, onChange],
   );
 
   return (
-    <Select value={currentModel} onValueChange={handleModelChange}>
-      <SelectTrigger className="w-full border-0 hover:bg-muted/20 dark:hover:bg-muted/30">
+    <Select value={bindValue} onValueChange={handleModelChange}>
+      <SelectTrigger className="w-full border-0 hover:bg-muted/20 dark:hover:bg-muted/30 shadow-none">
         <SelectValue placeholder="Select model" />
       </SelectTrigger>
       <SelectContent className="max-h-[320px] dark:bg-[#101213] max-w-56 p-0">

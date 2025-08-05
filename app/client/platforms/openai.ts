@@ -1,11 +1,6 @@
 "use client";
 import { REQUEST_TIMEOUT_MS } from "@/app/constant";
-import {
-  ModelSize,
-  DalleQuality,
-  DalleStyle,
-  ChatModelInfo,
-} from "@/app/typing";
+import { ModelSize, DalleQuality, DalleStyle } from "@/app/typing";
 import { ChatOptions, LLMApi, MultimodalContent } from "../api";
 import {
   getBaseChatUrl,
@@ -13,7 +8,7 @@ import {
   getSecondChatUrl,
 } from "@/app/utils/fetch";
 import { tauriFetchWithSignal } from "@/app/utils/stream";
-import { streamWithThink, parseSSE, getChatHeaders } from "@/app/utils/chat";
+import { streamWithThink, parseSSE } from "@/app/utils/chat";
 
 export interface OpenAIListModelResponse {
   object: string;
@@ -71,16 +66,14 @@ export class ChatGPTApi implements LLMApi {
 
     const controller = new AbortController();
     options.onController?.(controller);
-    const headers = await getHeaders({ aiden: true });
+    const isSummary = options.isSummary ?? false;
+    const headers = await getHeaders({ aiden: true, isSummary });
     try {
       if (shouldStream) {
         streamWithThink(
           DEFAULT_CHAT_URL,
           requestPayload,
-          {
-            ...headers,
-            ...getChatHeaders(options.modelInfo as ChatModelInfo),
-          },
+          headers,
           controller,
           parseSSE,
           options,
@@ -100,12 +93,7 @@ export class ChatGPTApi implements LLMApi {
                 messages: requestPayload.messages,
               },
             },
-            headers: {
-              ...headers,
-              "Aiden-Model-Name": options.modelInfo?.model,
-              "Aiden-Endpoint": options.modelInfo?.endpoint,
-              "Aiden-Model-Provider": options.modelInfo?.provider,
-            },
+            headers,
           },
           controller.signal,
         );
@@ -136,10 +124,7 @@ export class ChatGPTApi implements LLMApi {
         streamWithThink(
           SECOND_CHAT_URL,
           requestPayload,
-          {
-            ...headers,
-            ...getChatHeaders(options.modelInfo as ChatModelInfo),
-          },
+          headers,
           controller,
           parseSSE,
           options,

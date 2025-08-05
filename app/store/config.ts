@@ -100,6 +100,28 @@ export function limitNumber(
   return Math.min(max, Math.max(min, x));
 }
 
+export function getModelInfo(
+  modelName: string,
+  groupedProviders: Record<string, ProviderOption>,
+  models: ModelOption[],
+) {
+  const res = modelName.split(":");
+  if (res.length === 2 && Object.keys(groupedProviders).length > 0) {
+    const providerKey = Object.keys(groupedProviders).find(
+      (key) => groupedProviders[key]?.provider === res[0],
+    );
+
+    const providerInfo = groupedProviders[providerKey!];
+    // @ts-ignore
+    return {
+      ...(providerInfo as Record<string, unknown>),
+      model: res[1],
+    };
+  }
+  // @ts-ignore
+  return models.find((model) => model.model === modelName);
+}
+
 export const useAppConfig = createPersistStore(
   { ...DEFAULT_CONFIG },
   (set, get) => ({
@@ -147,23 +169,12 @@ export const useAppConfig = createPersistStore(
     },
 
     getCurrentModel(): ProviderOption {
-      const { currentModel, groupedProviders } = get();
-      const res = currentModel.split(":");
-      // custom model
-      if (res.length === 2 && Object.keys(groupedProviders).length > 0) {
-        const providerKey = Object.keys(groupedProviders).find(
-          (key) => groupedProviders[key]?.provider === res[0],
-        );
-
-        const providerInfo = groupedProviders[providerKey!];
-        // @ts-ignore
-        return {
-          ...(providerInfo as Record<string, unknown>),
-          model: res[1],
-        };
-      }
-      // @ts-ignore
-      return get().models.find((model) => model.model === get().currentModel);
+      const { currentModel, groupedProviders, models } = get();
+      return getModelInfo(
+        currentModel,
+        groupedProviders,
+        models,
+      ) as ProviderOption;
     },
     getSummaryModel() {
       return get().models.find((model) => model.model === get().summaryModel);
@@ -227,6 +238,6 @@ export const useAppConfig = createPersistStore(
   }),
   {
     name: StoreKey.Config,
-    version: 4,
+    version: 5,
   },
 );
