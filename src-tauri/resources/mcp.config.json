@@ -1,7 +1,23 @@
 {
   "version": "0.0.14",
-  "syncVersion": "0.0.3",
+  "syncVersion": "0.0.5",
   "mcpServers": {
+    "aiden-mail": {
+      "command": "uvx",
+      "args": [
+        "aiden-mail"
+      ],
+      "transport": "stdio",
+      "aiden_credential": {
+        "type": "password",
+        "providers": [
+          "Gmail",
+          "iCloud",
+          "QQ",
+          "163"
+        ]
+      }
+    },
     "aiden-outlook": {
       "command": "uv",
       "args": [

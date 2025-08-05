@@ -94,7 +94,13 @@
     "editor": {
       "success": "配置已保存。",
       "fail": "配置保存失败，请稍后再试。"
-    }
+    },
+    "provider": "提供商",
+    "account": "账号",
+    "pwd": "密码",
+    "providerTip": "选择提供商",
+    "accountTip": "输入账号",
+    "pwdTip": "输入密码"
   },
   "aboutUs": {
     "contact": "联系我们：",

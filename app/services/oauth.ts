@@ -12,7 +12,6 @@ async function getCredentialFetchOptions() {
   return { baseURL, headers };
 }
 
-// 1. 发起 OAuth 添加凭证
 export async function addOAuthCredential(server_name: string) {
   const { baseURL, headers } = await getCredentialFetchOptions();
   const res = await fetchNoProxy(
@@ -23,10 +22,9 @@ export async function addOAuthCredential(server_name: string) {
       body: Body.json({ server_name }),
     },
   );
-  return res.json(); // { message, data: { accounts } } 或 400 报错
+  return res.json();
 }
 
-// 2. 直接添加账号密码凭证
 export async function addPasswordCredential(params: {
   server_name: string;
   service: string;
@@ -42,10 +40,9 @@ export async function addPasswordCredential(params: {
       body: Body.json(params),
     },
   );
-  return res.json(); // { message, data: { accounts } }
+  return res.json();
 }
 
-// 3. 查询指定 MCP Server 的凭证列表
 export async function queryCredentials(server_name: string) {
   const { baseURL, headers } = await getCredentialFetchOptions();
   const res = await fetchNoProxy(`${baseURL}${CREDENTIAL_API_PREFIX}/query`, {
@@ -53,10 +50,9 @@ export async function queryCredentials(server_name: string) {
     headers,
     body: Body.json({ server_name }),
   });
-  return res.json(); // { message, data: { accounts } }
+  return res.json();
 }
 
-// 4. 移除指定凭证
 export async function revokeCredential(params: {
   server_name: string;
   service: string;
@@ -68,5 +64,5 @@ export async function revokeCredential(params: {
     headers,
     body: Body.json(params),
   });
-  return res.json(); // { message: "Credential revoked" }
+  return res.json();
 }

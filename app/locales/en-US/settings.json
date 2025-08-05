@@ -83,7 +83,9 @@
     "addAccountTips": "Click here to authorize account",
     "delete": {
       "title": "Delete",
-      "description": "Confirm to delete?"
+      "description": "Confirm to delete?",
+      "success": "Delete successful.",
+      "fail": "Remove failed. Please try again later."
     },
     "add": {
       "success": "Add successful.",
@@ -93,7 +95,13 @@
       "success": "Config saved.",
       "fail": "Config save failed. Please try again later.",
       "parseError": "Config parse failed."
-    }
+    },
+    "provider": "Provider",
+    "account": "Account",
+    "pwd": "Password",
+    "providerTip": "Select Provider",
+    "accountTip": "Enter Account",
+    "pwdTip": "Enter Password"
   },
   "aboutUs": {
     "contact": "Contact us:",

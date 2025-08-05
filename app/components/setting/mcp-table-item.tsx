@@ -4,6 +4,7 @@ import { Switch } from "@/app/components/shadcn/switch";
 import FetchIcon from "../../icons/fetch.svg";
 import MoreIcon from "../../icons/more.svg";
 import SettingIcon from "../../icons/setting.svg";
+import OauthIcon from "../../icons/oauth.svg";
 import UpdateIcon from "../../icons/update.svg";
 import DeleteIcon from "../../icons/delete.svg";
 import SuccessIcon from "../../icons/access.svg";
@@ -116,7 +117,7 @@ export function McpTableItem({
 
   const showOauth = useMemo(() => {
     const { mcp_key } = item;
-    return mcp_key === "aiden-outlook";
+    return ["aiden-mail", "aiden-outlook"].includes(mcp_key);
   }, [item]);
 
   const showUpdate = useMemo(() => {
@@ -291,8 +292,7 @@ export function McpTableItem({
                         className="rounded-sm text-sm text-[#6C7275] px-1.5 py-2 h-9 gap-1.5"
                         onClick={handleShowOauthModal}
                       >
-                        {/* TODO replace oauth icon */}
-                        <SettingIcon className="size-[18px]" />
+                        <OauthIcon className="size-[18px]" />
                         {t("mcp.oauth")}
                       </DropdownMenuRadioItem>
                     )}
