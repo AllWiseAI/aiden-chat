@@ -29,6 +29,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { McpTemplateModal } from "./mcp-template-modal";
 import { checkShowTemplateModal } from "@/app/utils/mcp";
+import { McpOauthModal } from "./mcp-oauth-modal";
 
 type McpItemProps = {
   keyword: string;
@@ -67,6 +68,7 @@ export function McpTableItem({
   const { t, i18n } = useTranslation("settings");
   const [status, setStatus] = useState<McpAction | null>(null);
   const [templateModal, setTemplateModal] = useState(false);
+  const [oauthModal, setOauthModal] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
   const [templateInfo, setTemplateInfo] = useState<TTemplateInfo | null>(null);
   const {
@@ -112,6 +114,11 @@ export function McpTableItem({
     return false;
   }, [item]);
 
+  const showOauth = useMemo(() => {
+    const { mcp_key } = item;
+    return mcp_key === "aiden-outlook";
+  }, [item]);
+
   const showUpdate = useMemo(() => {
     if (!config?.mcpServers[mcp_key]) return false;
     if (!local_version && !remote_version) return false;
@@ -128,6 +135,14 @@ export function McpTableItem({
       onSetting(item.settingInfo, item.mcp_key);
     },
     [item.settingInfo, onSetting, item.mcp_key],
+  );
+
+  const handleShowOauthModal = useCallback(
+    (e: React.MouseEvent<HTMLElement>) => {
+      e.stopPropagation();
+      setOauthModal(true);
+    },
+    [],
   );
 
   const handleUpdateMcpVersion = useCallback(
@@ -240,7 +255,7 @@ export function McpTableItem({
             <div className="font-medium mb-1 w-full max-w-8/10">
               {Highlight({ text: mcp_name, keyword })}
             </div>
-            {(showSetting || showUpdate || showDelete) && (
+            {(showSetting || showUpdate || showDelete || showOauth) && (
               <DropdownMenu
                 open={openMenu}
                 onOpenChange={setOpenMenu}
@@ -268,6 +283,17 @@ export function McpTableItem({
                       >
                         <SettingIcon className="size-[18px]" />
                         {t("mcp.setting")}
+                      </DropdownMenuRadioItem>
+                    )}
+                    {showOauth && (
+                      <DropdownMenuRadioItem
+                        value="oauth"
+                        className="rounded-sm text-sm text-[#6C7275] px-1.5 py-2 h-9 gap-1.5"
+                        onClick={handleShowOauthModal}
+                      >
+                        {/* TODO replace oauth icon */}
+                        <SettingIcon className="size-[18px]" />
+                        {t("mcp.oauth")}
                       </DropdownMenuRadioItem>
                     )}
                     {showUpdate && (
@@ -330,6 +356,13 @@ export function McpTableItem({
           onConfirm={handleSettingConfirm}
         ></McpTemplateModal>
       )}
+
+      <McpOauthModal
+        onOpenChange={setOauthModal}
+        mcpInfo={item}
+        open={oauthModal}
+        onConfirm={() => setOauthModal(false)}
+      ></McpOauthModal>
     </div>
   );
 }

@@ -1,7 +1,29 @@
 {
   "version": "0.0.14",
-  "syncVersion": "0.0.2",
+  "syncVersion": "0.0.3",
   "mcpServers": {
+    "aiden-outlook": {
+      "command": "uv",
+      "args": [
+        "run",
+        "outlook_mail.py"
+      ],
+      "aiden_credential": {
+        "type": "oauth",
+        "service": "microsoft",
+        "scopes": [
+          "User.Read",
+          "profile",
+          "offline_access",
+          "Mail.Send",
+          "Mail.Read",
+          "email",
+          "openid"
+        ]
+      },
+      "transport": "stdio",
+      "aiden_enable": true
+    },
     "aiden-search": {
       "url": "https://mcp.aidenai.io/mcp/tavily/sse",
       "transport": "sse",

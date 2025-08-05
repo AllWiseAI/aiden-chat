@@ -4,6 +4,7 @@ import {
   ModelSize,
   ModelOption,
   ProviderOption,
+  OauthAccounts,
 } from "../typing";
 import { getClientConfig } from "../config/client";
 import {
@@ -32,6 +33,7 @@ export enum Theme {
 const config = getClientConfig();
 
 export const DEFAULT_CONFIG = {
+  oauthAccounts: [] as OauthAccounts,
   localToken: "",
   hostServerPort: 6888,
   debugMode: false,
@@ -231,6 +233,11 @@ export const useAppConfig = createPersistStore(
     setCurrentModel(model: string) {
       set(() => ({
         currentModel: model,
+      }));
+    },
+    updateOauthAccount(accounts: OauthAccounts) {
+      set(() => ({
+        oauthAccounts: accounts,
       }));
     },
 

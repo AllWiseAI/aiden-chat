@@ -71,15 +71,23 @@
     "edit": "Edit Config",
     "search": "Search",
     "setting": "Setting",
+    "oauth": "OAuth",
+    "oauthTitle": "Outlook Account",
     "btnUpdate": "Update",
     "remove": "Remove",
     "save": "Save",
     "update": {
       "success": "Update successful."
     },
+    "addAccount": "Add Account",
+    "addAccountTips": "Click here to authorize account",
     "delete": {
       "title": "Delete",
       "description": "Confirm to delete?"
+    },
+    "add": {
+      "success": "Add successful.",
+      "fail": "Add failed. Please try again later."
     },
     "editor": {
       "success": "Config saved.",

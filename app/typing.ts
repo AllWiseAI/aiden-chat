@@ -56,6 +56,7 @@ export type CustomMCPServer = {
   aiden_enable: boolean;
   aiden_id: string;
   aiden_mcp_version?: string;
+  aiden_credential?: AidenCredential;
 };
 
 export type TRemoteMcpInfo = {
@@ -107,6 +108,14 @@ export type McpItemInfo = Omit<
   settingInfo: TSettingInfo | null;
   local_version: string;
   remote_version: string;
+  aiden_credential?: AidenCredential;
+};
+
+export type AidenCredential = {
+  type: "oauth" | "password";
+  service?: string;
+  scopes?: [];
+  providers?: [];
 };
 
 export type A2AServer = {
@@ -309,3 +318,10 @@ export interface TaskPayload {
     days_of_month?: number[];
   };
 }
+
+export type AccountItem = {
+  service: string;
+  account: string;
+};
+
+export type OauthAccounts = AccountItem[];
