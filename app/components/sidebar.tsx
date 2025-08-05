@@ -15,13 +15,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/app/components/shadcn/avatar";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogHeader,
-  DialogFooter,
-} from "./shadcn/dialog";
+
 import { Button } from "@/app/components/shadcn/button";
 import { Input } from "@/app/components/shadcn/input";
 import LogoIcon from "../icons/logo-invite.svg";
@@ -50,6 +44,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { isIOS, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
 import clsx from "clsx";
+import { InviteDialog } from "./invite-dialog";
 // import { exportAndDownloadLog } from "../utils/log";
 
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
@@ -420,81 +415,7 @@ export function SideBarFooter(props: {
           </Button>
         </div>
       )}
-      <Dialog open={showInvite} onOpenChange={setShowInvite}>
-        <DialogContent
-          className="max-w-xl w-150 h-95 rounded-sm gap-5 p-5 pb-0 bg-[#FEFEFE] dark:bg-[#101213]"
-          closeIcon
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
-          <DialogHeader>
-            <DialogTitle className="text-lg text-center dark:text-[#FEFEFE]">
-              Invitation
-            </DialogTitle>
-          </DialogHeader>
-          <div className="overflow-y-auto flex-1">
-            <table className="w-full">
-              <thead className="sticky top-0 z-10 bg-[#FEFEFE] dark:bg-[#101213]">
-                <tr className="h-[22px]">
-                  <th className="w-1/3 h-full px-2 text-center">
-                    Invitation code
-                  </th>
-                  <th className="w-1/3 h-full px-2 text-center">Status</th>
-                  <th className="w-1/3 h-full px-2 text-center">Share</th>
-                </tr>
-              </thead>
-              <tbody className="border-y-[14px] border-y-transparent">
-                <tr className="h-[32px] border-b-[14px] border-b-transparent">
-                  <td className="text-center">Code</td>
-                  <td className="text-center">Status</td>
-                  <td className="text-center">Share</td>
-                </tr>
-                <tr className="h-[32px] border-b-[14px] border-b-transparent">
-                  <td className="text-center">Row‑n</td>
-                  <td className="text-center">…</td>
-                  <td className="text-center">…</td>
-                </tr>
-                <tr className="h-[32px] border-b-[14px] border-b-transparent">
-                  <td className="text-center">Row‑n</td>
-                  <td className="text-center">…</td>
-                  <td className="text-center">…</td>
-                </tr>
-                <tr className="h-[32px] border-b-[14px] border-b-transparent">
-                  <td className="text-center">Row‑n</td>
-                  <td className="text-center">…</td>
-                  <td className="text-center">…</td>
-                </tr>
-                <tr className="h-[32px] border-b-[14px] border-b-transparent">
-                  <td className="text-center">Row‑n</td>
-                  <td className="text-center">…</td>
-                  <td className="text-center">…</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <DialogFooter className="!justify-center text-xs font-medium  text-main">
-            Seed users enjoy 3-month free after launch
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      {/* <div className="flex flex-col gap-2 text-[#6C7275] text-sm">
-        <div
-          className="flex items-center gap-2 group hover:text-white cursor-pointer"
-          onClick={logout}
-        >
-          <LogoutIcon className="size-[18px] text-[#6C7275] group-hover:text-white" />
-          {!shouldNarrow && <span>{t("general.logout")}</span>}
-        </div>
-        <div
-          className="flex items-center gap-2 group hover:text-white cursor-pointer"
-          onClick={() => navigate(Path.Settings)}
-        >
-          <SettingIcon className="size-[18px] text-[#6C7275] group-hover:text-white" />
-          {!shouldNarrow && <span>{t("title")}</span>}
-        </div>
-      </div> */}
+      <InviteDialog open={showInvite} onOpenChange={setShowInvite} />
     </div>
   );
 }
