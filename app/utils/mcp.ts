@@ -309,8 +309,13 @@ export const getRenderMcpList: any = async (
   }
   if (config?.mcpServers) {
     Object.entries(config.mcpServers).forEach(([name, server]) => {
-      const { aiden_type, aiden_enable, aiden_id, aiden_mcp_version } =
-        server as CustomMCPServer;
+      const {
+        aiden_type,
+        aiden_enable,
+        aiden_id,
+        aiden_mcp_version,
+        aiden_credential,
+      } = server as CustomMCPServer;
       if (!mcpRemoteInfoMap.has(aiden_id)) {
         items.push({
           mcp_id: aiden_id,
@@ -329,6 +334,7 @@ export const getRenderMcpList: any = async (
           mcp_logo: "",
           type: aiden_type,
           settingInfo: parseConfig(server as CustomMCPServer),
+          aiden_credential: aiden_credential,
         });
         mcpRenderedMap.set(name, { icon: "", renderName: name });
       } else {

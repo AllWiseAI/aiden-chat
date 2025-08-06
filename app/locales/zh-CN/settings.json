@@ -68,9 +68,12 @@
     "enterApiKey": "输入 API Key"
   },
   "mcp": {
+    "inValidEmail": "请输入有效的邮箱地址",
     "edit": "编辑配置",
     "search": "搜索",
     "setting": "设置",
+    "oauth": "OAuth",
+    "oauthTitle": "邮箱账号",
     "btnUpdate": "更新",
     "remove": "移除",
     "save": "保存",
@@ -83,10 +86,22 @@
       "success": "移除成功。",
       "fail": "移除失败。请稍后再试。"
     },
+    "add": {
+      "success": "添加成功。",
+      "fail": "添加失败。请稍后再试。"
+    },
+    "addAccount": "添加账号",
+    "addAccountTips": "点击添加账号进行授权",
     "editor": {
       "success": "配置已保存。",
-      "fail": "配置保存失败。请稍后再试。"
-    }
+      "fail": "配置保存失败，请稍后再试。"
+    },
+    "provider": "提供商",
+    "account": "账号",
+    "pwd": "密码",
+    "providerTip": "选择提供商",
+    "accountTip": "输入账号",
+    "pwdTip": "输入密码"
   },
   "aboutUs": {
     "contact": "联系我们：",

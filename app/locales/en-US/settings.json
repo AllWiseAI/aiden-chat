@@ -68,24 +68,41 @@
     "enterApiKey": "Enter API Key"
   },
   "mcp": {
+    "inValidEmail": "Please enter a valid email address",
     "edit": "Edit Config",
     "search": "Search",
     "setting": "Setting",
+    "oauth": "OAuth",
+    "oauthTitle": "Mail Account",
     "btnUpdate": "Update",
     "remove": "Remove",
     "save": "Save",
     "update": {
       "success": "Update successful."
     },
+    "addAccount": "Add Account",
+    "addAccountTips": "Click here to authorize account",
     "delete": {
       "title": "Delete",
-      "description": "Confirm to delete?"
+      "description": "Confirm to delete?",
+      "success": "Delete successful.",
+      "fail": "Remove failed. Please try again later."
+    },
+    "add": {
+      "success": "Add successful.",
+      "fail": "Add failed. Please try again later."
     },
     "editor": {
       "success": "Config saved.",
       "fail": "Config save failed. Please try again later.",
       "parseError": "Config parse failed."
-    }
+    },
+    "provider": "Provider",
+    "account": "Account",
+    "pwd": "Password",
+    "providerTip": "Select Provider",
+    "accountTip": "Enter Account",
+    "pwdTip": "Enter Password"
   },
   "aboutUs": {
     "contact": "Contact us:",

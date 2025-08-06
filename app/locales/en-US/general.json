@@ -150,6 +150,7 @@
     "allowAlways": "Allow always",
     "allowOnce": "Allow once",
     "mcpSetting": "MCP Setting",
+    "oauthSetting": "OAuth Setting",
     "save": "Save",
     "form": {
       "empty": "{{fieldName}} cannot be empty."
