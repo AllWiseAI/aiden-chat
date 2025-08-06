@@ -28,7 +28,7 @@ export default function McpConfig() {
   }
 
   return (
-    <div className="h-full text-black dark:text-white @container">
+    <div className="h-full text-black dark:text-white @container pt-1">
       {mode === "table" && (
         <McpTable setMode={setMode} setDetail={handleSetDetail} />
       )}

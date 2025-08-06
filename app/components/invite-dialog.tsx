@@ -46,7 +46,6 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
       try {
         setLoading(true);
         const data = (await apiGetInviteCode()) as inviteArrayItem[];
-        console.log("API Result:", data);
         setInviteArr(data);
       } catch (error) {
         console.error("Failed to fetch invite codes:", error);
