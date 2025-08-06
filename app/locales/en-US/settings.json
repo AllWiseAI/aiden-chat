@@ -68,11 +68,12 @@
     "enterApiKey": "Enter API Key"
   },
   "mcp": {
+    "inValidEmail": "Please enter a valid email address",
     "edit": "Edit Config",
     "search": "Search",
     "setting": "Setting",
     "oauth": "OAuth",
-    "oauthTitle": "Outlook Account",
+    "oauthTitle": "Mail Account",
     "btnUpdate": "Update",
     "remove": "Remove",
     "save": "Save",

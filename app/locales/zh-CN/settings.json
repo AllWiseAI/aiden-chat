@@ -68,11 +68,12 @@
     "enterApiKey": "输入 API Key"
   },
   "mcp": {
+    "inValidEmail": "请输入有效的邮箱地址",
     "edit": "编辑配置",
     "search": "搜索",
     "setting": "设置",
     "oauth": "OAuth",
-    "oauthTitle": "Outlook 账号",
+    "oauthTitle": "邮箱账号",
     "btnUpdate": "更新",
     "remove": "移除",
     "save": "保存",

@@ -33,7 +33,7 @@ export enum Theme {
 const config = getClientConfig();
 
 export const DEFAULT_CONFIG = {
-  oauthAccounts: [] as OauthAccounts,
+  oauthAccounts: {} as Record<string, OauthAccounts>,
   localToken: "",
   hostServerPort: 6888,
   debugMode: false,
@@ -235,9 +235,12 @@ export const useAppConfig = createPersistStore(
         currentModel: model,
       }));
     },
-    updateOauthAccount(accounts: OauthAccounts) {
+    updateOauthAccount(accounts: OauthAccounts, mcpKey: string) {
       set(() => ({
-        oauthAccounts: accounts,
+        oauthAccounts: {
+          ...get().oauthAccounts,
+          [mcpKey]: accounts,
+        },
       }));
     },
 

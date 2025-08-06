@@ -151,7 +151,6 @@
     "allowOnce": "仅允许一次",
     "mcpSetting": "MCP 设置",
     "oauthSetting": "OAuth 设置",
-    "outlookAccount": "Outlook 账号",
     "save": "保存",
     "form": {
       "empty": "{{fieldName}} 不能为空"

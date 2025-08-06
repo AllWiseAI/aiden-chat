@@ -151,7 +151,6 @@
     "allowOnce": "Allow once",
     "mcpSetting": "MCP Setting",
     "oauthSetting": "OAuth Setting",
-    "outlookAccount": "Outlook Account",
     "save": "Save",
     "form": {
       "empty": "{{fieldName}} cannot be empty."

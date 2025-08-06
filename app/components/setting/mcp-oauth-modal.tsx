@@ -9,6 +9,8 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/app/components/shadcn/dialog";
+import Image from "next/image";
+
 import clsx from "clsx";
 import {
   Select,
@@ -33,13 +35,26 @@ import {
   addPasswordCredential,
 } from "@/app/services/oauth";
 import { useAppConfig } from "@/app/store";
-import EmailIcon from "@/app/icons/email.svg";
+import OutlookIcon from "@/app/icons/outlook.png";
+import QQIcon from "@/app/icons/qq.png";
+import NeteaseIcon from "@/app/icons/163.png";
+import icloudIcon from "@/app/icons/icloud.png";
+import gmailIcon from "@/app/icons/gmail.png";
 import DeleteIcon from "@/app/icons/delete.svg";
 import AddIcon from "@/app/icons/add.svg";
 import AddOutlineIcon from "@/app/icons/add-outline.svg";
 import { AccountItem, McpItemInfo } from "@/app/typing";
 import DeleteDialog from "@/app/components/delete-dialog";
 import { toast } from "sonner";
+import { validateEmail } from "@/app/utils";
+
+const mailIconMap = {
+  QQ: QQIcon,
+  "163": NeteaseIcon,
+  iCloud: icloudIcon,
+  Gmail: gmailIcon,
+  microsoft: OutlookIcon,
+};
 
 interface McpOauthModalProps {
   mcpInfo: McpItemInfo;
@@ -54,9 +69,6 @@ export function McpOauthModal({
   onConfirm,
   onOpenChange,
 }: McpOauthModalProps) {
-  if (mcpInfo.mcp_key === "aiden-outlook") {
-    console.log(mcpInfo);
-  }
   const { t: tInner } = useTranslation("settings");
 
   const oauthAccounts = useAppConfig((state) => state.oauthAccounts);
@@ -67,6 +79,7 @@ export function McpOauthModal({
   const [provider, setProvider] = useState<string>("");
   const [account, setAccount] = useState<string>("");
   const [pwd, setPwd] = useState<string>("");
+  const [emailError, setEmailError] = useState("");
 
   const handleDeleteAccount = (item: AccountItem) => {
     setCurrentAccount(item);
@@ -91,7 +104,9 @@ export function McpOauthModal({
 
       if (res?.message === "Credential revoked") {
         updateOauthAccount(
-          oauthAccounts.filter((i) => i.account !== item.account),
+          oauthAccounts[mcp_key]?.filter((i) => i.account !== item.account) ??
+            [],
+          mcp_key,
         );
         toast.success(tInner("mcp.delete.success"));
       } else {
@@ -105,6 +120,12 @@ export function McpOauthModal({
   const handleConfirm = useCallback(async () => {
     const { aiden_credential, mcp_key } = mcpInfo;
     if (isShowAdd && aiden_credential && aiden_credential.type === "password") {
+      if (account && !validateEmail(account)) {
+        setEmailError(tInner("mcp.inValidEmail"));
+        return;
+      } else {
+        setEmailError("");
+      }
       try {
         const res = await addPasswordCredential({
           server_name: mcp_key,
@@ -114,10 +135,10 @@ export function McpOauthModal({
         });
         if (res?.message === "Credential added completed") {
           const merged = [
-            ...oauthAccounts,
+            ...(oauthAccounts[mcp_key] ?? []),
             ...[{ service: provider, account: account }],
           ];
-          updateOauthAccount(merged);
+          updateOauthAccount(merged, mcp_key);
           setIsShowAdd(false);
           setProvider("");
           setAccount("");
@@ -136,17 +157,21 @@ export function McpOauthModal({
   }, [onConfirm, onOpenChange, mcpInfo, account, pwd, provider]);
 
   const handleAddAcount = useCallback(async () => {
-    const { aiden_credential } = mcpInfo;
+    const { aiden_credential, mcp_key } = mcpInfo;
     if (aiden_credential && aiden_credential.type === "oauth") {
       try {
         const res = await addOAuthCredential(mcpInfo.mcp_key);
+        console.log("res", res);
 
         if (res?.message === "Credential added completed") {
-          const merged = [...oauthAccounts, ...res.data.accounts];
+          const merged = [
+            ...(oauthAccounts[mcp_key] ?? []),
+            ...res.data.accounts,
+          ];
           const unique = Array.from(
             new Map(merged.map((item) => [item.account, item])).values(),
           );
-          updateOauthAccount(unique);
+          updateOauthAccount(unique, mcp_key);
           toast.success(tInner("mcp.add.success"));
         } else {
           toast.error(tInner("mcp.add.fail"));
@@ -206,6 +231,7 @@ export function McpOauthModal({
                     className="w-full! !h-9"
                   >
                     <div className="flex items-center gap-2">
+                      {renderProviderIcon(provider)}
                       <span>{provider}</span>
                     </div>
                   </SelectItem>
@@ -228,7 +254,7 @@ export function McpOauthModal({
             className={clsx(
               "w-full h-9 !text-left px-2.5 py-2 rounded-sm text-sm hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]",
               {
-                "border border-[#EF466F]": false,
+                "border border-[#EF466F]": emailError,
               },
             )}
             value={account}
@@ -236,6 +262,9 @@ export function McpOauthModal({
             clearable
             required
           />
+          {emailError && (
+            <span className="text-[10px] text-red-500">{emailError}</span>
+          )}
         </div>
         <div className="flex flex-col gap-1 w-full">
           <Label htmlFor="pwd" className="font-normal !gap-1 text-sm min-w-14">
@@ -260,15 +289,17 @@ export function McpOauthModal({
   };
 
   const renderContent = () => {
+    const { mcp_key } = mcpInfo;
+    console.log(oauthAccounts[mcp_key]);
     return (
       <>
-        {oauthAccounts.map((item) => (
+        {oauthAccounts[mcp_key]?.map((item) => (
           <div
             key={item.account}
             className="flex justify-between items-center  border border-[#E8ECEF] dark:border-[#232627] rounded-sm px-2.5 py-2"
           >
             <div className="flex gap-2 items-center text-xs">
-              <EmailIcon size={5} />
+              {renderProviderIcon(item.service)}
               <span>{item.account}</span>
             </div>
             <Button
@@ -280,7 +311,7 @@ export function McpOauthModal({
             </Button>
           </div>
         ))}
-        {oauthAccounts.length ? (
+        {oauthAccounts[mcp_key]?.length ? (
           <Button
             variant="ghost"
             className="h-9 text-main flex justify-start items-center gap-1 !px-1.5 py-1.5 rounded-sm"
@@ -307,6 +338,17 @@ export function McpOauthModal({
     );
   };
 
+  const renderProviderIcon = (provider: string) => {
+    return (
+      <div className="size-5">
+        <Image
+          src={mailIconMap[provider as keyof typeof mailIconMap]}
+          alt={provider}
+        />
+      </div>
+    );
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -318,7 +360,7 @@ export function McpOauthModal({
       >
         <DialogHeader>
           <DialogTitle className="text-lg text-center dark:text-[#FEFEFE]">
-            {t("dialog.outlookAccount")}
+            {tInner("mcp.oauthTitle")}
           </DialogTitle>
         </DialogHeader>
 
