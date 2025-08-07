@@ -615,7 +615,7 @@ function InnerChat() {
                     },
                     "placeholder:text-[#6C7275]",
                   )}
-                  placeholder="Ask anything..."
+                  placeholder={t("chat.placeholder")}
                   onInput={(e) => onInput(e.currentTarget.value)}
                   value={userInput}
                   onKeyDown={onInputKeyDown}

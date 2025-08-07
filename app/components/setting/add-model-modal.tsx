@@ -206,6 +206,7 @@ export function AddModelModal({
       ]),
     );
     setIsGettingModelLoading(true);
+    setIsModelsError(false);
     try {
       const modelsReturn = await fetch(requestUrl, {
         method: "GET",

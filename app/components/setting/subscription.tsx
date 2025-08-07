@@ -34,7 +34,7 @@ export default function Subscription() {
             onClick={() => setShowPlan(false)}
           >
             <div
-              className="relative flex flex-col gap-6 p-6 w-72 h-127 bg-[#ECEFF3] rounded-xl overflow-hidden"
+              className="relative flex flex-col gap-6 p-6 w-72 h-127 text-black bg-[#ECEFF3] rounded-xl overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               <div

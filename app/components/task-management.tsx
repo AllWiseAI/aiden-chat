@@ -129,9 +129,13 @@ export default function TaskManagement({
     setIsTestLoading(false);
     const { code, detail } = res;
     if (code === 0) {
-      toast.success(t("task.testSuccess"));
+      toast.success(t("task.testSuccess"), {
+        className: "w-auto max-w-max",
+      });
     } else {
-      toast.error(detail || t("task.testFailed"));
+      toast.error(detail || t("task.testFailed"), {
+        className: "w-auto max-w-max",
+      });
     }
   };
 
@@ -273,9 +277,11 @@ export default function TaskManagement({
           />
         </div>
       </div>
-      <div className="flex justify-end">
-        <p className="w-1/2 pl-2.5 text-[#EF466F] text-sm">{timeErr}</p>
-      </div>
+      {timeErr && (
+        <div className="flex justify-end">
+          <p className="w-1/2 pl-2.5 text-[#EF466F] text-sm">{timeErr}</p>
+        </div>
+      )}
 
       <Select
         value={newTask.type}
