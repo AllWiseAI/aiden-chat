@@ -173,7 +173,9 @@ export default function TaskManagement({
 
     const { code, data, detail } = res;
     if (code === 0) {
-      toast.success(task ? t("task.updateSuccess") : t("task.createSuccess"));
+      toast.success(task ? t("task.updateSuccess") : t("task.createSuccess"), {
+        className: "w-auto max-w-max",
+      });
       if (task) {
         onChange?.(newTask.id, { ...newTask, backendData: { ...data } });
       } else {
@@ -288,7 +290,7 @@ export default function TaskManagement({
           <SelectValue placeholder={t("task.selectTaskType")} />
         </SelectTrigger>
         <SelectContent className="w-[var(--radix-select-trigger-width)]">
-          {Object.values(TaskType).map((type) => (
+          {Object.values(TaskTypeEnum).map((type) => (
             <SelectItem
               value={type}
               key={type}
