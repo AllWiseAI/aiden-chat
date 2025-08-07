@@ -20,6 +20,7 @@ interface FormData {
   email: string;
   password: string;
   code: string;
+  inviteCode: string;
 }
 interface SignUpFormProps {
   formData: FormData;
@@ -125,7 +126,7 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
         </div>
         <div className="flex flex-col gap-2 w-full">
           <Label
-            htmlFor="password"
+            htmlFor="confirm-password"
             className="font-normal after:content['*'] after:content-['*'] after:text-red-500 !gap-1 text-sm"
           >
             {t("signUp.confirm")}
@@ -151,6 +152,26 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
           {passwordError && (
             <span className="text-sm text-red-500">{passwordError}</span>
           )}
+        </div>
+        <div className="flex flex-col gap-2 w-full">
+          <Label
+            htmlFor="inviteCode"
+            className="font-normal after:content['*'] after:content-['*'] after:text-red-500 !gap-1 text-sm"
+          >
+            {t("signUp.invite")}
+          </Label>
+
+          <Input
+            id="inviteCode"
+            type="text"
+            placeholder={t("signUp.enterInviteCode")}
+            className={clsx(
+              "!w-full h-9 !max-w-130 !text-left !px-2.5 !py-2 !rounded-sm text-sm hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]",
+            )}
+            value={formData.inviteCode}
+            onChange={onFormChange}
+            required
+          />
         </div>
         <div className="self-start flex items-center gap-2 text-xs">
           <Checkbox
@@ -189,6 +210,7 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
               formData.email &&
               formData.password &&
               confirmPassword &&
+              formData.inviteCode &&
               checked
             ) || !!emailError
           }
@@ -322,6 +344,7 @@ export function SignUpPage() {
     email: "",
     password: "",
     code: "",
+    inviteCode: "",
   });
   const [isSignUp, setIsSignUp] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -333,6 +356,7 @@ export function SignUpPage() {
         formData.code,
         formData.email,
         formData.password,
+        formData.inviteCode,
         "",
       );
       if (success) {

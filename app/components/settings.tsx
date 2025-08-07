@@ -3,6 +3,7 @@ import CloseIcon from "../icons/close.svg";
 import General from "./setting/general";
 import McpManagement from "./setting/mcp-management";
 import ModelList from "./setting/model-list";
+import Subscription from "./setting/subscription";
 import AboutUs from "./setting/about-us";
 import { Button } from "@/app/components/shadcn/button";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -10,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import generalIcon from "../icons/general.svg";
 import modelIcon from "../icons/model.svg";
 import McpIcon from "../icons/mcp.svg";
+import SubscriptionIcon from "../icons/subscription.svg";
 import InfoIcon from "../icons/info.svg";
 
 function GeneralPanel() {
@@ -20,6 +22,9 @@ function ModelPanel() {
 }
 function McpServersPanel() {
   return <McpManagement />;
+}
+function SubscriptionPanel() {
+  return <Subscription />;
 }
 function AboutUsPanel() {
   return <AboutUs />;
@@ -32,6 +37,11 @@ export function Settings() {
     { name: t("tabs.general"), value: "general", icon: generalIcon },
     { name: t("tabs.model"), value: "model", icon: modelIcon },
     { name: t("tabs.mcp"), value: "mcp", icon: McpIcon },
+    {
+      name: t("tabs.subscription"),
+      value: "subscription",
+      icon: SubscriptionIcon,
+    },
     { name: t("tabs.aboutUs"), value: "about-us", icon: InfoIcon },
   ];
 
@@ -55,6 +65,8 @@ export function Settings() {
         return <McpServersPanel />;
       case "model":
         return <ModelPanel />;
+      case "subscription":
+        return <SubscriptionPanel />;
       case "about-us":
         return <AboutUsPanel />;
       default:

@@ -5,6 +5,7 @@
     "mcp": "MCP",
     "mcpManage": "MCP 管理",
     "model": "模型",
+    "subscription": "订阅",
     "aboutUs": "关于我们"
   },
   "general": {
@@ -102,6 +103,43 @@
     "providerTip": "选择提供商",
     "accountTip": "输入账号",
     "pwdTip": "输入密码"
+  },
+  "subscription": {
+    "plan": "订阅计划",
+    "planT": "版",
+    "detail": "详情",
+    "included": "包含内容：",
+    "month": "/每月",
+    "starter": {
+      "title": "入门",
+      "price": "免费",
+      "content": "具备基础服务的入门版",
+      "included": {
+        "1": "无限使用 Qwen-235B",
+        "2": "无限使用 MCP",
+        "3": "不支持多模态相关功能"
+      }
+    },
+    "standard": {
+      "title": "标准",
+      "price": "$19",
+      "content": "提供进阶服务",
+      "included": {
+        "1": "可使用免费套餐的所有功能",
+        "2": "无限使用所有 Aiden Access 模型（大多数模型）",
+        "3": "无限使用多模态相关功能"
+      }
+    },
+    "pro": {
+      "title": "专业",
+      "price": "$199",
+      "content": "终极解决方案",
+      "included": {
+        "1": "可使用所有功能",
+        "2": "更高级的模型可无限使用",
+        "3": "高峰期优先响应"
+      }
+    }
   },
   "aboutUs": {
     "contact": "联系我们：",

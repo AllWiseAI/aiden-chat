@@ -15,9 +15,11 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/app/components/shadcn/avatar";
+
 import { Button } from "@/app/components/shadcn/button";
 import { Input } from "@/app/components/shadcn/input";
-import LogoIcon from "../icons/logo-text.svg";
+import LogoIcon from "../icons/logo-invite.svg";
+import LogoTextIcon from "../icons/logo-text.svg";
 import SearchIcon from "../icons/search.svg";
 import CollapseIcon from "../icons/collapse.svg";
 import AddIcon from "../icons/add.svg";
@@ -42,6 +44,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { isIOS, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
 import clsx from "clsx";
+import { InviteDialog } from "./invite-dialog";
 // import { exportAndDownloadLog } from "../utils/log";
 
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
@@ -206,7 +209,9 @@ export function SideBarHeader(props: {
         )}
       >
         {!shouldNarrow && (
-          <>{debugMode ? "AidenDebug" : <LogoIcon className="h-[23px]" />}</>
+          <>
+            {debugMode ? "AidenDebug" : <LogoTextIcon className="h-[23px]" />}
+          </>
         )}
         <div className="flex gap-1.5">
           {!shouldNarrow && (
@@ -248,7 +253,7 @@ export function SideBarBody(props: {
 
   return (
     <>
-      {isSearchVisible && (
+      {isSearchVisible && !shouldNarrow && (
         <div className="mt-2.5 px-4 pb-2.5">
           <div className="flex-center relative">
             <Input
@@ -316,10 +321,11 @@ export function SideBarFooter(props: {
   children?: React.ReactNode;
   shouldNarrow?: boolean;
 }) {
-  const { children } = props;
+  const { children, shouldNarrow } = props;
   const authStore = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
+  const [showInvite, setShowInvite] = useState(false);
   // const { t } = useTranslation("settings");
   // const [showItem, setShowItem] = useState(false);
   // const logout = async () => {
@@ -342,7 +348,12 @@ export function SideBarFooter(props: {
     <div className="flex gap-2.5 mb-4">
       {children}
 
-      <div className="flex-center flex-col gap-2.5 w-16 border-r border-white dark:border-[#242424] overflow-hidden">
+      <div
+        className={clsx(
+          "flex-center flex-col gap-2.5 border-r border-white dark:border-[#242424] overflow-hidden",
+          shouldNarrow ? "w-full" : "w-16",
+        )}
+      >
         <Avatar
           className="size-10 cursor-pointer"
           onClick={() => {
@@ -393,22 +404,18 @@ export function SideBarFooter(props: {
         </div> */}
       </div>
 
-      {/* <div className="flex flex-col gap-2 text-[#6C7275] text-sm">
-        <div
-          className="flex items-center gap-2 group hover:text-white cursor-pointer"
-          onClick={logout}
-        >
-          <LogoutIcon className="size-[18px] text-[#6C7275] group-hover:text-white" />
-          {!shouldNarrow && <span>{t("general.logout")}</span>}
+      {!shouldNarrow && (
+        <div className="flex justify-state flex-1 h-10">
+          <Button
+            onClick={() => setShowInvite(true)}
+            className="flex-center h-full py-0 text-[13px] font-normal bg-[#333333] dark:bg-black border dark:border-[#00D47E] hover:bg-[#333333]/85 text-[#00D47E] rounded-full"
+          >
+            <LogoIcon className="size-5 mb-1" />
+            <span>Invite friends</span>
+          </Button>
         </div>
-        <div
-          className="flex items-center gap-2 group hover:text-white cursor-pointer"
-          onClick={() => navigate(Path.Settings)}
-        >
-          <SettingIcon className="size-[18px] text-[#6C7275] group-hover:text-white" />
-          {!shouldNarrow && <span>{t("title")}</span>}
-        </div>
-      </div> */}
+      )}
+      <InviteDialog open={showInvite} onOpenChange={setShowInvite} />
     </div>
   );
 }

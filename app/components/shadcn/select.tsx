@@ -8,6 +8,12 @@ import ArrowUpIcon from "../../icons/arrow-up.svg";
 
 import { cn } from "@/app/libs/shadcn/utils";
 
+type SelectItemProps = React.ComponentPropsWithoutRef<
+  typeof SelectPrimitive.Item
+> & {
+  showIcon?: boolean;
+};
+
 function Select({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Root>) {

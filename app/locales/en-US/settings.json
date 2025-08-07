@@ -5,6 +5,7 @@
     "mcp": "MCP",
     "mcpManage": "MCP Management",
     "model": "Model",
+    "subscription": "Subscription",
     "aboutUs": "About us"
   },
   "general": {
@@ -94,8 +95,50 @@
     },
     "editor": {
       "success": "Config saved.",
-      "fail": "Config save failed. Please try again later.",
-      "parseError": "Config parse failed."
+      "fail": "Config save failed. Please try again later."
+    },
+    "provider": "Provider",
+    "account": "Account",
+    "pwd": "Password",
+    "providerTip": "Select Provider",
+    "accountTip": "Enter Account",
+    "pwdTip": "Enter Password"
+  },
+  "subscription": {
+    "plan": "Plan",
+    "planT": "Plan",
+    "detail": "Details",
+    "included": "What's Included :",
+    "month": "/month",
+    "starter": {
+      "title": "Starter ",
+      "price": "Free",
+      "content": "Starter package with basic services",
+      "included": {
+        "1": "Qwen-235B unlimited use",
+        "2": "Unlimited use of MCP",
+        "3": "Does not support multi-modal related functions"
+      }
+    },
+    "standard": {
+      "title": "Standard ",
+      "price": "$19",
+      "content": "Giving advanced services",
+      "included": {
+        "1": "Access all function of Free Plan",
+        "2": "Unlimited use on all Aiden Access models (most models)",
+        "3": "Unlimited use of multi-modal related functions"
+      }
+    },
+    "pro": {
+      "title": "Pro ",
+      "price": "$199",
+      "content": "Ultimalt Solutions",
+      "included": {
+        "1": "Access all functions",
+        "2": "More advanced models are unlimited",
+        "3": "Priority response in case of congestion"
+      }
     },
     "provider": "Provider",
     "account": "Account",
