@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useTaskStore } from "../store";
-import { useMemo, useEffect, useState } from "react";
+import { useMemo, useEffect, useState, useRef } from "react";
 import { Button } from "./shadcn/button";
 import {
   Task as TaskType,
@@ -148,7 +148,7 @@ function formatDateToReadableString(isoString: string) {
 
 function TaskRecords({ currentTask }: { currentTask: TaskType }) {
   const [recordList, setRecordList] = useState<TaskExecutionRecord[]>([]);
-
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   useEffect(() => {
     const getRecord = async () => {
       if (!currentTask) return;
@@ -159,9 +159,16 @@ function TaskRecords({ currentTask }: { currentTask: TaskType }) {
       const { code, data } = res;
       if (code === 0) {
         const { records } = data;
-        console.log("records", records);
         if (records && records.length) {
           setRecordList(records);
+          const shouldPoll = records.some(
+            (r: TaskExecutionRecord) => r.status === TaskAction.Idle,
+          );
+          if (shouldPoll) {
+            timerRef.current = setTimeout(getRecord, 5000);
+          } else {
+            timerRef.current = null;
+          }
         } else {
           setRecordList([]);
         }
@@ -170,6 +177,11 @@ function TaskRecords({ currentTask }: { currentTask: TaskType }) {
       }
     };
     getRecord();
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
   }, [currentTask]);
 
   return (
