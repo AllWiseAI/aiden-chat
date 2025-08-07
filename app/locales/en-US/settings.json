@@ -96,14 +96,14 @@
     "editor": {
       "success": "Config saved.",
       "fail": "Config save failed. Please try again later."
-    }
+    },
+    "provider": "Provider",
+    "account": "Account",
+    "pwd": "Password",
+    "providerTip": "Select Provider",
+    "accountTip": "Enter Account",
+    "pwdTip": "Enter Password"
   },
-  "provider": "Provider",
-  "account": "Account",
-  "pwd": "Password",
-  "providerTip": "Select Provider",
-  "accountTip": "Enter Account",
-  "pwdTip": "Enter Password",
   "subscription": {
     "plan": "Plan",
     "planT": "Plan",
