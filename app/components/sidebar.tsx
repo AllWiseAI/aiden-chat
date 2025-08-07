@@ -249,6 +249,7 @@ export function SideBarBody(props: {
     isSearchVisible,
   } = props;
   const navigate = useNavigate();
+  const { t } = useTranslation("general");
   const currentTaskId = useTaskStore((state) => state.currentTaskId);
 
   return (
@@ -286,7 +287,7 @@ export function SideBarBody(props: {
               <div className="rounded-full size-10 flex-center bg-white dark:bg-[#262626]">
                 <ChatIcon />
               </div>
-              <span className="text-xs">Chats</span>
+              <span className="text-xs">{t("sidebar.chat")}</span>
             </div>
             <div
               className={clsx(
@@ -303,7 +304,7 @@ export function SideBarBody(props: {
               <div className="rounded-full size-10 flex-center bg-white dark:bg-[#262626]">
                 <TaskIcon />
               </div>
-              <span className="text-xs">Tasks</span>
+              <span className="text-xs">{t("sidebar.task")}</span>
             </div>
           </div>
           {!shouldNarrow && (
@@ -325,6 +326,7 @@ export function SideBarFooter(props: {
   const authStore = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation("general");
   const [showInvite, setShowInvite] = useState(false);
   // const { t } = useTranslation("settings");
   // const [showItem, setShowItem] = useState(false);
@@ -411,7 +413,7 @@ export function SideBarFooter(props: {
             className="flex-center h-full py-0 text-[13px] font-normal bg-[#333333] dark:bg-black border dark:border-[#00D47E] hover:bg-[#333333]/85 text-[#00D47E] rounded-full"
           >
             <LogoIcon className="size-5 mb-1" />
-            <span>Invite friends</span>
+            <span>{t("invite.btn")}</span>
           </Button>
         </div>
       )}

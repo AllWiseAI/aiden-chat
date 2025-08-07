@@ -9,6 +9,7 @@ import {
 import clsx from "clsx";
 import { apiGetInviteCode } from "../services";
 import { copyToClipboard } from "../utils";
+import { useTranslation } from "react-i18next";
 import LoadingIcon from "../icons/loading-spinner.svg";
 import ShareIcon from "../icons/share.svg";
 
@@ -32,6 +33,7 @@ type inviteArrayItem = {
 export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
   const [inviteArr, setInviteArr] = useState<inviteArrayItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const { t } = useTranslation("general");
   const isVip = useMemo(() => {
     const item = inviteArr.at(-1);
     if (item?.usage_limit === 1000) {
@@ -58,10 +60,7 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
   }, [open]);
 
   const handleClick = (index?: number) => {
-    copyToClipboard(
-      inviteArr.at(index ?? -1)!.code,
-      "The invitation link has been copied.",
-    );
+    copyToClipboard(inviteArr.at(index ?? -1)!.code, t("invite.copy"));
   };
 
   return (
@@ -78,7 +77,7 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
       >
         <DialogHeader>
           <DialogTitle className="text-lg text-center dark:text-[#FEFEFE] font-normal">
-            {isVip ? "VIP Invitation Code" : "Invitation"}
+            {isVip ? t("invite.vip.title") : t("invite.title")}
           </DialogTitle>
         </DialogHeader>
         {loading ? (
@@ -96,14 +95,14 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
             </div>
             <div className="flex flex-col gap-5 px-8 text-sm">
               <div className="flex justify-between bg-[#FAFAFA] dark:bg-[#0F0F0F] px-3">
-                <span>You have invited</span>
+                <span>{t("invite.vip.count")}</span>
                 <div className="w-7 flex-center">
                   <span>{inviteArr.at(-1)?.current_usage_count}</span>
                 </div>
               </div>
               <div className="flex justify-between bg-[#FAFAFA] dark:bg-[#0F0F0F] px-3">
-                <span>Maxmium</span>
-                <span>1000</span>
+                <span>{t("invite.vip.max")}</span>
+                <span>{inviteArr.at(-1)?.usage_limit}</span>
               </div>
             </div>
           </div>
@@ -113,13 +112,13 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
               <thead className="sticky top-0 z-10 bg-[#FEFEFE] dark:bg-black border-b-[14px] border-b-transparent">
                 <tr className="h-[22px]">
                   <th className="w-1/3 h-full px-2 text-center font-normal">
-                    Invitation code
+                    {t("invite.table.1")}
                   </th>
                   <th className="w-1/3 h-full px-2 text-center font-normal">
-                    Status
+                    {t("invite.table.2")}
                   </th>
                   <th className="w-1/3 h-full px-2 text-center font-normal">
-                    Share
+                    {t("invite.table.3")}
                   </th>
                 </tr>
               </thead>
@@ -131,15 +130,30 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
                   >
                     <td className="text-center">{item.code}</td>
                     <td>
-                      <div className="flex-center">
-                        <div className="bg-main size-4 rounded-full"></div>
-                      </div>
+                      {item.is_active ? (
+                        <div className="flex-center text-main">
+                          {t("invite.unused")}
+                        </div>
+                      ) : (
+                        <div className="flex-center opacity-40 text-[#101213] dark:text-[#FEFEFE]">
+                          {t("invite.used")}
+                        </div>
+                      )}
                     </td>
                     <td>
                       <div className="flex-center">
                         <ShareIcon
-                          className="text-[#6C7275] light:hover:opacity-70 dark:hover:text-white cursor-pointer"
-                          onClick={() => handleClick(index)}
+                          className={clsx(
+                            "text-[#6C7275]",
+                            item.is_active
+                              ? "light:hover:opacity-70 dark:hover:text-white cursor-pointer"
+                              : "opacity-40",
+                          )}
+                          onClick={() => {
+                            if (item.is_active) {
+                              handleClick(index);
+                            }
+                          }}
                         />
                       </div>
                     </td>
@@ -151,7 +165,7 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
         )}
 
         <DialogFooter className="!justify-center text-xs font-medium text-main">
-          Seed users enjoy 3-month free after launch
+          {isVip ? t("invite.vip.tip") : t("invite.tip")}
         </DialogFooter>
       </DialogContent>
     </Dialog>

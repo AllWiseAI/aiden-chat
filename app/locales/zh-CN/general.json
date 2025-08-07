@@ -7,9 +7,14 @@
   "chatItem": {
     "chatItemCount": "{{count}} 条对话"
   },
+  "sidebar": {
+    "chat": "聊天",
+    "task": "任务"
+  },
   "chat": {
     "title": "嗨，我是",
     "subTitle": "共 {{count}} 条对话",
+    "placeholder": "请输入问题...",
     "actions": {
       "copy": "复制",
       "stop": "停止",
@@ -135,6 +140,25 @@
     "import": "导入",
     "sync": "同步",
     "config": "配置"
+  },
+  "invite": {
+    "btn": "邀请好友",
+    "title": "邀请",
+    "copy": "邀请链接已复制。",
+    "vip": {
+      "title": "VIP 邀请码",
+      "count": "你已邀请",
+      "max": "最多可邀请",
+      "tip": "被邀请用户在上线后可享受一年免费使用"
+    },
+    "table": {
+      "1": "邀请码",
+      "2": "状态",
+      "3": "分享"
+    },
+    "used": "已使用",
+    "unused": "可用",
+    "tip": "种子用户在上线后可享受 3 个月免费使用"
   },
   "dialog": {
     "deleteTitle": "删除聊天",

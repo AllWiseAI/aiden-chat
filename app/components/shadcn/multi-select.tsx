@@ -7,6 +7,7 @@ import {
 import { Button } from "@/app/components/shadcn/button";
 import { useState, useMemo, useEffect } from "react";
 import { cn } from "@/app/libs/shadcn/utils";
+import clsx from "clsx";
 import ArrowDownIcon from "@/app/icons/arrow-down.svg";
 import ArrowUpIcon from "@/app/icons/arrow-up.svg";
 import LoadingSpinner from "@/app/icons/loading-spinner.svg";
@@ -81,7 +82,12 @@ export function MultiSelectDropdown({
             ))}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)]">
+      <DropdownMenuContent
+        className={clsx(
+          "w-[var(--radix-dropdown-menu-trigger-width)] max-h-60",
+          !options.length && "hidden",
+        )}
+      >
         {options.map((opt: Option) => (
           <DropdownMenuCheckboxItem
             key={opt.value}

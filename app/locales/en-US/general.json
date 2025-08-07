@@ -4,12 +4,17 @@
     "netErr": "Connection Error",
     "passwordErr": "Password Error"
   },
+  "sidebar": {
+    "chat": "Chats",
+    "task": "Tasks"
+  },
   "chatItem": {
     "chatItemCount": "{{count}} messages"
   },
   "chat": {
     "title": "Hi, I'm",
     "subTitle": "{{count}} messages",
+    "placeholder": "Ask anything...",
     "actions": {
       "copy": "Copy",
       "stop": "Stop",
@@ -135,6 +140,25 @@
     "import": "Import",
     "sync": "Sync",
     "config": "Config"
+  },
+  "invite": {
+    "btn": "Invite Friends",
+    "title": "Invitation",
+    "copy": "The invitation link has been copied.",
+    "vip": {
+      "title": "VIP Invitation Code",
+      "count": "You have invited",
+      "max": "Maxmium",
+      "tip": "Invited users enjoy one year free after launch"
+    },
+    "table": {
+      "1": "Invitation code",
+      "2": "Status",
+      "3": "Share"
+    },
+    "used": "Used",
+    "unused": "Unused",
+    "tip": "Seed users enjoy 3-month free after launch"
   },
   "dialog": {
     "deleteTitle": "Delete chat",
