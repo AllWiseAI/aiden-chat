@@ -1,4 +1,11 @@
-import { useState, useRef, useEffect, ReactNode, useMemo } from "react";
+import {
+  useState,
+  useRef,
+  useEffect,
+  ReactNode,
+  useMemo,
+  useCallback,
+} from "react";
 import { Input } from "./shadcn/input";
 import { Button } from "./shadcn/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./shadcn/popover";
@@ -12,7 +19,7 @@ import {
 import { Calendar } from "./shadcn/calendar";
 import TimeSelect from "./time-select";
 import { useNavigate } from "react-router-dom";
-import { TaskTypeEnum, Task, TaskPayload, ModelHeaderInfo } from "../typing";
+import { TaskTypeEnum, Task, TaskPayload } from "../typing";
 import { createDefaultTask, useAppConfig, useTaskStore } from "../store";
 import dayjs from "dayjs";
 import clsx from "clsx";
@@ -31,6 +38,7 @@ interface NotificationProps {
 }
 
 interface TaskManagementProps {
+  model: string;
   task?: Task;
   onCancel?: () => void;
   onChange?: (id: string, updatedTask: Task) => void;
@@ -71,13 +79,13 @@ export function Notification({
 export default function TaskManagement({
   task,
   onChange,
+  model,
 }: TaskManagementProps) {
   const { t } = useTranslation("general");
   const [newTask, setNewTask] = useState<Task>({
     ...createDefaultTask(),
     ...task,
   });
-  const currentModelInfo = useAppConfig((state) => state.getCurrentModel());
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [isTestLoading, setIsTestLoading] = useState(false);
   const [notificationEnabled, setNotificationEnabled] = useState(
@@ -89,6 +97,18 @@ export default function TaskManagement({
   // const { t } = useTranslation();
   const taskStore = useTaskStore();
 
+  const getModelInfo = useAppConfig((s) => s.getModelInfo);
+  useEffect(() => {
+    if (!model) return;
+    const modelInfo = getModelInfo(model);
+    setNewTask((task) => {
+      return {
+        ...task,
+        modelInfo: modelInfo,
+      };
+    });
+  }, [model]);
+
   const handleInput = () => {
     const el = textareaRef.current;
     if (el) {
@@ -97,15 +117,19 @@ export default function TaskManagement({
     }
   };
 
-  const verifyTask = (task: Task): boolean => {
-    if (!task.date || task.hour === null || task.minute === null) return false;
-    if (!task.type) return false;
-    if (!task.details) return false;
-    if (timeErr) return false;
-    return true;
-  };
+  const verifyTask = useCallback(
+    (task: Task): boolean => {
+      if (!task.date || task.hour === null || task.minute === null)
+        return false;
+      if (!task.type) return false;
+      if (!task.details) return false;
+      if (timeErr) return false;
+      return true;
+    },
+    [timeErr],
+  );
 
-  const confirmBtn = useMemo(() => verifyTask(newTask), [newTask]);
+  const confirmBtn = useMemo(() => verifyTask(newTask), [verifyTask, newTask]);
 
   useEffect(() => {
     handleInput();
@@ -166,9 +190,9 @@ export default function TaskManagement({
     }
     let res;
     if (task) {
-      res = await updateTask(payload);
+      res = await updateTask(payload, newTask);
     } else {
-      res = await createTask(payload);
+      res = await createTask(payload, newTask);
     }
 
     const { code, data, detail } = res;
@@ -177,18 +201,8 @@ export default function TaskManagement({
       if (task) {
         onChange?.(newTask.id, { ...newTask, backendData: { ...data } });
       } else {
-        const modelInfo = {
-          "Aiden-Model-Name": currentModelInfo?.model,
-          "Aiden-Endpoint": currentModelInfo?.endpoint,
-          "Aiden-Model-Provider": currentModelInfo?.provider,
-        } as ModelHeaderInfo;
-
-        if (currentModelInfo?.apiKey) {
-          modelInfo["Aiden-Model-Api-Key"] = currentModelInfo?.apiKey;
-        }
         taskStore.createTask({
           ...newTask,
-          modelInfo,
           backendData: { ...data },
         });
       }

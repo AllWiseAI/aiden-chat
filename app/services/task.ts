@@ -2,14 +2,20 @@ import { Body } from "@tauri-apps/api/http";
 import { getLocalBaseDomain } from "@/app/utils/fetch";
 import { fetchNoProxy } from "@/app/utils/fetch-no-proxy";
 import { getHeaders } from "@/app/utils/fetch";
-import { TaskPayload, ChatModelInfo } from "@/app/typing";
+import { TaskPayload, Task, ProviderOption } from "@/app/typing";
 import { getChatHeaders } from "../utils/chat";
+import { useAppConfig } from "../store";
 
 const TASK_API_PREFIX = "/scheduler";
 
-async function getLocalFetchOptions() {
+async function getLocalFetchOptions(modelInfo?: ProviderOption) {
   const baseURL = getLocalBaseDomain();
-  const headers = await getHeaders({ aiden: true });
+  const config = useAppConfig.getState();
+  const defaultModelInfo = config.getDefaultModel();
+  const headers = await getHeaders({
+    aiden: true,
+    modelInfo: modelInfo ?? defaultModelInfo,
+  });
   return { baseURL, headers };
 }
 
@@ -25,8 +31,10 @@ export async function testTask(task: object) {
 }
 
 // 创建任务
-export async function createTask(task: TaskPayload) {
-  const { baseURL, headers } = await getLocalFetchOptions();
+export async function createTask(task: TaskPayload, taskRawInfo: Task) {
+  console.log("taskRawInfo===", taskRawInfo);
+  const { modelInfo } = taskRawInfo;
+  const { baseURL, headers } = await getLocalFetchOptions(modelInfo);
   const res = await fetchNoProxy(`${baseURL}${TASK_API_PREFIX}/add_task`, {
     method: "POST",
     headers,
@@ -36,8 +44,9 @@ export async function createTask(task: TaskPayload) {
 }
 
 // 更新任务
-export async function updateTask(task: TaskPayload) {
-  const { baseURL, headers } = await getLocalFetchOptions();
+export async function updateTask(task: TaskPayload, taskRawInfo: Task) {
+  const { modelInfo } = taskRawInfo;
+  const { baseURL, headers } = await getLocalFetchOptions(modelInfo);
   const res = await fetchNoProxy(`${baseURL}${TASK_API_PREFIX}/update_task`, {
     method: "PUT",
     headers,
@@ -98,11 +107,10 @@ export async function getTaskExecutionRecords(
 // 切换任务模型
 export async function switchTaskModel(
   task_id: string,
-  modelInfo: ChatModelInfo,
+  modelInfo: ProviderOption,
 ) {
   const { baseURL, headers } = await getLocalFetchOptions();
   const chatHeaders = getChatHeaders(modelInfo);
-
   const res = await fetchNoProxy(
     `${baseURL}${TASK_API_PREFIX}/switch_task_model`,
     {

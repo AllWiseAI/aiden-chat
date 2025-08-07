@@ -1,22 +1,19 @@
-import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useAppConfig, useTaskStore, getModelInfo } from "../store";
-import { useMemo, useEffect } from "react";
+import { useTaskStore } from "../store";
+import { useMemo, useEffect, useState } from "react";
 import { Button } from "./shadcn/button";
 import {
   Task as TaskType,
   TaskAction,
   TaskExecutionRecord,
-  ChatModelInfo,
-  ModelHeaderInfo,
   TaskTypeEnum,
+  ProviderOption,
 } from "../typing";
 import EditIcon from "../icons/edit.svg";
 import TaskManagement from "./task-management";
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
 import advancedFormat from "dayjs/plugin/advancedFormat";
-
 import { getTaskExecutionRecords, switchTaskModel } from "@/app/services/task";
 import clsx from "clsx";
 import NotificationOnIcon from "../icons/notification-on.svg";
@@ -28,11 +25,11 @@ import FailedIcon from "../icons/close.svg";
 import { Path } from "../constant";
 import { useNavigate } from "react-router-dom";
 import { useChatStore } from "../store/chat";
-import { ModelSelect } from "./model-select";
-import { toast } from "sonner";
-import useState from "react-usestateref";
 import { getLang } from "../locales";
-import { getChatHeaders } from "../utils/chat";
+import { ModelSelect } from "../components/model-select";
+import { useAppConfig } from "../store";
+import { toast } from "sonner";
+import { formatMCPData } from "../utils/chat";
 dayjs.extend(advancedFormat);
 
 interface TaskPanelProps {
@@ -43,6 +40,7 @@ interface TaskPanelProps {
 interface TaskItemProps {
   taskInfo: TaskExecutionRecord;
   title: string;
+  modelInfo: ProviderOption;
 }
 
 function formatCustomTime(date: string, hour: number, minute: number): string {
@@ -78,7 +76,7 @@ function formatCustomTime(date: string, hour: number, minute: number): string {
   }
 }
 
-function TaskItem({ title, taskInfo }: TaskItemProps) {
+function TaskItem({ title, taskInfo, modelInfo }: TaskItemProps) {
   const { status } = taskInfo;
   const chatStore = useChatStore();
   const { t } = useTranslation();
@@ -95,13 +93,15 @@ function TaskItem({ title, taskInfo }: TaskItemProps) {
     const { id, task_id, request_messages, response_data } = taskInfo;
     const isExist = chatStore.haveTaskSession(task_id);
     const singleKey = task_id + "-" + id;
+
     if (!isExist) {
       chatStore.newTaskSession({
         taskId: singleKey,
+        modelInfo: modelInfo,
         // @ts-ignore
         requestData: request_messages,
         // @ts-ignore
-        responseData: response_data,
+        responseData: formatMCPData(response_data),
       });
     } else {
       chatStore.selectTaskSession(singleKey);
@@ -146,19 +146,20 @@ function formatDateToReadableString(isoString: string) {
   return formatCustomTime(date.toISOString(), hour, minute);
 }
 
-function TaskRecords({ taskItem }: { taskItem: TaskType }) {
+function TaskRecords({ currentTask }: { currentTask: TaskType }) {
   const [recordList, setRecordList] = useState<TaskExecutionRecord[]>([]);
 
   useEffect(() => {
     const getRecord = async () => {
-      if (!taskItem) return;
+      if (!currentTask) return;
       const {
         backendData: { id },
-      } = taskItem;
+      } = currentTask;
       const res = await getTaskExecutionRecords(id);
       const { code, data } = res;
       if (code === 0) {
         const { records } = data;
+        console.log("records", records);
         if (records && records.length) {
           setRecordList(records);
         } else {
@@ -169,13 +170,14 @@ function TaskRecords({ taskItem }: { taskItem: TaskType }) {
       }
     };
     getRecord();
-  }, [taskItem]);
+  }, [currentTask]);
 
   return (
     <div className="space-y-5 mt-5">
       {recordList.map((item) => (
         <TaskItem
           key={item.id}
+          modelInfo={currentTask.modelInfo}
           taskInfo={item}
           title={formatDateToReadableString(
             item.next_run_at || item.completed_at || item.created_at,
@@ -247,87 +249,52 @@ function TaskPanel({ task, setIsEdit }: TaskPanelProps) {
 }
 
 export function Task() {
-  const { id } = useParams<{ id: string }>();
-  const tasks = useTaskStore((state) => state.tasks);
+  const { t } = useTranslation();
   const setTask = useTaskStore((state) => state.setTask);
-  const [model, setModel, modelRef] = useState("");
   const [isEdit, setIsEdit] = useState(false);
-  const taskItem = tasks.find((task) => task.id === id);
+  const currentTask = useTaskStore().currentTask();
+  const taskStore = useTaskStore();
+  const updateTargetTask = taskStore.updateTargetTask;
 
   useEffect(() => {
-    const { modelInfo } = (taskItem as TaskType) || {};
-    if (!modelInfo) return;
-    const {
-      "Aiden-Model-Name": modelName,
-      "Aiden-Model-Provider": provider,
-      "Aiden-Model-Api-Key": apiKey,
-    } = modelInfo;
+    if (!currentTask) return;
+    setIsEdit(false);
+  }, [currentTask]);
 
-    if (apiKey) {
-      setModel(`${provider}:${modelName}`);
-    } else {
-      setModel(modelName);
-    }
-  }, [taskItem]);
-
-  const groupedProviders = useAppConfig((state) => state.groupedProviders);
-  const models = useAppConfig((state) => state.models);
-
-  const updateTaskModelInfo = (id: string, modelInfo: ChatModelInfo) => {
-    const modelHeaders = getChatHeaders(
-      modelInfo,
-    ) as unknown as ModelHeaderInfo;
-    setTask(id, {
-      ...(taskItem as TaskType),
-      modelInfo: modelHeaders,
-    });
-  };
-
-  const handleModelChange = async (value: string) => {
-    setModel(value);
-    const {
-      id,
-      backendData: { id: backendId },
-    } = (taskItem as TaskType) || {};
-
-    const modelInfo = getModelInfo(
-      modelRef.current,
-      groupedProviders,
-      models,
-    ) as ChatModelInfo;
-    const res = await switchTaskModel(backendId, modelInfo);
+  const [model, setModel] = useState<string>(
+    currentTask?.modelInfo?.model || "",
+  );
+  const getModelInfo = useAppConfig((s) => s.getModelInfo);
+  const handleModelChange = async (model: string) => {
+    setModel(model);
+    const modelInfo = getModelInfo(model);
+    console.log("currentTask", currentTask);
+    const res = await switchTaskModel(currentTask?.backendData?.id, modelInfo);
+    console.log("res", res);
     const { code } = res;
     if (code === 0) {
-      toast.success("切换成功");
-      updateTaskModelInfo(id, modelInfo);
+      updateTargetTask(currentTask!, (task) => {
+        task.modelInfo = modelInfo;
+      });
+      toast.success(t("task.updateSuccess"));
     } else {
-      console.error("qiehuan shibai");
+      toast.error(t("task.updateFailed"));
     }
   };
-
-  useEffect(() => {
-    if (!taskItem) return;
-    setIsEdit(false);
-  }, [taskItem]);
-
-  if (!taskItem) return null;
-
+  if (!currentTask) return null;
   return (
     <div
       className="flex flex-col h-screen min-h-0 gap-5 px-15 py-5"
       onClick={() => setIsEdit(false)}
     >
+      <div className="w-fit mb-5">
+        <ModelSelect mode="custom" onChange={handleModelChange} value={model} />
+      </div>
       <div onClick={(e) => e.stopPropagation()}>
-        <div className="w-fit mb-5">
-          <ModelSelect
-            mode="custom"
-            onChange={handleModelChange}
-            value={model}
-          />
-        </div>
         {isEdit ? (
           <TaskManagement
-            task={taskItem}
+            model={model}
+            task={currentTask}
             onCancel={() => {
               setIsEdit(false);
             }}
@@ -338,8 +305,8 @@ export function Task() {
           />
         ) : (
           <>
-            <TaskPanel task={taskItem} setIsEdit={() => setIsEdit(true)} />
-            <TaskRecords taskItem={taskItem} />
+            <TaskPanel task={currentTask} setIsEdit={() => setIsEdit(true)} />
+            <TaskRecords currentTask={currentTask} />
           </>
         )}
       </div>

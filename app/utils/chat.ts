@@ -11,7 +11,7 @@ import {
   ConfirmType,
 } from "@/app/components/confirm-modal/confirm";
 import { useSettingStore } from "@/app/store/setting";
-import { McpStepsAction, ChatModelInfo } from "../typing";
+import { McpStepsAction, ProviderOption } from "../typing";
 
 const settingStore = useSettingStore.getState();
 
@@ -29,7 +29,70 @@ type TParseSSEResult = {
   mcpInfo?: TMcpInfo;
 };
 
-export function getChatHeaders(modelInfo: ChatModelInfo) {
+type MCPInfo = {
+  type: string;
+  tool?: string;
+  args?: any;
+  id?: string;
+  result?: string;
+  thread_id?: string;
+  [key: string]: any;
+};
+
+type MCPFormatted = {
+  role: string;
+  content: string;
+  mcpInfo?: {
+    title: string;
+    request: string;
+    response: string;
+  };
+};
+
+export function formatMCPData(data: any[]): MCPFormatted[] {
+  const result: MCPFormatted[] = [];
+  let lastToolResult: string | undefined = undefined;
+
+  for (let i = data.length - 1; i >= 0; i--) {
+    const item = data[i];
+    const role = item.message?.role;
+    const content = item.message?.content;
+    const mcp: MCPInfo | undefined = item.extra?.mcp;
+
+    // tool_result 类型：更新 lastToolResult，跳过本条
+    if (mcp?.type === "tool_result") {
+      if (typeof mcp.result === "string") {
+        lastToolResult = mcp.result;
+      }
+    }
+
+    // 如果 content 有内容，直接输出
+    if (content && content.trim() !== "") {
+      result.push({ role, content });
+      continue;
+    }
+
+    // 如果是 tool_call_confirm 类型，没有 content，有 mcp，构造 mcpInfo
+    if (mcp && mcp.type === "tool_call_confirm") {
+      result.push({
+        role,
+        content: "",
+        mcpInfo: {
+          title: mcp.tool || "",
+          request: JSON.stringify(mcp, null, 2),
+          response: lastToolResult || "",
+        },
+      });
+      continue;
+    }
+
+    result.push({ role, content: "" });
+  }
+
+  return result.reverse();
+}
+
+export function getChatHeaders(modelInfo: ProviderOption) {
   if (modelInfo.apiKey) {
     // custom model
     const { default_endpoint, apiKey, provider, model } = modelInfo;

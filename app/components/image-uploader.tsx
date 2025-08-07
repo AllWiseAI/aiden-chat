@@ -9,14 +9,15 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/app/components/shadcn/tooltip";
-import { useAppConfig } from "../store";
+import { useChatStore } from "../store";
 
 export const ImageUploader = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { t } = useTranslation("general");
   const { uploadImage } = useImageUpload();
-  const currentModel = useAppConfig().getCurrentModel();
-  const disabled = currentModel?.multi_model === false;
+  const chatStore = useChatStore();
+  const currentSession = chatStore.currentSession();
+  const disabled = currentSession.modelInfo?.multi_model === false;
   const handleSelectFile = () => {
     if (inputRef.current) {
       inputRef.current.value = "";

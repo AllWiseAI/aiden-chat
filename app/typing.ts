@@ -251,7 +251,7 @@ export interface Task {
   notification: boolean;
   details: string;
   backendData: any;
-  modelInfo: ModelHeaderInfo;
+  modelInfo: ProviderOption;
 }
 
 export enum TaskTypeEnum {
@@ -289,18 +289,16 @@ export type TaskExecutionRecord = {
 
 export type taskSessionParams = {
   taskId: string;
+  modelInfo: ProviderOption;
   requestData: {
     role: MessageRole;
     content: string;
     date: string;
   }[];
   responseData: {
-    message: {
-      date: string;
-      role: MessageRole;
-      content: string;
-    };
-  };
+    role: MessageRole;
+    content: string;
+  }[];
 };
 
 export interface TaskPayload {

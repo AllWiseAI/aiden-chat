@@ -1,20 +1,25 @@
 import { StoreKey } from "../constant";
-import { Task, ModelHeaderInfo } from "../typing";
+import { Task } from "../typing";
 import { createPersistStore } from "../utils/store";
 import { nanoid } from "nanoid";
+import { useAppConfig } from "./config";
 
-export const createDefaultTask = (): Task => ({
-  id: nanoid(),
-  name: "",
-  date: "",
-  hour: null,
-  minute: null,
-  type: "",
-  notification: false,
-  details: "",
-  backendData: {},
-  modelInfo: {} as ModelHeaderInfo,
-});
+export const createDefaultTask = (): Task => {
+  const config = useAppConfig.getState();
+  const modelInfo = config.getDefaultModel();
+  return {
+    id: nanoid(),
+    name: "",
+    date: "",
+    hour: null,
+    minute: null,
+    type: "",
+    notification: false,
+    details: "",
+    backendData: {},
+    modelInfo: modelInfo,
+  };
+};
 
 const DEFAULT_TASK_STATE = {
   tasks: [] as Task[],
@@ -42,11 +47,22 @@ export const useTaskStore = createPersistStore(
           currentTaskId: newTask.id,
         });
       },
+      currentTask: () => {
+        return get().tasks.find((t) => t.id === get().currentTaskId);
+      },
       setTask: (id: string, updatedTask: Task) => {
         const tasks = get().tasks.map((t) =>
           t.id === id ? { ...updatedTask, id } : t,
         );
         set({ tasks });
+      },
+      updateTargetTask: (targetTask: Task, updater: (task: Task) => void) => {
+        const tasks = get().tasks;
+        const newTasks = [...tasks];
+        const index = newTasks.findIndex((s) => s.id === targetTask.id);
+        if (index < 0) return;
+        updater(newTasks[index]);
+        set(() => ({ tasks: [...newTasks] }));
       },
       setCurrentTaskId: (id: string) => {
         set({ currentTaskId: id });
