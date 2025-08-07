@@ -1,23 +1,26 @@
 import { useState } from "react";
 import { Dialog, DialogOverlay } from "../shadcn/dialog";
+import { useTranslation } from "react-i18next";
 import SuccessIcon from "../../icons/success.svg";
 import FailedIcon from "../../icons/close.svg";
 
 export default function Subscription() {
   const [showPlan, setShowPlan] = useState(false);
-
+  const { t } = useTranslation("settings");
   return (
     <>
       <div className="w-full h-full flex flex-col gap-4 justify-start items-center text-black dark:text-white">
         <div className="w-full flex flex-col gap-3 px-2.5 pt-1 pb-5">
-          <div className="font-medium">Plan</div>
+          <div className="font-medium">{t("subscription.plan")}</div>
           <div className="flex justify-between items-center gap-5 p-2.5 bg-[#F3F5F7]/30 dark:bg-[#232627]/30 border border-[#E8ECEF] dark:border-[#232627] rounded-sm text-sm">
-            <div className="text-sm flex-1">Standard Plan</div>
+            <div className="text-sm flex-1">
+              {t("subscription.starter.title") + t("subscription.planT")}
+            </div>
             <div
               className="text-main underline hover:opacity-70 cursor-pointer"
               onClick={() => setShowPlan(true)}
             >
-              Details
+              {t("subscription.detail")}
             </div>
           </div>
         </div>
@@ -42,41 +45,45 @@ export default function Subscription() {
                 }}
               ></div>
               <div className="flex flex-col gap-3">
-                <p className="text-[32px] font-light z-1">Starter Plan</p>
+                <p className="text-[32px] font-light z-1">
+                  {t("subscription.starter.title") + t("subscription.planT")}
+                </p>
                 <div className="flex items-end gap-3">
                   <span className="text-[64px] leading-[77px] font-extralight">
-                    Free
+                    {t("subscription.starter.price")}
                   </span>
-                  <span className="text-2xl pb-2">/month</span>
+                  <span className="text-2xl pb-2">
+                    {t("subscription.month")}
+                  </span>
                 </div>
                 <p className="text-[15px] whitespace-nowrap font-extralight">
-                  Starter package with basic services
+                  {t("subscription.starter.content")}
                 </p>
                 {/* <Button className="bg-black h-12 rounded-full px-6 py-2">
                   Current Plan
                 </Button> */}
               </div>
 
-              <div className="flex justify-between items-center">
-                <div className="w-14 h-[1px] bg-[#C1C7D0] -ml-6"></div>
+              <div className="flex justify-between gap-4 items-center">
+                <div className="flex-1 h-[1px] bg-[#C1C7D0] -ml-6"></div>
                 <span className="text-lg text-[#6F6F6F]">
-                  What’s Included :
+                  {t("subscription.included")}
                 </span>
-                <div className="w-14 h-[1px] bg-[#C1C7D0] -mr-6"></div>
+                <div className="flex-1 h-[1px] bg-[#C1C7D0] -mr-6"></div>
               </div>
               <div className="flex flex-col gap-4 text-sm">
                 <div className="flex items-center gap-3">
                   <SuccessIcon className="size-6 shrink-0" />
-                  <span>Qwen-235B unlimited use</span>
+                  <span>{t("subscription.starter.included.1")}</span>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <SuccessIcon className="size-6 shrink-0" />
-                  <span>Unlimited use of MCP</span>
+                  <span>{t("subscription.starter.included.2")}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <FailedIcon className="size-6 shrink-0 text-[#4ADE80]" />
-                  <span>Does not support multi-modal related functions</span>
+                  <span>{t("subscription.starter.included.3")}</span>
                 </div>
               </div>
             </div>
@@ -93,44 +100,47 @@ export default function Subscription() {
               ></div>
               <div className="flex flex-col gap-3">
                 <p className="text-[32px] font-light z-1">
-                  <span className="text-[#C8FF85]">Standard</span> Plan
+                  <span className="text-[#C8FF85]">
+                    {t("subscription.standard.title")}
+                  </span>
+                  {t("subscription.planT")}
                 </p>
                 <div className="flex items-end gap-3 z-1">
                   <span className="text-[64px] leading-[77px] font-extralight">
-                    $19
+                    {t("subscription.standard.price")}
                   </span>
-                  <span className="text-2xl pb-2">/month</span>
+                  <span className="text-2xl pb-2">
+                    {t("subscription.month")}
+                  </span>
                 </div>
                 <p className="text-[15px] whitespace-nowrap font-extralight">
-                  Giving advanced services
+                  {t("subscription.standard.content")}
                 </p>
                 {/* <Button className="bg-black h-12 rounded-full px-6 py-2">
                  Get Started
                 </Button> */}
               </div>
 
-              <div className="flex justify-between items-center">
-                <div className="w-14 h-[1px] bg-[#C1C7D0] -ml-6"></div>
+              <div className="flex justify-between gap-4 items-center">
+                <div className="flex-1 h-[1px] bg-[#C1C7D0] -ml-6"></div>
                 <span className="text-lg text-[#6F6F6F]">
-                  What’s Included :
+                  {t("subscription.included")}
                 </span>
-                <div className="w-14 h-[1px] bg-[#C1C7D0] -mr-6"></div>
+                <div className="flex-1 h-[1px] bg-[#C1C7D0] -mr-6"></div>
               </div>
               <div className="flex flex-col gap-4 text-sm text-[#00D47E]">
                 <div className="flex items-center gap-3">
                   <SuccessIcon className="size-6 shrink-0" />
-                  <span>Access all function of Free Plan</span>
+                  <span>{t("subscription.standard.included.1")}</span>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <SuccessIcon className="size-6 shrink-0" />
-                  <span>
-                    Unlimited use on all Aiden Access models (most models)
-                  </span>
+                  <span>{t("subscription.standard.included.2")}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <SuccessIcon className="size-6 shrink-0 " />
-                  <span>Unlimited use of multi-modal related functions</span>
+                  <span>{t("subscription.standard.included.3")}</span>
                 </div>
               </div>
             </div>
@@ -154,42 +164,47 @@ export default function Subscription() {
               ></div>
               <div className="flex flex-col gap-3">
                 <p className="text-[32px] font-light">
-                  <span className="text-[#C89CFF]">Pro</span> Plan
+                  <span className="text-[#C89CFF]">
+                    {t("subscription.pro.title")}
+                  </span>
+                  {t("subscription.planT")}
                 </p>
                 <div className="flex items-end gap-3">
                   <span className="text-[64px] leading-[77px] font-extralight">
-                    $199
+                    {t("subscription.pro.price")}
                   </span>
-                  <span className="text-2xl pb-2">/month</span>
+                  <span className="text-2xl pb-2">
+                    {t("subscription.month")}
+                  </span>
                 </div>
                 <p className="text-[15px] whitespace-nowrap font-extralight">
-                  Ultimalt Solutions
+                  {t("subscription.pro.content")}
                 </p>
                 {/* <Button className="bg-black h-12 rounded-full px-6 py-2">
                   Current Plan
                 </Button> */}
               </div>
 
-              <div className="flex justify-between items-center">
-                <div className="w-14 h-[1px] bg-[#C1C7D0] -ml-6"></div>
+              <div className="flex justify-between gap-4 items-center">
+                <div className="flex-1 h-[1px] bg-[#C1C7D0] -ml-6"></div>
                 <span className="text-lg text-[#6F6F6F]">
-                  What’s Included :
+                  {t("subscription.included")}
                 </span>
-                <div className="w-14 h-[1px] bg-[#C1C7D0] -mr-6"></div>
+                <div className="flex-1 h-[1px] bg-[#C1C7D0] -mr-6"></div>
               </div>
               <div className="flex flex-col gap-4 text-sm text-[#C8B1FF]">
                 <div className="flex items-center gap-3">
                   <SuccessIcon className="size-6 shrink-0 text-[#4ADE80]" />
-                  <span>Access all functions</span>
+                  <span> {t("subscription.pro.included.1")}</span>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <SuccessIcon className="size-6 shrink-0 text-[#4ADE80]" />
-                  <span>More advanced models are unlimited </span>
+                  <span>{t("subscription.pro.included.2")}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <SuccessIcon className="size-6 shrink-0 text-[#4ADE80]" />
-                  <span>Priority response in case of congestion</span>
+                  <span>{t("subscription.pro.included.3")}</span>
                 </div>
               </div>
             </div>
