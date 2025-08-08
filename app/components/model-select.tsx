@@ -24,7 +24,7 @@ import { useGetModel } from "../hooks/use-get-model";
 
 type Props = {
   value?: string;
-  mode: "inner" | "custom";
+  mode?: "inner" | "custom";
   onChange?: (modelInfo: string) => void;
 };
 
