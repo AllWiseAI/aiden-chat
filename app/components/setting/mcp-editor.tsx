@@ -10,7 +10,8 @@ import { json } from "@codemirror/lang-json";
 import clsx from "clsx";
 import TipsIcon from "../../icons/tips.svg";
 import dynamic from "next/dynamic";
-import { useAppConfig, Theme } from "@/app/store";
+import { Theme } from "@/app/store";
+import { useTheme } from "../../hooks/use-theme";
 import { vscodeLight, vscodeDark } from "@uiw/codemirror-theme-vscode";
 import { foldGutter, indentOnInput } from "@codemirror/language";
 import { useTranslation } from "react-i18next";
@@ -30,14 +31,10 @@ type Props = {
 };
 
 function ConfigEditor({ jsonStr, setJsonStr, error }: ConfigEditorProps) {
-  const config = useAppConfig();
-  const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-  const theme = useMemo(() => {
-    if (config.theme === Theme.Auto) {
-      return mediaQuery.matches ? vscodeDark : vscodeLight;
-    } else if (config.theme === Theme.Light) return vscodeLight;
-    else if (config.theme === Theme.Dark) return vscodeDark;
-  }, [config.theme, mediaQuery]);
+  const theme = useTheme();
+  const editorTheme = useMemo(() => {
+    return theme === Theme.Dark ? vscodeDark : vscodeLight;
+  }, [theme]);
 
   return (
     <div className="space-y-4 rounded-sm">
@@ -48,7 +45,7 @@ function ConfigEditor({ jsonStr, setJsonStr, error }: ConfigEditorProps) {
         value={jsonStr}
         height="calc(100vh - 180px)"
         extensions={[json(), foldGutter(), indentOnInput()]}
-        theme={theme}
+        theme={editorTheme}
         basicSetup={{
           lineNumbers: true,
           foldGutter: false,

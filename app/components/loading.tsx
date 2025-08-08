@@ -9,7 +9,10 @@ import ReturnIcon from "../icons/return.svg";
 import LogoIcon from "@/app/icons/logo.svg";
 import LogoTextIcon from "../icons/logo-text.svg";
 import LoadingIcon from "../icons/three-dots.svg";
-import ResultIcon from "../icons/result.svg";
+import ResultLightIcon from "../icons/result-light.svg";
+import ResultDarkIcon from "../icons/result-dark.svg";
+import { Theme } from "../store";
+import { useTheme } from "../hooks/use-theme";
 import { useAuthStore } from "../store";
 import { exportAndDownloadLog } from "../utils/log";
 import { appDataInit } from "../utils/init";
@@ -22,6 +25,7 @@ export function LoadingPage() {
   const [isAuthed, setIsAuthed] = useState(false);
   const [isServerReady, setIsServerReady] = useState(false);
   const [isServerTimeout, setIsServerTimeout] = useState(false);
+  const theme = useTheme();
 
   const handleReload = () => {
     relaunch();
@@ -67,7 +71,7 @@ export function LoadingPage() {
         <div className="relative">
           <div className="text-base font-medium flex flex-col items-center">
             <div className="mb-5">
-              <ResultIcon />
+              {theme === Theme.Light ? <ResultLightIcon /> : <ResultDarkIcon />}
             </div>
             <div
               className="text-[#6C7275] text-sm text-center border dark:border-[#232627] rounded-2xl p-4 bg-[#F3F5F7] dark:bg-[#141718]/30"

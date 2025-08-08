@@ -16,18 +16,21 @@ import "dayjs/locale/zh-cn";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import { getTaskExecutionRecords, switchTaskModel } from "@/app/services/task";
 import clsx from "clsx";
+import { useTheme } from "../hooks/use-theme";
 import NotificationOnIcon from "../icons/notification-on.svg";
 import NotificationOffIcon from "../icons/notification-off.svg";
 import SuccessIcon from "../icons/success.svg";
 import PendingIcon from "../icons/time.svg";
 import LoadingIcon from "../icons/loading-spinner.svg";
 import FailedIcon from "../icons/close.svg";
+import ResultLightIcon from "../icons/result-light.svg";
+import ResultDarkIcon from "../icons/result-dark.svg";
 import { Path } from "../constant";
 import { useNavigate } from "react-router-dom";
 import { useChatStore } from "../store/chat";
 import { getLang } from "../locales";
 import { ModelSelect } from "../components/model-select";
-import { useAppConfig } from "../store";
+import { useAppConfig, Theme } from "../store";
 import { toast } from "sonner";
 import { formatMCPData } from "../utils/chat";
 dayjs.extend(advancedFormat);
@@ -267,6 +270,7 @@ export function Task() {
   const currentTask = useTaskStore().currentTask();
   const taskStore = useTaskStore();
   const updateTargetTask = taskStore.updateTargetTask;
+  const theme = useTheme();
 
   useEffect(() => {
     if (!currentTask) return;
@@ -291,7 +295,12 @@ export function Task() {
       toast.error(t("task.updateFailed"));
     }
   };
-  if (!currentTask) return null;
+  if (!currentTask)
+    return (
+      <div className="flex-center h-[100vh]">
+        {theme === Theme.Light ? <ResultLightIcon /> : <ResultDarkIcon />}
+      </div>
+    );
   return (
     <div
       className="flex flex-col h-screen min-h-0 gap-5 px-15 py-5"
