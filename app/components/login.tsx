@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import clsx from "clsx";
 import { shell } from "@tauri-apps/api";
 import LoadingIcon from "../icons/loading-spinner.svg";
+import { getLang } from "../locales";
 import { useTranslation } from "react-i18next";
 import { appDataInit } from "../utils/init";
 
@@ -20,6 +21,7 @@ export function LoginPage() {
   const getRegion = useSettingStore((state) => state.getRegion);
   const login = useAuthStore((state) => state.login);
   const navigate = useNavigate();
+  const lang = getLang() === "zh-CN" ? "zh/" : "";
   const { t } = useTranslation("auth");
   const [formData, setFormData] = useState({
     email: localStorage.getItem("user-email") || "",
@@ -158,7 +160,9 @@ export function LoginPage() {
             <span
               className="cursor-pointer text-main underline"
               onClick={() =>
-                shell.open("https://docs.aidenai.io/terms-of-service.html")
+                shell.open(
+                  `https://docs.aidenai.io/${lang}terms-of-service.html`,
+                )
               }
             >
               {t("terms")}
@@ -166,7 +170,9 @@ export function LoginPage() {
             {" " + t("and") + " "}
             <span
               className="cursor-pointer text-main underline"
-              onClick={() => shell.open("https://docs.aidenai.io/privacy.html")}
+              onClick={() =>
+                shell.open(`https://docs.aidenai.io/${lang}privacy.html`)
+              }
             >
               {t("privacy")}
             </span>

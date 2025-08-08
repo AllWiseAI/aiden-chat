@@ -3,6 +3,7 @@ import { exportAndDownloadLog } from "../../utils/log";
 import Logo from "../../icons/aiden-logo.svg";
 import config from "@/src-tauri/tauri.conf.json";
 import RightIcon from "../../icons/right-arrow.svg";
+import { getLang } from "../../locales";
 import { useAppUpdate } from "@/app/hooks/use-app-update";
 import { showConfirm } from "@/app/components/confirm-modal/confirm";
 import { useTranslation } from "react-i18next";
@@ -10,6 +11,8 @@ import { useTranslation } from "react-i18next";
 export default function AboutUs() {
   const { isShowUpdate, isLatest, handleUpdate, isUpdating } = useAppUpdate();
   const { t } = useTranslation("settings");
+  const lang = getLang() === "zh-CN" ? "zh/" : "";
+
   const aboutUsArr = [
     { name: t("aboutUs.export"), onClick: () => exportAndDownloadLog() },
     {
@@ -33,11 +36,11 @@ export default function AboutUs() {
     {
       name: t("aboutUs.terms"),
       onClick: () =>
-        shell.open("https://docs.aidenai.io/terms-of-service.html"),
+        shell.open(`https://docs.aidenai.io/${lang}terms-of-service.html`),
     },
     {
       name: t("aboutUs.privacy"),
-      onClick: () => shell.open("https://docs.aidenai.io/privacy.html"),
+      onClick: () => shell.open(`https://docs.aidenai.io/${lang}privacy.html`),
     },
   ];
   return (

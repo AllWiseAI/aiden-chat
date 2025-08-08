@@ -13,6 +13,7 @@ import { Path } from "../constant";
 import { toast } from "sonner";
 import clsx from "clsx";
 import { shell } from "@tauri-apps/api";
+import { getLang } from "../locales";
 import { useTranslation } from "react-i18next";
 import LoadingIcon from "../icons/loading-spinner.svg";
 
@@ -36,6 +37,7 @@ interface VerifyCodeFormProps {
 
 const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
   const { t } = useTranslation("auth");
+  const lang = getLang() === "zh-CN" ? "zh/" : "";
   const [checked, setChecked] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
@@ -188,7 +190,9 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
             <span
               className="cursor-pointer text-main underline"
               onClick={() =>
-                shell.open("https://docs.aidenai.io/terms-of-service.html")
+                shell.open(
+                  `https://docs.aidenai.io/${lang}terms-of-service.html`,
+                )
               }
             >
               {t("terms")}
@@ -196,7 +200,9 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
             {" " + t("and") + " "}
             <span
               className="cursor-pointer text-main underline"
-              onClick={() => shell.open("https://docs.aidenai.io/privacy.html")}
+              onClick={() =>
+                shell.open(`https://docs.aidenai.io/${lang}privacy.html`)
+              }
             >
               {t("privacy")}
             </span>
