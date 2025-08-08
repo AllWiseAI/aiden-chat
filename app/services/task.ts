@@ -32,7 +32,6 @@ export async function testTask(task: object) {
 
 // 创建任务
 export async function createTask(task: TaskPayload, taskRawInfo: Task) {
-  console.log("taskRawInfo===", taskRawInfo);
   const { modelInfo } = taskRawInfo;
   const { baseURL, headers } = await getLocalFetchOptions(modelInfo);
   const res = await fetchNoProxy(`${baseURL}${TASK_API_PREFIX}/add_task`, {

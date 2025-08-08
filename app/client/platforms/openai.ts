@@ -72,7 +72,6 @@ export class ChatGPTApi implements LLMApi {
       isSummary,
       modelInfo: options.modelInfo,
     });
-    console.log("chat headers", headers);
     try {
       if (shouldStream) {
         streamWithThink(
@@ -127,7 +126,6 @@ export class ChatGPTApi implements LLMApi {
       aiden: true,
       modelInfo: options.modelInfo,
     });
-    console.log("toolCall headers", headers);
 
     try {
       if (shouldStream) {

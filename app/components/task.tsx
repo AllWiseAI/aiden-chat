@@ -280,9 +280,7 @@ export function Task() {
   const handleModelChange = async (model: string) => {
     setModel(model);
     const modelInfo = getModelInfo(model);
-    console.log("currentTask", currentTask);
     const res = await switchTaskModel(currentTask?.backendData?.id, modelInfo);
-    console.log("res", res);
     const { code } = res;
     if (code === 0) {
       updateTargetTask(currentTask!, (task) => {
