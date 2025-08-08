@@ -6,7 +6,6 @@ import {
   REQUEST_TIMEOUT_MS,
   REQUEST_TIMEOUT_MS_FOR_THINKING,
 } from "./constant";
-import { clipboard } from "@tauri-apps/api";
 // import { fetch as tauriFetch, ResponseType } from "@tauri-apps/api/http";
 import { fetch as tauriStreamFetch } from "./utils/stream";
 
@@ -25,7 +24,8 @@ export function trimTopic(topic: string) {
 export async function copyToClipboard(text: string, toastStr?: string) {
   try {
     if (window.__TAURI__) {
-      await clipboard.writeText(text);
+      const { writeText } = await import("@tauri-apps/api/clipboard");
+      await writeText(text);
     } else {
       await navigator.clipboard.writeText(text);
     }
