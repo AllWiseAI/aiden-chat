@@ -11,7 +11,7 @@ import {
 } from "@/app/components/shadcn/select";
 import clsx from "clsx";
 import { useAppConfig } from "../store";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { ModelOption, ProviderOption } from "@/app/typing";
 import { useNavigate } from "react-router-dom";
 import { Path } from "../constant";
@@ -20,35 +20,19 @@ import ArrowDownIcon from "@/app/icons/arrow-down.svg";
 import ArrowRightIcon from "@/app/icons/arrow-right.svg";
 import { ProviderIcon } from "./setting/provider-icon";
 import { INNER_PROVIDER_NAME } from "@/app/constant";
+import { useGetModel } from "../hooks/use-get-model";
 
 type Props = {
-  mode?: "custom" | "inner";
-  onChange?: (value: string) => void;
   value?: string;
+  mode?: "inner" | "custom";
+  onChange?: (modelInfo: string) => void;
 };
 
-export const ModelSelect = ({ mode = "inner", onChange, value }: Props) => {
+export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
   const navigate = useNavigate();
-  const setCurrentModel = useAppConfig((s) => s.setCurrentModel);
-  const currentModel = useAppConfig((s) => s.currentModel);
+  const { modelInfo, updateModel } = useGetModel();
   const modelList = useAppConfig((s) => s.models);
-
-  const [bindValue, setBindValue] = useState(value);
-
-  useEffect(() => {
-    if (mode === "custom" && value) {
-      setBindValue(value);
-    }
-  }, [value]);
-
-  useEffect(() => {
-    if (mode === "inner" && currentModel) {
-      setBindValue(currentModel);
-    }
-  }, [currentModel]);
-
   const localProviders = useAppConfig((state) => state.localProviders);
-
   const setGroupedProviders = useAppConfig(
     (state) => state.setGroupedProviders,
   );
@@ -63,6 +47,17 @@ export const ModelSelect = ({ mode = "inner", onChange, value }: Props) => {
       })),
     },
   });
+
+  const currentModel = useMemo(() => {
+    if (value) {
+      return value;
+    } else {
+      console.log("modelInfo", modelInfo);
+      return modelInfo?.apiKey
+        ? `${modelInfo?.provider}:${modelInfo?.model}`
+        : modelInfo?.model;
+    }
+  }, [value, modelInfo]);
 
   const formatProvider = (inputData: ProviderOption[]) => {
     const result = inputData.reduce(
@@ -110,7 +105,7 @@ export const ModelSelect = ({ mode = "inner", onChange, value }: Props) => {
       ...prev,
       ...res,
     }));
-  }, [localProviders]);
+  }, [localProviders, setGroupedProviders]);
 
   const [openGroup, setOpenGroup] = useState<string | null>(
     INNER_PROVIDER_NAME,
@@ -118,7 +113,6 @@ export const ModelSelect = ({ mode = "inner", onChange, value }: Props) => {
 
   useEffect(() => {
     if (currentModel) {
-      console.log("currentmodel===", currentModel);
       const res = currentModel.split(":");
       if (res.length === 2) {
         const [provider] = res;
@@ -130,22 +124,21 @@ export const ModelSelect = ({ mode = "inner", onChange, value }: Props) => {
         setOpenGroup(INNER_PROVIDER_NAME);
       }
     }
-  }, [currentModel]);
+  }, [currentModel, localProviders]);
 
   const handleModelChange = useCallback(
     (value: string) => {
-      console.log("value:===", value);
       if (mode === "inner") {
-        setCurrentModel(value);
+        updateModel(value);
       } else {
         onChange?.(value);
       }
     },
-    [setCurrentModel, mode, onChange],
+    [mode, updateModel, onChange],
   );
 
   return (
-    <Select value={bindValue} onValueChange={handleModelChange}>
+    <Select value={currentModel} onValueChange={handleModelChange}>
       <SelectTrigger className="w-full border-0 hover:bg-muted/20 dark:hover:bg-muted/30 shadow-none">
         <SelectValue placeholder="Select model" />
       </SelectTrigger>

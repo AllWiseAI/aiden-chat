@@ -56,9 +56,8 @@ export const DEFAULT_CONFIG = {
 
   dontShowMaskSplashScreen: true, // dont show splash screen when create chat
   hideBuiltinMasks: false, // dont add builtin masks
-
-  currentModel: "",
   summaryModel: "",
+  defaultModel: "",
   models: [] as ModelOption[],
   localProviders: [] as ProviderOption[],
   providerList: [] as ProviderOption[],
@@ -102,150 +101,143 @@ export function limitNumber(
   return Math.min(max, Math.max(min, x));
 }
 
-export function getModelInfo(
-  modelName: string,
-  groupedProviders: Record<string, ProviderOption>,
-  models: ModelOption[],
-) {
-  const res = modelName.split(":");
-  if (res.length === 2 && Object.keys(groupedProviders).length > 0) {
-    const providerKey = Object.keys(groupedProviders).find(
-      (key) => groupedProviders[key]?.provider === res[0],
-    );
-
-    const providerInfo = groupedProviders[providerKey!];
-    // @ts-ignore
-    return {
-      ...(providerInfo as Record<string, unknown>),
-      model: res[1],
-    };
-  }
-  // @ts-ignore
-  return models.find((model) => model.model === modelName);
-}
-
 export const useAppConfig = createPersistStore(
   { ...DEFAULT_CONFIG },
-  (set, get) => ({
-    initModelList: async () => {
-      const models: ModelOption[] | [] = await getModelList();
-      console.log("[Models]: remote model list", models);
-      if (models && models.length > 0) {
-        set(() => ({
-          models,
-        }));
-        const defaultModel = models?.find((model) => model.is_default)?.model;
-        const summaryModel = models?.find((model) => model.is_summary)?.model;
-        const { currentModel } = get();
-        if (summaryModel) {
+  (set, _get) => {
+    function get() {
+      return {
+        ..._get(),
+        ...methods,
+      };
+    }
+    const methods = {
+      initModelList: async () => {
+        const models: ModelOption[] | [] = await getModelList();
+        console.log("[Models]: remote model list", models);
+        if (models && models.length > 0) {
           set(() => ({
-            summaryModel: summaryModel || defaultModel,
+            models,
           }));
-        }
-        if (!currentModel) {
-          set(() => ({
-            currentModel: defaultModel,
-          }));
-        } else {
-          // resolve current model not exist in models
-          const isCurrentModelExist = models?.find(
-            (model) => model.model === currentModel,
-          );
-          if (!isCurrentModelExist) {
+          const defaultModel = models?.find((model) => model.is_default)?.model;
+          const summaryModel = models?.find((model) => model.is_summary)?.model;
+
+          if (summaryModel) {
             set(() => ({
-              currentModel: defaultModel,
+              summaryModel: summaryModel || defaultModel,
+            }));
+          }
+          if (defaultModel) {
+            set(() => ({
+              defaultModel,
             }));
           }
         }
-      }
-    },
-    setProviderList: async (data: ProviderOption[]) => {
-      set(() => ({
-        providerList: data,
-      }));
-    },
-    setGroupedProviders: (groupedProviders: Record<string, ProviderOption>) => {
-      set(() => ({
-        groupedProviders: groupedProviders,
-      }));
-    },
+      },
+      getModelInfo: (modelName: string): ProviderOption => {
+        const { groupedProviders, models } = get();
+        const res = modelName.split(":");
+        if (res.length === 2 && Object.keys(groupedProviders).length > 0) {
+          const providerKey = Object.keys(groupedProviders).find(
+            (key) => groupedProviders[key]?.provider === res[0],
+          );
 
-    getCurrentModel(): ProviderOption {
-      const { currentModel, groupedProviders, models } = get();
-      return getModelInfo(
-        currentModel,
-        groupedProviders,
-        models,
-      ) as ProviderOption;
-    },
-    getSummaryModel() {
-      return get().models.find((model) => model.model === get().summaryModel);
-    },
-    switchDebugMode() {
-      const debugMode = get().debugMode;
-      set(() => ({
-        debugMode: !debugMode,
-      }));
-    },
-    setLocalProviders(providerInfo: ProviderOption) {
-      const { localProviders } = get();
-      const id = uniqueId();
-      set(() => ({
-        localProviders: [...localProviders, { ...providerInfo, itemId: id }],
-      }));
-    },
-
-    updateLocalProviders(providerInfo: ProviderOption) {
-      const { localProviders } = get();
-      const index = localProviders.findIndex(
-        (provider) => provider.itemId === providerInfo.itemId,
-      );
-      if (index !== -1) {
-        localProviders[index] = providerInfo;
-      }
-    },
-
-    deleteLocalProviders(modelInfo: ProviderOption) {
-      const { localProviders } = get();
-      const index = localProviders.findIndex(
-        (provider) => provider.itemId === modelInfo.itemId,
-      );
-      if (index !== -1) {
-        localProviders.splice(index, 1);
+          const providerInfo = groupedProviders[providerKey!];
+          // @ts-ignore
+          return {
+            ...(providerInfo as Record<string, unknown>),
+            model: res[1],
+          };
+        }
+        // @ts-ignore
+        return models.find((model) => model.model === modelName);
+      },
+      setProviderList: async (data: ProviderOption[]) => {
         set(() => ({
-          localProviders: [...localProviders],
+          providerList: data,
         }));
-      }
-    },
-    reset() {
-      set(() => ({ ...DEFAULT_CONFIG }));
-    },
-    setHostPort(port: number) {
-      set(() => ({
-        hostServerPort: port,
-      }));
-    },
-    setLocalToken(token: string) {
-      set(() => ({
-        localToken: token,
-      }));
-    },
-    setCurrentModel(model: string) {
-      set(() => ({
-        currentModel: model,
-      }));
-    },
-    updateOauthAccount(accounts: OauthAccounts, mcpKey: string) {
-      set(() => ({
-        oauthAccounts: {
-          ...get().oauthAccounts,
-          [mcpKey]: accounts,
-        },
-      }));
-    },
+      },
+      setGroupedProviders: (
+        groupedProviders: Record<string, ProviderOption>,
+      ) => {
+        set(() => ({
+          groupedProviders: groupedProviders,
+        }));
+      },
 
-    allModels() {},
-  }),
+      getDefaultModel(): ProviderOption {
+        const { defaultModel, getModelInfo } = get();
+        return getModelInfo(defaultModel) as ProviderOption;
+      },
+      getSummaryModel() {
+        return get().models.find((model) => model.model === get().summaryModel);
+      },
+      switchDebugMode() {
+        const debugMode = get().debugMode;
+        set(() => ({
+          debugMode: !debugMode,
+        }));
+      },
+      setLocalProviders(providerInfo: ProviderOption) {
+        const { localProviders } = get();
+        const id = uniqueId();
+        set(() => ({
+          localProviders: [...localProviders, { ...providerInfo, itemId: id }],
+        }));
+      },
+
+      updateLocalProviders(providerInfo: ProviderOption) {
+        const { localProviders } = get();
+        const index = localProviders.findIndex(
+          (provider) => provider.itemId === providerInfo.itemId,
+        );
+        if (index !== -1) {
+          localProviders[index] = providerInfo;
+        }
+      },
+
+      deleteLocalProviders(modelInfo: ProviderOption) {
+        const { localProviders } = get();
+        const index = localProviders.findIndex(
+          (provider) => provider.itemId === modelInfo.itemId,
+        );
+        if (index !== -1) {
+          localProviders.splice(index, 1);
+          set(() => ({
+            localProviders: [...localProviders],
+          }));
+        }
+      },
+      reset() {
+        set(() => ({ ...DEFAULT_CONFIG }));
+      },
+      setHostPort(port: number) {
+        set(() => ({
+          hostServerPort: port,
+        }));
+      },
+      setLocalToken(token: string) {
+        set(() => ({
+          localToken: token,
+        }));
+      },
+      setDefaultModel(model: string) {
+        set(() => ({
+          defaultModel: model,
+        }));
+      },
+      updateOauthAccount(accounts: OauthAccounts, mcpKey: string) {
+        set(() => ({
+          oauthAccounts: {
+            ...get().oauthAccounts,
+            [mcpKey]: accounts,
+          },
+        }));
+      },
+
+      allModels() {},
+    };
+    return methods;
+  },
   {
     name: StoreKey.Config,
     version: 5,

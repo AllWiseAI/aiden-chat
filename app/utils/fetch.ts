@@ -59,6 +59,14 @@ export const getBaseDomain = async () => {
   return isDev ? "https://dev.aidenai.io" : "https://prod.aidenai.io";
 };
 
+type HeadersProps = {
+  aiden?: boolean;
+  isSummary?: boolean;
+  modelInfo?: ProviderOption;
+  ignoreHeaders?: boolean;
+  refresh?: boolean;
+};
+
 // aiden - header add Aiden-
 // refresh - should refresh token detect
 export const getHeaders = async ({
@@ -66,7 +74,8 @@ export const getHeaders = async ({
   isSummary = false,
   ignoreHeaders = false,
   refresh = true,
-}) => {
+  modelInfo,
+}: HeadersProps) => {
   let headers: Record<string, string> = {};
   const token = useAuthStore.getState().userToken;
   const refreshToken = useAuthStore.getState().refreshToken;
@@ -97,19 +106,26 @@ export const getHeaders = async ({
   }
   if (aiden) {
     const localToken = useAppConfig.getState().localToken;
-    let modelInfo = useAppConfig.getState().getCurrentModel();
+    let modelHeaderInfo = modelInfo;
     if (isSummary) {
-      modelInfo = useAppConfig
+      modelHeaderInfo = useAppConfig
         .getState()
         .getSummaryModel() as unknown as ProviderOption;
     }
     headers["Host-Authorization"] = localToken;
-    headers["Aiden-Model-Name"] = modelInfo?.model ?? "";
-    headers["Aiden-Endpoint"] = modelInfo?.endpoint ?? "";
-    headers["Aiden-Model-Provider"] = modelInfo?.provider ?? "";
+    if (modelHeaderInfo) {
+      const endpoint: string = (
+        modelHeaderInfo.apiKey
+          ? modelHeaderInfo.default_endpoint!
+          : modelHeaderInfo.endpoint!
+      ) as string;
+      headers["Aiden-Model-Name"] = modelHeaderInfo?.model ?? "";
+      headers["Aiden-Endpoint"] = endpoint;
+      headers["Aiden-Model-Provider"] = modelHeaderInfo?.provider ?? "";
 
-    if (modelInfo?.apiKey) {
-      headers["Aiden-Model-Api-Key"] = modelInfo?.apiKey;
+      if (modelHeaderInfo?.apiKey) {
+        headers["Aiden-Model-Api-Key"] = modelHeaderInfo?.apiKey;
+      }
     }
   }
   return headers;

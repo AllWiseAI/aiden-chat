@@ -21,7 +21,7 @@ import { createPersistStore } from "../utils/store";
 import { estimateTokenLength } from "../utils/token";
 import { ModelConfig, useAppConfig } from "./config";
 import { createEmptyMask, Mask } from "./mask";
-import { taskSessionParams } from "@/app/typing";
+import { taskSessionParams, ProviderOption } from "@/app/typing";
 
 const localStorage = safeLocalStorage();
 
@@ -77,6 +77,7 @@ export interface ChatSession {
   clearContextIndex?: number;
 
   mask: Mask;
+  modelInfo: ProviderOption;
 }
 
 export const defaultTopic = () => t("store.defaultTopic");
@@ -86,6 +87,8 @@ export const BOT_HELLO: ChatMessage = createMessage({
 });
 
 function createEmptySession(id?: string): ChatSession {
+  const config = useAppConfig.getState();
+  const modelInfo = config.getDefaultModel();
   return {
     id: id ? id : nanoid(),
     topic: "",
@@ -100,6 +103,7 @@ function createEmptySession(id?: string): ChatSession {
     lastSummarizeIndex: 0,
 
     mask: createEmptyMask(),
+    modelInfo: modelInfo,
   };
 }
 
@@ -200,9 +204,7 @@ export const useChatStore = createPersistStore(
       },
       selectTaskSession(task_id: string) {
         const { sessions, selectSession } = get();
-        console.log("sessions", sessions);
         const index = sessions.findIndex((session) => session.id === task_id);
-        console.log("index===", task_id, index);
         selectSession(index);
       },
 
@@ -252,17 +254,23 @@ export const useChatStore = createPersistStore(
           sessions: [session].concat(state.sessions),
         }));
       },
-      newTaskSession({ taskId, requestData, responseData }: taskSessionParams) {
+      newTaskSession({
+        taskId,
+        modelInfo,
+        requestData,
+        responseData,
+      }: taskSessionParams) {
         const session = createEmptySession(taskId);
+        session.modelInfo = modelInfo;
         session.messages = [
           ...requestData.map((msg: any) => ({
             ...msg,
             date: msg.date || new Date().toLocaleString(),
             id: msg.id || nanoid(),
           })),
-          {
-            ...responseData.message,
-          },
+          ...responseData.map((msg: any) => ({
+            ...msg,
+          })),
         ];
         set((state) => ({
           currentSessionIndex: 0,
@@ -382,6 +390,7 @@ export const useChatStore = createPersistStore(
         const api: ClientApi = getClientApi();
         // make request
         api.llm.chat({
+          modelInfo: session.modelInfo,
           messages: sendMessages,
           config: { ...modelConfig, stream: true },
           onToolCall: (toolCallInfo) => {
@@ -525,6 +534,7 @@ export const useChatStore = createPersistStore(
         const api: ClientApi = getClientApi();
         api.llm.toolCall({
           toolCallInfo,
+          modelInfo: session.modelInfo,
           config: { ...modelConfig, stream: true },
           onUpdate(message, mcpInfo) {
             botMessage.streaming = true;
@@ -860,6 +870,7 @@ export const useChatStore = createPersistStore(
         updater(newSession[index]);
         set(() => ({ sessions: [...newSession] }));
       },
+
       async clearAllData() {
         await indexedDBStorage.clear();
         localStorage.clear();
@@ -876,6 +887,6 @@ export const useChatStore = createPersistStore(
   },
   {
     name: StoreKey.Chat,
-    version: 2.1,
+    version: 2.2,
   },
 );

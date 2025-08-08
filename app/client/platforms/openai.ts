@@ -67,7 +67,11 @@ export class ChatGPTApi implements LLMApi {
     const controller = new AbortController();
     options.onController?.(controller);
     const isSummary = options.isSummary ?? false;
-    const headers = await getHeaders({ aiden: true, isSummary });
+    const headers = await getHeaders({
+      aiden: true,
+      isSummary,
+      modelInfo: options.modelInfo,
+    });
     try {
       if (shouldStream) {
         streamWithThink(
@@ -118,7 +122,11 @@ export class ChatGPTApi implements LLMApi {
     const requestPayload = {
       ...options.toolCallInfo,
     };
-    const headers = await getHeaders({ aiden: true });
+    const headers = await getHeaders({
+      aiden: true,
+      modelInfo: options.modelInfo,
+    });
+
     try {
       if (shouldStream) {
         streamWithThink(
