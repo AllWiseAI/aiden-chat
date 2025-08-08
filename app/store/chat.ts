@@ -385,7 +385,7 @@ export const useChatStore = createPersistStore(
           messages: sendMessages,
           config: { ...modelConfig, stream: true },
           onToolCall: (toolCallInfo) => {
-            get().onToolCall(toolCallInfo);
+            get().onToolCall(toolCallInfo, session);
           },
           onUpdate(message, mcpInfo) {
             botMessage.streaming = true;
@@ -503,8 +503,9 @@ export const useChatStore = createPersistStore(
         });
       },
 
-      onToolCall(toolCallInfo: ToolCallInfo) {
-        const session = get().currentSession();
+      onToolCall(toolCallInfo: ToolCallInfo, currentSession?: ChatSession) {
+        const session = currentSession ?? get().currentSession();
+        if (!session) return;
         const modelConfig = session.mask.modelConfig;
         const messageIndex = session.messages.length + 1;
 
@@ -541,7 +542,7 @@ export const useChatStore = createPersistStore(
             });
           },
           onToolCall(toolCallInfo) {
-            get().onToolCall(toolCallInfo);
+            get().onToolCall(toolCallInfo, session);
           },
           async onFinish(message, _, mcpInfo) {
             botMessage.streaming = false;
