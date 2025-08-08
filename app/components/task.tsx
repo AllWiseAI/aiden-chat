@@ -91,8 +91,8 @@ function TaskItem({ title, taskInfo, modelInfo }: TaskItemProps) {
 
   const handleDetailClick = () => {
     const { id, task_id, request_messages, response_data } = taskInfo;
-    const isExist = chatStore.haveTaskSession(task_id);
     const singleKey = task_id + "-" + id;
+    const isExist = chatStore.haveTaskSession(singleKey);
 
     if (!isExist) {
       chatStore.newTaskSession({

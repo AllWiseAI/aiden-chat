@@ -886,6 +886,6 @@ export const useChatStore = createPersistStore(
   },
   {
     name: StoreKey.Chat,
-    version: 2.1,
+    version: 2.2,
   },
 );

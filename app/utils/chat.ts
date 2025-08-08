@@ -66,12 +66,6 @@ export function formatMCPData(data: any[]): MCPFormatted[] {
       }
     }
 
-    // 如果 content 有内容，直接输出
-    if (content && content.trim() !== "") {
-      result.push({ role, content });
-      continue;
-    }
-
     // 如果是 tool_call_confirm 类型，没有 content，有 mcp，构造 mcpInfo
     if (mcp && mcp.type === "tool_call_confirm") {
       result.push({
@@ -83,10 +77,12 @@ export function formatMCPData(data: any[]): MCPFormatted[] {
           response: lastToolResult || "",
         },
       });
-      continue;
     }
 
-    result.push({ role, content: "" });
+    // 如果 content 有内容，直接输出
+    if (content && content.trim() !== "") {
+      result.push({ role, content });
+    }
   }
 
   return result.reverse();
