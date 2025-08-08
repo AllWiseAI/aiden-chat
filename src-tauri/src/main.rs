@@ -260,7 +260,7 @@ async fn main() {
 
     let _sentry_guard = if is_prod {
         Some(sentry::init((
-            "https://a066b430ddc995174c5436b01f934da4@sentry.aidenai.io/2",
+            "https://6598ac3fc1e35c15c14cbd94e7a73b3b@sentry.aidenai.io/3",
             sentry::ClientOptions {
                 release: sentry::release_name!(),
                 ..Default::default()
