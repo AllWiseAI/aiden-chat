@@ -1,10 +1,11 @@
 import { useTaskStore } from "../store";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Path } from "../constant";
 import { TaskTypeEnum, Task } from "../typing";
+import { getTaskList } from "../services/task";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -133,6 +134,36 @@ export function TaskList(props: { searchValue?: string }) {
   const selectedId = useTaskStore((state) => state.currentTaskId);
   const setSelectedId = useTaskStore((state) => state.setCurrentTaskId);
   const navigate = useNavigate();
+  const [backendTasks, setBackendTasks] = useState<Task[]>([]);
+
+  useEffect(() => {
+    async function getBackendTasks() {
+      const res = await getTaskList();
+      const { code, data } = res;
+      if (code === 0 && data && data.length) {
+        setBackendTasks(data);
+      }
+    }
+    getBackendTasks();
+  }, [tasks]);
+
+  const taskList = useMemo(() => {
+    return tasks.filter((item) => {
+      const { backendData } = item;
+      if (backendData) {
+        return backendTasks.some((task) => task.id === backendData.id);
+      } else {
+        return false;
+      }
+    });
+  }, [tasks, backendTasks]);
+
+  useEffect(() => {
+    const hasSelected = taskList.some((item) => item.id === selectedId);
+    if (!hasSelected) {
+      setSelectedId(taskList[0]?.id || "");
+    }
+  }, [taskList, selectedId]);
 
   const handleDeleteTask = async (item: Task) => {
     const { backendData, id } = item || {};
@@ -140,19 +171,19 @@ export function TaskList(props: { searchValue?: string }) {
     const { code } = res;
     if (code === 0) {
       deleteTask(id);
-      setSelectedId(tasks[0]?.id || "");
-      navigate(`${Path.Task}/${tasks[0]?.id || ""}`);
+      setSelectedId(taskList[0]?.id || "");
+      navigate(`${Path.Task}/${taskList[0]?.id || ""}`);
     } else {
       toast.error(t("task.deleteFailed"));
     }
   };
 
   const filteredTasks = useMemo(() => {
-    if (!searchValue) return tasks;
-    return tasks.filter((item) =>
+    if (!searchValue) return taskList;
+    return taskList.filter((item) =>
       item.name.toLowerCase().includes(searchValue!.toLowerCase()),
     );
-  }, [tasks, searchValue]);
+  }, [taskList, searchValue]);
 
   const typeOrder = {
     [TaskTypeEnum.Once]: 0,
