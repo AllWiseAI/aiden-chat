@@ -30,7 +30,7 @@ tracing-subscriber = { version = "0.3", features = ["fmt", "time", "std", "env-f
 dotenvy = "0.15"
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.5.4", features = [ "http-all", "updater", "window-set-position", "process-relaunch", "window-center", "window-set-size", "path-all",
+tauri = { version = "1.5.4", features = [ "os-all", "http-all", "updater", "window-set-position", "process-relaunch", "window-center", "window-set-size", "path-all",
     "notification-all",
     "fs-all",
     "clipboard-all",

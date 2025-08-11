@@ -31,6 +31,9 @@
         "writeText": true,
         "readText": true
       },
+      "os": {
+        "all": true
+      },
       "window": {
         "all": false,
         "close": true,
@@ -94,7 +97,7 @@
       "resources": [
         "bin/*",
         "resources/mcp.config.json",
-        "resources/host_server_*/**/*"
+        "../node_modules/host_server_*/**/*"
       ],
       "shortDescription": "AidenChat App",
       "targets": "all",
