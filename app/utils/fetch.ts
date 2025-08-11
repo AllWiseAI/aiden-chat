@@ -6,6 +6,8 @@ import { isRefreshRequest, getLocalToken } from "../services";
 import { t } from "i18next";
 import { useAppConfig } from "../store";
 import { ProviderOption } from "../typing";
+import { getOSInfo } from "../utils";
+import { getLang } from "../locales";
 
 const FIVE_MINUTES = 5 * 60 * 1000;
 let refreshingTokenPromise: Promise<void> | null = null;
@@ -67,6 +69,8 @@ type HeadersProps = {
   refresh?: boolean;
 };
 
+let osString = "";
+
 // aiden - header add Aiden-
 // refresh - should refresh token detect
 export const getHeaders = async ({
@@ -77,6 +81,11 @@ export const getHeaders = async ({
   modelInfo,
 }: HeadersProps) => {
   let headers: Record<string, string> = {};
+  const lang = getLang();
+  if (!osString) {
+    osString = await getOSInfo();
+  }
+
   const token = useAuthStore.getState().userToken;
   const refreshToken = useAuthStore.getState().refreshToken;
   const device_id = useSettingStore.getState().getDeviceId();
@@ -105,6 +114,8 @@ export const getHeaders = async ({
     headers[`${aiden ? "Aiden-" : ""}Authorization`] = `Bearer ${latestToken}`;
   }
   if (aiden) {
+    headers["Aiden-User-Lang"] = lang;
+    headers["Aiden-User-Os"] = osString;
     const localToken = useAppConfig.getState().localToken;
     let modelHeaderInfo = modelInfo;
     if (isSummary) {

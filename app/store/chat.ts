@@ -651,7 +651,7 @@ export const useChatStore = createPersistStore(
 
         // in-context prompts
         const contextPrompts = session.mask.context.slice();
-        const shouldInjectSystemPrompts = true;
+        const shouldInjectSystemPrompts = false;
 
         let systemPrompts: ChatMessage[] = [];
 
