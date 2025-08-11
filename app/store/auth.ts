@@ -48,7 +48,7 @@ export const useAuthStore = createPersistStore(
             code,
             email,
             password,
-            invite_code: inviteCode,
+            inviteCode,
             profile_image_url: profile,
           }).catch((err) => {
             throw new Error(err);
