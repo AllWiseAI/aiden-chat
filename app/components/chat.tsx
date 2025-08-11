@@ -19,8 +19,8 @@ import SuccessIcon from "../icons/success.svg";
 import ErrorIcon from "../icons/close.svg";
 import McpIcon from "../icons/mcp.svg";
 import { useTranslation } from "react-i18next";
-import { ImageUploader } from "./image-uploader";
-import { useImageUploadStore } from "@/app/store/image-upload";
+import { FileUploader } from "./file-uploader";
+import { useFileUploadStore } from "@/app/store/file-upload";
 import CircleProgress from "./circle-progress";
 import { relaunch } from "@tauri-apps/api/process";
 import {
@@ -163,8 +163,8 @@ function InnerChat() {
   const session = chatStore.currentSession();
   const config = useAppConfig();
 
-  const images = useImageUploadStore((state) => state.images);
-  const removeImage = useImageUploadStore((state) => state.removeImage);
+  const files = useFileUploadStore((state) => state.files);
+  const removeFile = useFileUploadStore((state) => state.removeFile);
 
   const isNewChat = useMemo(() => {
     return session.messages.length === 0;
@@ -262,7 +262,7 @@ function InnerChat() {
       ChatControllerPool.stopAll();
       return;
     }
-    if (userInput.trim() === "" && isEmpty(images)) return;
+    if (userInput.trim() === "" && isEmpty(files)) return;
 
     const matchCommand = chatCommands.match(userInput);
     if (matchCommand.matched) {
@@ -271,11 +271,10 @@ function InnerChat() {
       return;
     }
     setIsLoading(true);
-    const imageUrls = images.map((image) => image.url);
-    chatStore.onUserInput(userInput, imageUrls).then(() => setIsLoading(false));
+    chatStore.onUserInput(userInput, files).then(() => setIsLoading(false));
     chatStore.setLastInput(userInput);
     setUserInput("");
-    images.forEach((image) => removeImage(image.id));
+    files.forEach((file) => removeFile(file.id));
     inputRef.current?.focus();
     setAutoScroll(true);
   };
@@ -611,7 +610,7 @@ function InnerChat() {
                   className={clsx(
                     styles["chat-input"],
                     {
-                      [styles["chat-input-with-image"]]: images.length > 0,
+                      [styles["chat-input-with-image"]]: files.length > 0,
                     },
                     "placeholder:text-[#6C7275]",
                   )}
@@ -629,10 +628,10 @@ function InnerChat() {
                 <div
                   className={clsx(
                     "absolute top-3 left-3 flex items-center gap-2.5 w-[calc(100%-24px)] bg-white dark:bg-[#141416]",
-                    images.length > 0 && "pb-2",
+                    files.length > 0 && "pb-2",
                   )}
                 >
-                  {images.map((img) => (
+                  {files.map((img) => (
                     <div key={img.id} className="relative">
                       {img.url ? (
                         <img
@@ -645,7 +644,7 @@ function InnerChat() {
                         </div>
                       )}
                       <Button
-                        onClick={() => removeImage(img.id)}
+                        onClick={() => removeFile(img.id)}
                         className="absolute -top-2 -right-2 bg-[#F3F5F7] text-[#343839] rounded-full w-4 h-4 flex-center p-0"
                       >
                         ×
@@ -654,7 +653,7 @@ function InnerChat() {
                   ))}
                 </div>
                 <div className="absolute bottom-3 left-3 flex gap-2">
-                  <ImageUploader />
+                  <FileUploader />
                   <McpPopover
                     icon={
                       <McpIcon className="size-6 text-black dark:text-white" />
@@ -664,7 +663,7 @@ function InnerChat() {
                 <Button
                   className="absolute bottom-3 right-3 size-12 bg-main rounded-full hover:bg-[#00D47E]/90 p-0 disabled:bg-[#373A3B] disabled:opacity-100 dark:disabled:bg-[#343839] !disabled:cursor-not-allowed"
                   onClick={() => doSubmit(userInput)}
-                  disabled={!(userInput.length || images.length) && !isChatting}
+                  disabled={!(userInput.length || files.length) && !isChatting}
                 >
                   {isChatting ? (
                     <StopIcon className="size-[30px] text-white dark:text-black" />
