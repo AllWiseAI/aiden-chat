@@ -21,10 +21,14 @@ export type TaskFailed = TaskBase & {
   exception_type: string;
 };
 
-export type TaskMessage = TaskCompletedOrTested | TaskFailed;
+export type TaskRefreshToken = {
+  type: "get_latest_refresh_token";
+  task_description: "";
+};
+
+export type TaskMessage = TaskCompletedOrTested | TaskFailed | TaskRefreshToken;
 
 type MessageCallback = (msg: TaskMessage) => void;
-
 class WebSocketManager {
   private socket: WebSocket | null = null;
   private listeners: MessageCallback[] = [];
@@ -93,6 +97,19 @@ class WebSocketManager {
 
   onMessage(cb: MessageCallback) {
     this.listeners.push(cb);
+  }
+
+  send(data: string | object) {
+    if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+      console.error("[WebSocket] Cannot send message: socket is not open.");
+      return;
+    }
+    try {
+      const payload = typeof data === "string" ? data : JSON.stringify(data);
+      this.socket.send(payload);
+    } catch (err) {
+      console.error("[WebSocket] Failed to send message:", err);
+    }
   }
 
   disconnect() {
