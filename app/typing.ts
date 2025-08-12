@@ -252,6 +252,7 @@ export interface Task {
   details: string;
   backendData: any;
   modelInfo: ProviderOption;
+  createdAt: number;
 }
 
 export enum TaskTypeEnum {
