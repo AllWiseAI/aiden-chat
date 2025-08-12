@@ -93,6 +93,7 @@ export default function TaskManagement({
   );
   const [timeErr, setTimeErr] = useState<string>("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const setSelectedId = useTaskStore((state) => state.setCurrentTaskId);
   const navigate = useNavigate();
   // const { t } = useTranslation();
   const taskStore = useTaskStore();
@@ -212,6 +213,7 @@ export default function TaskManagement({
           backendData: { ...data },
         });
       }
+      setSelectedId(newTask.id);
       navigate(`${Path.Task}/${newTask.id}`);
     } else {
       toast.error(

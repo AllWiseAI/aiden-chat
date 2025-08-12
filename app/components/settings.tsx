@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import CloseIcon from "../icons/close.svg";
 import General from "./setting/general";
 import McpManagement from "./setting/mcp-management";
@@ -49,12 +49,19 @@ export function Settings() {
     searchParams.get("tab") ?? settingList[0].value,
   );
   const navigate = useNavigate();
+  const renderPanelRef = useRef<HTMLDivElement>(null);
+
   const handleClick = (e: React.MouseEvent<HTMLUListElement>) => {
     const target = e.target as HTMLElement;
     const li = target.closest("li");
     if (!li) return;
     const v = li.dataset.value;
-    if (v) setSelected(v);
+    if (v) {
+      setSelected(v);
+      if (renderPanelRef.current && selected !== v) {
+        renderPanelRef.current.scrollTop = 0;
+      }
+    }
   };
 
   const renderPanel = () => {
@@ -113,7 +120,10 @@ export function Settings() {
               </li>
             ))}
           </ul>
-          <div className="flex-1 pt-2 pl-5 h-full overflow-y-auto min-w-106">
+          <div
+            ref={renderPanelRef}
+            className="flex-1 pt-2 pl-5 h-full overflow-y-auto min-w-106"
+          >
             {renderPanel()}
           </div>
         </div>

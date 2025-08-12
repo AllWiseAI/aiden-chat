@@ -66,6 +66,7 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
+        aria-describedby={undefined}
         className={clsx(
           "flex flex-col max-w-xl w-150 h-95 rounded-sm p-5 pb-2 bg-[#FEFEFE] dark:bg-black",
           isVip ? "gap-15" : "gap-5",
@@ -86,11 +87,24 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
           </div>
         ) : isVip ? (
           <div className="flex flex-col gap-8 flex-1">
-            <div className="relatice flex-center">
+            <div className="relative flex-center">
               <p className="text-main text-6xl">{inviteArr.at(-1)?.code}</p>
               <ShareIcon
-                className="absolute right-16 text-[#6C7275] light:hover:opacity-70 dark:hover:text-white cursor-pointer"
-                onClick={handleClick}
+                className={clsx(
+                  "absolute right-16 text-[#6C7275]",
+                  inviteArr.at(-1)!.current_usage_count <
+                    inviteArr.at(-1)!.usage_limit
+                    ? "light:hover:opacity-70 dark:hover:text-white cursor-pointer"
+                    : "opacity-40",
+                )}
+                onClick={() => {
+                  if (
+                    inviteArr.at(-1)!.current_usage_count <
+                    inviteArr.at(-1)!.usage_limit
+                  ) {
+                    handleClick();
+                  }
+                }}
               />
             </div>
             <div className="flex flex-col gap-5 px-8 text-sm">
@@ -130,7 +144,7 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
                   >
                     <td className="text-center">{item.code}</td>
                     <td>
-                      {item.is_active ? (
+                      {item.current_usage_count < item.usage_limit ? (
                         <div className="flex-center text-main">
                           {t("invite.unused")}
                         </div>
@@ -145,12 +159,12 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
                         <ShareIcon
                           className={clsx(
                             "text-[#6C7275]",
-                            item.is_active
+                            item.current_usage_count < item.usage_limit
                               ? "light:hover:opacity-70 dark:hover:text-white cursor-pointer"
                               : "opacity-40",
                           )}
                           onClick={() => {
-                            if (item.is_active) {
+                            if (item.current_usage_count < item.usage_limit) {
                               handleClick(index);
                             }
                           }}

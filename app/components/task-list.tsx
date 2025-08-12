@@ -1,10 +1,11 @@
 import { useTaskStore } from "../store";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Path } from "../constant";
-import { TaskTypeEnum, Task } from "../typing";
+import { Task, TaskTypeEnum } from "../typing";
+import { getTaskList } from "../services/task";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -133,6 +134,58 @@ export function TaskList(props: { searchValue?: string }) {
   const selectedId = useTaskStore((state) => state.currentTaskId);
   const setSelectedId = useTaskStore((state) => state.setCurrentTaskId);
   const navigate = useNavigate();
+  const [backendTasks, setBackendTasks] = useState<Task[]>([]);
+  useEffect(() => {
+    async function getBackendTasks() {
+      const res = await getTaskList();
+      const { code, data } = res;
+      if (code === 0 && data && data.length) {
+        setBackendTasks(data);
+      }
+    }
+    getBackendTasks();
+  }, [tasks]);
+
+  const taskList = useMemo(() => {
+    return tasks.filter((item) => {
+      const { backendData } = item;
+      if (backendData) {
+        return backendTasks.some((task) => task.id === backendData.id);
+      } else {
+        return false;
+      }
+    });
+  }, [tasks, backendTasks]);
+
+  const renderTaskList = useMemo(() => {
+    const newestCreatedAt = Math.max(...taskList.map((t) => t.createdAt ?? 0));
+    return Object.values(TaskTypeEnum).map((type) => ({
+      type,
+      tasks: taskList
+        .filter((task) => task.type === type)
+        .sort((a, b) => {
+          if (
+            a.createdAt === newestCreatedAt &&
+            b.createdAt !== newestCreatedAt
+          )
+            return -1;
+          if (
+            b.createdAt === newestCreatedAt &&
+            a.createdAt !== newestCreatedAt
+          )
+            return 1;
+
+          const dateDiff =
+            new Date(a.date).getTime() - new Date(b.date).getTime();
+          if (dateDiff !== 0) return dateDiff;
+
+          const hourDiff = (a.hour ?? 0) - (b.hour ?? 0);
+          if (hourDiff !== 0) return hourDiff;
+
+          return (a.minute ?? 0) - (b.minute ?? 0);
+        }),
+    }));
+  }, [taskList]);
 
   const handleDeleteTask = async (item: Task) => {
     const { backendData, id } = item || {};
@@ -140,39 +193,29 @@ export function TaskList(props: { searchValue?: string }) {
     const { code } = res;
     if (code === 0) {
       deleteTask(id);
-      setSelectedId(tasks[0]?.id || "");
-      navigate(`${Path.Task}/${tasks[0]?.id || ""}`);
+      if (item.id === selectedId) {
+        setSelectedId(taskList[0]?.id || "");
+        navigate(`${Path.Task}/${taskList[0]?.id || ""}`);
+      }
     } else {
       toast.error(t("task.deleteFailed"));
     }
   };
 
   const filteredTasks = useMemo(() => {
-    if (!searchValue) return tasks;
-    return tasks.filter((item) =>
-      item.name.toLowerCase().includes(searchValue!.toLowerCase()),
-    );
-  }, [tasks, searchValue]);
-
-  const typeOrder = {
-    [TaskTypeEnum.Once]: 0,
-    [TaskTypeEnum.Daily]: 1,
-    [TaskTypeEnum.Weekly]: 2,
-    [TaskTypeEnum.Monthly]: 3,
-  };
-  const groupedTasks = Object.values(TaskTypeEnum).map((type) => ({
-    type,
-    tasks: filteredTasks
-      .filter((task) => task.type === type)
-      .sort(
-        (a, b) =>
-          typeOrder[a.type as TaskTypeEnum] - typeOrder[b.type as TaskTypeEnum],
+    if (!searchValue) return renderTaskList;
+    const lowerSearch = searchValue.toLowerCase();
+    return renderTaskList.map((group) => ({
+      ...group,
+      tasks: group.tasks.filter((task) =>
+        task.name.toLowerCase().includes(lowerSearch),
       ),
-  }));
+    }));
+  }, [renderTaskList, searchValue]);
 
   return (
     <div className="flex flex-col gap-2">
-      {groupedTasks.map(({ type, tasks }) =>
+      {filteredTasks.map(({ type, tasks }) =>
         tasks.length > 0 ? (
           <div key={type} className="flex flex-col gap-2">
             <span className="text-[10px] disable-select text-[#232627]/50 dark:text-[#E8ECEF]/50">
