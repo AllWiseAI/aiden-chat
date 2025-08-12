@@ -30,7 +30,7 @@ type Props = {
 
 export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
   const navigate = useNavigate();
-  const { modelInfo, updateModel } = useGetModel();
+  const { modelInfo, updateModel, defaultModel } = useGetModel();
   const modelList = useAppConfig((s) => s.models);
   const localProviders = useAppConfig((state) => state.localProviders);
   const setGroupedProviders = useAppConfig(
@@ -48,16 +48,28 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
     },
   });
 
+  const modelNameList = useMemo(() => {
+    const list = Object.values(groupedLocalProviders)
+      .flatMap((provider) => provider.models)
+      .map((item) => {
+        return item.value;
+      });
+    return list;
+  }, [groupedLocalProviders]);
+
   const currentModel = useMemo(() => {
     if (value) {
       return value;
     } else {
-      console.log("modelInfo", modelInfo);
-      return modelInfo?.apiKey
+      const modelName = modelInfo?.apiKey
         ? `${modelInfo?.provider}:${modelInfo?.model}`
         : modelInfo?.model;
+      if (modelNameList.includes(modelName!)) {
+        return modelName;
+      }
+      return defaultModel;
     }
-  }, [value, modelInfo]);
+  }, [value, modelInfo, defaultModel, modelNameList]);
 
   const formatProvider = (inputData: ProviderOption[]) => {
     const result = inputData.reduce(
