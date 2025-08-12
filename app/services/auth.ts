@@ -20,14 +20,14 @@ export async function apiCompleteSignUp(payload: {
   email: string;
   password: string;
   code: string;
-  invite_code: string;
+  inviteCode: string;
   profile_image_url: string;
 }) {
   const params = {
     email: payload.email,
     password: payload.password,
     code: payload.code,
-    invite_code: payload.invite_code,
+    invitation_code: payload.inviteCode,
     profile_image_url: payload.profile_image_url,
   };
   const result = await fetch("/auth/complete_signup", {
