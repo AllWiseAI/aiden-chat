@@ -29,9 +29,9 @@ export default function McpConfig() {
 
   return (
     <div className="h-full text-black dark:text-white @container pt-1">
-      {mode === "table" && (
+      <div className={mode === "table" ? "block h-full @container" : "hidden"}>
         <McpTable setMode={setMode} setDetail={handleSetDetail} />
-      )}
+      </div>
 
       {mode === "edit" && <McpEditor setMode={setMode} />}
       {mode === "detail" && detailInfo && (
