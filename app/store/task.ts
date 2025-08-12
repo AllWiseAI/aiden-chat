@@ -18,6 +18,7 @@ export const createDefaultTask = (): Task => {
     details: "",
     backendData: {},
     modelInfo: modelInfo,
+    createdAt: Date.now(),
   };
 };
 
@@ -77,6 +78,6 @@ export const useTaskStore = createPersistStore(
   },
   {
     name: StoreKey.Task,
-    version: 1.4,
+    version: 1.6,
   },
 );
