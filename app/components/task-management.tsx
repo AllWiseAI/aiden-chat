@@ -213,9 +213,7 @@ export default function TaskManagement({
           backendData: { ...data },
         });
       }
-      console.log("newTask", newTask);
       setSelectedId(newTask.id);
-      console.log("setSelectedId", newTask.id);
       navigate(`${Path.Task}/${newTask.id}`);
     } else {
       toast.error(
