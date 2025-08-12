@@ -295,12 +295,14 @@ export function Task() {
       toast.error(t("task.updateFailed"));
     }
   };
-  if (!currentTask)
+  if (!currentTask) {
     return (
       <div className="flex-center h-[100vh]">
         {theme === Theme.Light ? <ResultLightIcon /> : <ResultDarkIcon />}
       </div>
     );
+  }
+
   return (
     <div
       className="flex flex-col h-screen min-h-0 gap-5 px-15 py-5"
