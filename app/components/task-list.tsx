@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Path } from "../constant";
-import { TaskTypeEnum, Task } from "../typing";
+import { Task } from "../typing";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -132,6 +132,7 @@ export function TaskList(props: { searchValue?: string }) {
   const deleteTask = useTaskStore((state) => state.deleteTask);
   const selectedId = useTaskStore((state) => state.currentTaskId);
   const setSelectedId = useTaskStore((state) => state.setCurrentTaskId);
+  const renderTaskList = useTaskStore((state) => state.getRenderTaskList());
   const navigate = useNavigate();
 
   const handleDeleteTask = async (item: Task) => {
@@ -148,31 +149,19 @@ export function TaskList(props: { searchValue?: string }) {
   };
 
   const filteredTasks = useMemo(() => {
-    if (!searchValue) return tasks;
-    return tasks.filter((item) =>
-      item.name.toLowerCase().includes(searchValue!.toLowerCase()),
-    );
-  }, [tasks, searchValue]);
-
-  const typeOrder = {
-    [TaskTypeEnum.Once]: 0,
-    [TaskTypeEnum.Daily]: 1,
-    [TaskTypeEnum.Weekly]: 2,
-    [TaskTypeEnum.Monthly]: 3,
-  };
-  const groupedTasks = Object.values(TaskTypeEnum).map((type) => ({
-    type,
-    tasks: filteredTasks
-      .filter((task) => task.type === type)
-      .sort(
-        (a, b) =>
-          typeOrder[a.type as TaskTypeEnum] - typeOrder[b.type as TaskTypeEnum],
+    if (!searchValue) return renderTaskList;
+    const lowerSearch = searchValue.toLowerCase();
+    return renderTaskList.map((group) => ({
+      ...group,
+      tasks: group.tasks.filter((task) =>
+        task.name.toLowerCase().includes(lowerSearch),
       ),
-  }));
+    }));
+  }, [tasks, searchValue]);
 
   return (
     <div className="flex flex-col gap-2">
-      {groupedTasks.map(({ type, tasks }) =>
+      {filteredTasks.map(({ type, tasks }) =>
         tasks.length > 0 ? (
           <div key={type} className="flex flex-col gap-2">
             <span className="text-[10px] disable-select text-[#232627]/50 dark:text-[#E8ECEF]/50">
