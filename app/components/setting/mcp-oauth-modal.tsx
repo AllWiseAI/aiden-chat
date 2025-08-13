@@ -290,7 +290,6 @@ export function McpOauthModal({
 
   const renderContent = () => {
     const { mcp_key } = mcpInfo;
-    console.log(oauthAccounts[mcp_key]);
     return (
       <>
         {oauthAccounts[mcp_key]?.map((item) => (
