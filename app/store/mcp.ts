@@ -14,6 +14,7 @@ import {
 import {
   getFirstValue,
   fetchMcpStatus,
+  batchFetchMcpStatus,
   getMcpStatusList,
   readMcpConfig,
   getRemoteMcpList,
@@ -84,6 +85,12 @@ export const useMcpStore = createPersistStore(
         const { renderMcpList, mcpRemoteInfoMap, mcpRenderedMap } =
           await getRenderMcpList(config, remoteMcpList);
         set({ renderMcpList, mcpRemoteInfoMap, mcpRenderedMap });
+      },
+
+      batchUpdateMcpStatusList: async (statusList: McpStatusItem[]) => {
+        console.log("[Mcp store] batchUpdateMcpStatusList", statusList);
+        const { mcpStatusList } = get();
+        set({ mcpStatusList: [...mcpStatusList, ...statusList] });
       },
 
       updateMcpStatusList: async (
@@ -450,7 +457,7 @@ export const useMcpStore = createPersistStore(
 
       pollMcpStatus: async () => {
         console.log("[Mcp store] pollMcpStatus");
-        const { mcpStatusList, updateMcpStatusList, config } = _get();
+        const { mcpStatusList, batchUpdateMcpStatusList, config } = _get();
         if (!config) return;
 
         const loadingItems = mcpStatusList.filter(
@@ -458,16 +465,20 @@ export const useMcpStore = createPersistStore(
         );
 
         if (loadingItems.length > 0) {
-          for (const item of loadingItems) {
-            try {
-              const newAction = await fetchMcpStatus(item.name);
-              updateMcpStatusList(
-                { name: item.name, action: newAction },
-                "update",
-              );
-            } catch (err) {
-              console.warn(`[Mcp store] 轮询 ${item.name} 状态失败`, err);
-            }
+          const serverNames = loadingItems.map((item) => item.name);
+          try {
+            const statusList = await batchFetchMcpStatus(serverNames);
+            console.log("statusList", statusList);
+            const localStatusList = statusList.map((item) => ({
+              name: item.server,
+              action: item.status,
+            }));
+            batchUpdateMcpStatusList(localStatusList);
+          } catch (err) {
+            console.warn(
+              `[Mcp store] 轮询 ${serverNames.join(",")} 状态失败`,
+              err,
+            );
           }
         }
         pollingTimer = setTimeout(_get().pollMcpStatus, 5000); // 5000ms 后再次执行轮询
