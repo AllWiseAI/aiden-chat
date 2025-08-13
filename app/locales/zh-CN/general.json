@@ -2,7 +2,8 @@
   "error": {
     "unauthorized": "未授权",
     "netErr": "连接异常",
-    "passwordErr": "密码错误"
+    "passwordErr": "密码错误",
+    "timeoutErr": "请求已超时，请稍后重试！"
   },
   "chatItem": {
     "chatItemCount": "{{count}} 条对话"
@@ -101,6 +102,8 @@
       "isChecking": "正在检查更新...",
       "foundUpdate": "发现新版本：{{x}}",
       "goToUpdate": "前往更新",
+      "update": "版本更新",
+      "updating": "更新中...",
       "success": "更新成功！",
       "failed": "更新失败"
     }

@@ -2,7 +2,8 @@
   "error": {
     "unauthorized": "Unauthorized",
     "netErr": "Connection Error",
-    "passwordErr": "Password Error"
+    "passwordErr": "Password Error",
+    "timeoutErr": "The request has timed out. Please try again later!"
   },
   "sidebar": {
     "chat": "Chats",
@@ -101,6 +102,8 @@
       "isChecking": "Checking update...",
       "foundUpdate": "Found new version: {{x}}",
       "goToUpdate": "Update",
+      "update": "Update",
+      "updating": "Updating...",
       "success": "Update Successful.",
       "failed": "Update Failed."
     }

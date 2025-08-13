@@ -10,28 +10,13 @@ import React, {
 
 import styles from "./home.module.scss";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/app/components/shadcn/avatar";
-
 import { Button } from "@/app/components/shadcn/button";
 import { Input } from "@/app/components/shadcn/input";
-import LogoIcon from "../icons/aiden-logo.svg";
-import LogoInviteIcon from "../icons/logo-invite.svg";
 import SearchIcon from "../icons/search.svg";
 import CollapseIcon from "../icons/collapse.svg";
 import PlusIcon from "../icons/plus.svg";
-import ChatIcon from "../icons/chat.svg";
-import TaskIcon from "../icons/task.svg";
 import { useTranslation } from "react-i18next";
-import {
-  useAppConfig,
-  useAuthStore,
-  useChatStore,
-  useTaskStore,
-} from "../store";
+import { useAppConfig, useChatStore } from "../store";
 import {
   DEFAULT_SIDEBAR_WIDTH,
   MAX_SIDEBAR_WIDTH,
@@ -44,7 +29,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { isIOS, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
 import clsx from "clsx";
-import { InviteDialog } from "./invite-dialog";
 // import { exportAndDownloadLog } from "../utils/log";
 
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
@@ -174,7 +158,7 @@ export function SideBarContainer(props: {
         {
           [styles["narrow-sidebar"]]: shouldNarrow,
         },
-        "bg-[#F3F5F7]/50 dark:bg-[#101010]",
+        "bg-[#F3F5F7] dark:bg-[#232627]/50",
       )}
       style={{
         // #3016 disable transition on ios mobile screen
@@ -183,7 +167,7 @@ export function SideBarContainer(props: {
     >
       {children}
       <div
-        className="absolute w-[2px] h-full top-0 right-0 transition-all ease-in-out duration-300 dark:bg-[#23262F] hover:bg-[#00D47E] dark:hover:bg-[#00D47E] cursor-ew-resize"
+        className="absolute w-[2px] h-full top-0 right-0 transition-all ease-in-out duration-300 bg-[#E8ECEF] dark:bg-[#232627]/50 hover:bg-[#00D47E] dark:hover:bg-[#00D47E] cursor-ew-resize"
         onPointerDown={(e) => onDragStart(e as any)}
       ></div>
     </div>
@@ -211,7 +195,7 @@ export function SideBarHeader(props: {
           <div className="flex gap-1.5">
             <div className="flex-center relative">
               <Input
-                className="h-[30px] !text-left bg-[#E8ECEF] focus:bg-white focus:border-[#00D47E] focus:dark:border-[#00D47E] placeholder:text-sm !placeholder:text-[#6C7275] pl-6 pr-2.5 py-1 rounded-sm"
+                className="h-[30px] !text-left bg-[#E8ECEF] dark:bg-[#232627] focus:bg-white focus:border-[#00D47E] focus:dark:border-[#00D47E] placeholder:text-sm !placeholder:text-[#6C7275] pl-6 pr-2.5 py-1 rounded-sm"
                 clearable
                 value={searchValue}
                 placeholder="Search"
@@ -222,7 +206,7 @@ export function SideBarHeader(props: {
             </div>
             <Button
               variant="ghost"
-              className="bg-[#E8ECEF] size-[30px]"
+              className="bg-[#E8ECEF] dark:bg-[#232627] size-[30px]"
               onClick={toggleSideBar}
             >
               <CollapseIcon className="size-5" />
@@ -255,7 +239,7 @@ export function SideBarBody(props: {
           <div className="px-4 pb-4">
             <Button
               variant="ghost"
-              className="w-full h-9.5 bg-[#00AB66]/6 hover:bg-[#00AB66]/12 border border-[#00AB66]/15 text-main flex justify-start items-center gap-2 !px-1.5 py-1.5 rounded-lg"
+              className="w-full h-9.5 bg-[#00AB66]/6 hover:bg-[#00AB66]/12 dark:hover:bg-[#00AB66]/12 border border-[#00AB66]/15 text-main flex justify-start items-center gap-2 !px-1.5 py-1.5 rounded-lg"
               onClick={() => {
                 if (tabValue === "chat") {
                   chatStore.newSession();
@@ -285,25 +269,6 @@ export function SideBarFooter(props: {
   shouldNarrow?: boolean;
 }) {
   const { children, shouldNarrow } = props;
-  const { t } = useTranslation("general");
-  const [showInvite, setShowInvite] = useState(false);
-  // const { t } = useTranslation("settings");
-  // const [showItem, setShowItem] = useState(false);
-  // const logout = async () => {
-  //   navigate(Path.Login);
-  //   try {
-  //     const success = await authStore.logout();
-  //     if (success) {
-  //       toast.success("Logout success", {
-  //         className: "w-auto max-w-max",
-  //       });
-  //     }
-  //   } catch (e: any) {
-  //     toast.error(e.message, {
-  //       className: "w-auto max-w-max",
-  //     });
-  //   }
-  // };
 
   return (
     <div className="flex gap-2.5 my-4">
@@ -314,56 +279,7 @@ export function SideBarFooter(props: {
           "flex-center flex-col gap-2.5 border-r border-white dark:border-[#242424] overflow-hidden",
           shouldNarrow ? "w-full" : "w-16",
         )}
-      >
-        {/* <div
-          className={clsx(
-            "transition-all duration-300 ease-in-out",
-            showItem ? " max-h-40" : "max-h-0",
-          )}
-        >
-          <div
-            className={clsx(
-              "flex items-center gap-2 !px-1.5 !py-2 w-full hover:bg-[#E8ECEF]/50 dark:hover:bg-[#232627]/50 cursor-pointer",
-              !shouldNarrow ? "justify-start" : "justify-center",
-            )}
-            onClick={() => {
-              if (location.pathname !== Path.Settings) {
-                navigate(Path.Settings);
-              }
-            }}
-          >
-            <SettingIcon className="size-[18px]" />
-            {!shouldNarrow && (
-              <span className="-ml-1 text-xs">{t("title")}</span>
-            )}
-          </div>
-          <div
-            className={clsx(
-              "flex items-center gap-2 !px-1.5 !py-2 w-full hover:bg-[#E8ECEF]/50 dark:hover:bg-[#232627]/50 cursor-pointer",
-              !shouldNarrow ? "justify-start" : "justify-center",
-            )}
-            onClick={logout}
-          >
-            <LogoutIcon className="size-[18px]" />
-            {!shouldNarrow && (
-              <span className="-ml-1 text-xs">{t("general.logout")}</span>
-            )}
-          </div>
-        </div> */}
-      </div>
-
-      {!shouldNarrow && (
-        <div className="flex justify-state flex-1 h-10">
-          <Button
-            onClick={() => setShowInvite(true)}
-            className="flex-center h-full py-0 text-[13px] font-normal bg-[#333333] dark:bg-black border dark:border-[#00D47E] hover:bg-[#333333]/85 text-[#00D47E] rounded-full"
-          >
-            <LogoInviteIcon className="size-5 mb-1" />
-            <span>{t("invite.btn")}</span>
-          </Button>
-        </div>
-      )}
-      <InviteDialog open={showInvite} onOpenChange={setShowInvite} />
+      ></div>
     </div>
   );
 }
@@ -371,14 +287,10 @@ export function SideBarFooter(props: {
 export function SideBar(props: { className?: string }) {
   useHotKey();
   const { onDragStart, shouldNarrow } = useDragSideBar();
-  const authStore = useAuthStore();
-  const { t } = useTranslation("general");
   const [searchValue, setSearchValue] = useState("");
   const [tabValue, setTabValue] = useState<"chat" | "task">("chat");
   const navigate = useNavigate();
-  const currentTaskId = useTaskStore((state) => state.currentTaskId);
   const location = useLocation();
-  const debugMode = useAppConfig().debugMode;
 
   useEffect(() => {
     const pathName = location.pathname;
@@ -390,89 +302,33 @@ export function SideBar(props: { className?: string }) {
   }, [location]);
 
   return (
-    <div className="flex">
-      <div className="flex flex-col justify-between items-center w-17 pt-10 pb-4 bg-[#6C7275]/20">
-        <div className="flex flex-col gap-5 items-center">
-          <Avatar
-            className="size-10 cursor-pointer"
-            onClick={() => {
-              if (location.pathname !== Path.Settings) {
-                navigate(Path.Settings);
-              }
-            }}
-          >
-            <AvatarImage src={authStore.user.profile} />
-            <AvatarFallback className="bg-main text-xl font-medium">
-              {authStore.user.email?.[0].toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col gap-3">
-            <div
-              className={clsx(
-                "flex-center flex-col cursor-pointer rounded-lg",
-                tabValue === "chat"
-                  ? "text-main bg-[#F3F5F7]"
-                  : "text-[#6C7275] dark:text-[#E8ECEF]/50 hover:bg-white/80",
-              )}
-              onClick={() => {
-                setTabValue("chat");
-                navigate(Path.Chat);
-              }}
-            >
-              <div className="rounded- w-12.5 h-11.5 flex-center flex-col gap-[2px]">
-                <ChatIcon />
-                <span className="text-xs">{t("sidebar.chat")}</span>
-              </div>
-            </div>
-            <div
-              className={clsx(
-                "flex-center flex-col cursor-pointer rounded-lg",
-                tabValue === "task"
-                  ? "text-main bg-[#F3F5F7]"
-                  : "text-[#6C7275] dark:text-[#E8ECEF]/50 hover:bg-white/80",
-              )}
-              onClick={() => {
-                setTabValue("task");
-                navigate(`${Path.Task}/${currentTaskId}`);
-              }}
-            >
-              <div className=" w-12.5 h-11.5 flex-center flex-col gap-[2px]">
-                <TaskIcon />
-                <span className="text-xs">{t("sidebar.task")}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        {debugMode ? "AidenDebug" : <LogoIcon className="size-8" />}
-      </div>
-      <SideBarContainer
-        onDragStart={onDragStart}
-        className="flex-1 flex flex-col h-full"
+    <SideBarContainer
+      onDragStart={onDragStart}
+      className="flex-1 flex flex-col h-full"
+      shouldNarrow={shouldNarrow}
+      {...props}
+    >
+      <SideBarHeader
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
         shouldNarrow={shouldNarrow}
-        {...props}
+      ></SideBarHeader>
+      <SideBarBody
+        shouldNarrow={shouldNarrow}
+        tabValue={tabValue}
+        setTabValue={setTabValue}
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            navigate(Path.Chat);
+          }
+        }}
       >
-        <SideBarHeader
-          searchValue={searchValue}
-          setSearchValue={setSearchValue}
-          shouldNarrow={shouldNarrow}
-        ></SideBarHeader>
-        <SideBarBody
-          shouldNarrow={shouldNarrow}
-          tabValue={tabValue}
-          setTabValue={setTabValue}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              navigate(Path.Chat);
-            }
-          }}
-        >
-          {tabValue === "chat" && (
-            <ChatList narrow={shouldNarrow} searchValue={searchValue} />
-          )}
-          {tabValue === "task" && <TaskList searchValue={searchValue} />}
-        </SideBarBody>
-        <SideBarFooter shouldNarrow={shouldNarrow} />
-      </SideBarContainer>
-    </div>
+        {tabValue === "chat" && (
+          <ChatList narrow={shouldNarrow} searchValue={searchValue} />
+        )}
+        {tabValue === "task" && <TaskList searchValue={searchValue} />}
+      </SideBarBody>
+      <SideBarFooter shouldNarrow={shouldNarrow} />
+    </SideBarContainer>
   );
 }

@@ -675,7 +675,7 @@ function InnerChat() {
                   {isChatting ? (
                     <StopIcon className="size-[30px] text-white dark:text-black" />
                   ) : (
-                    <SendIcon className="size-[30px]" />
+                    <SendIcon className="size-[30px] text-white" />
                   )}
                 </Button>
               </label>

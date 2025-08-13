@@ -11,6 +11,7 @@ import {
 } from "../typing";
 import EditIcon from "../icons/edit.svg";
 import TaskManagement from "./task-management";
+import { WindowHeader } from "./window-header";
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
 import advancedFormat from "dayjs/plugin/advancedFormat";
@@ -295,40 +296,51 @@ export function Task() {
       toast.error(t("task.updateFailed"));
     }
   };
-  if (!currentTask)
-    return (
-      <div className="flex-center h-[100vh]">
-        {theme === Theme.Light ? <ResultLightIcon /> : <ResultDarkIcon />}
-      </div>
-    );
   return (
-    <div
-      className="flex flex-col h-screen min-h-0 gap-5 px-15 py-5"
-      onClick={() => setIsEdit(false)}
-    >
-      <div className="w-fit mb-5">
-        <ModelSelect mode="custom" onChange={handleModelChange} value={model} />
-      </div>
-      <div onClick={(e) => e.stopPropagation()}>
-        {isEdit ? (
-          <TaskManagement
-            model={model}
-            task={currentTask}
-            onCancel={() => {
-              setIsEdit(false);
-            }}
-            onChange={(id, updatedTask) => {
-              setTask(id, updatedTask);
-              setIsEdit(false);
-            }}
+    <div className="flex flex-col h-screen">
+      <WindowHeader>
+        {currentTask && (
+          <ModelSelect
+            mode="custom"
+            onChange={handleModelChange}
+            value={model}
           />
-        ) : (
-          <>
-            <TaskPanel task={currentTask} setIsEdit={() => setIsEdit(true)} />
-            <TaskRecords currentTask={currentTask} />
-          </>
         )}
-      </div>
+      </WindowHeader>
+      {!currentTask ? (
+        <div className="flex-center flex-1">
+          {theme === Theme.Light ? <ResultLightIcon /> : <ResultDarkIcon />}
+        </div>
+      ) : (
+        <div
+          className="flex-1 flex flex-col min-h-0 gap-5 px-15 py-5 border-t border-[#E8ECEF] dark:border-[#232627]/50"
+          onClick={() => setIsEdit(false)}
+        >
+          <div onClick={(e) => e.stopPropagation()}>
+            {isEdit ? (
+              <TaskManagement
+                model={model}
+                task={currentTask}
+                onCancel={() => {
+                  setIsEdit(false);
+                }}
+                onChange={(id, updatedTask) => {
+                  setTask(id, updatedTask);
+                  setIsEdit(false);
+                }}
+              />
+            ) : (
+              <>
+                <TaskPanel
+                  task={currentTask}
+                  setIsEdit={() => setIsEdit(true)}
+                />
+                <TaskRecords currentTask={currentTask} />
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

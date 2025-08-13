@@ -46,7 +46,7 @@ export default function AboutUs() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex gap-4">
-        <Logo className="size-12" />
+        <Logo className="size-12 text-[#00D47E]" />
         <div className="flex flex-col justify-center font-medium">
           <div className="text-lg">{"v" + config.package.version}</div>
           <div className="text-xs text-[#6C7275] font-light">

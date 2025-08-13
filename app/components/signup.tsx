@@ -277,7 +277,7 @@ const VerifyCodeForm = ({
     <>
       <div className="flex-center flex-col gap-5">
         <div className="flex items-end gap-2">
-          <LogoIcon className="size-7.5" />
+          <LogoIcon className="size-7.5 text-[#00D47E]" />
           <LogoTextIcon className="h-5.5" />
         </div>
         <span className="text-lg font-medium">{t("signUp.verifyAddress")}</span>
