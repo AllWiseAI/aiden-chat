@@ -9,6 +9,16 @@ import {
 // import { fetch as tauriFetch, ResponseType } from "@tauri-apps/api/http";
 import { fetch as tauriStreamFetch } from "./utils/stream";
 
+export async function getOSInfo() {
+  const { platform, version, type, arch } = await import("@tauri-apps/api/os");
+  const osPlatform = await platform();
+  const osVersion = await version();
+  const osType = await type();
+  const osArch = await arch();
+
+  return `osPlatform: ${osPlatform}, osVersion: ${osVersion}, osType: ${osType}, osArch: ${osArch}`;
+}
+
 export function trimTopic(topic: string) {
   // Fix an issue where double quotes still show in the Indonesian language
   // This will remove the specified punctuation from the end of the string

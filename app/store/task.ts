@@ -1,5 +1,5 @@
 import { StoreKey } from "../constant";
-import { Task, TaskTypeEnum } from "../typing";
+import { Task } from "../typing";
 import { createPersistStore } from "../utils/store";
 import { nanoid } from "nanoid";
 import { useAppConfig } from "./config";
@@ -73,41 +73,11 @@ export const useTaskStore = createPersistStore(
         const newTasks = currentTasks.filter((t) => t.id !== id);
         set({ tasks: newTasks });
       },
-      getRenderTaskList: () => {
-        const tasks = _get().tasks;
-        const newestCreatedAt = Math.max(...tasks.map((t) => t.createdAt ?? 0));
-        return Object.values(TaskTypeEnum).map((type) => ({
-          type,
-          tasks: tasks
-            .filter((task) => task.type === type)
-            .sort((a, b) => {
-              if (
-                a.createdAt === newestCreatedAt &&
-                b.createdAt !== newestCreatedAt
-              )
-                return -1;
-              if (
-                b.createdAt === newestCreatedAt &&
-                a.createdAt !== newestCreatedAt
-              )
-                return 1;
-
-              const dateDiff =
-                new Date(a.date).getTime() - new Date(b.date).getTime();
-              if (dateDiff !== 0) return dateDiff;
-
-              const hourDiff = (a.hour ?? 0) - (b.hour ?? 0);
-              if (hourDiff !== 0) return hourDiff;
-
-              return (a.minute ?? 0) - (b.minute ?? 0);
-            }),
-        }));
-      },
     };
     return methods;
   },
   {
     name: StoreKey.Task,
-    version: 1.5,
+    version: 1.6,
   },
 );

@@ -31,6 +31,9 @@
         "writeText": true,
         "readText": true
       },
+      "os": {
+        "all": true
+      },
       "window": {
         "all": false,
         "close": true,

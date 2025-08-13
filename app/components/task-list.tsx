@@ -1,10 +1,11 @@
 import { useTaskStore } from "../store";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Path } from "../constant";
-import { Task } from "../typing";
+import { Task, TaskTypeEnum } from "../typing";
+import { getTaskList } from "../services/task";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -132,8 +133,59 @@ export function TaskList(props: { searchValue?: string }) {
   const deleteTask = useTaskStore((state) => state.deleteTask);
   const selectedId = useTaskStore((state) => state.currentTaskId);
   const setSelectedId = useTaskStore((state) => state.setCurrentTaskId);
-  const renderTaskList = useTaskStore((state) => state.getRenderTaskList());
   const navigate = useNavigate();
+  const [backendTasks, setBackendTasks] = useState<Task[]>([]);
+  useEffect(() => {
+    async function getBackendTasks() {
+      const res = await getTaskList();
+      const { code, data } = res;
+      if (code === 0 && data && data.length) {
+        setBackendTasks(data);
+      }
+    }
+    getBackendTasks();
+  }, [tasks]);
+
+  const taskList = useMemo(() => {
+    return tasks.filter((item) => {
+      const { backendData } = item;
+      if (backendData) {
+        return backendTasks.some((task) => task.id === backendData.id);
+      } else {
+        return false;
+      }
+    });
+  }, [tasks, backendTasks]);
+
+  const renderTaskList = useMemo(() => {
+    const newestCreatedAt = Math.max(...taskList.map((t) => t.createdAt ?? 0));
+    return Object.values(TaskTypeEnum).map((type) => ({
+      type,
+      tasks: taskList
+        .filter((task) => task.type === type)
+        .sort((a, b) => {
+          if (
+            a.createdAt === newestCreatedAt &&
+            b.createdAt !== newestCreatedAt
+          )
+            return -1;
+          if (
+            b.createdAt === newestCreatedAt &&
+            a.createdAt !== newestCreatedAt
+          )
+            return 1;
+
+          const dateDiff =
+            new Date(a.date).getTime() - new Date(b.date).getTime();
+          if (dateDiff !== 0) return dateDiff;
+
+          const hourDiff = (a.hour ?? 0) - (b.hour ?? 0);
+          if (hourDiff !== 0) return hourDiff;
+
+          return (a.minute ?? 0) - (b.minute ?? 0);
+        }),
+    }));
+  }, [taskList]);
 
   const handleDeleteTask = async (item: Task) => {
     const { backendData, id } = item || {};
@@ -141,8 +193,10 @@ export function TaskList(props: { searchValue?: string }) {
     const { code } = res;
     if (code === 0) {
       deleteTask(id);
-      setSelectedId(tasks[0]?.id || "");
-      navigate(`${Path.Task}/${tasks[0]?.id || ""}`);
+      if (item.id === selectedId) {
+        setSelectedId(taskList[0]?.id || "");
+        navigate(`${Path.Task}/${taskList[0]?.id || ""}`);
+      }
     } else {
       toast.error(t("task.deleteFailed"));
     }
@@ -157,7 +211,7 @@ export function TaskList(props: { searchValue?: string }) {
         task.name.toLowerCase().includes(lowerSearch),
       ),
     }));
-  }, [tasks, searchValue]);
+  }, [renderTaskList, searchValue]);
 
   return (
     <div className="flex flex-col gap-2">
