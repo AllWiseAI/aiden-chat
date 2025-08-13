@@ -69,7 +69,12 @@ class WebSocketManager {
       try {
         const data = JSON.parse(event.data) as TaskMessage;
         if (
-          ["task_completed", "task_tested", "task_failed"].includes(data.type)
+          [
+            "task_completed",
+            "task_tested",
+            "task_failed",
+            "get_latest_refresh_token",
+          ].includes(data.type)
         ) {
           this.listeners.forEach((cb) => cb(data));
         } else {
