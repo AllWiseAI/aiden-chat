@@ -195,7 +195,7 @@ export function SideBarHeader(props: {
           <div className="flex gap-1.5">
             <div className="flex-center relative">
               <Input
-                className="h-[30px] !text-left bg-[#E8ECEF] dark:bg-[#232627] focus:bg-white focus:border-[#00D47E] focus:dark:border-[#00D47E] placeholder:text-sm !placeholder:text-[#6C7275] pl-6 pr-2.5 py-1 rounded-sm"
+                className="h-[30px] !text-left bg-[#E8ECEF] dark:bg-[#232627] focus:bg-white dark:focus:bg-[#101213] focus:border-[#00D47E] focus:dark:border-[#00D47E] placeholder:text-sm !placeholder:text-[#6C7275] pl-6 pr-2.5 py-1 rounded-sm"
                 clearable
                 value={searchValue}
                 placeholder="Search"

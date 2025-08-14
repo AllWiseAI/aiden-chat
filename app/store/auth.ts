@@ -105,7 +105,7 @@ export const useAuthStore = createPersistStore(
             // setAuth
             return true;
           } catch (e: any) {
-            console.error("refresh token err:", JSON.stringify(e));
+            console.error("refresh token err:", JSON.stringify(e.message));
           }
         }
         setDefaultState();

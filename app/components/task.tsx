@@ -26,6 +26,12 @@ import LoadingIcon from "../icons/loading-spinner.svg";
 import FailedIcon from "../icons/close.svg";
 import ResultLightIcon from "../icons/result-light.svg";
 import ResultDarkIcon from "../icons/result-dark.svg";
+import TimeIcon from "../icons/time.svg";
+import RepeatIcon from "../icons/repeat.svg";
+import ClockIcon from "../icons/clock.svg";
+import DetailIcon from "../icons/detail.svg";
+import CalendarIcon from "../icons/calendar.svg";
+import TimeCalendarIcon from "../icons/time-calendar.svg";
 import { Path } from "../constant";
 import { useNavigate } from "react-router-dom";
 import { useChatStore } from "../store/chat";
@@ -208,7 +214,7 @@ function TaskPanel({ task, setIsEdit }: TaskPanelProps) {
   const { t } = useTranslation();
 
   return (
-    <div className="flex flex-col gap-2 py-3 px-5 text-sm bg-[#F3F5F7] dark:bg-[#232627] text-[#101213] dark:text-white rounded-xl">
+    <div className="flex flex-col gap-5 py-3 px-5 text-sm bg-[#F3F5F7] dark:bg-[#232627] text-[#101213] dark:text-white rounded-xl">
       <div className="flex items-center gap-2">
         <span className="flex-1 text-lg">{task.name}</span>
         <Button variant="ghost" className="size-7" onClick={setIsEdit}>
@@ -216,48 +222,67 @@ function TaskPanel({ task, setIsEdit }: TaskPanelProps) {
         </Button>
       </div>
 
-      <div className="flex gap-3">
-        <span>{t("task.time")}</span>
-        <span className="text-[#979797]">
-          {formatCustomTime(task.date, task.hour!, task.minute!)}
-        </span>
-      </div>
+      <div className="flex flex-col gap-4 text-[#6C7275] dark:text-[#E8ECEF]/50">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1">
+            <TimeIcon className="size-[18px]" />
+            <span>{t("task.time")}</span>
+          </div>
 
-      <div className="flex gap-3">
-        <span>{t("task.recurrence")}</span>
-        <span className="text-[#979797]">
-          {task.type === TaskTypeEnum.Daily
-            ? t("task.daily")
-            : task.type === TaskTypeEnum.Weekly
-            ? t("task.weekly")
-            : task.type === TaskTypeEnum.Monthly
-            ? t("task.monthly")
-            : t("task.once")}
-        </span>
-      </div>
-
-      <div className="flex gap-3">
-        <span>{t("task.notification")}</span>
-
-        <div className="flex items-center justify-center gap-1 text-[#979797]">
-          {task.notification ? (
-            <>
-              <NotificationOnIcon className="size-5" />
-              {t("task.on")}
-            </>
-          ) : (
-            <>
-              <NotificationOffIcon className="size-5" />
-              {t("task.off")}
-            </>
-          )}
+          <div className="text-[#979797] bg-[#E8ECEF] dark:bg-[#343839] px-1.5 py-1 rounded-sm">
+            <CalendarIcon />
+            <TimeCalendarIcon />
+            {formatCustomTime(task.date, task.hour!, task.minute!)}
+          </div>
         </div>
-      </div>
 
-      <div className="flex items-start gap-3">
-        <span className="whitespace-nowrap">{t("task.details")}</span>
-        <div className="text-[#979797] max-h-30 overflow-y-auto flex-1 break-words">
-          {task.details}
+        <div className="flex gap-3">
+          <div className="flex items-center gap-1">
+            <RepeatIcon className="size-[18px]" />
+            <span>{t("task.recurrence")}</span>
+          </div>
+
+          <span className="text-[#979797]">
+            {task.type === TaskTypeEnum.Daily
+              ? t("task.daily")
+              : task.type === TaskTypeEnum.Weekly
+              ? t("task.weekly")
+              : task.type === TaskTypeEnum.Monthly
+              ? t("task.monthly")
+              : t("task.once")}
+          </span>
+        </div>
+
+        <div className="flex gap-3">
+          <div className="flex items-center gap-1">
+            <ClockIcon className="size-[18px]" />
+            <span>{t("task.notification")}</span>
+          </div>
+
+          <div className="flex items-center justify-center gap-1 text-[#979797]">
+            {task.notification ? (
+              <>
+                <NotificationOnIcon className="size-5" />
+                {t("task.on")}
+              </>
+            ) : (
+              <>
+                <NotificationOffIcon className="size-5" />
+                {t("task.off")}
+              </>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-start gap-3">
+          <div className="flex items-center gap-1">
+            <DetailIcon className="size-[18px]" />
+            <span className="whitespace-nowrap">{t("task.details")}</span>
+          </div>
+
+          <div className="text-[#979797] max-h-30 overflow-y-auto flex-1 break-words">
+            {task.details}
+          </div>
         </div>
       </div>
     </div>
