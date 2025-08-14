@@ -130,72 +130,71 @@ export function TaskList(props: { searchValue?: string }) {
   const { searchValue } = props;
   const { t } = useTranslation("general");
   const tasks = useTaskStore((state) => state.tasks);
+  const initTasks = useTaskStore((state) => state.initTasks);
   const deleteTask = useTaskStore((state) => state.deleteTask);
   const selectedId = useTaskStore((state) => state.currentTaskId);
   const setSelectedId = useTaskStore((state) => state.setCurrentTaskId);
+  const taskModelMap = useTaskStore((state) => state.taskModelMap);
   const navigate = useNavigate();
-  const [backendTasks, setBackendTasks] = useState<Task[]>([]);
+
   useEffect(() => {
     async function getBackendTasks() {
       const res = await getTaskList();
       const { code, data } = res;
       if (code === 0 && data && data.length) {
-        setBackendTasks(data);
+        const formatTaskList = data.map((item: Task) => ({
+          ...item,
+          modelInfo: taskModelMap[item.id],
+        }));
+        initTasks(formatTaskList);
       }
     }
     getBackendTasks();
-  }, [tasks]);
-
-  const taskList = useMemo(() => {
-    return tasks.filter((item) => {
-      const { backendData } = item;
-      if (backendData) {
-        return backendTasks.some((task) => task.id === backendData.id);
-      } else {
-        return false;
-      }
-    });
-  }, [tasks, backendTasks]);
+  }, []);
 
   const renderTaskList = useMemo(() => {
-    const newestCreatedAt = Math.max(...taskList.map((t) => t.createdAt ?? 0));
+    const newestCreatedAt = Math.max(
+      ...tasks.map((t) => new Date(t.created_at).getTime() ?? 0),
+    );
     return Object.values(TaskTypeEnum).map((type) => ({
       type,
-      tasks: taskList
-        .filter((task) => task.type === type)
+      tasks: tasks
+        .filter((task) => task.original_info.repeat_unit === type)
         .sort((a, b) => {
           if (
-            a.createdAt === newestCreatedAt &&
-            b.createdAt !== newestCreatedAt
+            new Date(a.created_at).getTime() === newestCreatedAt &&
+            new Date(b.created_at).getTime() !== newestCreatedAt
           )
             return -1;
           if (
-            b.createdAt === newestCreatedAt &&
-            a.createdAt !== newestCreatedAt
+            new Date(b.created_at).getTime() === newestCreatedAt &&
+            new Date(a.created_at).getTime() !== newestCreatedAt
           )
             return 1;
 
           const dateDiff =
-            new Date(a.date).getTime() - new Date(b.date).getTime();
+            new Date(a.original_info.start_date).getTime() -
+            new Date(b.original_info.start_date).getTime();
           if (dateDiff !== 0) return dateDiff;
 
-          const hourDiff = (a.hour ?? 0) - (b.hour ?? 0);
+          const hourDiff =
+            (a.original_info.hour ?? 0) - (b.original_info.hour ?? 0);
           if (hourDiff !== 0) return hourDiff;
 
-          return (a.minute ?? 0) - (b.minute ?? 0);
+          return (a.original_info.minute ?? 0) - (b.original_info.minute ?? 0);
         }),
     }));
-  }, [taskList]);
+  }, [tasks]);
 
   const handleDeleteTask = async (item: Task) => {
-    const { backendData, id } = item || {};
-    const res = await deleteTaskService(backendData?.id);
+    const { id } = item || {};
+    const res = await deleteTaskService(id);
     const { code } = res;
     if (code === 0) {
       deleteTask(id);
       if (item.id === selectedId) {
-        setSelectedId(taskList[0]?.id || "");
-        navigate(`${Path.Task}/${taskList[0]?.id || ""}`);
+        setSelectedId(tasks[0]?.id || "");
+        navigate(`${Path.Task}/${tasks[0]?.id || ""}`);
       }
     } else {
       toast.error(t("task.deleteFailed"));

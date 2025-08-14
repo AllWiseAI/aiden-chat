@@ -244,16 +244,30 @@ export type ModelHeaderInfo = {
 export interface Task {
   id: string;
   name: string;
+  original_info: {
+    name: string;
+    start_date: string;
+    hour: number | null;
+    minute: number | null;
+    repeat_unit: string;
+    enable_notification: boolean;
+    description: string;
+  };
+  modelInfo?: ProviderOption;
+  created_at: string;
+  updated_at: string;
+}
+
+export type TaskFormType = {
+  modelInfo?: ProviderOption;
+  name: string;
   date: string;
   hour: number | null;
   minute: number | null;
-  type: string;
+  type: TaskTypeEnum;
   notification: boolean;
   details: string;
-  backendData: any;
-  modelInfo: ProviderOption;
-  createdAt: number;
-}
+};
 
 export enum TaskTypeEnum {
   Once = "once",

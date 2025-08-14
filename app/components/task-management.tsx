@@ -19,8 +19,8 @@ import {
 import { Calendar } from "./shadcn/calendar";
 import TimeSelect from "./time-select";
 import { useNavigate } from "react-router-dom";
-import { TaskTypeEnum, Task, TaskPayload } from "../typing";
-import { createDefaultTask, useAppConfig, useTaskStore } from "../store";
+import { TaskTypeEnum, Task, TaskPayload, TaskFormType } from "../typing";
+import { useAppConfig, useTaskStore } from "../store";
 import dayjs from "dayjs";
 import clsx from "clsx";
 import NotificationOnIcon from "../icons/notification-on.svg";
@@ -82,20 +82,49 @@ export default function TaskManagement({
   model,
 }: TaskManagementProps) {
   const { t } = useTranslation("general");
-  const [newTask, setNewTask] = useState<Task>({
-    ...createDefaultTask(),
-    ...task,
+  const [newTask, setNewTask] = useState<TaskFormType>({
+    name: "",
+    date: "",
+    hour: null,
+    minute: null,
+    type: TaskTypeEnum.Daily,
+    notification: false,
+    details: "",
+    modelInfo: undefined,
   });
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [isTestLoading, setIsTestLoading] = useState(false);
-  const [notificationEnabled, setNotificationEnabled] = useState(
-    task?.notification ?? false,
-  );
+  const [notificationEnabled, setNotificationEnabled] = useState(false);
   const [timeErr, setTimeErr] = useState<string>("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const setSelectedId = useTaskStore((state) => state.setCurrentTaskId);
+
+  useEffect(() => {
+    if (task) {
+      const {
+        original_info: {
+          name,
+          hour,
+          minute,
+          start_date,
+          description,
+          repeat_unit,
+          enable_notification,
+        },
+      } = task;
+      setNewTask({
+        name,
+        date: start_date,
+        hour,
+        minute,
+        type: repeat_unit as TaskTypeEnum,
+        notification: enable_notification,
+        details: description,
+      });
+      setNotificationEnabled(enable_notification);
+    }
+  }, [task]);
   const navigate = useNavigate();
-  // const { t } = useTranslation();
   const taskStore = useTaskStore();
 
   const getModelInfo = useAppConfig((s) => s.getModelInfo);
@@ -119,7 +148,7 @@ export default function TaskManagement({
   };
 
   const verifyTask = useCallback(
-    (task: Task): boolean => {
+    (task: TaskFormType): boolean => {
       if (!task.date || task.hour === null || task.minute === null)
         return false;
       if (!task.type) return false;
@@ -179,7 +208,7 @@ export default function TaskManagement({
     };
 
     if (task) {
-      payload.task_id = task.backendData.id;
+      payload.task_id = task.id;
     }
 
     const { dayString, dayOfMonth } = getCurrentDateObj(date);
@@ -205,16 +234,18 @@ export default function TaskManagement({
       toast.success(task ? t("task.updateSuccess") : t("task.createSuccess"), {
         className: "w-auto max-w-max",
       });
+      const updatedData = { ...data, modelInfo: newTask.modelInfo };
       if (task) {
-        onChange?.(newTask.id, { ...newTask, backendData: { ...data } });
+        onChange?.(data.id, updatedData);
       } else {
-        taskStore.createTask({
-          ...newTask,
-          backendData: { ...data },
-        });
+        taskStore.addTask(updatedData);
       }
-      setSelectedId(newTask.id);
-      navigate(`${Path.Task}/${newTask.id}`);
+      const { modelInfo } = newTask;
+      if (modelInfo) {
+        taskStore.setTaskModelMap(data.id, modelInfo);
+      }
+      setSelectedId(data.id);
+      navigate(`${Path.Task}/${data.id}`);
     } else {
       toast.error(
         detail || (task ? t("task.updateFailed") : t("task.createFailed")),
@@ -301,7 +332,7 @@ export default function TaskManagement({
 
       <Select
         value={newTask.type}
-        onValueChange={(type) => {
+        onValueChange={(type: TaskTypeEnum) => {
           setNewTask((task) => ({
             ...task,
             type,
