@@ -4,6 +4,7 @@ import { useState, useRef, Dispatch, SetStateAction } from "react";
 import { Popover, PopoverTrigger, PopoverContent } from "./shadcn/popover";
 import { Input } from "./shadcn/input";
 import { useTranslation } from "react-i18next";
+import TimeCalendarIcon from "../icons/time-calendar.svg";
 import clsx from "clsx";
 
 interface TimeSelectProps {
@@ -63,7 +64,13 @@ export default function TimeSelect({
           inputRef.current?.focus();
         }}
       >
-        <div>
+        <div
+          className={clsx(
+            "flex items-center gap-1.5 rounded-sm pl-1.5",
+            timeErr && "border border-[#EF466F] dark:border-[#EF466F]",
+          )}
+        >
+          <TimeCalendarIcon className="text-main" />
           <Input
             ref={inputRef}
             value={inputVal}
@@ -78,10 +85,7 @@ export default function TimeSelect({
             }}
             onFocus={() => setOpen(true)}
             placeholder={t("task.time")}
-            className={clsx(
-              "w-full h-10 !text-left border-0",
-              timeErr && "border border-[#EF466F] dark:border-[#EF466F]",
-            )}
+            className="w-full h-10 !text-left border-0 pl-0"
           />
         </div>
       </PopoverTrigger>

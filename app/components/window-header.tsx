@@ -7,7 +7,7 @@ import styles from "./chat.module.scss";
 import { Button } from "./shadcn/button";
 import { InviteDialog } from "./invite-dialog";
 import UpdateIcon from "../icons/up-arrow.svg";
-import LogoIcon from "../icons/logo.svg";
+import InviteIcon from "../icons/invite.svg";
 import CollapseIcon from "../icons/collapse.svg";
 
 export function WindowHeader({ children }: { children?: ReactNode }) {
@@ -49,9 +49,9 @@ export function WindowHeader({ children }: { children?: ReactNode }) {
         )}
         <Button
           onClick={() => setShowInvite(true)}
-          className="flex-center h-full px-1.5 py-1 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main rounded-2xl"
+          className="flex-center h-full !px-1.5 py-1 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main rounded-2xl"
         >
-          <LogoIcon className="size-4 text-main mb-[2px]" />
+          <InviteIcon className="size-4 text-main" />
           <span>{t("invite.btn")}</span>
         </Button>
       </div>

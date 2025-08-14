@@ -25,6 +25,8 @@ import dayjs from "dayjs";
 import clsx from "clsx";
 import NotificationOnIcon from "../icons/notification-on.svg";
 import NotificationOffIcon from "../icons/notification-off.svg";
+import ArrowDownIcon from "../icons/arrow-down.svg";
+import CalendarIcon from "../icons/calendar.svg";
 import { Path } from "../constant";
 import { createTask, testTask, updateTask } from "../services/task";
 import { toast } from "sonner";
@@ -62,7 +64,7 @@ export function Notification({
   return (
     <div
       onClick={() => onChange(!checked)}
-      className="flex gap-1 cursor-pointer hover:opacity-75"
+      className="flex size-6.5 gap-1 p-1 cursor-pointer rounded-sm bg-[#E8ECEF] hover:opacity-75"
     >
       <div className="flex items-center justify-center size-5 text-main">
         {checked ? (
@@ -114,7 +116,7 @@ export default function TaskManagement({
     const el = textareaRef.current;
     if (el) {
       el.style.height = "auto";
-      el.style.height = el.scrollHeight + "px";
+      el.style.height = el.scrollHeight + 2 + "px"; // border: 2px
     }
   };
 
@@ -224,144 +226,165 @@ export default function TaskManagement({
 
   return (
     <div className="flex flex-col gap-2.5 text-sm bg-[#F3F5F7] dark:bg-[#232627]/50 px-2.5 py-2 border border-[#E8ECEF] dark:border-[#343839] rounded-sm">
-      <Input
-        className="h-10 !text-left rounded-sm bg-white dark:bg-[#101213] !border-0 p-2.5"
-        placeholder={t("task.enterTaskName")}
-        value={newTask.name}
-        onChange={(e) =>
-          setNewTask((task) => {
-            return { ...task, name: e.target.value };
-          })
-        }
-      />
+      <div className="flex flex-col gap-1.5">
+        <span className="text-[#6C7275]">{t("task.name")}</span>
+        <Input
+          className="h-10 !text-left rounded-sm bg-white dark:bg-[#101213] border border-white dark:border-[#101213] focus:border-[#00AB66] dark:focus:border-[#00AB66] p-2.5"
+          placeholder={t("task.enterTaskName")}
+          value={newTask.name}
+          onChange={(e) =>
+            setNewTask((task) => {
+              return { ...task, name: e.target.value };
+            })
+          }
+        />
+      </div>
 
-      <div className="flex gap-2.5 h-10">
-        <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-          <PopoverTrigger asChild>
-            <div className="flex-1 flex items-center bg-white dark:bg-[#101213] rounded-sm">
-              <div
-                className={clsx("flex items-center px-2.5 py-2 text-sm", {
-                  "text-[#6C7275]/50 dark:text-[#E8ECEF]/50": !newTask.date,
-                })}
-              >
-                {newTask.date
-                  ? getLang() === "zh-CN"
-                    ? dayjs(newTask.date).format("M月D日")
-                    : dayjs(newTask.date).format("D, MMM")
-                  : t("task.date")}
+      <div className="flex gap-2.5 h-16.5">
+        <div className="flex flex-col gap-1.5 flex-1">
+          <span className="text-[#6C7275]">{t("task.date")}</span>
+          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+            <PopoverTrigger asChild>
+              <div className="h-full flex justify-between items-center pr-1.5 bg-white dark:bg-[#101213] rounded-sm">
+                <div
+                  className={clsx(
+                    "flex items-center gap-1 px-2.5 py-2 text-sm",
+                    {
+                      "text-[#6C7275]/50 dark:text-[#E8ECEF]/50": !newTask.date,
+                    },
+                  )}
+                >
+                  <CalendarIcon className="text-main" />
+                  {newTask.date
+                    ? getLang() === "zh-CN"
+                      ? dayjs(newTask.date).format("M月D日")
+                      : dayjs(newTask.date).format("D, MMM")
+                    : t("task.date")}
+                </div>
+                <ArrowDownIcon className="opacity-50" />
               </div>
-            </div>
-          </PopoverTrigger>
-          <PopoverContent asChild align="start">
-            <div className="dark:bg-black">
-              <Calendar
-                mode="single"
-                className="w-full h-full p-0 pb-4"
-                selected={new Date(newTask.date)}
-                required
-                onSelect={(date: Date) => {
-                  setNewTask((task) => {
-                    return {
-                      ...task,
-                      date: date.toLocaleDateString(),
-                    };
-                  });
-                  setCalendarOpen(false);
-                }}
-              />
-            </div>
-          </PopoverContent>
-        </Popover>
-        <div className="flex-1 bg-white dark:bg-[#101213] rounded-sm">
-          <TimeSelect
-            hour={newTask.hour}
-            minute={newTask.minute}
-            timeErr={timeErr}
-            setTimeErr={setTimeErr}
-            onChange={(time) =>
-              setNewTask((task) => {
-                const [hour, minute] = time
-                  .split(":")
-                  .map((item) => Number(item));
-                return {
-                  ...task,
-                  hour,
-                  minute,
-                };
-              })
-            }
-          />
+            </PopoverTrigger>
+            <PopoverContent asChild align="start">
+              <div className="dark:bg-black">
+                <Calendar
+                  mode="single"
+                  className="w-full h-full p-0 pb-4"
+                  selected={new Date(newTask.date)}
+                  required
+                  onSelect={(date: Date) => {
+                    setNewTask((task) => {
+                      return {
+                        ...task,
+                        date: date.toLocaleDateString(),
+                      };
+                    });
+                    setCalendarOpen(false);
+                  }}
+                />
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
+
+        <div className="flex-1 flex flex-col gap-1.5">
+          <span className="text-[#6C7275]">{t("task.time")}</span>
+          <div className="bg-white dark:bg-[#101213] rounded-sm">
+            <TimeSelect
+              hour={newTask.hour}
+              minute={newTask.minute}
+              timeErr={timeErr}
+              setTimeErr={setTimeErr}
+              onChange={(time) =>
+                setNewTask((task) => {
+                  const [hour, minute] = time
+                    .split(":")
+                    .map((item) => Number(item));
+                  return {
+                    ...task,
+                    hour,
+                    minute,
+                  };
+                })
+              }
+            />
+          </div>
         </div>
       </div>
+
       {timeErr && (
         <div className="flex justify-end">
           <p className="w-1/2 pl-2.5 text-[#EF466F] text-sm">{timeErr}</p>
         </div>
       )}
 
-      <Select
-        value={newTask.type}
-        onValueChange={(type) => {
-          setNewTask((task) => ({
-            ...task,
-            type,
-          }));
-        }}
-      >
-        <SelectTrigger className="!w-full !h-10 bg-white dark:bg-[#101213] dark:hover:bg-[#101213] rounded-sm border-0 !data-[placeholder]:text-black">
-          <SelectValue placeholder={t("task.selectTaskType")} />
-        </SelectTrigger>
-        <SelectContent className="w-[var(--radix-select-trigger-width)]">
-          {Object.values(TaskTypeEnum).map((type) => (
-            <SelectItem
-              value={type}
-              key={type}
-              className="hover:bg-[#F5F5F5] px-2.5 py-2 cursor-default [&_[data-select-item-indicator]]:hidden"
-            >
-              {t(`task.${type}`)}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <textarea
-        className="bg-white dark:bg-[#101213] placeholder:text-[#6C7275]/50 dark:placeholder:text-[#E8ECEF]/50 rounded-sm p-2.5 resize-none overflow-auto max-h-[60vh]"
-        ref={textareaRef}
-        rows={1}
-        placeholder={t("task.taskDesp")}
-        value={newTask.details}
-        onChange={(e) => {
-          setNewTask((task) => {
-            return { ...task, details: e.target.value };
-          });
-          handleInput();
-        }}
-      ></textarea>
-      <div className="flex justify-between items-center h-8.5 pl-2.5">
-        <Notification
-          checked={notificationEnabled}
-          onChange={() => {
-            setNotificationEnabled(!notificationEnabled);
-            setNewTask((task) => {
-              return { ...task, notification: !notificationEnabled };
-            });
+      <div className="flex flex-col gap-1.5">
+        <span className="text-[#6C7275]">{t("task.type")}</span>
+        <Select
+          value={newTask.type}
+          onValueChange={(type) => {
+            setNewTask((task) => ({
+              ...task,
+              type,
+            }));
           }}
-        />
-        <div className="flex gap-2.5 h-full">
-          <Button
-            className="h-full bg-transparent hover:bg-transparent hover:opacity-60 text-black dark:text-white font-normal border border-[#343839] rounded-sm"
-            onClick={handleTestClick}
-            disabled={!confirmBtn || isTestLoading}
-          >
-            {t("task.test")}
-          </Button>
-          <Button
-            disabled={!confirmBtn}
-            className="h-full bg-main rounded-sm font-normal"
-            onClick={handleConfirmClick}
-          >
-            {t("task.confirm")}
-          </Button>
-        </div>
+        >
+          <SelectTrigger className="!w-full !h-10 bg-white dark:bg-[#101213] dark:hover:bg-[#101213] rounded-sm border-0 !data-[placeholder]:text-black">
+            <SelectValue placeholder={t("task.selectTaskType")} />
+          </SelectTrigger>
+          <SelectContent className="w-[var(--radix-select-trigger-width)]">
+            {Object.values(TaskTypeEnum).map((type) => (
+              <SelectItem
+                value={type}
+                key={type}
+                className="hover:bg-[#F5F5F5] px-2.5 py-2 cursor-default [&_[data-select-item-indicator]]:hidden"
+              >
+                {t(`task.${type}`)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <span className="text-[#6C7275]">{t("task.description")}</span>
+        <textarea
+          className="bg-white dark:bg-[#101213] placeholder:text-[#6C7275]/50 dark:placeholder:text-[#E8ECEF]/50 rounded-sm p-2.5 resize-none border border-white dark:border-[#101213] focus:border-[#00AB66] dark:focus:border-[#00AB66] overflow-y-auto max-h-[40vh]"
+          ref={textareaRef}
+          rows={1}
+          placeholder={t("task.taskDesp")}
+          value={newTask.details}
+          onChange={(e) => {
+            setNewTask((task) => {
+              return { ...task, details: e.target.value };
+            });
+            handleInput();
+          }}
+        ></textarea>
+      </div>
+
+      <Notification
+        checked={notificationEnabled}
+        onChange={() => {
+          setNotificationEnabled(!notificationEnabled);
+          setNewTask((task) => {
+            return { ...task, notification: !notificationEnabled };
+          });
+        }}
+      />
+      <div className="flex justify-end gap-2.5 h-8.5">
+        <Button
+          className="h-full bg-transparent hover:bg-transparent hover:opacity-60 text-black dark:text-white font-normal border border-[#E8ECEF] rounded-sm w-34"
+          onClick={handleTestClick}
+          disabled={!confirmBtn || isTestLoading}
+        >
+          {t("task.test")}
+        </Button>
+        <Button
+          disabled={!confirmBtn}
+          className="h-full bg-main rounded-sm font-normal w-34"
+          onClick={handleConfirmClick}
+        >
+          {t("task.confirm")}
+        </Button>
       </div>
     </div>
   );
