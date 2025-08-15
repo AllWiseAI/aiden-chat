@@ -82,9 +82,9 @@ export function Settings() {
   };
 
   return (
-    <div className="flex flex-col bg-[#F3F5F7] h-screen">
+    <div className="flex flex-col bg-[#F3F5F7] dark:bg-[#141718] h-screen">
       <div
-        className="flex justify-between items-center h-15 px-5 border-b border-[#E8ECEF]"
+        className="flex justify-between items-center h-15 px-5 border-b border-[#E8ECEF] dark:border-[#232627]/50"
         data-tauri-drag-region
       >
         <div className="w-max text-lg dark:text-white font-semibold disable-select">
@@ -92,17 +92,17 @@ export function Settings() {
         </div>
         <Button
           variant="ghost"
-          className="rounded-full size-6 bg-[#F3F5F7] dark:bg-[#6C7275] hover:bg-[#F3F5F7]/75 dark:hover:bg-[#6C7275]/75"
+          className="rounded-full size-6 bg-[#F3F5F7] dark:bg-[#232627] hover:bg-[#F3F5F7]/75 dark:hover:bg-[#6C7275]/75"
           onClick={() => navigate(-1)}
         >
-          <CloseIcon className="size-4 text-[#343839]" />
+          <CloseIcon className="size-4 text-[#343839] dark:text-white" />
         </Button>
       </div>
       <div className="h-full overflow-x-auto overflow-y-hidden">
         <div className="flex flex-col h-full">
           <div className="flex h-full">
             <ul
-              className="w-max flex flex-col gap-3.5 min-w-60 border-r p-4"
+              className="w-max flex flex-col gap-3.5 min-w-60 border-r dark:border-[#232627]/50 p-4"
               onClick={handleClick}
             >
               {settingList.map((item) => (
@@ -111,8 +111,8 @@ export function Settings() {
                   data-value={item.value}
                   className={`cursor-pointer select-none rounded-sm flex items-center text-[#6C7275] gap-3 px-1.5 py-2 ${
                     selected === item.value
-                      ? "text-[#141718] bg-[#E8ECEF] dark:text-white dark:bg-[#2326274D] font-medium "
-                      : "hover:bg-[#F3F5F7]/50 dark:hover:text-white/60 dark:hover:bg-[#2326274D]"
+                      ? "text-[#141718] bg-[#E8ECEF] dark:text-white dark:bg-[#232627] font-medium"
+                      : "hover:bg-[#F3F5F7]/50 dark:hover:text-white/60 dark:hover:bg-[#232627]"
                   }`}
                 >
                   <item.icon className="size-4 flex-shrink-0" />

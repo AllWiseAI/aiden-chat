@@ -64,7 +64,7 @@ export function Notification({
   return (
     <div
       onClick={() => onChange(!checked)}
-      className="flex size-6.5 gap-1 p-1 cursor-pointer rounded-sm bg-[#E8ECEF] hover:opacity-75"
+      className="flex size-6.5 gap-1 p-1 cursor-pointer rounded-sm bg-[#E8ECEF] dark:bg-[#343839] hover:opacity-75"
     >
       <div className="flex items-center justify-center size-5 text-main">
         {checked ? (
@@ -372,7 +372,7 @@ export default function TaskManagement({
       />
       <div className="flex justify-end gap-2.5 h-8.5">
         <Button
-          className="h-full bg-transparent hover:bg-transparent hover:opacity-60 text-black dark:text-white font-normal border border-[#E8ECEF] rounded-sm w-34"
+          className="h-full bg-transparent hover:bg-transparent hover:opacity-60 text-black dark:text-white font-normal border border-[#E8ECEF] dark:border-[#343839] rounded-sm w-34"
           onClick={handleTestClick}
           disabled={!confirmBtn || isTestLoading}
         >

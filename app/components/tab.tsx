@@ -17,7 +17,7 @@ export function Tab() {
   const [tabValue, setTabValue] = useState<"chat" | "task">("chat");
 
   return (
-    <div className="flex flex-col justify-between items-center w-17 pt-10 pb-4 bg-[#6C7275]/20 dark:bg-[#292A2D]">
+    <div className="shrink-0 flex flex-col justify-between items-center w-17 pt-10 pb-4 bg-[#6C7275]/20 dark:bg-[#292A2D]">
       <div className="flex flex-col gap-5 items-center">
         <LogoIcon
           className={clsx(

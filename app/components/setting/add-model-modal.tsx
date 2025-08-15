@@ -364,7 +364,7 @@ export function AddModelModal({
         <DialogFooter>
           <DialogClose asChild className="flex-1">
             <Button
-              className="bg-white h-8 rounded-sm hover:bg-[#F3F5F74D] dark:bg-[#141718] dark:border-[#343839] dark:hover:bg-[#141718]/8 text-[#6C7275] dark:text-[#FEFEFE] border border-[#6C7275]/10 px-2.5 py-2"
+              className="bg-white h-9 rounded-sm hover:bg-[#F3F5F74D] dark:bg-[#141718] dark:border-[#343839] dark:hover:bg-[#141718]/8 text-[#6C7275] dark:text-[#FEFEFE] border border-[#6C7275]/10 px-2.5 py-2"
               type="button"
               onClick={() => onOpenChange?.(false)}
             >
@@ -372,7 +372,7 @@ export function AddModelModal({
             </Button>
           </DialogClose>
           <Button
-            className="flex-1 h-8 rounded-sm bg-[#00D47E] text-white dark:text-black px-2.5 py-2"
+            className="flex-1 h-9 rounded-sm bg-[#00D47E] text-white dark:text-black px-2.5 py-2"
             onClick={handleConfirm}
             type="button"
           >
