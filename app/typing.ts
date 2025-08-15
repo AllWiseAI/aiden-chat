@@ -33,6 +33,12 @@ export enum McpAction {
   Failed = "failed",
 }
 
+export type batchMcpStatusResp = {
+  server: string;
+  status: McpAction;
+  tools: [];
+};
+
 export type McpStatusItem = {
   name: string;
   action: McpAction;
