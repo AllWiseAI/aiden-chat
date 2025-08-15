@@ -155,9 +155,7 @@ function TaskRecords({ currentTask }: { currentTask: TaskType }) {
   useEffect(() => {
     const getRecord = async () => {
       if (!currentTask) return;
-      const {
-        backendData: { id },
-      } = currentTask;
+      const { id } = currentTask;
       const res = await getTaskExecutionRecords(id);
       const { code, data } = res;
       if (code === 0) {
@@ -192,7 +190,7 @@ function TaskRecords({ currentTask }: { currentTask: TaskType }) {
       {recordList.map((item) => (
         <TaskItem
           key={item.id}
-          modelInfo={currentTask.modelInfo}
+          modelInfo={currentTask.modelInfo!}
           taskInfo={item}
           title={formatDateToReadableString(
             item.next_run_at || item.completed_at || item.created_at,
@@ -218,18 +216,22 @@ function TaskPanel({ task, setIsEdit }: TaskPanelProps) {
       <div className="flex gap-3">
         <span>{t("task.time")}</span>
         <span className="text-[#979797]">
-          {formatCustomTime(task.date, task.hour!, task.minute!)}
+          {formatCustomTime(
+            task.original_info.start_date,
+            task.original_info.hour!,
+            task.original_info.minute!,
+          )}
         </span>
       </div>
 
       <div className="flex gap-3">
         <span>{t("task.recurrence")}</span>
         <span className="text-[#979797]">
-          {task.type === TaskTypeEnum.Daily
+          {task.original_info.repeat_unit === TaskTypeEnum.Daily
             ? t("task.daily")
-            : task.type === TaskTypeEnum.Weekly
+            : task.original_info.repeat_unit === TaskTypeEnum.Weekly
             ? t("task.weekly")
-            : task.type === TaskTypeEnum.Monthly
+            : task.original_info.repeat_unit === TaskTypeEnum.Monthly
             ? t("task.monthly")
             : t("task.once")}
         </span>
@@ -239,7 +241,7 @@ function TaskPanel({ task, setIsEdit }: TaskPanelProps) {
         <span>{t("task.notification")}</span>
 
         <div className="flex items-center justify-center gap-1 text-[#979797]">
-          {task.notification ? (
+          {task.original_info.enable_notification ? (
             <>
               <NotificationOnIcon className="size-5" />
               {t("task.on")}
@@ -256,7 +258,7 @@ function TaskPanel({ task, setIsEdit }: TaskPanelProps) {
       <div className="flex items-start gap-3">
         <span className="whitespace-nowrap">{t("task.details")}</span>
         <div className="text-[#979797] max-h-30 overflow-y-auto flex-1 break-words">
-          {task.details}
+          {task.original_info.description}
         </div>
       </div>
     </div>
@@ -271,25 +273,28 @@ export function Task() {
   const taskStore = useTaskStore();
   const updateTargetTask = taskStore.updateTargetTask;
   const theme = useTheme();
-
-  useEffect(() => {
-    if (!currentTask) return;
-    setIsEdit(false);
-  }, [currentTask]);
-
   const [model, setModel] = useState<string>(
     currentTask?.modelInfo?.model || "",
   );
+  useEffect(() => {
+    console.log("currentTask===", currentTask);
+    if (!currentTask) return;
+    setIsEdit(false);
+    setModel(currentTask.modelInfo?.model || "");
+  }, [currentTask]);
+
   const getModelInfo = useAppConfig((s) => s.getModelInfo);
   const handleModelChange = async (model: string) => {
+    if (!currentTask) return;
     setModel(model);
     const modelInfo = getModelInfo(model);
-    const res = await switchTaskModel(currentTask?.backendData?.id, modelInfo);
+    const res = await switchTaskModel(currentTask.id, modelInfo);
     const { code } = res;
     if (code === 0) {
       updateTargetTask(currentTask!, (task) => {
         task.modelInfo = modelInfo;
       });
+      taskStore.setTaskModelMap(currentTask!.id, modelInfo);
       toast.success(t("task.updateSuccess"));
     } else {
       toast.error(t("task.updateFailed"));

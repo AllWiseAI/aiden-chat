@@ -2,7 +2,7 @@ import { Body } from "@tauri-apps/api/http";
 import { getLocalBaseDomain } from "@/app/utils/fetch";
 import { fetchNoProxy } from "@/app/utils/fetch-no-proxy";
 import { getHeaders } from "@/app/utils/fetch";
-import { TaskPayload, Task, ProviderOption } from "@/app/typing";
+import { TaskPayload, TaskFormType, ProviderOption } from "@/app/typing";
 import { getChatHeaders } from "../utils/chat";
 import { useAppConfig } from "../store";
 
@@ -31,7 +31,7 @@ export async function testTask(task: object) {
 }
 
 // 创建任务
-export async function createTask(task: TaskPayload, taskRawInfo: Task) {
+export async function createTask(task: TaskPayload, taskRawInfo: TaskFormType) {
   const { modelInfo } = taskRawInfo;
   const { baseURL, headers } = await getLocalFetchOptions(modelInfo);
   const res = await fetchNoProxy(`${baseURL}${TASK_API_PREFIX}/add_task`, {
@@ -43,7 +43,7 @@ export async function createTask(task: TaskPayload, taskRawInfo: Task) {
 }
 
 // 更新任务
-export async function updateTask(task: TaskPayload, taskRawInfo: Task) {
+export async function updateTask(task: TaskPayload, taskRawInfo: TaskFormType) {
   const { modelInfo } = taskRawInfo;
   const { baseURL, headers } = await getLocalFetchOptions(modelInfo);
   const res = await fetchNoProxy(`${baseURL}${TASK_API_PREFIX}/update_task`, {
