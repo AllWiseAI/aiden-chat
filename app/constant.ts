@@ -55,7 +55,7 @@ export enum StoreKey {
 export const DEFAULT_SIDEBAR_WIDTH = 280;
 export const MAX_SIDEBAR_WIDTH = 400;
 export const MIN_SIDEBAR_WIDTH = 220;
-export const NARROW_SIDEBAR_WIDTH = 72;
+export const NARROW_SIDEBAR_WIDTH = 0;
 
 export const ACCESS_CODE_PREFIX = "nk-";
 

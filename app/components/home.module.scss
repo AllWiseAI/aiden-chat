@@ -24,10 +24,9 @@
   .tight-container {
     --window-width: 100vw;
     --window-height: var(--full-height);
-    --window-content-width: calc(100% - var(--sidebar-width));
+    --window-content-width: calc(100% - 64px);
 
     @include container();
-
     max-width: 100vw;
     max-height: var(--full-height);
 
@@ -92,7 +91,7 @@
 // }
 
 .window-content {
-  width: var(--window-content-width);
+  width: calc(100% - 64px);
   height: 100%;
   display: flex;
   flex-direction: column;

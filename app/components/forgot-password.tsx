@@ -310,7 +310,7 @@ export const ForgotPasswordPage = () => {
     <div className="w-full h-full px-6 py-13 my-10 bg-white dark:bg-[#141416] mx-auto flex flex-col justify-start items-center gap-17.5 rounded-2xl">
       <div className="flex-center flex-col gap-4">
         <div className="flex items-end gap-2">
-          <LogoIcon className="size-7.5" />
+          <LogoIcon className="size-7.5 text-[#00D47E]" />
           <LogoTextIcon className="h-5.5" />
         </div>
         <span className="text-lg font-medium">{t("forgot.title")}</span>

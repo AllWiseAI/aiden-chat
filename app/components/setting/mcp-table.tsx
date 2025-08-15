@@ -13,6 +13,7 @@ import LoadingIcon from "../../icons/loading-spinner.svg";
 import { McpItemInfo, McpConfigKey, TSettingInfo } from "@/app/typing";
 import { useMcpStore } from "@/app/store/mcp";
 import SearchIcon from "../../icons/search.svg";
+import EditIcon from "../../icons/edit.svg";
 import { McpSettingModal } from "./mcp-setting-modal";
 
 type ServerTableProps = {
@@ -134,10 +135,10 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
         <h2 className="text-sm font-bold">{t("tabs.mcpManage")}</h2>
         <div className="flex items-center gap-2 self-end h-7">
           <Button
-            className="h-full bg-[#DBF5EC] dark:bg-[#00D47E]/6 hover:bg-[#BEF0DD] dark:hover:bg-[#00D47E]/12 text-main border border-[#00D47E]/10 text-sm rounded-sm px-2.5 py-1"
+            className="h-full bg-[#00AB66]/12 dark:bg-[#00D47E]/6 hover:bg-[#BEF0DD] dark:hover:bg-[#00D47E]/12 text-main border border-[#00D47E]/10 text-sm rounded-sm px-2.5 py-1 gap-1"
             onClick={() => setMode("edit")}
           >
-            {/* <EditIcon className="size-4" /> */}
+            <EditIcon className="size-4" />
             {t("mcp.edit")}
           </Button>
           <div className="flex-center relative w-40">

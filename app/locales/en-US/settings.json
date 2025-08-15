@@ -42,8 +42,8 @@
     "theme": {
       "title": "Appearance",
       "system": "System match",
-      "light": "Light",
-      "dark": "Dark"
+      "light": "Light Mode",
+      "dark": "Dark Mode"
     },
     "relaunch": {
       "title": "Restart",

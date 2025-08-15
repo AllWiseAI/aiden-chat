@@ -154,7 +154,7 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
       <SelectTrigger className="w-full border-0 hover:bg-muted/20 dark:hover:bg-muted/30 shadow-none">
         <SelectValue placeholder="Select model" />
       </SelectTrigger>
-      <SelectContent className="max-h-[320px] dark:bg-[#101213] max-w-56 p-0">
+      <SelectContent className="max-h-[320px] dark:bg-[#101213] select-none max-w-56 p-0">
         <div className="overflow-y-auto max-h-[260px] px-1 py-2 space-y-1.5">
           {Object.entries(groupedLocalProviders).map(
             ([groupLabel, provider]) => {

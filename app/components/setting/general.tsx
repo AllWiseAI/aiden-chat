@@ -21,8 +21,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/shadcn/select";
+import LightMode from "../../icons/theme-light.svg";
+import DarkMode from "../../icons/theme-dark.svg";
+import SystemMode from "../../icons/theme-system.svg";
 import { ChangePasswordModal, SuccessModal } from "./change-password-modal";
 import RestartDialog from "../restart-dialog";
+import clsx from "clsx";
 
 export default function General() {
   const authStore = useAuthStore();
@@ -37,6 +41,9 @@ export default function General() {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [currentRegion, setCurrentRegion] = useState<string>(region);
+  const [theme, setTheme] = useState<Theme.Auto | Theme.Dark | Theme.Light>(
+    config.theme,
+  );
   const logout = async () => {
     navigate(Path.Login);
     try {
@@ -56,6 +63,12 @@ export default function General() {
     setCurrentRegion(value);
     setIsAlertOpen(true);
   };
+  const handleChangeTheme = (value: Theme) => {
+    setTheme(value);
+    updateConfig((config) => {
+      config.theme = value as Theme;
+    });
+  };
   const sortedCountryList = [...countryList].sort((a, b) => {
     const nameA = t(`common:region.${a}`);
     const nameB = t(`common:region.${b}`);
@@ -63,10 +76,10 @@ export default function General() {
   });
   return (
     <>
-      <div className="w-full h-full flex flex-col gap-4 justify-start items-center text-black dark:text-white">
-        <div className="w-full flex flex-col gap-3 px-2.5 pt-1 pb-5 border-b">
+      <div className="w-max h-full pr-8 flex flex-col gap-10 justify-start items-start text-black dark:text-white">
+        <div className="w-full flex flex-col gap-3 px-2.5 pt-1">
           <div className="font-medium">{t("general.account")}</div>
-          <div className="flex justify-between items-center gap-5 p-2.5 bg-[#F3F5F7]/30 dark:bg-[#232627]/30 border border-[#E8ECEF] dark:border-[#232627] rounded-sm text-sm">
+          <div className="w-125 flex justify-between items-center gap-5 p-2.5 bg-[#F3F5F7]/30 dark:bg-[#232627]/30 border border-[#E8ECEF] dark:border-[#232627] rounded-sm text-sm">
             <p>{email}</p>
             <div className="flex items-center gap-5">
               <div
@@ -84,17 +97,17 @@ export default function General() {
             </div>
           </div>
         </div>
-        <div className="w-full flex justify-between items-center gap-6 px-2.5 py-5 border-b">
+        <div className="w-full flex flex-col gap-3 justify-between px-2.5">
           <div className="font-medium">{t("general.country.title")}</div>
           <Select
             defaultValue={region || "US"}
             value={region}
             onValueChange={(value) => handleRegionChange(value)}
           >
-            <SelectTrigger className="w-[180px] dark:border-[#232627] text-xs">
+            <SelectTrigger className="w-125 dark:border-[#343839] text-xs">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-[#F3F5F7] dark:bg-[#232627] max-w-[180px] max-h-60 overflow-y-auto">
+            <SelectContent className="bg-[#F3F5F7] dark:bg-[#232627] max-w-125 max-h-60 overflow-y-auto">
               <SelectGroup className="space-y-2">
                 {sortedCountryList.map((region) => (
                   <SelectItem
@@ -109,7 +122,7 @@ export default function General() {
             </SelectContent>
           </Select>
         </div>
-        <div className="w-full flex justify-between items-center gap-6 px-2.5 py-5 border-b">
+        <div className="w-full flex flex-col justify-between gap-3 px-2.5">
           <div className="font-medium">{t("general.language")}</div>
           <Select
             defaultValue={getLang()}
@@ -117,10 +130,10 @@ export default function General() {
               changeLanguage(value as Locales);
             }}
           >
-            <SelectTrigger className="w-[180px] dark:border-[#232627] text-xs">
+            <SelectTrigger className="w-125 dark:border-[#343839] text-xs">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="w-[180px] bg-[#F3F5F7] dark:bg-[#232627]">
+            <SelectContent className="w-125 bg-[#F3F5F7] dark:bg-[#232627]">
               <SelectGroup className="space-y-2">
                 {localeOptions.map((option) => (
                   <SelectItem
@@ -135,42 +148,46 @@ export default function General() {
             </SelectContent>
           </Select>
         </div>
-        <div className="w-full flex justify-between items-center gap-6 px-2.5 py-5">
+        <div className="flex flex-col items-start gap-3 px-2.5 max-w-178">
           <div className="font-medium">{t("general.theme.title")}</div>
-          <Select
-            defaultValue={config.theme}
-            onValueChange={(value) => {
-              updateConfig((config) => {
-                config.theme = value as Theme;
-              });
-            }}
-          >
-            <SelectTrigger className="w-[180px] dark:border-[#232627] text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="w-[180px] bg-[#F3F5F7] dark:bg-[#232627]">
-              <SelectGroup className="space-y-2">
-                <SelectItem
-                  value="auto"
-                  className="hover:!bg-[#E8ECEF] dark:hover:!bg-black"
-                >
-                  {t("general.theme.system")}
-                </SelectItem>
-                <SelectItem
-                  value="light"
-                  className="hover:!bg-[#E8ECEF] dark:hover:!bg-black"
-                >
-                  {t("general.theme.light")}
-                </SelectItem>
-                <SelectItem
-                  value="dark"
-                  className="hover:!bg-[#E8ECEF] dark:hover:!bg-black"
-                >
-                  {t("general.theme.dark")}
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <div className="flex justify-between gap-8 w-full text-sm">
+            <div
+              className={clsx(
+                "flex flex-col gap-3 flex-1 p-4 bg-[#F3F5F7] dark:bg-[#232627] border-2 rounded-lg",
+                theme === Theme.Light
+                  ? "border-main"
+                  : "border-[#F3F5F7] dark:border-[#232627]",
+              )}
+              onClick={() => handleChangeTheme(Theme.Light)}
+            >
+              <LightMode className="rounded-xl" />
+              {t("general.theme.light")}
+            </div>
+            <div
+              className={clsx(
+                "flex flex-col gap-3 flex-1 p-4 bg-[#F3F5F7] dark:bg-[#232627] border-2 rounded-lg",
+                theme === Theme.Dark
+                  ? "border-main"
+                  : "border-[#F3F5F7] dark:border-[#232627]",
+              )}
+              onClick={() => handleChangeTheme(Theme.Dark)}
+            >
+              <DarkMode className="rounded-xl" />
+              {t("general.theme.dark")}
+            </div>
+            <div
+              className={clsx(
+                "flex flex-col gap-3 flex-1 p-4 bg-[#F3F5F7] dark:bg-[#232627] border-2 rounded-lg",
+                theme === Theme.Auto
+                  ? "border-main"
+                  : "border-[#F3F5F7] dark:border-[#232627]",
+              )}
+              onClick={() => handleChangeTheme(Theme.Auto)}
+            >
+              <SystemMode className="rounded-xl" />
+              {t("general.theme.system")}
+            </div>
+          </div>
         </div>
         <RestartDialog
           title={t("general.relaunch.title")}

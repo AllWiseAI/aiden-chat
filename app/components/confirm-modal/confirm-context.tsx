@@ -184,7 +184,7 @@ export const ConfirmProvider = ({
               </div>
               {options.withLogo && (
                 <div className="flex items-end justify-center gap-2 w-full mb-2 -mt-[16px]">
-                  <Logo className="size-[22px]" />
+                  <Logo className="size-[22px] text-[#00D47E]" />
                   <LogoText className="h-[17px] dark:text-white" />
                 </div>
               )}

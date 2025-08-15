@@ -63,7 +63,7 @@ export function LoadingPage() {
     <div className="relative bg-white dark:bg-[#141416] flex flex-col items-center justify-center w-full h-full">
       <div className="absolute top-15">
         <div className="flex items-end gap-2">
-          <LogoIcon className="size-7.5" />
+          <LogoIcon className="size-7.5 text-[#00D47E]" />
           <LogoTextIcon className="h-5.5" />
         </div>
       </div>

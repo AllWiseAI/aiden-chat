@@ -42,20 +42,23 @@ export function TaskItem(props: {
   return (
     <div
       onClick={props.onClick}
-      className="rounded-sm group h-7.5 p-1.5 flex flex-col justify-center cursor-default hover:bg-[#E8ECEF]/50 dark:hover:bg-[#232627]/50"
+      className={clsx(
+        "rounded-sm group h-7.5 p-1.5 flex flex-col justify-center cursor-default",
+        props.selected
+          ? "bg-[#E8ECEF] dark:bg-[#343839]"
+          : "hover:bg-[#E8ECEF]/50 dark:hover:bg-[#232627]/50",
+      )}
     >
       <div className="flex justify-between items-center">
-        <div className="flex justify-start items-center gap-4 leading-6">
-          <div
-            className={clsx(
-              "cursor-default font-normal text-sm w-full line-clamp-1",
-              props.selected && location.pathname !== Path.NewTask
-                ? "text-main"
-                : "text-[#6C7275] dark:text-[#FEFEFE]",
-            )}
-          >
-            {props.name}
-          </div>
+        <div
+          className={clsx(
+            "flex justify-start items-center gap-4 leading-6 cursor-default text-sm w-full line-clamp-1",
+            props.selected && location.pathname !== Path.NewTask
+              ? "text-[#141718] dark:text-white font-medium"
+              : "text-[#343839] dark:text-[#FEFEFE] font-normal",
+          )}
+        >
+          {props.name}
         </div>
 
         <DropdownMenu open={openMenu} onOpenChange={setOpenMenu} modal={false}>

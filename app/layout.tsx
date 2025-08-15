@@ -47,10 +47,10 @@ export default function RootLayout({
         ></link>
       </head>
       <body>
-        <div
-          className="absolute h-8 top-0 left-0 right-0 z-1000"
+        {/* <div
+          className="absolute h-8 top-0 left-0 right-0 z-1000 pointer-events-auto"
           data-tauri-drag-region
-        ></div>
+        ></div> */}
         {children}
         <Toaster richColors />
       </body>

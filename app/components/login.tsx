@@ -82,7 +82,7 @@ export function LoginPage() {
     <div className="w-full h-full px-6 py-13 bg-white dark:bg-[#141416] mx-auto flex flex-col justify-start items-center gap-12 rounded-2xl">
       <div className="flex-center flex-col gap-4 text-black dark:text-white">
         <div className="flex items-end gap-2">
-          <LogoIcon className="size-7.5" />
+          <LogoIcon className="size-7.5 text-[#00D47E]" />
           <LogoTextIcon className="h-5.5" />
         </div>
 
