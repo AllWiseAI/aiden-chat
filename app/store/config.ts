@@ -113,7 +113,6 @@ export const useAppConfig = createPersistStore(
     const methods = {
       initModelList: async () => {
         const models: ModelOption[] | [] = await getModelList();
-        console.log("[Models]: remote model list", models);
         if (models && models.length > 0) {
           set(() => ({
             models,

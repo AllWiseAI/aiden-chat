@@ -3,7 +3,7 @@ set -e
 
 VERSION="${PACKAGE_VERSION}"
 PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-REPO_URL="https://github.com/AllWiseAI/aiden-chat/releases/download/v${VERSION}"
+REPO_URL="https://github.com/AllWiseAI/aiden-chat/releases/download/${VERSION}"
 ARTIFACT_DIR="artifacts"
 CRC_TOOL=".github/scripts/crc64.py"
 

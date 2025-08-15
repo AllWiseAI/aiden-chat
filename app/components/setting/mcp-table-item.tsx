@@ -357,12 +357,14 @@ export function McpTableItem({
         ></McpTemplateModal>
       )}
 
-      <McpOauthModal
-        onOpenChange={setOauthModal}
-        mcpInfo={item}
-        open={oauthModal}
-        onConfirm={() => setOauthModal(false)}
-      ></McpOauthModal>
+      {oauthModal && (
+        <McpOauthModal
+          onOpenChange={setOauthModal}
+          mcpInfo={item}
+          open={oauthModal}
+          onConfirm={() => setOauthModal(false)}
+        ></McpOauthModal>
+      )}
     </div>
   );
 }

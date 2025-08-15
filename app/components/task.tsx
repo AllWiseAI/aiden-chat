@@ -29,7 +29,6 @@ import ResultDarkIcon from "../icons/result-dark.svg";
 import TimeIcon from "../icons/time.svg";
 import RepeatIcon from "../icons/repeat.svg";
 import ClockIcon from "../icons/clock.svg";
-import DetailIcon from "../icons/detail.svg";
 import CalendarIcon from "../icons/calendar.svg";
 import TimeCalendarIcon from "../icons/time-calendar.svg";
 import { Path } from "../constant";
@@ -175,9 +174,7 @@ function TaskRecords({ currentTask }: { currentTask: TaskType }) {
   useEffect(() => {
     const getRecord = async () => {
       if (!currentTask) return;
-      const {
-        backendData: { id },
-      } = currentTask;
+      const { id } = currentTask;
       const res = await getTaskExecutionRecords(id);
       const { code, data } = res;
       if (code === 0) {
@@ -212,7 +209,7 @@ function TaskRecords({ currentTask }: { currentTask: TaskType }) {
       {recordList.map((item) => (
         <TaskItem
           key={item.id}
-          modelInfo={currentTask.modelInfo}
+          modelInfo={currentTask.modelInfo!}
           taskInfo={item}
           title={formatDateToReadableString(
             item.next_run_at || item.completed_at || item.created_at,
@@ -244,11 +241,11 @@ function TaskPanel({ task, setIsEdit }: TaskPanelProps) {
 
           <div className="flex items-center gap-1 text-[#141718] dark:text-[#FEFEFE] font-medium bg-[#E8ECEF] dark:bg-[#343839] px-1.5 py-1 rounded-sm">
             <CalendarIcon className="text-main" />
-            {formatDate(task.date)}
+            {formatDate(task.original_info.start_date)}
           </div>
           <div className="flex items-center gap-1 text-[#141718] dark:text-[#FEFEFE] font-medium bg-[#E8ECEF] dark:bg-[#343839] px-1.5 py-1 rounded-sm">
             <TimeCalendarIcon className="text-main" />
-            {formatTime(task.hour!, task.minute!)}
+            {formatTime(task.original_info.hour!, task.original_info.minute!)}
           </div>
         </div>
 
@@ -259,11 +256,11 @@ function TaskPanel({ task, setIsEdit }: TaskPanelProps) {
           </div>
 
           <span className="text-[#141718] dark:text-[#FEFEFE] font-medium">
-            {task.type === TaskTypeEnum.Daily
+            {task.original_info.repeat_unit === TaskTypeEnum.Daily
               ? t("task.daily")
-              : task.type === TaskTypeEnum.Weekly
+              : task.original_info.repeat_unit === TaskTypeEnum.Weekly
               ? t("task.weekly")
-              : task.type === TaskTypeEnum.Monthly
+              : task.original_info.repeat_unit === TaskTypeEnum.Monthly
               ? t("task.monthly")
               : t("task.once")}
           </span>
@@ -276,7 +273,7 @@ function TaskPanel({ task, setIsEdit }: TaskPanelProps) {
           </div>
 
           <div className="flex items-center justify-center gap-1 text-[#141718] dark:text-[#FEFEFE] bg-[#E8ECEF] dark:bg-[#343839] px-1.5 py-1 font-medium">
-            {task.notification ? (
+            {task.original_info.enable_notification ? (
               <>
                 <NotificationOnIcon className="size-5 text-main" />
                 {t("task.on")}
@@ -289,16 +286,12 @@ function TaskPanel({ task, setIsEdit }: TaskPanelProps) {
             )}
           </div>
         </div>
+      </div>
 
-        <div className="flex items-start gap-3">
-          <div className="flex items-center gap-1">
-            <DetailIcon className="size-[18px]" />
-            <span className="whitespace-nowrap">{t("task.details")}</span>
-          </div>
-
-          <div className="text-[#141718] dark:text-[#FEFEFE] font-medium max-h-30 overflow-y-auto break-all">
-            {task.details}
-          </div>
+      <div className="flex items-start gap-3">
+        <span className="whitespace-nowrap">{t("task.details")}</span>
+        <div className="text-[#979797] max-h-30 overflow-y-auto flex-1 break-words">
+          {task.original_info.description}
         </div>
       </div>
     </div>
@@ -313,25 +306,28 @@ export function Task() {
   const taskStore = useTaskStore();
   const updateTargetTask = taskStore.updateTargetTask;
   const theme = useTheme();
-
-  useEffect(() => {
-    if (!currentTask) return;
-    setIsEdit(false);
-  }, [currentTask]);
-
   const [model, setModel] = useState<string>(
     currentTask?.modelInfo?.model || "",
   );
+  useEffect(() => {
+    console.log("currentTask===", currentTask);
+    if (!currentTask) return;
+    setIsEdit(false);
+    setModel(currentTask.modelInfo?.model || "");
+  }, [currentTask]);
+
   const getModelInfo = useAppConfig((s) => s.getModelInfo);
   const handleModelChange = async (model: string) => {
+    if (!currentTask) return;
     setModel(model);
     const modelInfo = getModelInfo(model);
-    const res = await switchTaskModel(currentTask?.backendData?.id, modelInfo);
+    const res = await switchTaskModel(currentTask.id, modelInfo);
     const { code } = res;
     if (code === 0) {
       updateTargetTask(currentTask!, (task) => {
         task.modelInfo = modelInfo;
       });
+      taskStore.setTaskModelMap(currentTask!.id, modelInfo);
       toast.success(t("task.updateSuccess"));
     } else {
       toast.error(t("task.updateFailed"));

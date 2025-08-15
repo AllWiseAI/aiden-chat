@@ -21,7 +21,7 @@ const initWebsocket = () => {
       const headers = await getHeaders({ aiden: true });
       websocketManager.send({
         type: "update_refresh_token",
-        token: headers["Host-Authorization"],
+        token: headers["Aiden-Authorization"],
       });
     }
     if (["task_completed", "task_failed", "task_tested"].includes(msg.type))
