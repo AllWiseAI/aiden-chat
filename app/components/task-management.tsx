@@ -242,10 +242,6 @@ export default function TaskManagement({
       } else {
         taskStore.addTask(updatedData);
       }
-      const { modelInfo } = newTask;
-      if (modelInfo) {
-        taskStore.setTaskModelMap(data.id, modelInfo);
-      }
       setSelectedId(data.id);
       navigate(`${Path.Task}/${data.id}`);
     } else {

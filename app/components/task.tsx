@@ -310,10 +310,11 @@ export function Task() {
     currentTask?.modelInfo?.model || "",
   );
   useEffect(() => {
-    console.log("currentTask===", currentTask);
     if (!currentTask) return;
     setIsEdit(false);
-    setModel(currentTask.modelInfo?.model || "");
+    const { apiKey, model, provider } = currentTask.modelInfo || {};
+    const modelValue = (apiKey ? `${provider}:${model}` : model) ?? "";
+    setModel(modelValue);
   }, [currentTask]);
 
   const getModelInfo = useAppConfig((s) => s.getModelInfo);
@@ -327,7 +328,6 @@ export function Task() {
       updateTargetTask(currentTask!, (task) => {
         task.modelInfo = modelInfo;
       });
-      taskStore.setTaskModelMap(currentTask!.id, modelInfo);
       toast.success(t("task.updateSuccess"));
     } else {
       toast.error(t("task.updateFailed"));
