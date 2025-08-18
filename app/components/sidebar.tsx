@@ -328,7 +328,7 @@ export function SideBar(props: { className?: string }) {
         )}
         {tabValue === "task" && <TaskList searchValue={searchValue} />}
       </SideBarBody>
-      <SideBarFooter shouldNarrow={shouldNarrow} />
+      {/* <SideBarFooter shouldNarrow={shouldNarrow} /> */}
     </SideBarContainer>
   );
 }

@@ -167,3 +167,15 @@ export async function apiGetInviteCode() {
   });
   return result.data;
 }
+
+export async function apiCheckInviteCode(code: string) {
+  const params = {};
+  const result = await fetch(`/api/check/invite_code?code=${code}`, {
+    method: "GET",
+    body: {
+      type: "Json",
+      payload: params,
+    },
+  });
+  return result.data;
+}

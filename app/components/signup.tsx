@@ -8,7 +8,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuthStore } from "../store";
 import { Password } from "./password";
-import { apiGetSignUpCode } from "@/app/services";
+import { apiCheckInviteCode, apiGetSignUpCode } from "@/app/services";
 import { Path } from "../constant";
 import { toast } from "sonner";
 import clsx from "clsx";
@@ -27,15 +27,24 @@ interface SignUpFormProps {
   formData: FormData;
   onFormChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: React.FormEvent) => void;
+  codeErr: string;
+  loading: boolean;
 }
 interface VerifyCodeFormProps {
   formData: FormData;
   onCodeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: React.FormEvent) => void;
   loading: boolean;
+  onBack: () => void;
 }
 
-const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
+const SignUpForm = ({
+  formData,
+  onFormChange,
+  onSubmit,
+  codeErr,
+  loading,
+}: SignUpFormProps) => {
   const { t } = useTranslation("auth");
   const lang = getLang() === "zh-CN" ? "zh/" : "";
   const [checked, setChecked] = useState(false);
@@ -67,7 +76,7 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
     <>
       <div className="flex-center flex-col gap-4 text-black dark:text-white">
         <div className="flex items-end gap-2">
-          <LogoIcon className="size-7.5" />
+          <LogoIcon className="size-7.5 text-[#00D47E]" />
           <LogoTextIcon className="h-5.5" />
         </div>
         <span className="text-lg font-medium">{t("signUp.to")} Aiden.ai</span>
@@ -169,11 +178,13 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
             placeholder={t("signUp.enterInviteCode")}
             className={clsx(
               "!w-full h-9 !max-w-130 !text-left !px-2.5 !py-2 !rounded-sm text-sm hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]",
+              { "border-2 border-[#EF466F]": codeErr },
             )}
             value={formData.inviteCode}
             onChange={onFormChange}
             required
           />
+          {codeErr && <span className="text-sm text-red-500">{codeErr}</span>}
         </div>
         <div className="self-start flex items-center gap-2 text-xs">
           <Checkbox
@@ -218,9 +229,12 @@ const SignUpForm = ({ formData, onFormChange, onSubmit }: SignUpFormProps) => {
               confirmPassword &&
               formData.inviteCode &&
               checked
-            ) || !!emailError
+            ) ||
+            !!emailError ||
+            loading
           }
         >
+          {loading && <LoadingIcon className="size-4 animate-spin" />}
           {t("signUp.btn")}
         </Button>
       </form>
@@ -238,10 +252,10 @@ const VerifyCodeForm = ({
   formData,
   onCodeChange,
   onSubmit,
+  onBack,
   loading,
 }: VerifyCodeFormProps) => {
   const [countdown, setCountdown] = useState(0);
-  const navigate = useNavigate();
   const { t } = useTranslation("auth");
   const getCode = async (email: string) => {
     try {
@@ -332,7 +346,7 @@ const VerifyCodeForm = ({
             type="button"
             variant="outline"
             className="w-full h-11 font-medium text-sm rounded-sm px-2.5 py-2"
-            onClick={() => navigate(-1)}
+            onClick={onBack}
           >
             {t("back")}
           </Button>
@@ -354,6 +368,29 @@ export function SignUpPage() {
   });
   const [isSignUp, setIsSignUp] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [codeErr, setCodeErr] = useState("");
+  const handleSubmit = async () => {
+    setLoading(true);
+    try {
+      const res = (await apiCheckInviteCode(formData.inviteCode)) as {
+        valid: string;
+        message: string;
+      };
+      if ("valid" in res && res.valid) {
+        setIsSignUp(false);
+      } else {
+        throw new Error(t("signUp.invalidCode"));
+      }
+    } catch (e: any) {
+      toast.error(e.message, {
+        className: "w-auto max-w-max",
+      });
+      setCodeErr(t("signUp.invalidCode"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleVerifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -381,6 +418,7 @@ export function SignUpPage() {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCodeErr("");
     const { id, value } = e.target;
     const filteredValue =
       id === "name" ? value.trim() : value.replace(/\s/g, "");
@@ -389,19 +427,25 @@ export function SignUpPage() {
       [id]: filteredValue,
     }));
   };
+  const handleBack = () => {
+    setIsSignUp(true);
+  };
   return (
     <div className="w-full h-full px-6 py-13 my-10 bg-white dark:bg-[#141416] mx-auto flex flex-col justify-start items-center gap-[50px] rounded-2xl">
       {isSignUp ? (
         <SignUpForm
           formData={formData}
           onFormChange={handleChange}
-          onSubmit={() => setIsSignUp(false)}
+          onSubmit={handleSubmit}
+          codeErr={codeErr}
+          loading={loading}
         />
       ) : (
         <VerifyCodeForm
           formData={formData}
           onCodeChange={handleChange}
           onSubmit={handleVerifyCode}
+          onBack={handleBack}
           loading={loading}
         />
       )}

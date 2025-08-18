@@ -22,6 +22,7 @@ import {
   Routes,
   useLocation,
 } from "react-router-dom";
+import { DragLayout } from "./drag-layout";
 import { WindowLayout } from "./window-layout";
 import { Tab } from "./tab";
 import { useAppConfig } from "../store/config";
@@ -218,11 +219,14 @@ export function AppRouter() {
     <Router>
       <WindowSize />
       <Routes>
-        <Route path="/" element={<Navigate to={Path.Loading} replace />} />
-        <Route path={Path.Loading} element={<LoadingPage />} />
-        <Route path={Path.Login} element={<LoginPage />} />
-        <Route path={Path.SignUp} element={<SignUpPage />} />
-        <Route path={Path.ForgotPassword} element={<ForgotPasswordPage />} />
+        <Route element={<DragLayout />}>
+          <Route path="/" element={<Navigate to={Path.Loading} replace />} />
+          <Route path={Path.Loading} element={<LoadingPage />} />
+          <Route path={Path.Login} element={<LoginPage />} />
+          <Route path={Path.SignUp} element={<SignUpPage />} />
+          <Route path={Path.ForgotPassword} element={<ForgotPasswordPage />} />
+        </Route>
+
         <Route path="/*" element={<MainLayout />} />
       </Routes>
     </Router>
