@@ -1,10 +1,9 @@
 import { StoreKey } from "../constant";
-import { Task, ProviderOption } from "../typing";
+import { Task } from "../typing";
 import { createPersistStore } from "../utils/store";
 
 const DEFAULT_TASK_STATE = {
   tasks: [] as Task[],
-  taskModelMap: {} as Record<string, ProviderOption>,
   currentTaskId: "",
 };
 
@@ -18,14 +17,6 @@ export const useTaskStore = createPersistStore(
       };
     }
     const methods = {
-      setTaskModelMap: (id: string, modelInfo: ProviderOption) => {
-        set({
-          taskModelMap: {
-            ...get().taskModelMap,
-            [id]: modelInfo,
-          },
-        });
-      },
       initTasks: (tasks: Task[]) => {
         set({ tasks });
       },

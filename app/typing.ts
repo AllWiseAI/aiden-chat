@@ -261,6 +261,7 @@ export interface Task {
     description: string;
   };
   modelInfo?: ProviderOption;
+  model_info: ModelHeaderInfo;
   created_at: string;
   updated_at: string;
 }

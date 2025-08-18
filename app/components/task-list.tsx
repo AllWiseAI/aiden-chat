@@ -1,10 +1,10 @@
-import { useTaskStore } from "../store";
+import { useTaskStore, useAppConfig } from "../store";
 import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Path } from "../constant";
-import { Task, TaskTypeEnum } from "../typing";
+import { Task, TaskTypeEnum, ModelHeaderInfo } from "../typing";
 import { getTaskList } from "../services/task";
 import {
   DropdownMenu,
@@ -137,8 +137,18 @@ export function TaskList(props: { searchValue?: string }) {
   const deleteTask = useTaskStore((state) => state.deleteTask);
   const selectedId = useTaskStore((state) => state.currentTaskId);
   const setSelectedId = useTaskStore((state) => state.setCurrentTaskId);
-  const taskModelMap = useTaskStore((state) => state.taskModelMap);
   const navigate = useNavigate();
+  const getModelInfo = useAppConfig((state) => state.getModelInfo);
+
+  const resolveModelInfo = (modelInfo: ModelHeaderInfo) => {
+    const apiKey = modelInfo["Aiden-Model-Api-Key"];
+    const modelName = modelInfo["Aiden-Model-Name"];
+    const providerName = modelInfo["Aiden-Model-Provider"];
+    if (apiKey) {
+      return getModelInfo(`${providerName}:${modelName}`);
+    }
+    return getModelInfo(modelName);
+  };
 
   useEffect(() => {
     async function getBackendTasks() {
@@ -147,7 +157,7 @@ export function TaskList(props: { searchValue?: string }) {
       if (code === 0 && data && data.length) {
         const formatTaskList = data.map((item: Task) => ({
           ...item,
-          modelInfo: taskModelMap[item.id],
+          modelInfo: resolveModelInfo(item.model_info),
         }));
         initTasks(formatTaskList);
       }

@@ -327,7 +327,6 @@ export function Task() {
       updateTargetTask(currentTask!, (task) => {
         task.modelInfo = modelInfo;
       });
-      taskStore.setTaskModelMap(currentTask!.id, modelInfo);
       toast.success(t("task.updateSuccess"));
     } else {
       toast.error(t("task.updateFailed"));
