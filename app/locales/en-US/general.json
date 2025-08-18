@@ -2,7 +2,9 @@
   "error": {
     "unauthorized": "Unauthorized",
     "netErr": "Connection Error",
-    "passwordErr": "Password Error"
+    "passwordErr": "Password Error",
+    "timeoutErr": "The request has timed out. Please try again later!",
+    "busyErr": "The server is busy. Please try again later!"
   },
   "sidebar": {
     "chat": "Chats",
@@ -51,7 +53,10 @@
     "noTitle": "Untitled",
     "time": "Time",
     "invalidTime": "Invalid time!",
+    "name": "Task Name",
     "date": "Day/Month",
+    "type": "Task Type",
+    "description": "Task Description",
     "recurrence": "Recurrence",
     "notification": "Notification",
     "details": "Details",
@@ -101,6 +106,8 @@
       "isChecking": "Checking update...",
       "foundUpdate": "Found new version: {{x}}",
       "goToUpdate": "Update",
+      "update": "Update",
+      "updating": "Updating...",
       "success": "Update Successful.",
       "failed": "Update Failed."
     }
@@ -158,7 +165,9 @@
     },
     "used": "Used",
     "unused": "Unused",
-    "tip": "Seed users enjoy 3-month free after launch"
+    "tip": "Seed users enjoy 3-month free after launch",
+    "text": "Register with Aiden and instantly enjoy free access to our powerful AI model! Download: www.aidenai.io Enter the invitation code {{inviteCode}} to start your Aiden journey!",
+    "textVip": "Register with Aiden and instantly enjoy free access to our powerful AI model! Download: www.aidenai.io Enter your exclusive invitation code {{inviteCode}} to start your Aiden journey!"
   },
   "dialog": {
     "deleteTitle": "Delete chat",

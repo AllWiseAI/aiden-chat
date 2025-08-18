@@ -11,6 +11,7 @@ import {
 } from "../typing";
 import EditIcon from "../icons/edit.svg";
 import TaskManagement from "./task-management";
+import { WindowHeader } from "./window-header";
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
 import advancedFormat from "dayjs/plugin/advancedFormat";
@@ -25,6 +26,11 @@ import LoadingIcon from "../icons/loading-spinner.svg";
 import FailedIcon from "../icons/close.svg";
 import ResultLightIcon from "../icons/result-light.svg";
 import ResultDarkIcon from "../icons/result-dark.svg";
+import TimeIcon from "../icons/time.svg";
+import RepeatIcon from "../icons/repeat.svg";
+import ClockIcon from "../icons/clock.svg";
+import CalendarIcon from "../icons/calendar.svg";
+import TimeCalendarIcon from "../icons/time-calendar.svg";
 import { Path } from "../constant";
 import { useNavigate } from "react-router-dom";
 import { useChatStore } from "../store/chat";
@@ -46,15 +52,26 @@ interface TaskItemProps {
   modelInfo: ProviderOption;
 }
 
-function formatCustomTime(date: string, hour: number, minute: number): string {
+function formatDate(date: string): string {
   const locale = getLang();
   dayjs.locale(locale);
-  const full = dayjs(`${dayjs(date).format("YYYY-MM-DD")}T${hour}:${minute}`);
-
-  const formatMinute = minute < 10 ? `0${minute}` : minute;
+  const full = dayjs(date);
 
   if (locale === "zh-CN") {
-    let suffix = "";
+    return full.format("YYYY年M月D日 dddd");
+  } else {
+    return full.format("dddd, YYYY.MM.DD");
+  }
+}
+
+function formatTime(hour: number, minute: number): string {
+  const locale = getLang();
+  const formatMinute = minute < 10 ? `0${minute}` : minute;
+
+  let suffix = "";
+  let formatHour = hour;
+
+  if (locale === "zh-CN") {
     if (hour < 6) {
       suffix = "凌晨";
     } else if (hour < 12) {
@@ -66,17 +83,19 @@ function formatCustomTime(date: string, hour: number, minute: number): string {
     } else {
       suffix = "晚上";
     }
-    const formatHour = hour <= 12 ? hour : hour - 12;
-    return `${full.format(
-      "YYYY年M月D日 dddd",
-    )} ${suffix}${formatHour}:${formatMinute}`;
+    formatHour = hour <= 12 ? hour : hour - 12;
+    return `${suffix}${formatHour}:${formatMinute}`;
   } else {
-    const formatHour = hour % 12 || 12;
-    const suffix = hour < 12 ? "am" : "pm";
-    return `${formatHour}:${formatMinute} ${suffix}, ${full.format(
-      "dddd, MMMM D, YYYY",
-    )}`;
+    formatHour = hour % 12 || 12;
+    suffix = hour < 12 ? "am" : "pm";
+    return `${formatHour}:${formatMinute} ${suffix}`;
   }
+}
+
+function formatCustomTime(date: string, hour: number, minute: number): string {
+  const datePart = formatDate(date);
+  const timePart = formatTime(hour, minute);
+  return `${datePart} ${timePart}`;
 }
 
 function TaskItem({ title, taskInfo, modelInfo }: TaskItemProps) {
@@ -114,7 +133,7 @@ function TaskItem({ title, taskInfo, modelInfo }: TaskItemProps) {
 
   return (
     <div>
-      <div className="flex justify-between items-center px-5 py-3 bg-[#F3F5F7] dark:bg-[#232627] rounded-xl">
+      <div className="flex justify-between items-center px-5 py-3 bg-[#F3F5F7]/50 dark:bg-[#232627]/50 rounded-xl">
         <div className="flex items-center gap-2">
           <p>{title}</p>
           {StatusIcon && (
@@ -186,7 +205,7 @@ function TaskRecords({ currentTask }: { currentTask: TaskType }) {
   }, [currentTask]);
 
   return (
-    <div className="space-y-5 mt-5">
+    <div className="flex-1 min-h-0 space-y-5 overflow-y-auto">
       {recordList.map((item) => (
         <TaskItem
           key={item.id}
@@ -205,7 +224,7 @@ function TaskPanel({ task, setIsEdit }: TaskPanelProps) {
   const { t } = useTranslation();
 
   return (
-    <div className="flex flex-col gap-2 py-3 px-5 text-sm bg-[#F3F5F7] dark:bg-[#232627] text-[#101213] dark:text-white rounded-xl">
+    <div className="flex flex-col gap-5 py-3 px-5 text-sm bg-[#F3F5F7]/50 dark:bg-[#232627]/50 text-[#101213] dark:text-white rounded-xl">
       <div className="flex items-center gap-2">
         <span className="flex-1 text-lg">{task.name}</span>
         <Button variant="ghost" className="size-7" onClick={setIsEdit}>
@@ -213,45 +232,59 @@ function TaskPanel({ task, setIsEdit }: TaskPanelProps) {
         </Button>
       </div>
 
-      <div className="flex gap-3">
-        <span>{t("task.time")}</span>
-        <span className="text-[#979797]">
-          {formatCustomTime(
-            task.original_info.start_date,
-            task.original_info.hour!,
-            task.original_info.minute!,
-          )}
-        </span>
-      </div>
+      <div className="flex flex-col gap-4 text-[#6C7275] dark:text-[#E8ECEF]/50">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1">
+            <TimeIcon className="size-[18px]" />
+            <span>{t("task.time")}</span>
+          </div>
 
-      <div className="flex gap-3">
-        <span>{t("task.recurrence")}</span>
-        <span className="text-[#979797]">
-          {task.original_info.repeat_unit === TaskTypeEnum.Daily
-            ? t("task.daily")
-            : task.original_info.repeat_unit === TaskTypeEnum.Weekly
-            ? t("task.weekly")
-            : task.original_info.repeat_unit === TaskTypeEnum.Monthly
-            ? t("task.monthly")
-            : t("task.once")}
-        </span>
-      </div>
+          <div className="flex items-center gap-1 text-[#141718] dark:text-[#FEFEFE] font-medium bg-[#E8ECEF] dark:bg-[#343839] px-1.5 py-1 rounded-sm">
+            <CalendarIcon className="text-main" />
+            {formatDate(task.original_info.start_date)}
+          </div>
+          <div className="flex items-center gap-1 text-[#141718] dark:text-[#FEFEFE] font-medium bg-[#E8ECEF] dark:bg-[#343839] px-1.5 py-1 rounded-sm">
+            <TimeCalendarIcon className="text-main" />
+            {formatTime(task.original_info.hour!, task.original_info.minute!)}
+          </div>
+        </div>
 
-      <div className="flex gap-3">
-        <span>{t("task.notification")}</span>
+        <div className="flex gap-3">
+          <div className="flex items-center gap-1">
+            <RepeatIcon className="size-[18px]" />
+            <span>{t("task.recurrence")}</span>
+          </div>
 
-        <div className="flex items-center justify-center gap-1 text-[#979797]">
-          {task.original_info.enable_notification ? (
-            <>
-              <NotificationOnIcon className="size-5" />
-              {t("task.on")}
-            </>
-          ) : (
-            <>
-              <NotificationOffIcon className="size-5" />
-              {t("task.off")}
-            </>
-          )}
+          <span className="text-[#141718] dark:text-[#FEFEFE] font-medium">
+            {task.original_info.repeat_unit === TaskTypeEnum.Daily
+              ? t("task.daily")
+              : task.original_info.repeat_unit === TaskTypeEnum.Weekly
+              ? t("task.weekly")
+              : task.original_info.repeat_unit === TaskTypeEnum.Monthly
+              ? t("task.monthly")
+              : t("task.once")}
+          </span>
+        </div>
+
+        <div className="flex gap-3">
+          <div className="flex items-center gap-1">
+            <ClockIcon className="size-[18px]" />
+            <span>{t("task.notification")}</span>
+          </div>
+
+          <div className="flex items-center justify-center gap-1 text-[#141718] dark:text-[#FEFEFE] bg-[#E8ECEF] dark:bg-[#343839] px-1.5 py-1 font-medium">
+            {task.original_info.enable_notification ? (
+              <>
+                <NotificationOnIcon className="size-5 text-main" />
+                {t("task.on")}
+              </>
+            ) : (
+              <>
+                <NotificationOffIcon className="size-5 text-main" />
+                {t("task.off")}
+              </>
+            )}
+          </div>
         </div>
       </div>
 
@@ -300,40 +333,54 @@ export function Task() {
       toast.error(t("task.updateFailed"));
     }
   };
-  if (!currentTask)
-    return (
-      <div className="flex-center h-[100vh]">
-        {theme === Theme.Light ? <ResultLightIcon /> : <ResultDarkIcon />}
-      </div>
-    );
   return (
-    <div
-      className="flex flex-col h-screen min-h-0 gap-5 px-15 py-5"
-      onClick={() => setIsEdit(false)}
-    >
-      <div className="w-fit mb-5">
-        <ModelSelect mode="custom" onChange={handleModelChange} value={model} />
-      </div>
-      <div onClick={(e) => e.stopPropagation()}>
-        {isEdit ? (
-          <TaskManagement
-            model={model}
-            task={currentTask}
-            onCancel={() => {
-              setIsEdit(false);
-            }}
-            onChange={(id, updatedTask) => {
-              setTask(id, updatedTask);
-              setIsEdit(false);
-            }}
+    <div className="flex flex-col h-screen">
+      <WindowHeader>
+        {currentTask && (
+          <ModelSelect
+            mode="custom"
+            onChange={handleModelChange}
+            value={model}
           />
-        ) : (
-          <>
-            <TaskPanel task={currentTask} setIsEdit={() => setIsEdit(true)} />
-            <TaskRecords currentTask={currentTask} />
-          </>
         )}
-      </div>
+      </WindowHeader>
+      {!currentTask ? (
+        <div className="flex-center flex-1">
+          {theme === Theme.Light ? <ResultLightIcon /> : <ResultDarkIcon />}
+        </div>
+      ) : (
+        <div
+          className="flex-1 flex flex-col min-h-0 gap-5 px-15 py-5 border-t border-[#E8ECEF] dark:border-[#232627]/50"
+          onClick={() => setIsEdit(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="flex flex-col gap-2.5 min-h-0"
+          >
+            {isEdit ? (
+              <TaskManagement
+                model={model}
+                task={currentTask}
+                onCancel={() => {
+                  setIsEdit(false);
+                }}
+                onChange={(id, updatedTask) => {
+                  setTask(id, updatedTask);
+                  setIsEdit(false);
+                }}
+              />
+            ) : (
+              <>
+                <TaskPanel
+                  task={currentTask}
+                  setIsEdit={() => setIsEdit(true)}
+                />
+                <TaskRecords currentTask={currentTask} />
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

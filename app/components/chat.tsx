@@ -483,7 +483,13 @@ function InnerChat() {
 
   return (
     <>
-      <div className={styles.chat} key={session.id}>
+      <div
+        className={clsx(
+          styles.chat,
+          "border-t border-[#E8ECEF] dark:border-[#232627]/50",
+        )}
+        key={session.id}
+      >
         <div className={styles["chat-main"]}>
           <div className={styles["chat-body-container"]}>
             {isNewChat ? (
@@ -669,7 +675,7 @@ function InnerChat() {
                   {isChatting ? (
                     <StopIcon className="size-[30px] text-white dark:text-black" />
                   ) : (
-                    <SendIcon className="size-[30px]" />
+                    <SendIcon className="size-[30px] text-white" />
                   )}
                 </Button>
               </label>

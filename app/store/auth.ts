@@ -105,7 +105,7 @@ export const useAuthStore = createPersistStore(
             // setAuth
             return true;
           } catch (e: any) {
-            console.error("refresh token err:", JSON.stringify(e));
+            console.error("refresh token err:", JSON.stringify(e.message));
           }
         }
         setDefaultState();
@@ -180,6 +180,7 @@ export const useAuthStore = createPersistStore(
           const response = (await apiRefreshToken(
             userToken.refreshToken,
           )) as RefreshResponse;
+          console.log("refreshToken_Res", response);
           if ("access_token" in response) {
             const { access_token, refresh_token, expires_at } = response;
             set({

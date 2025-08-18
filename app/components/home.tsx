@@ -22,12 +22,13 @@ import {
   Routes,
   useLocation,
 } from "react-router-dom";
-import { SideBar } from "./sidebar";
+import { DragLayout } from "./drag-layout";
+import { WindowLayout } from "./window-layout";
+import { Tab } from "./tab";
 import { useAppConfig } from "../store/config";
 import { getClientConfig } from "../config/client";
 import useAppSetting from "../hooks/use-app-setting";
 import clsx from "clsx";
-import { WindowHeader } from "./window-header";
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -187,8 +188,6 @@ const loadAsyncGoogleFont = () => {
 
 function MainLayout() {
   const location = useLocation();
-  const isHome = location.pathname === Path.Home;
-
   useAppSetting();
   useEffect(() => {
     loadAsyncGoogleFont();
@@ -196,19 +195,18 @@ function MainLayout() {
 
   return (
     <div className={clsx(styles.container, styles["tight-container"])}>
-      <SideBar
-        className={clsx({
-          [styles["sidebar-show"]]: isHome,
-        })}
-      />
+      <Tab />
       <WindowContent>
         <Routes>
-          <Route element={<WindowHeader />}>
+          <Route
+            element={<WindowLayout header={location.pathname === Path.Chat} />}
+          >
             <Route path={Path.Home} element={<Chat />} />
             <Route path={Path.Chat} element={<Chat />} />
+            <Route path={`${Path.Task}/:id?`} element={<Task />} />
+            <Route path={Path.NewTask} element={<NewTask />} />
           </Route>
-          <Route path={`${Path.Task}/:id`} element={<Task />} />
-          <Route path={Path.NewTask} element={<NewTask />} />
+
           <Route path={Path.Settings} element={<Settings />} />
         </Routes>
       </WindowContent>
@@ -221,11 +219,14 @@ export function AppRouter() {
     <Router>
       <WindowSize />
       <Routes>
-        <Route path="/" element={<Navigate to={Path.Loading} replace />} />
-        <Route path={Path.Loading} element={<LoadingPage />} />
-        <Route path={Path.Login} element={<LoginPage />} />
-        <Route path={Path.SignUp} element={<SignUpPage />} />
-        <Route path={Path.ForgotPassword} element={<ForgotPasswordPage />} />
+        <Route element={<DragLayout />}>
+          <Route path="/" element={<Navigate to={Path.Loading} replace />} />
+          <Route path={Path.Loading} element={<LoadingPage />} />
+          <Route path={Path.Login} element={<LoginPage />} />
+          <Route path={Path.SignUp} element={<SignUpPage />} />
+          <Route path={Path.ForgotPassword} element={<ForgotPasswordPage />} />
+        </Route>
+
         <Route path="/*" element={<MainLayout />} />
       </Routes>
     </Router>

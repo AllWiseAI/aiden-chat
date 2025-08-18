@@ -56,8 +56,9 @@ export async function copyToClipboard(text: string, toastStr?: string) {
         className: "w-auto max-w-max",
       });
     } catch (error) {
-      console.error("Failed to copy text: ", error);
-      toast.error(t("copy.success"), {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error("Failed to copy text: ", message);
+      toast.error(message, {
         className: "w-auto max-w-max",
       });
     }

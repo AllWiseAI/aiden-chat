@@ -179,9 +179,13 @@ export async function aidenFetch<T = unknown>(
       await useAuthStore.getState().refreshToken();
     } catch (err) {
       console.error("Token refresh failed", err);
+      throw err; // 抛错避免死循环
     }
     try {
-      const retryRes = await aidenFetch<T>(url, options);
+      const retryRes = await aidenFetch<T>(url, {
+        ...options,
+        _isRefreshToken: true, // 标记避免循环
+      });
       return retryRes;
     } catch (err) {
       throw err;

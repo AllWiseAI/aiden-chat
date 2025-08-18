@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -19,6 +19,7 @@ import { AddModelModal } from "./add-model-modal";
 import { getProviderList } from "@/app/services";
 import DeleteDialog from "@/app/components/delete-dialog";
 import { toast } from "sonner";
+import ReloadIcon from "../../icons/reload.svg";
 import { ProviderIcon } from "./provider-icon";
 
 export default function ModelList() {
@@ -35,7 +36,7 @@ export default function ModelList() {
     (state) => state.deleteLocalProviders,
   );
   const { t } = useTranslation("settings");
-
+  const [showMore, setShowMore] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalEdit, setIsModalEdit] = useState(false);
   const [currentProviderInfo, setCurrentProviderInfo] =
@@ -50,6 +51,11 @@ export default function ModelList() {
     }
     getProviderData();
   }, []);
+
+  const renderModelList = useMemo(() => {
+    if (!showMore) return modelList.slice(0, 6);
+    else return modelList;
+  }, [showMore]);
 
   const handleAddModel = () => {
     setIsModalEdit(false);
@@ -85,31 +91,48 @@ export default function ModelList() {
   };
 
   return (
-    <div className="gap-2 pt-2.5 pb-6">
+    <div className="gap-2 pt-2.5 pb-6 max-w-135">
       <div className="gap-2.5">
         <div className="font-medium text-base mb-2.5">
           {t("model.defaultModel")}
         </div>
-        <div>
-          <Table>
+        <div className="flex flex-col items-center gap-2.5 w-full">
+          <Table className="table-auto">
             <TableHeader>
-              <TableRow>
-                <TableHead className="">{t("model.provider")}</TableHead>
-                <TableHead> {t("model.model")}</TableHead>
+              <TableRow className="border-[#F3F5F7] dark:border-[#232627]/50">
+                <TableHead className="w-1/2 px-2.5">
+                  {t("model.provider")}
+                </TableHead>
+                <TableHead className="px-2.5">{t("model.model")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {modelList.map((model) => (
-                <TableRow key={model.id}>
-                  <TableCell className="font-medium flex gap-2 items-center">
+              {renderModelList.map((model) => (
+                <TableRow
+                  key={model.id}
+                  className="border-[#F3F5F7] dark:border-[#232627]/50"
+                >
+                  <TableCell className="flex-1 mr-0 px-2.5 py-3.5 h-13 font-medium flex gap-2 items-center">
                     <DefaultModelIcon size="4" />
                     Aiden
                   </TableCell>
-                  <TableCell className="text-sm">{model.display}</TableCell>
+                  <TableCell className="px-2.5 py-3.5 h-13 text-sm">
+                    {model.display}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
+          {!showMore && (
+            <Button
+              variant="outline"
+              className="w-fit dark:border-[#232627] dark:hover:bg-[#1B1C1C]"
+              onClick={() => setShowMore(true)}
+            >
+              <ReloadIcon className="size-[18px]" />
+              View More
+            </Button>
+          )}
         </div>
       </div>
       <div className="mt-6 gap-2">
@@ -119,7 +142,7 @@ export default function ModelList() {
         <div>
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="border-transparent">
                 <TableHead className="">{t("model.provider")}</TableHead>
                 <TableHead> {t("model.model")}</TableHead>
                 <TableHead> {t("model.operation")}</TableHead>
@@ -128,19 +151,22 @@ export default function ModelList() {
 
             <TableBody>
               {localProviders.map((item) => (
-                <TableRow key={item.itemId}>
-                  <TableCell className="font-medium">
+                <TableRow
+                  key={item.itemId}
+                  className="border-[#F3F5F7] dark:border-[#232627]/50"
+                >
+                  <TableCell className="px-2.5 py-3.5 font-medium">
                     <div className="flex gap-2 items-center">
                       <ProviderIcon provider={item.provider} />
                       {item.display}
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="px-2.5 py-3.5 text-[#141718] dark:text-[#6C7275]">
                     {item.models?.map((model) => (
                       <div key={model.value}>{model.label}</div>
                     ))}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="px-2.5 py-3.5">
                     <Button
                       variant="ghost"
                       className="size-6 mr-2.5"
@@ -150,7 +176,7 @@ export default function ModelList() {
                     </Button>
                     <Button
                       variant="ghost"
-                      className="size-6 text-[#EF466F]"
+                      className="size-6 text-[#EF466F] hover:text-[#EF466F]/75"
                       onClick={() => handleDelete(item)}
                     >
                       <DeleteIcon className="size-4" />

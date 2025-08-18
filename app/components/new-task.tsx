@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import TaskManagement from "./task-management";
+import { WindowHeader } from "./window-header";
 import { ModelSelect } from "../components/model-select";
 import { useAppConfig } from "../store";
 
@@ -11,11 +12,13 @@ export function NewTask() {
     setModel(model);
   };
   return (
-    <div className="flex flex-col gap-5 px-15 py-5">
-      <div className="w-fit mb-5">
+    <div>
+      <WindowHeader>
         <ModelSelect mode="custom" onChange={handleModelChange} value={model} />
+      </WindowHeader>
+      <div className="flex flex-col gap-5 px-15 py-5 border-t border-[#E8ECEF] dark:border-[#232627]/50">
+        <TaskManagement model={model} />
       </div>
-      <TaskManagement model={model} />
     </div>
   );
 }
