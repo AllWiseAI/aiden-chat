@@ -37,10 +37,10 @@
     "typing": "Typing…",
     "send": "Send",
     "image": {
-      "tip": "Please select an image to upload",
-      "fileTypes": "The image type is not supported, please select an image file",
+      "tip": "Please select an image or pdf file to upload",
+      "fileTypes": "The file type is not supported, please select an image or pdf file",
       "disabledTips1": "The current model does not",
-      "disabledTips2": "support image recognition."
+      "disabledTips2": "support image and pdf file recognition."
     }
   },
   "task": {

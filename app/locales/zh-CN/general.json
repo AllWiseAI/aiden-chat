@@ -37,10 +37,10 @@
     "typing": "正在输入…",
     "send": "发送",
     "image": {
-      "tip": "请上传图片文件",
-      "fileTypes": "不支持的图片格式",
+      "tip": "请上传图片或pdf文件",
+      "fileTypes": "不支持的图片或pdf格式",
       "disabledTips1": "当前模型不支持",
-      "disabledTips2": "图片识别。"
+      "disabledTips2": "图片和pdf文件识别。"
     }
   },
   "task": {

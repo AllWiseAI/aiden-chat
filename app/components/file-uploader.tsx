@@ -17,7 +17,11 @@ export const FileUploader = () => {
   const { uploadFile } = useFileUpload();
   const chatStore = useChatStore();
   const currentSession = chatStore.currentSession();
-  const disabled = currentSession.modelInfo?.multi_model === false;
+
+  const supportImage = currentSession.modelInfo?.multi_model ?? false;
+  const supportPDF = currentSession.modelInfo?.support_pdf ?? false;
+  const disabled = !supportImage && !supportPDF;
+
   const handleSelectFile = () => {
     if (inputRef.current) {
       inputRef.current.value = "";
