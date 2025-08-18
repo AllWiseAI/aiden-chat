@@ -112,12 +112,19 @@ export const useAuthStore = createPersistStore(
         return false;
       },
 
-      login: async (email: string, password: string) => {
+      login: async (
+        email: string,
+        password: string,
+        captchaId: string,
+        captchaAnswer: string,
+      ) => {
         const { setDefaultState } = _get();
         try {
           const response = (await apiLogin({
             email,
             password,
+            captchaId,
+            captchaAnswer,
           }).catch((err) => {
             throw new Error(err);
           })) as LoginResponse;
