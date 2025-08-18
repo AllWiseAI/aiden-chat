@@ -592,9 +592,9 @@ export const useChatStore = createPersistStore(
             const isAborted = error.message?.includes?.("canceled");
             const isTimeout = error.message?.includes?.("timeout");
             if (isTimeout) {
-              botMessage.content += "请求已超时，请稍后重试！";
+              botMessage.content += t("error.timeoutErr");
             } else if (!isAborted) {
-              botMessage.content += "服务器繁忙，请稍后重试！";
+              botMessage.content += t("error.busyErr");
             }
             botMessage.streaming = false;
             botMessage.isError = !isAborted;

@@ -3,7 +3,8 @@
     "unauthorized": "未授权",
     "netErr": "连接异常",
     "passwordErr": "密码错误",
-    "timeoutErr": "请求已超时，请稍后重试！"
+    "timeoutErr": "请求已超时，请稍后重试！",
+    "busyErr": "服务器繁忙，请稍后重试！"
   },
   "chatItem": {
     "chatItemCount": "{{count}} 条对话"
@@ -164,7 +165,9 @@
     },
     "used": "已使用",
     "unused": "可用",
-    "tip": "种子用户在上线后可享受 3 个月免费使用"
+    "tip": "种子用户在上线后可享受 3 个月免费使用",
+    "text": "注册Aiden立享火爆大模型免费使用权！下载：www.aidenai.info 输入邀请码{{inviteCode}} 开启您的Aiden之旅！",
+    "textVip": "注册Aiden立享火爆大模型免费使用权！下载：www.aidenai.info 输入专属邀请码{{inviteCode}} 开启您的Aiden之旅！"
   },
   "dialog": {
     "deleteTitle": "删除聊天",
