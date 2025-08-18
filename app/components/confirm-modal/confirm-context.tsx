@@ -6,6 +6,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../shadcn/alert-dialog";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/app/components/shadcn/accordion";
+import LoadingIcon from "../../icons/three-dots.svg";
 import { Button } from "@/app/components/shadcn/button";
 import { createContext, useContext, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
@@ -13,10 +20,20 @@ import MapIcon from "../../icons/map.svg";
 import Logo from "../../icons/logo.svg";
 import LogoText from "../../icons/logo-text.svg";
 import { t } from "i18next";
+import dynamic from "next/dynamic";
+import { prettyObject } from "@/app/utils/format";
+
+const Markdown = dynamic(
+  async () => (await import("@/app/components/markdown")).Markdown,
+  {
+    loading: () => <LoadingIcon />,
+  },
+);
 
 export type ConfirmOptions = {
   title: string;
   description?: string;
+  mcpInfo?: any;
   type?: "delete" | "latestVersion" | "setting";
   noClose?: boolean;
   withLogo?: boolean;
@@ -150,9 +167,20 @@ export const ConfirmProvider = ({
     }
 
     return (
-      <AlertDialogDescription className="flex items-center gap-2.5 text-base font-normal text-[#141718] dark:text-white border border-[#E8ECEF] dark:border-[#232627] rounded-xl px-2.5 py-2 whitespace-nowrap">
-        <MapIcon className="size-[18px] shrink-0" />
-        {options.description}
+      <AlertDialogDescription className="flex flex-col items-center gap-2.5 text-base font-normal text-[#141718] dark:text-white border border-[#E8ECEF] dark:border-[#232627] rounded-xl px-2.5 py-2 whitespace-nowrap">
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value={options.mcpInfo.title}>
+            <AccordionTrigger className="!py-0">
+              <div className="flex gap-2">
+                <MapIcon className="size-[18px] shrink-0" />
+                {options.description}
+              </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <Markdown content={prettyObject(options.mcpInfo || "")} />
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </AlertDialogDescription>
     );
   }, [options]);
