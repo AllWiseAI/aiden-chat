@@ -306,6 +306,9 @@ export function getMessageImages(message: RequestMessage): string[] {
     if (c.type === "image_url") {
       urls.push(c.image_url?.url ?? "");
     }
+    if (c.type === "file_url") {
+      urls.push(c.file_url?.url ?? "");
+    }
   }
   return urls;
 }

@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { useImageUpload } from "@/app/hooks/use-image-upload";
+import { useFileUpload } from "@/app/hooks/use-file-upload";
 import { Button } from "@/app/components/shadcn/button";
 import FileIcon from "../icons/file.svg";
 import { toast } from "sonner";
@@ -11,13 +11,17 @@ import {
 } from "@/app/components/shadcn/tooltip";
 import { useChatStore } from "../store";
 
-export const ImageUploader = () => {
+export const FileUploader = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { t } = useTranslation("general");
-  const { uploadImage } = useImageUpload();
+  const { uploadFile } = useFileUpload();
   const chatStore = useChatStore();
   const currentSession = chatStore.currentSession();
-  const disabled = currentSession.modelInfo?.multi_model === false;
+
+  const supportImage = currentSession.modelInfo?.multi_model ?? false;
+  const supportPDF = currentSession.modelInfo?.support_pdf ?? false;
+  const disabled = !supportImage && !supportPDF;
+
   const handleSelectFile = () => {
     if (inputRef.current) {
       inputRef.current.value = "";
@@ -29,21 +33,30 @@ export const ImageUploader = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith("image/")) {
+    // TODO replace tips
+    if (!file.type.startsWith("image/") && file.type !== "application/pdf") {
       toast.error(t("chat.image.tip"));
       return;
     }
-
-    const validExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp"];
+    const validExtensions = [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".gif",
+      ".webp",
+      ".bmp",
+      ".pdf",
+    ];
     const fileName = file.name.toLowerCase();
     const isValid = validExtensions.some((ext) => fileName.endsWith(ext));
 
     if (!isValid) {
+      // TODO replace tips
       toast.error(t("chat.image.fileTypes"));
       return;
     }
     if (file) {
-      uploadImage(file);
+      uploadFile(file);
     }
   };
 

@@ -1,4 +1,5 @@
 import { getMessageTextContent, safeLocalStorage, trimTopic } from "../utils";
+import { UploadedFile } from "@/app/store/file-upload";
 
 import { indexedDBStorage } from "@/app/utils/indexedDB-storage";
 import { nanoid } from "nanoid";
@@ -338,7 +339,7 @@ export const useChatStore = createPersistStore(
 
       async onUserInput(
         content: string,
-        attachImages?: string[],
+        attachFiles?: UploadedFile[],
         isMcpResponse?: boolean,
       ) {
         const session = get().currentSession();
@@ -348,14 +349,35 @@ export const useChatStore = createPersistStore(
           ? content
           : fillTemplateWith(content, modelConfig);
 
-        if (!isMcpResponse && attachImages && attachImages.length > 0) {
+        if (!isMcpResponse && attachFiles && attachFiles.length > 0) {
+          // @ts-ignore
           mContent = [
             ...(content ? [{ type: "text" as const, text: content }] : []),
-            ...attachImages.map((url) => ({
-              type: "image_url" as const,
-              image_url: { url },
-            })),
+            ...attachFiles
+              .map((fileItem) => {
+                console.log("fileItem===", fileItem);
+                const {
+                  file: { type },
+                  url,
+                } = fileItem;
+                if (type === "application/pdf") {
+                  return {
+                    type: "file_url",
+                    file_url: { url },
+                  };
+                }
+                if (type.startsWith("image/")) {
+                  return {
+                    type: "image_url" as const,
+                    image_url: { url },
+                  };
+                }
+
+                return undefined;
+              })
+              .filter((item) => item !== undefined),
           ];
+          console.log("mContent===", mContent);
         }
 
         const userMessage: ChatMessage = createMessage({

@@ -203,6 +203,7 @@ export type CustomModelOption = {
 export type ProviderOption = {
   endpoint?: string;
   multi_model?: boolean;
+  support_pdf?: boolean;
   itemId: string;
   protocol: string;
   provider: string;
