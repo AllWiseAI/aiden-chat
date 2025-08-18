@@ -312,7 +312,9 @@ export function Task() {
   useEffect(() => {
     if (!currentTask) return;
     setIsEdit(false);
-    setModel(currentTask.modelInfo?.model || "");
+    const { apiKey, model, provider } = currentTask.modelInfo || {};
+    const modelValue = (apiKey ? `${provider}:${model}` : model) ?? "";
+    setModel(modelValue);
   }, [currentTask]);
 
   const getModelInfo = useAppConfig((s) => s.getModelInfo);
