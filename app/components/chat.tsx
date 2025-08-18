@@ -164,6 +164,7 @@ function InnerChat() {
   const config = useAppConfig();
 
   const files = useFileUploadStore((state) => state.files);
+
   const removeFile = useFileUploadStore((state) => state.removeFile);
 
   const isNewChat = useMemo(() => {
@@ -480,6 +481,11 @@ function InnerChat() {
     );
   };
 
+  const shouldDisabled = useMemo(() => {
+    const haveFiles = files.filter((file) => file.url !== "").length;
+    return !(userInput.length || haveFiles) && !isChatting;
+  }, [userInput, files, isChatting]);
+
   return (
     <>
       <div className={styles.chat} key={session.id}>
@@ -663,7 +669,7 @@ function InnerChat() {
                 <Button
                   className="absolute bottom-3 right-3 size-12 bg-main rounded-full hover:bg-[#00D47E]/90 p-0 disabled:bg-[#373A3B] disabled:opacity-100 dark:disabled:bg-[#343839] !disabled:cursor-not-allowed"
                   onClick={() => doSubmit(userInput)}
-                  disabled={!(userInput.length || files.length) && !isChatting}
+                  disabled={shouldDisabled}
                 >
                   {isChatting ? (
                     <StopIcon className="size-[30px] text-white dark:text-black" />
