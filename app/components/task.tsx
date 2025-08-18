@@ -310,7 +310,6 @@ export function Task() {
     currentTask?.modelInfo?.model || "",
   );
   useEffect(() => {
-    console.log("currentTask===", currentTask);
     if (!currentTask) return;
     setIsEdit(false);
     setModel(currentTask.modelInfo?.model || "");
