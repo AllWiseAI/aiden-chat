@@ -46,6 +46,24 @@ export async function updateMcpConfig(configJson: object) {
   }
 }
 
+export async function getMcpStatuses(serverNames: string[]) {
+  const baseURL = getLocalBaseDomain();
+  const headers = await getHeaders({ aiden: true });
+
+  const result = await fetchNoProxy(`${baseURL}/mcp_servers/get_statuses`, {
+    method: "POST",
+    headers: headers,
+    body: Body.json({ server_names: serverNames }),
+  });
+
+  if (result.status !== 200) {
+    throw new Error("get statuses failed: " + result.statusText);
+  } else {
+    const jsonResult = await result.json();
+    return jsonResult;
+  }
+}
+
 export async function searchMcpServerStatus(name: string) {
   const baseURL = getLocalBaseDomain();
 

@@ -1,29 +1,10 @@
 import { StoreKey } from "../constant";
-import { Task } from "../typing";
+import { Task, ProviderOption } from "../typing";
 import { createPersistStore } from "../utils/store";
-import { nanoid } from "nanoid";
-import { useAppConfig } from "./config";
-
-export const createDefaultTask = (): Task => {
-  const config = useAppConfig.getState();
-  const modelInfo = config.getDefaultModel();
-  return {
-    id: nanoid(),
-    name: "",
-    date: "",
-    hour: null,
-    minute: null,
-    type: "",
-    notification: false,
-    details: "",
-    backendData: {},
-    modelInfo: modelInfo,
-    createdAt: Date.now(),
-  };
-};
 
 const DEFAULT_TASK_STATE = {
   tasks: [] as Task[],
+  taskModelMap: {} as Record<string, ProviderOption>,
   currentTaskId: "",
 };
 
@@ -37,16 +18,19 @@ export const useTaskStore = createPersistStore(
       };
     }
     const methods = {
-      createTask: (task: Partial<Task> = {}) => {
-        const newTask: Task = {
-          ...createDefaultTask(),
-          ...task,
-        };
-
+      setTaskModelMap: (id: string, modelInfo: ProviderOption) => {
         set({
-          tasks: [...get().tasks, newTask],
-          currentTaskId: newTask.id,
+          taskModelMap: {
+            ...get().taskModelMap,
+            [id]: modelInfo,
+          },
         });
+      },
+      initTasks: (tasks: Task[]) => {
+        set({ tasks });
+      },
+      addTask: (task: Task) => {
+        set({ tasks: [...get().tasks, task] });
       },
       currentTask: () => {
         return get().tasks.find((t) => t.id === get().currentTaskId);
@@ -78,6 +62,6 @@ export const useTaskStore = createPersistStore(
   },
   {
     name: StoreKey.Task,
-    version: 1.6,
+    version: 1.7,
   },
 );

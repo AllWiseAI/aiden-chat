@@ -26,11 +26,13 @@ export function useGetModel() {
     return {
       modelInfo: currentSession.modelInfo,
       updateModel,
+      defaultModel,
     };
   }
 
   return {
     modelInfo: getModelInfo(defaultModel),
     updateModel,
+    defaultModel,
   };
 }

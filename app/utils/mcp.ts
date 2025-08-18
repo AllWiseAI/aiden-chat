@@ -2,6 +2,7 @@ import {
   updateMcpConfig as updateRemoteMcpConfig,
   getRemoteMcpItems,
   searchMcpServerStatus,
+  getMcpStatuses,
 } from "@/app/services";
 import {
   McpItemInfo,
@@ -11,6 +12,7 @@ import {
   MCPServer,
   McpAction,
   EnvItem,
+  batchMcpStatusResp,
 } from "@/app/typing";
 import { invoke } from "@tauri-apps/api/tauri";
 import { toast } from "sonner";
@@ -250,6 +252,22 @@ export const fetchMcpStatus = async (name: string): Promise<McpAction> => {
     return McpAction.Failed;
   }
 };
+export const batchFetchMcpStatus = async (
+  names: string[],
+): Promise<batchMcpStatusResp[]> => {
+  try {
+    const res = (await getMcpStatuses(names)) as any;
+    if (!res || !res?.data) {
+      throw new Error("No data");
+    }
+    const { data } = res;
+    if (data?.length) return data;
+    else throw new Error("No status");
+  } catch (e) {
+    console.error("[batchFetchMcpStatus]", e);
+    return [];
+  }
+};
 
 export const isEmptyObject = (obj: any) => {
   return Object.keys(obj).length === 0;
@@ -269,12 +287,12 @@ export const getMcpStatusList = async (config: MCPConfig) => {
     const item = config.mcpServers[name];
     return item.aiden_enable;
   });
-  const mcpStatusList = await Promise.all(
-    enableList.map(async (name) => {
-      const status = await fetchMcpStatus(name);
-      return { name, action: status };
-    }),
-  );
+
+  const list = await batchFetchMcpStatus(enableList);
+  const mcpStatusList = list.map((item) => ({
+    name: item.server,
+    action: item.status,
+  }));
   return mcpStatusList;
 };
 
