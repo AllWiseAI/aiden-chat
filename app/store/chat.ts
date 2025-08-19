@@ -1,7 +1,7 @@
 import { getMessageTextContent, safeLocalStorage, trimTopic } from "../utils";
 import { UploadedFile } from "@/app/store/file-upload";
 import { DEFAULT_USER_DELINETED } from "../constant";
-
+import { prettyObject } from "@/app/utils/format";
 import { indexedDBStorage } from "@/app/utils/indexedDB-storage";
 import { nanoid } from "nanoid";
 import type {
@@ -49,6 +49,8 @@ export type ChatMessage = RequestMessage & {
   tools?: ChatMessageTool[];
   audio_url?: string;
   isMcpResponse?: boolean;
+  errorInfo?: string;
+  content: string | MultimodalContent[];
 };
 
 export function createMessage(override: Partial<ChatMessage>): ChatMessage {
@@ -494,13 +496,24 @@ export const useChatStore = createPersistStore(
               session.messages = session.messages.concat();
             });
           },
-          onError(error, shouldStream: boolean) {
+          onError(error: Error & { msg: string }, shouldStream: boolean) {
             const isAborted = error.message?.includes?.("canceled");
             const isTimeout = error.message?.includes?.("timeout");
             if (isTimeout) {
               botMessage.content += t("error.timeoutErr");
+              botMessage.errorInfo =
+                "\n\n" +
+                prettyObject({
+                  msg: t("error.timeoutErr"),
+                  code: -1,
+                });
             } else if (!isAborted) {
-              botMessage.content += t("error.timeoutErr");
+              botMessage.content += error.msg;
+              botMessage.errorInfo =
+                "\n\n" +
+                prettyObject({
+                  ...error,
+                });
             }
             botMessage.streaming = false;
             userMessage.isError = !isAborted;
@@ -623,8 +636,19 @@ export const useChatStore = createPersistStore(
             const isTimeout = error.message?.includes?.("timeout");
             if (isTimeout) {
               botMessage.content += t("error.timeoutErr");
+              botMessage.errorInfo =
+                "\n\n" +
+                prettyObject({
+                  msg: t("error.timeoutErr"),
+                  code: -1,
+                });
             } else if (!isAborted) {
-              botMessage.content += t("error.busyErr");
+              botMessage.content += error.msg;
+              botMessage.errorInfo =
+                "\n\n" +
+                prettyObject({
+                  ...error,
+                });
             }
             botMessage.streaming = false;
             botMessage.isError = !isAborted;

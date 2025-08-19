@@ -109,7 +109,7 @@ export class ChatGPTApi implements LLMApi {
       }
     } catch (e) {
       console.log("[Request] failed to make a chat request", e);
-      options.onError?.(e as Error, shouldStream);
+      options.onError?.(e as Error & { msg: string }, shouldStream);
     }
   }
 
@@ -164,7 +164,7 @@ export class ChatGPTApi implements LLMApi {
       }
     } catch (e) {
       console.log("[Request] failed to make a chat request", e);
-      options.onError?.(e as Error, shouldStream);
+      options.onError?.(e as Error & { msg: string }, shouldStream);
     }
   }
 }
