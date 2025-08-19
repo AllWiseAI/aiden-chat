@@ -1,5 +1,6 @@
 import { getMessageTextContent, safeLocalStorage, trimTopic } from "../utils";
 import { UploadedFile } from "@/app/store/file-upload";
+import { DEFAULT_USER_DELINETED } from "../constant";
 
 import { indexedDBStorage } from "@/app/utils/indexedDB-storage";
 import { nanoid } from "nanoid";
@@ -540,14 +541,21 @@ export const useChatStore = createPersistStore(
         const modelConfig = session.mask.modelConfig;
         const messageIndex = session.messages.length + 1;
 
+        const mcpInfo = {
+          title: toolCallInfo.title ?? "",
+          request: toolCallInfo.request ?? "",
+          response: [] as string[],
+        };
+
+        const { approved } = toolCallInfo;
+        if (!approved) {
+          mcpInfo.response = [DEFAULT_USER_DELINETED];
+        }
+
         const botMessage: ChatMessage = createMessage({
           role: "assistant",
           streaming: true,
-          mcpInfo: {
-            title: toolCallInfo.title ?? "",
-            request: toolCallInfo.request ?? "",
-            response: [],
-          },
+          mcpInfo: mcpInfo,
         });
 
         get().updateTargetSession(session, (session) => {
