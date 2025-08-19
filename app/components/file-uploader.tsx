@@ -22,7 +22,6 @@ export const FileUploader = () => {
   const supportPDF = currentSession.modelInfo?.support_pdf ?? false;
   const disabled = !supportImage && !supportPDF;
 
-  /** 公用校验逻辑 */
   const validateAndUpload = (file: File) => {
     if (!file) return;
 
@@ -48,7 +47,6 @@ export const FileUploader = () => {
     uploadFile(file);
   };
 
-  /** 点击上传 */
   const handleSelectFile = () => {
     if (inputRef.current) {
       inputRef.current.value = "";
@@ -77,7 +75,7 @@ export const FileUploader = () => {
       }
 
       if (files.length > 0) {
-        e.preventDefault(); // ✅ 避免文件名插入输入框
+        e.preventDefault();
         files.forEach((file) => validateAndUpload(file));
       }
     };
