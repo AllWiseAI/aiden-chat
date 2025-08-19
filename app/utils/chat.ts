@@ -1,4 +1,4 @@
-import { REQUEST_TIMEOUT_MS, DEFAULT_USER_DELINETED } from "@/app/constant";
+import { REQUEST_TIMEOUT_MS } from "@/app/constant";
 import { t } from "i18next";
 import {
   EventStreamContentType,
@@ -527,9 +527,6 @@ export function streamWithThink(
                 }
                 if (result === ConfirmType.Decline) {
                   console.log("[MCP confirm] User rejected.");
-                  options.onUpdate?.(responseText, {
-                    response: DEFAULT_USER_DELINETED,
-                  });
                 }
               }
               options.onToolCall({
