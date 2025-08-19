@@ -112,12 +112,19 @@ export const useAuthStore = createPersistStore(
         return false;
       },
 
-      login: async (email: string, password: string) => {
+      login: async (
+        email: string,
+        password: string,
+        captchaId: string,
+        captchaAnswer: string,
+      ) => {
         const { setDefaultState } = _get();
         try {
           const response = (await apiLogin({
             email,
             password,
+            captchaId,
+            captchaAnswer,
           }).catch((err) => {
             throw new Error(err);
           })) as LoginResponse;
@@ -152,7 +159,9 @@ export const useAuthStore = createPersistStore(
         } catch (e: any) {
           setDefaultState();
           if (e.message === "Invalid Credentials")
-            throw new Error(t("error.passwordErr"));
+            throw { code: "INVALID_PASSWORD", message: t("error.passwordErr") };
+          else if (e.message === "Invalid Captcha")
+            throw { code: "INVALID_CAPTCHA", message: t("error.captchaErr") };
           else throw new Error(`Login Failed: ${e.message}`);
         }
       },

@@ -40,10 +40,17 @@ export async function apiCompleteSignUp(payload: {
   return result.data;
 }
 
-export async function apiLogin(payload: { email: string; password: string }) {
+export async function apiLogin(payload: {
+  email: string;
+  password: string;
+  captchaId: string;
+  captchaAnswer: string;
+}) {
   const params = {
     email: payload.email,
     password: payload.password,
+    captcha_id: payload.captchaId,
+    captcha_answer: payload.captchaAnswer,
   };
   const response = await fetch("/auth/login", {
     method: "POST",
@@ -171,6 +178,18 @@ export async function apiGetInviteCode() {
 export async function apiCheckInviteCode(code: string) {
   const params = {};
   const result = await fetch(`/api/check/invite_code?code=${code}`, {
+    method: "GET",
+    body: {
+      type: "Json",
+      payload: params,
+    },
+  });
+  return result.data;
+}
+
+export async function apiGetCaptcha() {
+  const params = {};
+  const result = await fetch("/auth/captcha", {
     method: "GET",
     body: {
       type: "Json",

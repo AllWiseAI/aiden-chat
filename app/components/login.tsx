@@ -6,7 +6,7 @@ import { Password } from "@/app/components/password";
 import LogoIcon from "@/app/icons/logo.svg";
 import LogoTextIcon from "@/app/icons/logo-text.svg";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Path } from "../constant";
 import { useAuthStore, useSettingStore } from "../store";
 import { toast } from "sonner";
@@ -16,6 +16,7 @@ import LoadingIcon from "../icons/loading-spinner.svg";
 import { getLang } from "../locales";
 import { useTranslation } from "react-i18next";
 import { appDataInit } from "../utils/init";
+import { apiGetCaptcha } from "../services";
 
 export function LoginPage() {
   const getRegion = useSettingStore((state) => state.getRegion);
@@ -26,20 +27,50 @@ export function LoginPage() {
   const [formData, setFormData] = useState({
     email: localStorage.getItem("user-email") || "",
     password: "",
+    captchaId: "",
+    captchaAnswer: "",
   });
   const [checked, setChecked] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [emailError, setEmailError] = useState("");
+  const [error, setError] = useState<{
+    email: string;
+    password: string;
+    captcha: string;
+  }>({
+    email: "",
+    password: "",
+    captcha: "",
+  });
+  const [captcha, setCaptcha] = useState<{
+    captcha_id: string;
+    captcha_image: string;
+    expires_at: number;
+  }>({
+    captcha_id: "",
+    captcha_image: "",
+    expires_at: Date.now(),
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError({
+      email: "",
+      password: "",
+      captcha: "",
+    });
     if (formData.email && !validateEmail(formData.email)) {
-      setEmailError(t("inValidEmail"));
+      setError((error) => ({ ...error, email: t("inValidEmail") }));
       return;
     }
     setLoading(true);
 
     try {
-      const success = await login(formData.email, formData.password);
+      const success = await login(
+        formData.email,
+        formData.password,
+        formData.captchaId,
+        formData.captchaAnswer,
+      );
       if (success) {
         appDataInit();
         navigate(Path.Chat);
@@ -52,11 +83,18 @@ export function LoginPage() {
       toast.error(e.message, {
         className: "w-auto max-w-max",
       });
+      if (e.code === "INVALID_CAPTCHA") {
+        setError((error) => ({ ...error, captcha: e.message }));
+      } else if (e.code === "INVALID_PASSWORD") {
+        setError((error) => ({ ...error, password: e.message }));
+      }
     } finally {
       setLoading(false);
+      getCaptcha();
     }
     getRegion();
   };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     const filteredValue = value.replace(/\s/g, "");
@@ -65,7 +103,37 @@ export function LoginPage() {
       ...data,
       [id]: filteredValue,
     }));
+    if (id === "password") {
+      setError((error) => ({ ...error, password: "" }));
+    } else if (id === "capchaAnwser") {
+      setError((error) => ({ ...error, captcha: "" }));
+    }
   };
+
+  const getCaptcha = async () => {
+    const res = (await apiGetCaptcha()) as {
+      captcha_id: string;
+      captcha_image: string;
+      expires_at: number;
+    };
+    const { captcha_id, captcha_image, expires_at } = res;
+    setFormData((data) => ({
+      ...data,
+      captchaId: captcha_id,
+    }));
+
+    setCaptcha({
+      ...captcha,
+      captcha_id,
+      captcha_image: `data:image/png;base64,${captcha_image}`,
+      expires_at,
+    });
+  };
+
+  useEffect(() => {
+    getCaptcha();
+  }, []);
+
   const validateEmail = (email: string) => {
     const reg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return reg.test(email);
@@ -73,9 +141,9 @@ export function LoginPage() {
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     if (id === "email" && value && !validateEmail(value)) {
-      setEmailError(t("inValidEmail"));
+      setError((error) => ({ ...error, email: t("inValidEmail") }));
     } else {
-      setEmailError("");
+      setError((error) => ({ ...error, email: "" }));
     }
   };
   return (
@@ -106,7 +174,7 @@ export function LoginPage() {
             className={clsx(
               "w-full h-9 !text-left px-2.5 py-2 rounded-sm text-sm hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]",
               {
-                "border border-[#EF466F]": emailError,
+                "border-[#EF466F] dark:border-[#EF466F]": error.email,
               },
             )}
             value={formData.email}
@@ -115,8 +183,8 @@ export function LoginPage() {
             clearable
             required
           />
-          {emailError && (
-            <span className="text-[10px] text-red-500">{emailError}</span>
+          {error.email && (
+            <span className="text-[10px] text-red-500">{error.email}</span>
           )}
         </div>
         <div className="flex flex-col gap-2 w-full">
@@ -139,11 +207,51 @@ export function LoginPage() {
             id="password"
             type="password"
             placeholder={t("enter")}
-            className="!w-full h-9 !max-w-130 !text-left !px-2.5 !py-2 !rounded-sm text-sm border hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]"
+            className={clsx(
+              "!w-full h-9 !max-w-130 !text-left !px-2.5 !py-2 !rounded-sm text-sm border hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]",
+              {
+                "border-[#EF466F] dark:border-[#EF466F]": error.password,
+              },
+            )}
             value={formData.password}
             onChange={handleChange}
             required
           />
+          {error.password && (
+            <span className="text-[10px] text-red-500">{error.password}</span>
+          )}
+        </div>
+        <div className="flex flex-col gap-2 w-full">
+          <Label
+            htmlFor="captchaAnswer"
+            className="font-normal after:content['*'] after:content-['*'] after:text-red-500 !gap-1 text-sm"
+          >
+            Captcha
+          </Label>
+          <div className="flex items-center gap-2">
+            <Input
+              id="captchaAnswer"
+              type="text"
+              placeholder="Enter captcha"
+              className={clsx(
+                "w-full h-9 !text-left px-2.5 py-2 rounded-sm text-sm hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]",
+                {
+                  "border-[#EF466F] dark:border-[#EF466F]": error.captcha,
+                },
+              )}
+              value={formData.captchaAnswer}
+              onChange={handleChange}
+            />
+            <img
+              src={captcha.captcha_image}
+              alt=""
+              className="h-10 cursor-pointer border rounded"
+              onClick={getCaptcha}
+            ></img>
+          </div>
+          {error.captcha && (
+            <span className="text-[10px] text-red-500">{error.captcha}</span>
+          )}
         </div>
         <div className="self-start flex items-center gap-2 text-xs">
           <Checkbox
@@ -182,9 +290,14 @@ export function LoginPage() {
           className="w-full h-11 !px-2.5 !py-2 bg-main hover:bg-[#009A5C] disabled:bg-[#7FD5B2] dark:disabled:bg-[#0A6E45] text-white text-base dark:text-black font-medium rounded-sm"
           type="submit"
           disabled={
-            !(formData.email && formData.password && checked) ||
+            !(
+              formData.email &&
+              formData.password &&
+              formData.captchaAnswer &&
+              checked
+            ) ||
             loading ||
-            !!emailError
+            !!error.email
           }
         >
           {loading && <LoadingIcon className="size-4 animate-spin" />}
