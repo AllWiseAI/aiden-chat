@@ -511,6 +511,7 @@ export function streamWithThink(
                 const result = await showConfirm({
                   title: "Aiden " + t("dialog.mcpTitle"),
                   description: chunk.mcpInfo.tool,
+                  mcpInfo: chunk.mcpInfo,
                 });
                 approved = [ConfirmType.Always, ConfirmType.Once].includes(
                   result as ConfirmType,
