@@ -19,7 +19,7 @@ import { AddModelModal } from "./add-model-modal";
 import { getProviderList } from "@/app/services";
 import DeleteDialog from "@/app/components/delete-dialog";
 import { toast } from "sonner";
-import ReloadIcon from "../../icons/reload.svg";
+import DownIcon from "../../icons/down.svg";
 import { ProviderIcon } from "./provider-icon";
 
 export default function ModelList() {
@@ -126,10 +126,10 @@ export default function ModelList() {
           {!showMore && (
             <Button
               variant="outline"
-              className="w-fit dark:border-[#232627] dark:hover:bg-[#1B1C1C]"
+              className="w-fit gap-1 dark:border-[#232627] dark:hover:bg-[#1B1C1C] rounded-sm"
               onClick={() => setShowMore(true)}
             >
-              <ReloadIcon className="size-[18px]" />
+              <DownIcon className="size-[18px]" />
               View More
             </Button>
           )}

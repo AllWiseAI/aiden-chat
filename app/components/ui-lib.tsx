@@ -313,7 +313,7 @@ export function Select(
       <select className={styles["select-with-icon-select"]} {...otherProps}>
         {children}
       </select>
-      <DownIcon className={styles["select-with-icon-icon"]} />
+      <DownIcon className={clsx(styles["select-with-icon-icon"], "size-4")} />
     </div>
   );
 }

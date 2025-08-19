@@ -601,7 +601,6 @@
 
 .chat-input-panel {
   position: relative;
-
   margin-left: 60px;
   margin-right: 60px;
   margin-bottom: 20px;
@@ -699,7 +698,7 @@
   color: var(--black);
   font-family: inherit;
   padding: 10px 14px 10px 14px;
-  margin-bottom: 60px;
+  margin-bottom: 50px;
   resize: none;
   outline: none;
   box-sizing: border-box;
@@ -802,6 +801,8 @@
     flex-direction: column;
     flex: 1;
     width: 100%;
+    max-width: 776px;
+    margin: 0 auto;
   }
   .chat-side-panel {
     position: absolute;

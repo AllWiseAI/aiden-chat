@@ -606,7 +606,7 @@ function InnerChat() {
                   className="absolute -top-10 right-2 size-8 z-1 border bg-white dark:bg-[#343839] rounded-full"
                   onClick={() => scrollToBottom(true)}
                 >
-                  <DownIcon className="text-black dark:text-white" />
+                  <DownIcon className="text-black dark:text-white size-4" />
                 </Button>
               )}
               <label
@@ -639,7 +639,7 @@ function InnerChat() {
                 />
                 <div
                   className={clsx(
-                    "absolute top-3 left-3 flex items-center gap-2.5 w-[calc(100%-24px)] bg-white dark:bg-[#141416]",
+                    "absolute top-[1px] left-3 pt-3 flex items-center gap-2.5 w-[calc(100%-24px)] bg-white dark:bg-[#141416]",
                     files.length > 0 && "pb-2",
                   )}
                 >
@@ -668,19 +668,19 @@ function InnerChat() {
                   <FileUploader />
                   <McpPopover
                     icon={
-                      <McpIcon className="size-6 text-black dark:text-white" />
+                      <McpIcon className="size-[18px] text-black dark:text-white" />
                     }
                   />
                 </div>
                 <Button
-                  className="absolute bottom-3 right-3 size-12 bg-main rounded-full hover:bg-[#00D47E]/90 p-0 disabled:bg-[#373A3B] disabled:opacity-100 dark:disabled:bg-[#343839] !disabled:cursor-not-allowed"
+                  className="absolute bottom-3 right-3 size-8 bg-main rounded-full hover:bg-[#00D47E]/90 p-0 disabled:bg-[#373A3B] disabled:opacity-100 dark:disabled:bg-[#343839] !disabled:cursor-not-allowed"
                   onClick={() => doSubmit(userInput)}
                   disabled={shouldDisabled}
                 >
                   {isChatting ? (
                     <StopIcon className="size-[30px] text-white dark:text-black" />
                   ) : (
-                    <SendIcon className="size-[30px] text-white" />
+                    <SendIcon className="size-[30px] text-white dark:text-black" />
                   )}
                 </Button>
               </label>

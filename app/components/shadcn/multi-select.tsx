@@ -66,7 +66,7 @@ export function MultiSelectDropdown({
           variant="outline"
           disabled={options && options.length === 0}
           className={cn(
-            "!hover:bg-background !dark:hover:bg-background min-w-56 justify-between pr-3 truncate",
+            "!hover:bg-background !dark:hover:bg-background min-w-56 h-9 justify-between pr-3 truncate",
             className,
           )}
         >
