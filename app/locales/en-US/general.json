@@ -3,6 +3,7 @@
     "unauthorized": "Unauthorized",
     "netErr": "Connection Error",
     "passwordErr": "Password Error",
+    "captchaErr": "Captcha Error",
     "timeoutErr": "The request has timed out. Please try again later!",
     "busyErr": "The server is busy. Please try again later!"
   },

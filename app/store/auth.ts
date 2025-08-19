@@ -159,7 +159,9 @@ export const useAuthStore = createPersistStore(
         } catch (e: any) {
           setDefaultState();
           if (e.message === "Invalid Credentials")
-            throw new Error(t("error.passwordErr"));
+            throw { code: "INVALID_PASSWORD", message: t("error.passwordErr") };
+          else if (e.message === "Invalid Captcha")
+            throw { code: "INVALID_CAPTCHA", message: t("error.captchaErr") };
           else throw new Error(`Login Failed: ${e.message}`);
         }
       },

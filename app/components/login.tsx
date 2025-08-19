@@ -79,14 +79,13 @@ export function LoginPage() {
       toast.error(e.message, {
         className: "w-auto max-w-max",
       });
-      console.log(e.message);
-      if (e.message === "Invalid Captcha") {
-        console.log(11111);
-        setError((error) => ({ ...error, password: "验证码错误" }));
-      } else if (e.message === "Password Error") {
-        setError((error) => ({ ...error, email: "密码错误" }));
+      console.log("test", e);
+      if (e.code === "INVALID_CAPTCHA") {
+        setError((error) => ({ ...error, captcha: e.message }));
+      } else if (e.code === "INVALID_PASSWORD") {
+        console.log(11111111);
+        setError((error) => ({ ...error, password: e.message }));
       }
-      console.log(e.message);
     } finally {
       setLoading(false);
     }
@@ -172,7 +171,7 @@ export function LoginPage() {
             className={clsx(
               "w-full h-9 !text-left px-2.5 py-2 rounded-sm text-sm hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]",
               {
-                "border-[#EF466F]": error.email,
+                "border-[#EF466F] dark:border-[#EF466F]": error.email,
               },
             )}
             value={formData.email}
@@ -208,13 +207,16 @@ export function LoginPage() {
             className={clsx(
               "!w-full h-9 !max-w-130 !text-left !px-2.5 !py-2 !rounded-sm text-sm border hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]",
               {
-                "border-[#EF466F]": error.password,
+                "border-[#EF466F] dark:border-[#EF466F]": error.password,
               },
             )}
             value={formData.password}
             onChange={handleChange}
             required
           />
+          {error.password && (
+            <span className="text-[10px] text-red-500">{error.password}</span>
+          )}
         </div>
         <div className="flex flex-col gap-2 w-full">
           <Label
@@ -231,7 +233,7 @@ export function LoginPage() {
               className={clsx(
                 "w-full h-9 !text-left px-2.5 py-2 rounded-sm text-sm hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]",
                 {
-                  "border border-[#EF466F]": error.captcha,
+                  "border-[#EF466F] dark:border-[#EF466F]": error.captcha,
                 },
               )}
               value={formData.captchaAnswer}
@@ -244,6 +246,9 @@ export function LoginPage() {
               onClick={getCaptcha}
             ></img>
           </div>
+          {error.captcha && (
+            <span className="text-[10px] text-red-500">{error.captcha}</span>
+          )}
         </div>
         <div className="self-start flex items-center gap-2 text-xs">
           <Checkbox
@@ -282,7 +287,12 @@ export function LoginPage() {
           className="w-full h-11 !px-2.5 !py-2 bg-main hover:bg-[#009A5C] disabled:bg-[#7FD5B2] dark:disabled:bg-[#0A6E45] text-white text-base dark:text-black font-medium rounded-sm"
           type="submit"
           disabled={
-            !(formData.email && formData.password && checked) ||
+            !(
+              formData.email &&
+              formData.password &&
+              formData.captchaAnswer &&
+              checked
+            ) ||
             loading ||
             !!error.email
           }
