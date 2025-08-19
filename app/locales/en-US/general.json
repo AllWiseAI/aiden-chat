@@ -170,6 +170,7 @@
     "textVip": "Register with Aiden and instantly enjoy free access to our powerful AI model! Download: www.aidenai.io Enter your exclusive invitation code {{inviteCode}} to start your Aiden journey!"
   },
   "dialog": {
+    "tutorial": "Tutorial",
     "deleteTitle": "Delete chat",
     "deleteTaskTitle": "Delete task",
     "alert": "Are you sure you want to delete chat?",

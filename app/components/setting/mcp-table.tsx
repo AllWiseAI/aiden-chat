@@ -37,6 +37,7 @@ type ServerTableProps = {
   setCurrentSetting: (
     settingInfo: TSettingInfo | null,
     mcpName: string,
+    detailInfo: McpItemInfo,
   ) => void;
 };
 
@@ -93,9 +94,9 @@ function ServerTable({
               }}
               onDelete={handleDeleteMcp}
               onSelect={() => setDetail({ ...item })}
-              onSetting={(settingInfo, name) =>
-                setCurrentSetting(settingInfo, name)
-              }
+              onSetting={(settingInfo, name) => {
+                setCurrentSetting(settingInfo, name, { ...item });
+              }}
             />
           ))}
         </div>
@@ -122,6 +123,7 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
   const [currentSetting, setCurrentSetting] = useState<TSettingInfo | null>(
     null,
   );
+  const [detailInfo, setDetailInfo] = useState<McpItemInfo>();
   const [currentMcpName, setCurrentMcpName] = useState<string>("");
   const handleSettingConfirm = async (update: TSettingInfo) => {
     setShowSettingModal(false);
@@ -166,7 +168,8 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
           switchMcpStatus={switchMcpStatus}
           setDetail={setDetail}
           removeMcpItem={removeMcpItem}
-          setCurrentSetting={(settingInfo, mcpName) => {
+          setCurrentSetting={(settingInfo, mcpName, detailInfo) => {
+            setDetailInfo(detailInfo);
             setCurrentSetting(settingInfo);
             setCurrentMcpName(mcpName);
             setShowSettingModal(true);
@@ -179,6 +182,10 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
           open={showSettingModal}
           settingInfo={currentSetting}
           onConfirm={handleSettingConfirm}
+          onGoToTutorial={() => {
+            setShowSettingModal(false);
+            setDetail(detailInfo!);
+          }}
         />
       )}
     </>

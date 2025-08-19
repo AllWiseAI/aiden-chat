@@ -26,6 +26,7 @@ interface McpSettingModalProps {
   settingInfo: SettingInfo;
   onConfirm: (updated: SettingInfo) => void;
   onOpenChange?: (open: boolean) => void;
+  onGoToTutorial?: () => void;
 }
 
 export function McpSettingModal({
@@ -33,6 +34,7 @@ export function McpSettingModal({
   settingInfo,
   onConfirm,
   onOpenChange,
+  onGoToTutorial,
 }: McpSettingModalProps) {
   const [args, setArgs] = useState(settingInfo.args);
   const [envs, setEnvs] = useState(settingInfo.envs);
@@ -79,10 +81,16 @@ export function McpSettingModal({
           e.stopPropagation();
         }}
       >
-        <DialogHeader>
+        <DialogHeader className="relative">
           <DialogTitle className="text-lg text-center dark:text-[#FEFEFE]">
             {t("dialog.mcpSetting")}
           </DialogTitle>
+          <Button
+            className="absolute -top-0.5 right-0 bg-[#00AB66]/12 dark:bg-[#00D47E]/6 hover:bg-[#BEF0DD] dark:hover:bg-[#00D47E]/12 text-main border border-[#00D47E]/10 text-sm leading-[22px] h-[30px] rounded-sm px-1 py-0 gap-1"
+            onClick={onGoToTutorial}
+          >
+            {t("dialog.tutorial")}
+          </Button>
         </DialogHeader>
 
         <div className="space-y-4 max-h-[500px] overflow-y-auto">

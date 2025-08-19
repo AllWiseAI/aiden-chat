@@ -170,6 +170,7 @@
     "textVip": "注册Aiden立享火爆大模型免费使用权！下载：www.aidenai.info 输入专属邀请码{{inviteCode}} 开启您的Aiden之旅！"
   },
   "dialog": {
+    "tutorial": "教程",
     "deleteTitle": "删除聊天",
     "deleteTaskTitle": "删除任务",
     "alert": "你确定要删除这条聊天记录吗？",
