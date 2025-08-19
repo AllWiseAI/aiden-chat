@@ -90,7 +90,13 @@ export const useMcpStore = createPersistStore(
       batchUpdateMcpStatusList: async (statusList: McpStatusItem[]) => {
         console.log("[Mcp store] batchUpdateMcpStatusList", statusList);
         const { mcpStatusList } = get();
-        set({ mcpStatusList: [...mcpStatusList, ...statusList] });
+        const mergedList = [...mcpStatusList, ...statusList];
+
+        const uniqueList = Array.from(
+          new Map(mergedList.map((item) => [item.name, item])).values(),
+        );
+
+        set({ mcpStatusList: uniqueList });
       },
 
       updateMcpStatusList: async (
