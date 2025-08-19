@@ -53,7 +53,11 @@ export function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("test", formData, captcha);
+    setError({
+      email: "",
+      password: "",
+      captcha: "",
+    });
     if (formData.email && !validateEmail(formData.email)) {
       setError((error) => ({ ...error, email: t("inValidEmail") }));
       return;
@@ -79,18 +83,18 @@ export function LoginPage() {
       toast.error(e.message, {
         className: "w-auto max-w-max",
       });
-      console.log("test", e);
       if (e.code === "INVALID_CAPTCHA") {
         setError((error) => ({ ...error, captcha: e.message }));
       } else if (e.code === "INVALID_PASSWORD") {
-        console.log(11111111);
         setError((error) => ({ ...error, password: e.message }));
       }
     } finally {
       setLoading(false);
+      getCaptcha();
     }
     getRegion();
   };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     const filteredValue = value.replace(/\s/g, "");
@@ -105,13 +109,13 @@ export function LoginPage() {
       setError((error) => ({ ...error, captcha: "" }));
     }
   };
+
   const getCaptcha = async () => {
     const res = (await apiGetCaptcha()) as {
       captcha_id: string;
       captcha_image: string;
       expires_at: number;
     };
-    console.log(res);
     const { captcha_id, captcha_image, expires_at } = res;
     setFormData((data) => ({
       ...data,
@@ -124,7 +128,6 @@ export function LoginPage() {
       captcha_image: `data:image/png;base64,${captcha_image}`,
       expires_at,
     });
-    console.log(captcha);
   };
 
   useEffect(() => {
