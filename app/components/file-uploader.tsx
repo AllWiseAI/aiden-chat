@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { useFileUpload } from "@/app/hooks/use-file-upload";
 import { Button } from "@/app/components/shadcn/button";
 import FileIcon from "../icons/file.svg";
@@ -22,18 +22,10 @@ export const FileUploader = () => {
   const supportPDF = currentSession.modelInfo?.support_pdf ?? false;
   const disabled = !supportImage && !supportPDF;
 
-  const handleSelectFile = () => {
-    if (inputRef.current) {
-      inputRef.current.value = "";
-    }
-    inputRef.current?.click();
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  /** 公用校验逻辑 */
+  const validateAndUpload = (file: File) => {
     if (!file) return;
 
-    // TODO replace tips
     if (!file.type.startsWith("image/") && file.type !== "application/pdf") {
       toast.error(t("chat.image.tip"));
       return;
@@ -49,16 +41,42 @@ export const FileUploader = () => {
     ];
     const fileName = file.name.toLowerCase();
     const isValid = validExtensions.some((ext) => fileName.endsWith(ext));
-
     if (!isValid) {
-      // TODO replace tips
       toast.error(t("chat.image.fileTypes"));
       return;
     }
-    if (file) {
-      uploadFile(file);
-    }
+    uploadFile(file);
   };
+
+  /** 点击上传 */
+  const handleSelectFile = () => {
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
+    inputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) validateAndUpload(file);
+  };
+
+  /** 粘贴上传 */
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      // if (disabled) return;
+      console.log("file===", e);
+      if (e.clipboardData?.files?.length) {
+        const file = e.clipboardData.files[0];
+        validateAndUpload(file);
+      }
+    };
+
+    document.addEventListener("paste", handlePaste);
+    return () => {
+      document.removeEventListener("paste", handlePaste);
+    };
+  }, [disabled]);
 
   const renderButton = (disable: boolean) => {
     return (
@@ -74,7 +92,7 @@ export const FileUploader = () => {
         <input
           ref={inputRef}
           type="file"
-          accept="image/*"
+          accept="image/*,application/pdf"
           hidden
           onChange={handleFileChange}
         />
