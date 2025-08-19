@@ -167,17 +167,19 @@ export const ConfirmProvider = ({
     }
 
     return (
-      <AlertDialogDescription className="flex flex-col items-center gap-2.5 text-base font-normal text-[#141718] dark:text-white border border-[#E8ECEF] dark:border-[#232627] rounded-xl px-2.5 py-2 whitespace-nowrap">
+      <AlertDialogDescription className="w-[278px] flex flex-col items-center gap-2.5 text-base font-normal text-[#141718] dark:text-white border border-[#E8ECEF] dark:border-[#232627] rounded-xl px-2.5 py-2 whitespace-nowrap">
         <Accordion type="single" collapsible className="w-full">
-          <AccordionItem value={options.mcpInfo.title}>
+          <AccordionItem value={options.title}>
             <AccordionTrigger className="!py-0">
               <div className="flex gap-2">
                 <MapIcon className="size-[18px] shrink-0" />
                 {options.description}
               </div>
             </AccordionTrigger>
-            <AccordionContent>
-              <Markdown content={prettyObject(options.mcpInfo || "")} />
+            <AccordionContent className="!pb-0 w-full">
+              <div className="mt-2.5 max-w-full overflow-x-auto">
+                <Markdown content={prettyObject(options.mcpInfo || "")} />
+              </div>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
