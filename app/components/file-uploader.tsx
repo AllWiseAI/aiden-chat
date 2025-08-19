@@ -61,14 +61,24 @@ export const FileUploader = () => {
     if (file) validateAndUpload(file);
   };
 
-  /** 粘贴上传 */
   useEffect(() => {
     const handlePaste = (e: ClipboardEvent) => {
-      // if (disabled) return;
-      console.log("file===", e);
-      if (e.clipboardData?.files?.length) {
-        const file = e.clipboardData.files[0];
-        validateAndUpload(file);
+      if (disabled) return;
+      if (!e.clipboardData) return;
+
+      const items = Array.from(e.clipboardData.items);
+      const files: File[] = [];
+
+      for (const item of items) {
+        if (item.kind === "file") {
+          const file = item.getAsFile();
+          if (file) files.push(file);
+        }
+      }
+
+      if (files.length > 0) {
+        e.preventDefault(); // ✅ 避免文件名插入输入框
+        files.forEach((file) => validateAndUpload(file));
       }
     };
 
