@@ -177,8 +177,10 @@ export const ConfirmProvider = ({
               </div>
             </AccordionTrigger>
             <AccordionContent className="!pb-0 w-full">
-              <div className="mt-2.5 max-w-full overflow-x-auto">
-                <Markdown content={prettyObject(options.mcpInfo || "")} />
+              <div className="mt-2.5 max-w-full overflow-x-scroll">
+                <div className="w-max">
+                  <Markdown content={prettyObject(options.mcpInfo || "")} />
+                </div>
               </div>
             </AccordionContent>
           </AccordionItem>

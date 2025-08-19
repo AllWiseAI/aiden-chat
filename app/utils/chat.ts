@@ -508,7 +508,6 @@ export function streamWithThink(
                 console.log(
                   "[MCP confirm] No user approval before. Show confirm modal.  ",
                 );
-                console.log("chunk===", chunk.mcpInfo);
                 const result = await showConfirm({
                   title: "Aiden " + t("dialog.mcpTitle"),
                   description: chunk.mcpInfo.tool,
