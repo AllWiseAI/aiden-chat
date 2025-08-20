@@ -71,7 +71,7 @@ export interface ChatOptions {
     response: Response,
     mcpInfo?: { title: string; request: string; response: string },
   ) => void;
-  onError?: (err: Error, shouldStream: boolean) => void;
+  onError?: (err: Error & { msg: string }, shouldStream: boolean) => void;
   onController?: (controller: AbortController) => void;
   onBeforeTool?: (tool: ChatMessageTool) => void;
   onAfterTool?: (tool: ChatMessageTool) => void;
