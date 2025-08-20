@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, Dispatch, SetStateAction } from "react";
+import { useState, useRef, Dispatch, SetStateAction, useEffect } from "react";
 import { Popover, PopoverTrigger, PopoverContent } from "./shadcn/popover";
 import { Input } from "./shadcn/input";
 import { useTranslation } from "react-i18next";
@@ -52,6 +52,12 @@ export default function TimeSelect({
   const [inputVal, setInputVal] = useState(
     hour != null && minute != null ? `${formatHour}:${formatMinute}` : "",
   );
+
+  useEffect(() => {
+    if (hour != null && minute != null) {
+      setInputVal(`${formatHour}:${formatMinute}`);
+    }
+  }, [hour, minute]);
 
   const filtered = TIME_OPTIONS.filter((t) => t.includes(inputVal.trim()));
 
