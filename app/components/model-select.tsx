@@ -156,8 +156,8 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
           <span>{currentModel}</span>
         </SelectValue>
       </SelectTrigger>
-      <SelectContent className="max-h-[320px] dark:bg-[#101213] select-none max-w-56 p-0">
-        <div className="overflow-y-auto max-h-[260px] px-1 py-2 space-y-1.5">
+      <SelectContent className="max-h-[320px] bg-[#FEFEFE] dark:bg-[#141718] select-none w-62.5 p-0">
+        <div className="max-w-60 overflow-y-auto max-h-[260px] px-1 py-2 space-y-1.5">
           {Object.entries(groupedLocalProviders).map(
             ([groupLabel, provider]) => {
               const isOpen = openGroup === groupLabel;
@@ -183,12 +183,12 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
                     <ProviderIcon provider={provider.provider} />
                     <span>{groupLabel}</span>
                   </SelectLabel>
-                  <div className={clsx("pl-2", isOpen ? "block" : "hidden")}>
+                  <div className={clsx("pl-5", isOpen ? "block" : "hidden")}>
                     {models?.map((model: ModelOption) => (
                       <SelectItem key={model.value} value={model.value}>
                         <div className="flex items-center justify-center gap-2">
                           <div
-                            className="text-sm font-normal truncate max-w-[120px]"
+                            className="text-sm font-normal truncate max-w-[170px]"
                             title={model.label}
                           >
                             {model.label}
@@ -203,9 +203,9 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
           )}
         </div>
 
-        <div className="border-t px-2 py-2 bg-background">
+        <div className="max-w-60 h-max px-2 py-2 bg-[#FEFEFE] dark:bg-[#141718]">
           <div
-            className="cursor-pointer px-2 py-1 bg-muted group rounded flex items-center justify-between"
+            className="h-7.5 cursor-pointer px-2 py-1 bg-[#E8ECEF]/50 dark:bg-[#232627]/50 group rounded flex items-center justify-between"
             onClick={() => navigate(Path.Settings + "?tab=model")}
           >
             <span className="text-sm group-hover:text-[#00AB66]">Manage</span>

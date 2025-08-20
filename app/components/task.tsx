@@ -29,6 +29,7 @@ import ResultDarkIcon from "../icons/result-dark.svg";
 import TimeIcon from "../icons/time.svg";
 import RepeatIcon from "../icons/repeat.svg";
 import ClockIcon from "../icons/clock.svg";
+import DetailIcon from "../icons/detail.svg";
 import CalendarIcon from "../icons/calendar.svg";
 import TimeCalendarIcon from "../icons/time-calendar.svg";
 import { Path } from "../constant";
@@ -286,12 +287,15 @@ function TaskPanel({ task, setIsEdit }: TaskPanelProps) {
             )}
           </div>
         </div>
-      </div>
+        <div className="flex gap-3">
+          <div className="flex items-center gap-1">
+            <DetailIcon className="size-[18px]" />
+            <span className="whitespace-nowrap">{t("task.details")}</span>
+          </div>
 
-      <div className="flex items-start gap-3">
-        <span className="whitespace-nowrap">{t("task.details")}</span>
-        <div className="text-[#979797] max-h-30 overflow-y-auto flex-1 break-words">
-          {task.original_info.description}
+          <div className="text-[#141718] dark:text-[#FEFEFE] max-h-30 overflow-y-auto flex-1 break-words">
+            {task.original_info.description}
+          </div>
         </div>
       </div>
     </div>

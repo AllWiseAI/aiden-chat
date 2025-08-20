@@ -189,6 +189,9 @@ export default function General() {
             </div>
           </div>
         </div>
+        <div className="flex flex-col items-start gap-3 px-2.5 max-w-178">
+          <div className="font-medium">{t("general.theme.title")}</div>
+        </div>
         <RestartDialog
           title={t("general.relaunch.title")}
           description={t("general.relaunch.description")}

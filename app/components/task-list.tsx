@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Path } from "../constant";
-import { Task, TaskTypeEnum, ModelHeaderInfo } from "../typing";
+import { Task, ModelHeaderInfo } from "../typing";
 import { getTaskList } from "../services/task";
 import {
   DropdownMenu,
@@ -166,37 +166,7 @@ export function TaskList(props: { searchValue?: string }) {
   }, []);
 
   const renderTaskList = useMemo(() => {
-    const newestCreatedAt = Math.max(
-      ...tasks.map((t) => new Date(t.created_at).getTime() ?? 0),
-    );
-    return Object.values(TaskTypeEnum).map((type) => ({
-      type,
-      tasks: tasks
-        .filter((task) => task.original_info.repeat_unit === type)
-        .sort((a, b) => {
-          if (
-            new Date(a.created_at).getTime() === newestCreatedAt &&
-            new Date(b.created_at).getTime() !== newestCreatedAt
-          )
-            return -1;
-          if (
-            new Date(b.created_at).getTime() === newestCreatedAt &&
-            new Date(a.created_at).getTime() !== newestCreatedAt
-          )
-            return 1;
-
-          const dateDiff =
-            new Date(a.original_info.start_date).getTime() -
-            new Date(b.original_info.start_date).getTime();
-          if (dateDiff !== 0) return dateDiff;
-
-          const hourDiff =
-            (a.original_info.hour ?? 0) - (b.original_info.hour ?? 0);
-          if (hourDiff !== 0) return hourDiff;
-
-          return (a.original_info.minute ?? 0) - (b.original_info.minute ?? 0);
-        }),
-    }));
+    return tasks;
   }, [tasks]);
 
   const handleDeleteTask = async (item: Task) => {
@@ -217,39 +187,25 @@ export function TaskList(props: { searchValue?: string }) {
   const filteredTasks = useMemo(() => {
     if (!searchValue) return renderTaskList;
     const lowerSearch = searchValue.toLowerCase();
-    return renderTaskList.map((group) => ({
-      ...group,
-      tasks: group.tasks.filter((task) =>
-        task.name.toLowerCase().includes(lowerSearch),
-      ),
-    }));
+    return renderTaskList.filter((task) =>
+      task.name.toLowerCase().includes(lowerSearch),
+    );
   }, [renderTaskList, searchValue]);
 
   return (
     <div className="flex flex-col gap-2">
-      {filteredTasks.map(({ type, tasks }) =>
-        tasks.length > 0 ? (
-          <div key={type} className="flex flex-col gap-2">
-            <span className="text-[10px] disable-select text-[#232627]/50 dark:text-[#E8ECEF]/50">
-              {type.charAt(0).toUpperCase() + type.slice(1) + " " + "Task"}
-            </span>
-            <div className="flex flex-col gap-2">
-              {tasks.map((item) => (
-                <TaskItem
-                  key={item.id}
-                  name={item.name}
-                  selected={item.id === selectedId}
-                  onClick={() => {
-                    setSelectedId(item.id);
-                    navigate(`${Path.Task}/${item.id}`);
-                  }}
-                  onDelete={() => handleDeleteTask(item)}
-                />
-              ))}
-            </div>
-          </div>
-        ) : null,
-      )}
+      {filteredTasks.map((item) => (
+        <TaskItem
+          key={item.id}
+          name={item.name}
+          selected={item.id === selectedId}
+          onClick={() => {
+            setSelectedId(item.id);
+            navigate(`${Path.Task}/${item.id}`);
+          }}
+          onDelete={() => handleDeleteTask(item)}
+        />
+      ))}
     </div>
   );
 }
