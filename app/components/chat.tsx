@@ -537,7 +537,7 @@ function InnerChat() {
                   setAutoScroll(false);
                 }}
               >
-                <div className="w-full max-w-[776px]">
+                <div className="w-full h-max max-w-[776px]">
                   {renderMessages.map((message, i) => {
                     const isUser = message.role === "user";
                     const isMcpMsg = message.mcpInfo !== undefined;
