@@ -124,7 +124,6 @@ export function McpTableItem({
     if (!config?.mcpServers[mcp_key]) return false;
     if (!local_version && !remote_version) return false;
     if (local_version !== remote_version) {
-      console.log(mcp_key, local_version, remote_version, config?.mcpServers);
       return true;
     }
     return false;
@@ -192,6 +191,9 @@ export function McpTableItem({
             setTemplateModal(true);
             return;
           }
+        }
+        if (enable && showOauth) {
+          setOauthModal(true);
         }
         await onSwitchChange(
           enable,

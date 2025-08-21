@@ -12,14 +12,17 @@ async function getCredentialFetchOptions() {
   return { baseURL, headers };
 }
 
-export async function addOAuthCredential(server_name: string) {
+export async function addOAuthCredential(
+  server_name: string,
+  credential?: any,
+) {
   const { baseURL, headers } = await getCredentialFetchOptions();
   const res = await fetchNoProxy(
     `${baseURL}${CREDENTIAL_API_PREFIX}/add/oauth`,
     {
       method: "POST",
       headers,
-      body: Body.json({ server_name }),
+      body: Body.json({ server_name, credential }),
     },
   );
   return res.json();

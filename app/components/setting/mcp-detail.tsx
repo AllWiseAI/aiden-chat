@@ -12,6 +12,7 @@ import { checkShowTemplateModal } from "@/app/utils/mcp";
 
 import { McpConfigKey, McpItemInfo, TTemplateInfo } from "@/app/typing";
 import { McpTemplateModal } from "./mcp-template-modal";
+import { McpOauthModal } from "./mcp-oauth-modal";
 
 type Props = {
   setMode: (mode: McpConfigKey) => void;
@@ -25,6 +26,7 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
   const [checked, setChecked] = useState(detailInfo.checked);
   const { t, i18n } = useTranslation("settings");
   const [templateModal, setTemplateModal] = useState(false);
+  const [oauthModal, setOauthModal] = useState(false);
   const [templateInfo, setTemplateInfo] = useState<TTemplateInfo | null>(null);
 
   const {
@@ -76,6 +78,11 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
     [detailInfo, switchMcpStatus, t],
   );
 
+  const showOauth = useMemo(
+    () => ["aiden-mail", "aiden-outlook"].includes(detailInfo.mcp_key),
+    [detailInfo],
+  );
+
   const handleSwitchChange = useCallback(
     async (enable: boolean) => {
       if (enable) {
@@ -85,12 +92,13 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
         if (shouldShowTemplateModal) {
           setTemplateModal(true);
           return;
-        } else {
-          resolveSwitchChange(enable);
         }
-      } else {
-        resolveSwitchChange(enable);
       }
+
+      if (enable && showOauth) {
+        setOauthModal(true);
+      }
+      resolveSwitchChange(enable);
     },
     [detailInfo, config, resolveSwitchChange],
   );
@@ -163,6 +171,14 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
           templateInfo={templateInfo || {}}
           onConfirm={handleSettingConfirm}
         ></McpTemplateModal>
+      )}
+      {oauthModal && (
+        <McpOauthModal
+          onOpenChange={setOauthModal}
+          mcpInfo={detailInfo}
+          open={oauthModal}
+          onConfirm={() => setOauthModal(false)}
+        ></McpOauthModal>
       )}
     </>
   );
