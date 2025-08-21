@@ -1,5 +1,5 @@
 import { getBaseDomain, getHeaders } from "../utils/fetch";
-import { toast } from "sonner";
+import { toast } from "@/app/utils/toast";
 
 export async function uploadFileWithProgress(
   file: File,
