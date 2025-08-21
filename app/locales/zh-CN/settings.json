@@ -92,7 +92,6 @@
       "fail": "添加失败。请稍后再试。"
     },
     "addAccount": "添加账号",
-    "addAccountTips": "点击添加账号进行授权",
     "editor": {
       "success": "配置已保存。",
       "fail": "配置保存失败，请稍后再试。"

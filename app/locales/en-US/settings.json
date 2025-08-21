@@ -82,7 +82,6 @@
       "success": "Update successful."
     },
     "addAccount": "Add Account",
-    "addAccountTips": "Click here to authorize account",
     "delete": {
       "title": "Delete",
       "description": "Confirm to delete?",

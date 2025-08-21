@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, useMemo } from "react";
+import { useCallback, useState, useMemo, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -22,9 +22,7 @@ import {
 } from "@/app/components/shadcn/select";
 import { Password } from "@/app/components/password";
 import { Input } from "@/app/components/shadcn/input";
-
 import { Label } from "@/app/components/shadcn/label";
-
 import { Button } from "@/app/components/shadcn/button";
 import { t } from "i18next";
 import { useTranslation } from "react-i18next";
@@ -33,15 +31,14 @@ import {
   addOAuthCredential,
   revokeCredential,
   addPasswordCredential,
+  queryCredentials,
 } from "@/app/services/oauth";
-import { useAppConfig } from "@/app/store";
 import OutlookIcon from "@/app/icons/outlook.png";
 import QQIcon from "@/app/icons/qq.png";
 import NeteaseIcon from "@/app/icons/163.png";
 import icloudIcon from "@/app/icons/icloud.png";
 import gmailIcon from "@/app/icons/gmail.png";
 import DeleteIcon from "@/app/icons/delete.svg";
-import AddIcon from "@/app/icons/add.svg";
 import AddOutlineIcon from "@/app/icons/add-outline.svg";
 import { AccountItem, McpItemInfo } from "@/app/typing";
 import DeleteDialog from "@/app/components/delete-dialog";
@@ -70,9 +67,6 @@ export function McpOauthModal({
   onOpenChange,
 }: McpOauthModalProps) {
   const { t: tInner } = useTranslation("settings");
-
-  const oauthAccounts = useAppConfig((state) => state.oauthAccounts);
-  const updateOauthAccount = useAppConfig((state) => state.updateOauthAccount);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [currentAccount, setCurrentAccount] = useState<AccountItem>();
   const [isShowAdd, setIsShowAdd] = useState(false);
@@ -80,6 +74,24 @@ export function McpOauthModal({
   const [account, setAccount] = useState<string>("");
   const [pwd, setPwd] = useState<string>("");
   const [emailError, setEmailError] = useState("");
+
+  const [credentials, setCredentials] = useState<AccountItem[]>([]);
+
+  const getAccountList = useCallback(async () => {
+    const { mcp_key } = mcpInfo;
+    try {
+      const res = await queryCredentials(mcp_key);
+      if (res?.message === "Credential retrieved") {
+        setCredentials(res.data?.accounts);
+      }
+    } catch {
+      toast.error(tInner("mcp.query.fail"));
+    }
+  }, [mcpInfo]);
+
+  useEffect(() => {
+    getAccountList();
+  }, []);
 
   const handleDeleteAccount = (item: AccountItem) => {
     setCurrentAccount(item);
@@ -103,11 +115,7 @@ export function McpOauthModal({
       });
 
       if (res?.message === "Credential revoked") {
-        updateOauthAccount(
-          oauthAccounts[mcp_key]?.filter((i) => i.account !== item.account) ??
-            [],
-          mcp_key,
-        );
+        getAccountList();
         toast.success(tInner("mcp.delete.success"));
       } else {
         toast.error(tInner("mcp.delete.fail"));
@@ -134,18 +142,14 @@ export function McpOauthModal({
           password: pwd,
         });
         if (res?.message === "Credential added completed") {
-          const merged = [
-            ...(oauthAccounts[mcp_key] ?? []),
-            ...[{ service: provider, account: account }],
-          ];
-          updateOauthAccount(merged, mcp_key);
+          getAccountList();
           setIsShowAdd(false);
           setProvider("");
           setAccount("");
           setPwd("");
           toast.success(tInner("mcp.add.success"));
         } else {
-          toast.error(tInner("mcp.add.fail"));
+          toast.error(res.message);
         }
       } catch {
         toast.error(tInner("mcp.add.fail"));
@@ -160,28 +164,15 @@ export function McpOauthModal({
     const { aiden_credential, mcp_key } = mcpInfo;
     if (aiden_credential && aiden_credential.type === "oauth") {
       try {
-        const res = await addOAuthCredential(mcpInfo.mcp_key);
-        console.log("res", res);
-
+        const res = await addOAuthCredential(mcp_key, aiden_credential);
         if (res?.message === "Credential added completed") {
-          const merged = [
-            ...(oauthAccounts[mcp_key] ?? []),
-            ...res.data.accounts,
-          ];
-          const unique = Array.from(
-            new Map(merged.map((item) => [item.account, item])).values(),
-          );
-          updateOauthAccount(unique, mcp_key);
+          getAccountList();
           toast.success(tInner("mcp.add.success"));
         } else {
-          toast.error(tInner("mcp.add.fail"));
+          toast.error(res.message);
         }
-      } catch (err: any) {
-        if (err?.status === 400) {
-          toast.error(tInner("mcp.add.fail"));
-        } else {
-          toast.error(tInner("mcp.add.fail"));
-        }
+      } catch {
+        toast.error(tInner("mcp.add.fail"));
       }
     } else {
       setIsShowAdd(true);
@@ -289,10 +280,9 @@ export function McpOauthModal({
   };
 
   const renderContent = () => {
-    const { mcp_key } = mcpInfo;
     return (
       <>
-        {oauthAccounts[mcp_key]?.map((item) => (
+        {credentials.map((item) => (
           <div
             key={item.account}
             className="flex justify-between items-center  border border-[#E8ECEF] dark:border-[#232627] rounded-sm px-2.5 py-2"
@@ -310,29 +300,16 @@ export function McpOauthModal({
             </Button>
           </div>
         ))}
-        {oauthAccounts[mcp_key]?.length ? (
-          <Button
-            variant="ghost"
-            className="h-9 text-main flex justify-start items-center gap-1 !px-1.5 py-1.5 rounded-sm"
-            onClick={handleAddAcount}
-          >
-            <AddIcon className="size-5 text-main" />
-            <span className="text-main font-medium select-none">
-              {tInner("mcp.addAccount")}
-            </span>
-          </Button>
-        ) : (
-          <Button
-            variant="ghost"
-            className="h-9 text-sm w-full text-center border border-[#E8ECEF] dark:border-[#232627] bg-transparent hover:bg-transparent text-main flex justify-center items-center gap-1 !px-1.5 py-1.5 rounded-sm"
-            onClick={handleAddAcount}
-          >
-            <AddOutlineIcon className="size-5" />
-            <span className="text-main font-medium select-none">
-              {tInner("mcp.addAccountTips")}
-            </span>
-          </Button>
-        )}
+        <Button
+          variant="ghost"
+          className="h-9 text-sm w-full text-center border border-[#E8ECEF] dark:border-[#232627] bg-transparent hover:bg-transparent text-main flex justify-center items-center gap-1 !px-1.5 py-1.5 rounded-sm"
+          onClick={handleAddAcount}
+        >
+          <AddOutlineIcon className="size-5" />
+          <span className="text-main font-medium select-none">
+            {tInner("mcp.addAccount")}
+          </span>
+        </Button>
       </>
     );
   };
