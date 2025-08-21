@@ -537,174 +537,180 @@ function InnerChat() {
                   setAutoScroll(false);
                 }}
               >
-                {renderMessages.map((message, i) => {
-                  const isUser = message.role === "user";
-                  const isMcpMsg = message.mcpInfo !== undefined;
+                <div className="w-full max-w-[776px]">
+                  {renderMessages.map((message, i) => {
+                    const isUser = message.role === "user";
+                    const isMcpMsg = message.mcpInfo !== undefined;
 
-                  return (
-                    <Fragment key={message.id}>
-                      <div
-                        className={
-                          isUser
-                            ? styles["chat-message-user"]
-                            : styles["chat-message"]
-                        }
-                      >
-                        <div className={styles["chat-message-container"]}>
-                          <div
-                            className={clsx(
-                              styles["chat-message-item"],
-                              message.role === "user" && "p-3",
-                            )}
-                          >
-                            {isMcpMsg && renderMessageMcpInfo(message)}
-                            {getMessageImages(message).length == 1 && (
-                              <img
-                                className={styles["chat-message-item-image"]}
-                                src={getMessageImages(message)[0]}
-                                alt=""
-                              />
-                            )}
-                            {getMessageImages(message).length > 1 && (
-                              <div
-                                className={styles["chat-message-item-images"]}
-                                style={
-                                  {
-                                    "--image-count":
-                                      getMessageImages(message).length,
-                                  } as React.CSSProperties
-                                }
-                              >
-                                {getMessageImages(message).map(
-                                  (image, index) => {
-                                    return (
-                                      <img
-                                        className={
-                                          styles[
-                                            "chat-message-item-image-multi"
-                                          ]
-                                        }
-                                        key={index}
-                                        src={image}
-                                        alt=""
-                                      />
+                    return (
+                      <Fragment key={message.id}>
+                        <div
+                          className={
+                            isUser
+                              ? styles["chat-message-user"]
+                              : styles["chat-message"]
+                          }
+                        >
+                          <div className={styles["chat-message-container"]}>
+                            <div
+                              className={clsx(
+                                styles["chat-message-item"],
+                                message.role === "user" && "p-3",
+                              )}
+                            >
+                              {isMcpMsg && renderMessageMcpInfo(message)}
+                              {getMessageImages(message).length == 1 && (
+                                <img
+                                  className={styles["chat-message-item-image"]}
+                                  src={getMessageImages(message)[0]}
+                                  alt=""
+                                />
+                              )}
+                              {getMessageImages(message).length > 1 && (
+                                <div
+                                  className={styles["chat-message-item-images"]}
+                                  style={
+                                    {
+                                      "--image-count":
+                                        getMessageImages(message).length,
+                                    } as React.CSSProperties
+                                  }
+                                >
+                                  {getMessageImages(message).map(
+                                    (image, index) => {
+                                      return (
+                                        <img
+                                          className={
+                                            styles[
+                                              "chat-message-item-image-multi"
+                                            ]
+                                          }
+                                          key={index}
+                                          src={image}
+                                          alt=""
+                                        />
+                                      );
+                                    },
+                                  )}
+                                </div>
+                              )}
+                              {message.isError ? (
+                                renderErrorMsg(message)
+                              ) : (
+                                <Markdown
+                                  key={message.streaming ? "loading" : "done"}
+                                  content={getMessageTextContent(message)}
+                                  loading={
+                                    (message.preview || message.streaming) &&
+                                    message.content.length === 0 &&
+                                    !isUser
+                                  }
+                                  onDoubleClickCapture={() => {
+                                    if (!isMobileScreen) return;
+                                    setUserInput(
+                                      getMessageTextContent(message),
                                     );
-                                  },
-                                )}
-                              </div>
-                            )}
-                            {message.isError ? (
-                              renderErrorMsg(message)
-                            ) : (
-                              <Markdown
-                                key={message.streaming ? "loading" : "done"}
-                                content={getMessageTextContent(message)}
-                                loading={
-                                  (message.preview || message.streaming) &&
-                                  message.content.length === 0 &&
-                                  !isUser
-                                }
-                                onDoubleClickCapture={() => {
-                                  if (!isMobileScreen) return;
-                                  setUserInput(getMessageTextContent(message));
-                                }}
-                                parentRef={scrollRef}
-                                defaultShow={i >= renderMessages.length - 6}
-                              />
-                            )}
+                                  }}
+                                  parentRef={scrollRef}
+                                  defaultShow={i >= renderMessages.length - 6}
+                                />
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </Fragment>
-                  );
-                })}
+                      </Fragment>
+                    );
+                  })}
+                </div>
               </div>
             )}
-            <div className={styles["chat-input-panel"]}>
-              {!hitBottom && (
-                <Button
-                  variant="ghost"
-                  className="absolute -top-10 right-2 size-8 z-1 border bg-white dark:bg-[#343839] rounded-full"
-                  onClick={() => scrollToBottom(true)}
-                >
-                  <DownIcon className="text-black dark:text-white size-4" />
-                </Button>
-              )}
-              <label
-                className={clsx(
-                  styles["chat-input-panel-inner"],
-                  "overflow-hidden",
+            <div className="px-15">
+              <div className={styles["chat-input-panel"]}>
+                {!hitBottom && (
+                  <Button
+                    variant="ghost"
+                    className="absolute -top-10 right-2 size-8 z-1 border bg-white dark:bg-[#343839] rounded-full"
+                    onClick={() => scrollToBottom(true)}
+                  >
+                    <DownIcon className="text-black dark:text-white size-4" />
+                  </Button>
                 )}
-                htmlFor="chat-input"
-              >
-                <textarea
-                  id="chat-input"
-                  ref={inputRef}
+                <label
                   className={clsx(
-                    styles["chat-input"],
-                    {
-                      [styles["chat-input-with-image"]]: files.length > 0,
-                    },
-                    "placeholder:text-[#6C7275]",
+                    styles["chat-input-panel-inner"],
+                    "overflow-hidden",
                   )}
-                  placeholder={t("chat.placeholder")}
-                  onInput={(e) => onInput(e.currentTarget.value)}
-                  value={userInput}
-                  onKeyDown={onInputKeyDown}
-                  rows={inputRows}
-                  autoFocus={true}
-                  style={{
-                    fontSize: config.fontSize,
-                    fontFamily: config.fontFamily,
-                  }}
-                />
-                <div
-                  className={clsx(
-                    "absolute top-[1px] left-3 pt-3 flex items-center gap-2.5 w-[calc(100%-24px)] bg-white dark:bg-[#141416]",
-                    files.length > 0 && "pb-2",
-                  )}
+                  htmlFor="chat-input"
                 >
-                  {files.map((img) => (
-                    <div key={img.id} className="relative">
-                      {img.url ? (
-                        <img
-                          src={img.url}
-                          className={styles["input-img"]}
-                        ></img>
-                      ) : (
-                        <div className={styles["input-img-loading"]}>
-                          <CircleProgress progress={img.progress} />
-                        </div>
-                      )}
-                      <Button
-                        onClick={() => removeFile(img.id)}
-                        className="absolute -top-2 -right-2 bg-[#F3F5F7] text-[#343839] rounded-full w-4 h-4 flex-center p-0"
-                      >
-                        ×
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-                <div className="absolute bottom-3 left-3 flex gap-2">
-                  <FileUploader />
-                  <McpPopover
-                    icon={
-                      <McpIcon className="size-[18px] text-black dark:text-white" />
-                    }
+                  <textarea
+                    id="chat-input"
+                    ref={inputRef}
+                    className={clsx(
+                      styles["chat-input"],
+                      {
+                        [styles["chat-input-with-image"]]: files.length > 0,
+                      },
+                      "placeholder:text-[#6C7275]",
+                    )}
+                    placeholder={t("chat.placeholder")}
+                    onInput={(e) => onInput(e.currentTarget.value)}
+                    value={userInput}
+                    onKeyDown={onInputKeyDown}
+                    rows={inputRows}
+                    autoFocus={true}
+                    style={{
+                      fontSize: config.fontSize,
+                      fontFamily: config.fontFamily,
+                    }}
                   />
-                </div>
-                <Button
-                  className="absolute bottom-3 right-3 size-8 bg-main rounded-full hover:bg-[#00D47E]/90 p-0 disabled:bg-[#373A3B] disabled:opacity-100 dark:disabled:bg-[#343839] !disabled:cursor-not-allowed"
-                  onClick={() => doSubmit(userInput)}
-                  disabled={shouldDisabled}
-                >
-                  {isChatting ? (
-                    <StopIcon className="size-[30px] text-white dark:text-black" />
-                  ) : (
-                    <SendIcon className="size-[30px] text-white dark:text-black" />
-                  )}
-                </Button>
-              </label>
+                  <div
+                    className={clsx(
+                      "absolute top-[1px] left-3 pt-3 flex items-center gap-2.5 w-[calc(100%-24px)] bg-white dark:bg-[#141416]",
+                      files.length > 0 && "pb-2",
+                    )}
+                  >
+                    {files.map((img) => (
+                      <div key={img.id} className="relative">
+                        {img.url ? (
+                          <img
+                            src={img.url}
+                            className={styles["input-img"]}
+                          ></img>
+                        ) : (
+                          <div className={styles["input-img-loading"]}>
+                            <CircleProgress progress={img.progress} />
+                          </div>
+                        )}
+                        <Button
+                          onClick={() => removeFile(img.id)}
+                          className="absolute -top-2 -right-2 bg-[#F3F5F7] text-[#343839] rounded-full w-4 h-4 flex-center p-0"
+                        >
+                          ×
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="absolute bottom-3 left-3 flex gap-2">
+                    <FileUploader />
+                    <McpPopover
+                      icon={
+                        <McpIcon className="size-[18px] text-black dark:text-white" />
+                      }
+                    />
+                  </div>
+                  <Button
+                    className="absolute bottom-3 right-3 size-8 bg-main rounded-full hover:bg-[#00D47E]/90 p-0 disabled:bg-[#373A3B] disabled:opacity-100 dark:disabled:bg-[#343839] !disabled:cursor-not-allowed"
+                    onClick={() => doSubmit(userInput)}
+                    disabled={shouldDisabled}
+                  >
+                    {isChatting ? (
+                      <StopIcon className="size-6 text-white dark:text-black" />
+                    ) : (
+                      <SendIcon className="size-6 text-white dark:text-black" />
+                    )}
+                  </Button>
+                </label>
+              </div>
             </div>
           </div>
         </div>

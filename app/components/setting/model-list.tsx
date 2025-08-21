@@ -91,7 +91,7 @@ export default function ModelList() {
   };
 
   return (
-    <div className="gap-2 pt-2.5 pb-6 max-w-135">
+    <div className="gap-2 pt-2.5 pb-6 max-w-135 min-w-106">
       <div className="gap-2.5">
         <div className="font-medium text-base mb-2.5">
           {t("model.defaultModel")}

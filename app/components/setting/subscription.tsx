@@ -9,7 +9,7 @@ export default function Subscription() {
   const { t } = useTranslation("settings");
   return (
     <>
-      <div className="w-full h-full flex flex-col gap-4 justify-start items-center text-black dark:text-white">
+      <div className="w-full h-full flex flex-col gap-4 justify-start items-center text-black dark:text-white min-w-60">
         <div className="w-full flex flex-col gap-3 px-2.5 pt-1 pb-5">
           <div className="font-medium">{t("subscription.plan")}</div>
           <div className="flex justify-between items-center gap-5 p-2.5 bg-[#F3F5F7]/30 dark:bg-[#232627]/30 border border-[#E8ECEF] dark:border-[#232627] rounded-sm text-sm">

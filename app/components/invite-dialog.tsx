@@ -12,6 +12,7 @@ import { copyToClipboard } from "../utils";
 import { useTranslation } from "react-i18next";
 import LoadingIcon from "../icons/loading-spinner.svg";
 import ShareIcon from "../icons/share.svg";
+import ShareDisabledIcon from "../icons/share-disabled.svg";
 
 interface InviteDialogProps {
   open: boolean;
@@ -38,7 +39,7 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
     return inviteArr.at(-1);
   }, [inviteArr]);
   const isVip = useMemo(() => {
-    if (lastItem?.usage_limit !== 1000) {
+    if (lastItem?.usage_limit === 1000) {
       return true;
     } else return false;
   }, [lastItem]);
@@ -78,7 +79,7 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
         className={clsx(
           "flex flex-col max-w-xl w-150 h-95 rounded-sm p-5 bg-[#FEFEFE] dark:bg-black overflow-hidden",
           isVip
-            ? "gap-8 border-0 bg-[url('https://static.aidenai.io/static/1755670652.png')] bg-cover bg-center"
+            ? "gap-8 border-0 bg-black bg-[url('https://static.aidenai.io/static/1755670652.png')] bg-cover bg-center"
             : "gap-8",
         )}
         closeIcon
@@ -162,8 +163,9 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
                     <div
                       className={clsx(
                         "text-center flex-1",
-                        item.current_usage_count < item.usage_limit &&
-                          "text-main",
+                        item.current_usage_count < item.usage_limit
+                          ? "text-main"
+                          : "opacity-40 text-[#101213] dark:text-[#FEFEFE]",
                       )}
                     >
                       {item.code}
@@ -180,19 +182,14 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
                       )}
                     </div>
                     <div className="flex-1 flex-center">
-                      <ShareIcon
-                        className={clsx(
-                          "text-[#6C7275]",
-                          item.current_usage_count < item.usage_limit
-                            ? "hover:opacity-80 text-black dark:text-[#00FF98] cursor-pointer"
-                            : "opacity-40 text-[#101213] dark:text-[#FEFEFE]",
-                        )}
-                        onClick={() => {
-                          if (item.current_usage_count < item.usage_limit) {
-                            handleClick(index);
-                          }
-                        }}
-                      />
+                      {item.current_usage_count < item.usage_limit ? (
+                        <ShareIcon
+                          className="hover:opacity-80 text-black dark:text-[#00FF98] cursor-pointer"
+                          onClick={() => handleClick(index)}
+                        />
+                      ) : (
+                        <ShareDisabledIcon className="text-[#6C7275] opacity-40 dark:text-[#FEFEFE]" />
+                      )}
                     </div>
                   </div>
                 ))}

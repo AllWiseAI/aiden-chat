@@ -315,6 +315,8 @@
   padding-top: 20px;
   position: relative;
   overscroll-behavior: none;
+  display: flex;
+  justify-content: center;
 }
 
 .chat-body-main-title {
@@ -609,11 +611,11 @@
 
 .chat-input-panel {
   position: relative;
-  margin-left: 60px;
-  margin-right: 60px;
-  margin-bottom: 20px;
+  margin: 0 auto 20px;
   box-sizing: border-box;
   flex-direction: column;
+  width: 100%;
+  max-width: 776px;
 
   .chat-input-actions {
     .chat-input-action {
@@ -809,8 +811,6 @@
     flex-direction: column;
     flex: 1;
     width: 100%;
-    max-width: 776px;
-    margin: 0 auto;
   }
   .chat-side-panel {
     position: absolute;

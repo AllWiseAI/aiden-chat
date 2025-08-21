@@ -44,7 +44,7 @@ export default function AboutUs() {
     },
   ];
   return (
-    <div className="flex flex-col gap-4 max-w-137">
+    <div className="flex flex-col gap-4 max-w-137 min-w-70">
       <div className="flex gap-4">
         <Logo className="size-12 text-[#00D47E]" />
         <div className="flex flex-col justify-center font-medium">
