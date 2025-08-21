@@ -31,6 +31,7 @@ import { toast } from "sonner";
 export function TaskItem(props: {
   selected: boolean;
   name: string;
+  isUpdate: boolean;
   onClick: () => void;
   onDelete: () => void;
 }) {
@@ -52,13 +53,16 @@ export function TaskItem(props: {
       <div className="flex justify-between items-center">
         <div
           className={clsx(
-            "flex justify-start items-center gap-4 leading-6 cursor-default text-sm w-full line-clamp-1",
+            "flex justify-start items-center gap-2 leading-6 cursor-default text-sm w-full line-clamp-1",
             props.selected && location.pathname !== Path.NewTask
               ? "text-[#141718] dark:text-white font-medium"
               : "text-[#343839] dark:text-[#FEFEFE] font-normal",
           )}
         >
           {props.name}
+          {props.isUpdate && (
+            <div className="size-[5px] bg-[#EF466F] rounded-full"></div>
+          )}
         </div>
 
         <DropdownMenu open={openMenu} onOpenChange={setOpenMenu} modal={false}>
@@ -139,6 +143,15 @@ export function TaskList(props: { searchValue?: string }) {
   const setSelectedId = useTaskStore((state) => state.setCurrentTaskId);
   const navigate = useNavigate();
   const getModelInfo = useAppConfig((state) => state.getModelInfo);
+  const [taskList, setTaskList] = useState<(Task & { isUpdate: boolean })[]>(
+    [],
+  );
+
+  useEffect(() => {
+    if (tasks) {
+      setTaskList(tasks.map((t) => ({ ...t, isUpdate: t.show_unread })));
+    }
+  }, [tasks]);
 
   const resolveModelInfo = (modelInfo: ModelHeaderInfo) => {
     const apiKey = modelInfo["Aiden-Model-Api-Key"];
@@ -166,8 +179,13 @@ export function TaskList(props: { searchValue?: string }) {
   }, []);
 
   const renderTaskList = useMemo(() => {
-    return tasks;
-  }, [tasks]);
+    if (!taskList) return [];
+    return taskList.sort((a, b) => {
+      return (
+        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+      );
+    });
+  }, [taskList]);
 
   const handleDeleteTask = async (item: Task) => {
     const { id } = item || {};
@@ -198,8 +216,14 @@ export function TaskList(props: { searchValue?: string }) {
         <TaskItem
           key={item.id}
           name={item.name}
+          isUpdate={item.isUpdate}
           selected={item.id === selectedId}
           onClick={() => {
+            setTaskList((prev) =>
+              prev.map((t) =>
+                t.id === item.id ? { ...t, isUpdate: false } : t,
+              ),
+            );
             setSelectedId(item.id);
             navigate(`${Path.Task}/${item.id}`);
           }}

@@ -264,6 +264,7 @@ export interface Task {
   model_info: ModelHeaderInfo;
   created_at: string;
   updated_at: string;
+  show_unread: boolean;
 }
 
 export type TaskFormType = {
