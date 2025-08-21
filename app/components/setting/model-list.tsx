@@ -161,10 +161,8 @@ export default function ModelList() {
                       {item.display}
                     </div>
                   </TableCell>
-                  <TableCell className="px-2.5 py-3.5 text-[#141718] dark:text-[#6C7275]">
-                    {item.models?.map((model) => (
-                      <div key={model.value}>{model.label}</div>
-                    ))}
+                  <TableCell className="px-2.5 py-3.5 text-[#141718] dark:text-[#6C7275] max-w-[80px] whitespace-nowrap overflow-hidden text-ellipsis">
+                    {item.models?.map((model) => model.label).join(",")}
                   </TableCell>
                   <TableCell className="px-2.5 py-3.5">
                     <Button

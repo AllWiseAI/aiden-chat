@@ -287,7 +287,7 @@ export function AddModelModal({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-5">
+        <div className="space-y-5 overflow-hidden">
           <div className="flex gap-2 w-full">
             <Label
               htmlFor="provider"
@@ -340,7 +340,7 @@ export function AddModelModal({
             >
               {tInner("model.model")}
             </Label>
-            <div className="flex flex-col flex-1 gap-2">
+            <div className="flex flex-col flex-1 gap-2 overflow-hidden">
               <div
                 className={clsx(
                   "w-full rounded-sm border border-[#E8ECEF] dark:border-[#232627]",
