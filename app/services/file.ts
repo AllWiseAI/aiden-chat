@@ -1,4 +1,5 @@
 import { getBaseDomain, getHeaders } from "../utils/fetch";
+import { toast } from "sonner";
 
 export async function uploadFileWithProgress(
   file: File,
@@ -45,11 +46,16 @@ export async function uploadFileWithProgress(
           reject("Invalid JSON response: " + err);
         }
       } else {
+        toast.error(`Upload failed: ${xhr.status}`);
         reject(`Upload failed: ${xhr.status}`);
       }
     };
 
-    xhr.onerror = () => reject("Network error during upload");
+    xhr.onerror = () => {
+      toast.error(`Network error during upload`);
+
+      reject("Network error during upload");
+    };
 
     xhr.send(file);
   });
