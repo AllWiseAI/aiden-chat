@@ -36,6 +36,8 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
   const setGroupedProviders = useAppConfig(
     (state) => state.setGroupedProviders,
   );
+  const [currentProvider, setCurrentProvider] =
+    useState<string>(INNER_PROVIDER_NAME);
   const [groupedLocalProviders, setGroupedLocalProviders] = useState({
     [INNER_PROVIDER_NAME]: {
       id: -1,
@@ -65,7 +67,7 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
         ? `${modelInfo?.provider}:${modelInfo?.model}`
         : modelInfo?.model;
       if (modelNameList.includes(modelName!)) {
-        return modelName;
+        return modelName!;
       }
       return defaultModel;
     }
@@ -128,11 +130,13 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
       const res = currentModel.split(":");
       if (res.length === 2) {
         const [provider] = res;
+        setCurrentProvider(provider);
         const labelKey = localProviders.find(
           (item) => item.provider === provider,
         )?.display;
         setOpenGroup(labelKey!);
       } else {
+        setCurrentProvider(INNER_PROVIDER_NAME);
         setOpenGroup(INNER_PROVIDER_NAME);
       }
     }
@@ -153,7 +157,10 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
     <Select value={currentModel} onValueChange={handleModelChange}>
       <SelectTrigger className="w-full border-0 hover:bg-muted/20 dark:hover:bg-muted/30 shadow-none text-base">
         <SelectValue placeholder="Select model">
-          <span>{currentModel}</span>
+          <div className="flex items-center gap-1">
+            <ProviderIcon provider={currentProvider} />
+            <div>{modelInfo.model}</div>
+          </div>
         </SelectValue>
       </SelectTrigger>
       <SelectContent className="max-h-[320px] bg-[#FEFEFE] dark:bg-[#141718] select-none w-62.5 p-0">
