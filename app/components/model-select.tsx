@@ -158,7 +158,7 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
       <SelectTrigger className="w-full border-0 hover:bg-muted/20 dark:hover:bg-muted/30 shadow-none text-base">
         <SelectValue placeholder="Select model">
           <div className="flex items-center gap-1">
-            <ProviderIcon provider={currentProvider} />
+            <ProviderIcon provider={currentProvider} className="size-5" />
             <div>{modelInfo.model}</div>
           </div>
         </SelectValue>
@@ -187,7 +187,10 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
                     ) : (
                       <ArrowRightIcon className="h-4 w-4 text-muted-foreground" />
                     )}
-                    <ProviderIcon provider={provider.provider} />
+                    <ProviderIcon
+                      provider={provider.provider}
+                      className="size-4"
+                    />
                     <span>{groupLabel}</span>
                   </SelectLabel>
                   <div className={clsx("pl-5", isOpen ? "block" : "hidden")}>

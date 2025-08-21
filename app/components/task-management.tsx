@@ -250,7 +250,6 @@ export default function TaskManagement({
       );
     }
   };
-
   return (
     <div className="flex flex-col gap-2.5 text-sm bg-[#F3F5F7] dark:bg-[#232627]/50 px-2.5 py-2 border border-[#E8ECEF] dark:border-[#343839] rounded-sm">
       <div className="flex flex-col gap-1.5">
@@ -281,7 +280,7 @@ export default function TaskManagement({
                     },
                   )}
                 >
-                  <CalendarIcon className="text-main" />
+                  <CalendarIcon className="text-main shrink-0" />
                   {newTask.date
                     ? getLang() === "zh-CN"
                       ? dayjs(newTask.date).format("M月D日")

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, Dispatch, SetStateAction } from "react";
+import { useState, useRef, useEffect, Dispatch, SetStateAction } from "react";
 import { Popover, PopoverTrigger, PopoverContent } from "./shadcn/popover";
 import { Input } from "./shadcn/input";
 import { useTranslation } from "react-i18next";
@@ -31,7 +31,7 @@ function verifyTime(time: string): boolean {
   const [h, m] = time.split(":").map((item: string) => Number(item));
   if (Number.isNaN(h) || Number.isNaN(m)) return false;
   if (h < 0 || h > 23) return false;
-  if (m < 0 || m > 60) return false;
+  if (m < 0 || m > 59) return false;
   return true;
 }
 
@@ -47,11 +47,21 @@ export default function TimeSelect({
   const { t } = useTranslation("general");
   const [open, setOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const formatHour = hour !== null && hour < 10 ? `0${hour}` : hour;
-  const formatMinute = minute !== null && minute < 10 ? `0${minute}` : minute;
-  const [inputVal, setInputVal] = useState(
-    hour != null && minute != null ? `${formatHour}:${formatMinute}` : "",
-  );
+
+  const [inputVal, setInputVal] = useState("");
+
+  // 只在「hour/minute 第一次变为可用」时设置一次默认值
+  const didInitFromProps = useRef(false);
+  useEffect(() => {
+    if (didInitFromProps.current) return;
+    if (hour != null && minute != null) {
+      const h = hour.toString().padStart(2, "0");
+      const m = minute.toString().padStart(2, "0");
+      setInputVal(`${h}:${m}`);
+      setTimeErr("");
+      didInitFromProps.current = true;
+    }
+  }, [hour, minute, setTimeErr]);
 
   const filtered = TIME_OPTIONS.filter((t) => t.includes(inputVal.trim()));
 
@@ -70,14 +80,14 @@ export default function TimeSelect({
             timeErr && "border border-[#EF466F] dark:border-[#EF466F]",
           )}
         >
-          <TimeCalendarIcon className="text-main" />
+          <TimeCalendarIcon className="text-main shrink-0" />
           <Input
             ref={inputRef}
             value={inputVal}
             onChange={(e) => {
               const val = e.target.value;
               setInputVal(val);
-              onChange(e.target.value);
+              onChange(val);
               if (!verifyTime(val)) {
                 setTimeErr(t("task.invalidTime"));
               } else setTimeErr("");
@@ -85,7 +95,7 @@ export default function TimeSelect({
             }}
             onFocus={() => setOpen(true)}
             placeholder={t("task.time")}
-            className="w-full h-10 !text-left border-0 pl-0"
+            className="flex-1 h-10 !text-left border-0 pl-0"
           />
         </div>
       </PopoverTrigger>

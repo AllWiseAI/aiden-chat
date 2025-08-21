@@ -11,7 +11,6 @@ import { apiGetInviteCode } from "../services";
 import { copyToClipboard } from "../utils";
 import { useTranslation } from "react-i18next";
 import LoadingIcon from "../icons/loading-spinner.svg";
-import TopRightIcon from "../icons/top-right.svg";
 import ShareIcon from "../icons/share.svg";
 
 interface InviteDialogProps {
@@ -39,7 +38,7 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
     return inviteArr.at(-1);
   }, [inviteArr]);
   const isVip = useMemo(() => {
-    if (lastItem?.usage_limit === 1000) {
+    if (lastItem?.usage_limit !== 1000) {
       return true;
     } else return false;
   }, [lastItem]);
@@ -77,10 +76,10 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
         aria-describedby={undefined}
         closeIconClass={isVip ? "text-[#6C7275] hover:text-white" : ""}
         className={clsx(
-          "flex flex-col max-w-xl w-150 h-95 rounded-sm p-5 pb-2 bg-[#FEFEFE] dark:bg-black overflow-hidden",
+          "flex flex-col max-w-xl w-150 h-95 rounded-sm p-5 bg-[#FEFEFE] dark:bg-black overflow-hidden",
           isVip
             ? "gap-8 border-0 bg-[url('https://static.aidenai.io/static/1755670652.png')] bg-cover bg-center"
-            : "gap-5",
+            : "gap-8",
         )}
         closeIcon
         onClick={(e) => {
@@ -107,7 +106,7 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
               <p className="text-main text-6xl">{lastItem?.code}</p>
               <div
                 className={clsx(
-                  "relative w-30 h-12 flex-center text-[#FEFEFE] bg-[#000000]/49 backdrop-blur-xl border-3 border-[#00D47E] rounded-4xl",
+                  "w-30 h-12 flex-center text-[#FEFEFE] bg-[#000000]/49 backdrop-blur-xl border-3 border-[#00D47E] rounded-4xl",
                   lastItem &&
                     lastItem.current_usage_count < lastItem.usage_limit
                     ? "hover:bg-[#000000]/75 cursor-pointer"
@@ -123,7 +122,6 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
                 }}
               >
                 <span>Share</span>
-                <TopRightIcon className="absolute right-3 size-3" />
               </div>
             </div>
             <div className="flex flex-col gap-2 px-8 text-sm font-light">
@@ -141,30 +139,38 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
           </div>
         ) : (
           <div className="overflow-y-auto flex-1">
-            <table className="w-full font-light">
-              <thead className="sticky top-0 z-10 bg-[#FEFEFE] dark:bg-black border-b-[14px] border-b-transparent">
-                <tr className="h-[22px]">
-                  <th className="w-1/3 h-full px-2 text-center font-normal">
+            <div className="w-full font-light">
+              <div className="sticky top-0 z-10 bg-[#FEFEFE] dark:bg-black border-b-[14px] border-b-transparent">
+                <div className="h-[22px] flex">
+                  <div className="w-1/3 h-full px-2 text-center font-normal">
                     {t("invite.table.1")}
-                  </th>
-                  <th className="w-1/3 h-full px-2 text-center font-normal">
+                  </div>
+                  <div className="w-1/3 h-full px-2 text-center font-normal">
                     {t("invite.table.2")}
-                  </th>
-                  <th className="w-1/3 h-full px-2 text-center font-normal">
+                  </div>
+                  <div className="w-1/3 h-full px-2 text-center font-normal">
                     {t("invite.table.3")}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
                 {inviteArr.map((item, index) => (
-                  <tr
-                    className="h-[46px] leading-8 border-b-[14px] border-b-transparent"
+                  <div
+                    className="h-8 leading-8 flex justify-between rounded-full bg-[#FAFAFA] dark:bg-[#151718]"
                     key={item.id}
                   >
-                    <td className="text-center">{item.code}</td>
-                    <td>
+                    <div
+                      className={clsx(
+                        "text-center flex-1",
+                        item.current_usage_count < item.usage_limit &&
+                          "text-main",
+                      )}
+                    >
+                      {item.code}
+                    </div>
+                    <div className="flex-1">
                       {item.current_usage_count < item.usage_limit ? (
-                        <div className="flex-center text-main">
+                        <div className="flex-center text-[#101213] dark:text-[#FEFEFE]">
                           {t("invite.unused")}
                         </div>
                       ) : (
@@ -172,28 +178,26 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
                           {t("invite.used")}
                         </div>
                       )}
-                    </td>
-                    <td>
-                      <div className="flex-center">
-                        <ShareIcon
-                          className={clsx(
-                            "text-[#6C7275]",
-                            item.current_usage_count < item.usage_limit
-                              ? "hover:opacity-80 text-black dark:text-[#00FF98] cursor-pointer"
-                              : "opacity-40 text-[#101213] dark:text-[#FEFEFE]",
-                          )}
-                          onClick={() => {
-                            if (item.current_usage_count < item.usage_limit) {
-                              handleClick(index);
-                            }
-                          }}
-                        />
-                      </div>
-                    </td>
-                  </tr>
+                    </div>
+                    <div className="flex-1 flex-center">
+                      <ShareIcon
+                        className={clsx(
+                          "text-[#6C7275]",
+                          item.current_usage_count < item.usage_limit
+                            ? "hover:opacity-80 text-black dark:text-[#00FF98] cursor-pointer"
+                            : "opacity-40 text-[#101213] dark:text-[#FEFEFE]",
+                        )}
+                        onClick={() => {
+                          if (item.current_usage_count < item.usage_limit) {
+                            handleClick(index);
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
                 ))}
-              </tbody>
-            </table>
+              </div>
+            </div>
           </div>
         )}
 

@@ -130,7 +130,7 @@ export default function ModelList() {
               onClick={() => setShowMore(true)}
             >
               <DownIcon className="size-[18px]" />
-              View More
+              {t("model.viewMore")}
             </Button>
           )}
         </div>
@@ -195,7 +195,7 @@ export default function ModelList() {
           onClick={handleAddModel}
         >
           <PlusIcon className="size-4" />
-          Add
+          {t("model.add")}
         </Button>
       </div>
       {isModalOpen && (

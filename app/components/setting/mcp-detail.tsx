@@ -130,11 +130,11 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
       <div className="border rounded-xl mt-6 overflow-y-auto max-h-[calc(100%-80px)] px-[20px] py-[24px]">
         <div className="header flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="bg-[#E8ECEF] rounded-full flex items-center justify-center w-[30px] h-[30px]">
+            <div className="bg-[#E8ECEF] dark:bg-[#343839] rounded-full flex items-center justify-center w-[30px] h-[30px]">
               {detailInfo.mcp_logo ? (
                 <img width="18" height="18" src={detailInfo.mcp_logo}></img>
               ) : (
-                <FetchIcon className="w-[18px] h-[18px]" />
+                <FetchIcon className="w-[18px] h-[18px] text-[#343839] dark:text-[#6C7275]" />
               )}
             </div>
             <div className="font-medium text-sm">{detailInfo.mcp_name}</div>

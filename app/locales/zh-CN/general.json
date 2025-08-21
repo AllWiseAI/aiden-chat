@@ -74,7 +74,8 @@
     "deleteFailed": "删除失败",
     "enterTaskName": "请输入任务名称",
     "selectTaskType": "请选择任务类型",
-    "taskDesp": "任务描述"
+    "taskDesp": "任务描述",
+    "viewMore": "查看更多"
   },
   "home": {
     "newChat": "新的聊天",

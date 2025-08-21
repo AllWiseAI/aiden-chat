@@ -25,6 +25,7 @@ import {
 } from "@/app/components/shadcn/alert-dialog";
 import MoreIcon from "../icons/more.svg";
 import DeleteIcon from "../icons/delete.svg";
+import ArrowDownIcon from "../icons/arrow-down.svg";
 import { deleteTask as deleteTaskService } from "../services/task";
 import { toast } from "sonner";
 
@@ -32,6 +33,7 @@ export function TaskItem(props: {
   selected: boolean;
   name: string;
   isUpdate: boolean;
+  className: string;
   onClick: () => void;
   onDelete: () => void;
 }) {
@@ -45,7 +47,7 @@ export function TaskItem(props: {
       onClick={props.onClick}
       className={clsx(
         "rounded-sm group h-7.5 p-1.5 flex flex-col justify-center cursor-default",
-        props.selected
+        props.selected && location.pathname !== Path.NewTask
           ? "bg-[#E8ECEF] dark:bg-[#343839]"
           : "hover:bg-[#E8ECEF]/50 dark:hover:bg-[#232627]/50",
       )}
@@ -56,6 +58,8 @@ export function TaskItem(props: {
             "flex justify-start items-center gap-2 leading-6 cursor-default text-sm w-full line-clamp-1",
             props.selected && location.pathname !== Path.NewTask
               ? "text-[#141718] dark:text-white font-medium"
+              : props.className
+              ? props.className
               : "text-[#343839] dark:text-[#FEFEFE] font-normal",
           )}
         >
@@ -202,20 +206,28 @@ export function TaskList(props: { searchValue?: string }) {
     }
   };
 
+  const [showMore, setShowMore] = useState(false);
   const filteredTasks = useMemo(() => {
-    if (!searchValue) return renderTaskList;
+    if (!searchValue) {
+      return showMore ? renderTaskList : renderTaskList.slice(0, 10);
+    }
     const lowerSearch = searchValue.toLowerCase();
     return renderTaskList.filter((task) =>
       task.name.toLowerCase().includes(lowerSearch),
     );
-  }, [renderTaskList, searchValue]);
+  }, [renderTaskList, searchValue, showMore]);
 
   return (
     <div className="flex flex-col gap-2">
-      {filteredTasks.map((item) => (
+      {filteredTasks.map((item, index) => (
         <TaskItem
           key={item.id}
           name={item.name}
+          className={
+            index > 5 && !showMore
+              ? "text-[#6C7275]/75 dark:text-[#E8ECEF]/50"
+              : ""
+          }
           isUpdate={item.isUpdate}
           selected={item.id === selectedId}
           onClick={() => {
@@ -230,6 +242,15 @@ export function TaskList(props: { searchValue?: string }) {
           onDelete={() => handleDeleteTask(item)}
         />
       ))}
+      {!searchValue && renderTaskList.length > 10 && !showMore && (
+        <div
+          className="text-sm text-[#6C7275]/75 dark:text-[#E8ECEF]/50 rounded-sm group h-7.5 p-1.5 flex justify-between cursor-default hover:bg-[#E8ECEF]/50 dark:hover:bg-[#232627]/50"
+          onClick={() => setShowMore(true)}
+        >
+          {t("task.viewMore")}
+          <ArrowDownIcon />
+        </div>
+      )}
     </div>
   );
 }

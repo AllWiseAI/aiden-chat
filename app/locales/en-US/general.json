@@ -74,7 +74,8 @@
     "deleteFailed": "Delete Failed",
     "enterTaskName": "Enter Task Name",
     "selectTaskType": "Select Task Type",
-    "taskDesp": "Task Description"
+    "taskDesp": "Task Description",
+    "viewMore": "View More"
   },
   "home": {
     "newChat": "New Chat",

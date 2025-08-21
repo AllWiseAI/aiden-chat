@@ -81,3 +81,38 @@ export async function searchMcpServerStatus(name: string) {
   console.log("[Mcp tools] searchMcpServerStatus", name, jsonResult);
   return jsonResult;
 }
+
+export async function getRagEnabled() {
+  const baseURL = getLocalBaseDomain();
+  const url = `${baseURL}/rag/config`;
+  const headers = await getHeaders({ aiden: true });
+
+  const result = await fetchNoProxy(url, {
+    method: "GET",
+    headers: headers,
+  });
+  if (result.status !== 200) {
+    throw new Error("get rag status failed: " + result.statusText);
+  } else {
+    const jsonResult = await result.json();
+    return jsonResult;
+  }
+}
+
+export async function updateRagEnabled(status: boolean) {
+  const baseURL = getLocalBaseDomain();
+  const headers = await getHeaders({ aiden: true });
+
+  const result = await fetchNoProxy(`${baseURL}/rag/config`, {
+    method: "POST",
+    headers: headers,
+    body: Body.json({ mcp_rag_enabled: status }),
+  });
+  console.log(result);
+  if (result.status !== 200) {
+    throw new Error("get statuses failed: " + result.statusText);
+  } else {
+    const jsonResult = await result.json();
+    return jsonResult;
+  }
+}
