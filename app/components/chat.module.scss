@@ -477,6 +477,14 @@
   background-color: var(--gray-1);
 }
 
+.chat-message-user.chat-message-item,
+.chat-message-item-error {
+  background: rgba(239, 70, 111, 0.1);
+  border: 1px solid #ef466f;
+  border-radius: 4px;
+  padding: 8px 10px;
+}
+
 .chat-message-mcp-info {
   width: 100%;
   border-radius: 10px;

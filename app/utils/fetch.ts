@@ -102,15 +102,18 @@ export const getHeaders = async ({
 
   if (token.accessToken) {
     if (refresh && token.expires * 1000 - Date.now() <= FIVE_MINUTES) {
+      console.log("[refresh token] token is going to expired, refresh token.");
       // 防止多次同时触发 refresh 请求
       if (!refreshingTokenPromise) {
         refreshingTokenPromise = refreshToken().finally(() => {
           refreshingTokenPromise = null;
+          console.log("[refresh token] refresh token done.");
         });
       }
       await refreshingTokenPromise;
     }
     const latestToken = useAuthStore.getState().userToken.accessToken;
+    console.log("[refresh token] latest token: ", latestToken);
     headers[`${aiden ? "Aiden-" : ""}Authorization`] = `Bearer ${latestToken}`;
   }
   if (aiden) {

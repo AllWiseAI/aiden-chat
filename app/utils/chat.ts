@@ -1,4 +1,4 @@
-import { REQUEST_TIMEOUT_MS, DEFAULT_USER_DELINETED } from "@/app/constant";
+import { REQUEST_TIMEOUT_MS } from "@/app/constant";
 import { t } from "i18next";
 import {
   EventStreamContentType,
@@ -27,6 +27,10 @@ type TParseSSEResult = {
   isMcpInfo: boolean;
   content?: string;
   mcpInfo?: TMcpInfo;
+  rawResp?: {
+    msg?: string;
+    code?: number | string;
+  };
 };
 
 type MCPInfo = {
@@ -138,11 +142,11 @@ export function parseSSE(text: string): TParseSSEResult {
   }
 
   const content = choices[0]?.delta?.content;
-
   if (!content || content.length === 0) {
     return {
       isMcpInfo: false,
       content: "",
+      rawResp: choices[0]?.delta,
     };
   }
   return {
@@ -301,7 +305,6 @@ export function stream(
           responseText = await res.clone().text();
           return finish();
         }
-
         if (
           !res.ok ||
           !res.headers
@@ -373,7 +376,6 @@ export function streamWithThink(
   let responseText = text;
   let remainText = "";
   let finished = false;
-  let hasConfirmRequest = false;
   let responseRes: Response;
 
   function animateResponseText() {
@@ -383,9 +385,6 @@ export function streamWithThink(
       if (controller.signal.aborted) {
         options.onError?.(new Error("User canceled"), true);
         return;
-      }
-      if (!hasConfirmRequest && responseText?.length === 0) {
-        options.onError?.(new Error("empty response from server"), true);
       }
       return;
     }
@@ -486,13 +485,16 @@ export function streamWithThink(
           const chunk = parseSSE(text);
 
           if (!chunk?.content || chunk.content.length === 0) {
+            const { msg, code } = chunk.rawResp || {};
+            if (msg || code) {
+              options.onError(chunk.rawResp, true);
+            }
             return;
           }
 
           if (chunk.mcpInfo) {
             const { type } = chunk.mcpInfo;
             if (type === McpStepsAction.ToolCallConfirm) {
-              hasConfirmRequest = true;
               // should check if user has approved the MCP
               const userHasApproved = settingStore.getUserMcpApproveStatus(
                 chunk.mcpInfo.tool,
@@ -527,9 +529,6 @@ export function streamWithThink(
                 }
                 if (result === ConfirmType.Decline) {
                   console.log("[MCP confirm] User rejected.");
-                  options.onUpdate?.(responseText, {
-                    response: DEFAULT_USER_DELINETED,
-                  });
                 }
               }
               options.onToolCall({

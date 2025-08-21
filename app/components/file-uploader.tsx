@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from "react";
 import { useFileUpload } from "@/app/hooks/use-file-upload";
 import { Button } from "@/app/components/shadcn/button";
 import FileIcon from "../icons/file.svg";
-import { toast } from "sonner";
+import { toast } from "@/app/utils/toast";
 import { useTranslation } from "react-i18next";
 import {
   Tooltip,

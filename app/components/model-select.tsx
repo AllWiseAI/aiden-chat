@@ -115,11 +115,21 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
   useEffect(() => {
     const res = formatProvider(localProviders);
     setGroupedProviders(res);
-    setGroupedLocalProviders((prev) => ({
-      ...prev,
+    setGroupedLocalProviders(() => ({
+      ...{
+        [INNER_PROVIDER_NAME]: {
+          id: -1,
+          provider: INNER_PROVIDER_NAME,
+          models: modelList.map((model) => ({
+            ...model,
+            value: model.model,
+            label: model.display,
+          })),
+        },
+      },
       ...res,
     }));
-  }, [localProviders, setGroupedProviders]);
+  }, [modelList, localProviders, setGroupedProviders]);
 
   const [openGroup, setOpenGroup] = useState<string | null>(
     INNER_PROVIDER_NAME,
@@ -140,7 +150,7 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
         setOpenGroup(INNER_PROVIDER_NAME);
       }
     }
-  }, [currentModel, localProviders]);
+  }, [currentModel, localProviders, modelList]);
 
   const handleModelChange = useCallback(
     (value: string) => {

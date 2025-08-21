@@ -289,14 +289,6 @@ function InnerChat() {
           if (m.streaming) {
             m.streaming = false;
           }
-
-          // if (m.content.length === 0) {
-          //   m.isError = true;
-          //   m.content = prettyObject({
-          //     error: true,
-          //     message: "empty response",
-          //   });
-          // }
         }
       });
 
@@ -443,6 +435,31 @@ function InnerChat() {
     }
   };
 
+  const renderErrorMsg = (message: RenderMessage) => {
+    if (!message.isError) return null;
+    return (
+      <div className={`${styles["chat-message-item-error"]}`}>
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem
+            value={message.content as string}
+            className={styles["chat-message-mcp-item"]}
+          >
+            <AccordionTrigger className="!py-0">
+              <div className="flex flex-row items-center gap-2">
+                {message.content as string}
+              </div>
+            </AccordionTrigger>
+            <AccordionContent
+              className={styles["chat-message-item-mcp-result"]}
+            >
+              <Markdown content={message.errorInfo ?? ""} />
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </div>
+    );
+  };
+
   const renderMessageMcpInfo = (message: RenderMessage) => {
     if (!message.mcpInfo) return null;
     return (
@@ -576,21 +593,25 @@ function InnerChat() {
                                 )}
                               </div>
                             )}
-                            <Markdown
-                              key={message.streaming ? "loading" : "done"}
-                              content={getMessageTextContent(message)}
-                              loading={
-                                (message.preview || message.streaming) &&
-                                message.content.length === 0 &&
-                                !isUser
-                              }
-                              onDoubleClickCapture={() => {
-                                if (!isMobileScreen) return;
-                                setUserInput(getMessageTextContent(message));
-                              }}
-                              parentRef={scrollRef}
-                              defaultShow={i >= renderMessages.length - 6}
-                            />
+                            {message.isError ? (
+                              renderErrorMsg(message)
+                            ) : (
+                              <Markdown
+                                key={message.streaming ? "loading" : "done"}
+                                content={getMessageTextContent(message)}
+                                loading={
+                                  (message.preview || message.streaming) &&
+                                  message.content.length === 0 &&
+                                  !isUser
+                                }
+                                onDoubleClickCapture={() => {
+                                  if (!isMobileScreen) return;
+                                  setUserInput(getMessageTextContent(message));
+                                }}
+                                parentRef={scrollRef}
+                                defaultShow={i >= renderMessages.length - 6}
+                              />
+                            )}
                           </div>
                         </div>
                       </div>
