@@ -265,6 +265,7 @@ export interface Task {
   created_at: string;
   updated_at: string;
   show_unread: boolean;
+  next_run_time: string | null;
 }
 
 export type TaskFormType = {

@@ -157,11 +157,14 @@ export default function ModelList() {
                 >
                   <TableCell className="px-2.5 py-3.5 font-medium">
                     <div className="flex gap-2 items-center">
-                      <ProviderIcon provider={item.provider} />
+                      <ProviderIcon
+                        provider={item.provider}
+                        className="size-5"
+                      />
                       {item.display}
                     </div>
                   </TableCell>
-                  <TableCell className="px-2.5 py-3.5 text-[#141718] dark:text-[#6C7275] max-w-[80px] whitespace-nowrap overflow-hidden text-ellipsis">
+                  <TableCell className="px-2.5 py-3.5 text-[#141718] dark:text-white max-w-[80px] whitespace-nowrap overflow-hidden text-ellipsis">
                     {item.models?.map((model) => model.label).join(",")}
                   </TableCell>
                   <TableCell className="px-2.5 py-3.5">

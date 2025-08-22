@@ -50,7 +50,7 @@ export const ProviderSelect = ({
             <SelectItem
               key={provider.id}
               value={provider.provider}
-              className="w-full! !h-9 hover:bg-[#F3F5F7] dark:hover:bg-[#232627]"
+              className="w-full! !h-9 hover:bg-[#F3F5F7] dark:hover:bg-black"
             >
               <div className="flex items-center gap-2">
                 <ProviderIcon provider={provider.provider} />
