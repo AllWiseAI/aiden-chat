@@ -50,18 +50,13 @@ export default function TimeSelect({
 
   const [inputVal, setInputVal] = useState("");
 
-  // 只在「hour/minute 第一次变为可用」时设置一次默认值
-  const didInitFromProps = useRef(false);
   useEffect(() => {
-    if (didInitFromProps.current) return;
     if (hour != null && minute != null) {
       const h = hour.toString().padStart(2, "0");
       const m = minute.toString().padStart(2, "0");
       setInputVal(`${h}:${m}`);
-      setTimeErr("");
-      didInitFromProps.current = true;
     }
-  }, [hour, minute, setTimeErr]);
+  }, [hour, minute]);
 
   const filtered = TIME_OPTIONS.filter((t) => t.includes(inputVal.trim()));
 
@@ -87,13 +82,13 @@ export default function TimeSelect({
             onChange={(e) => {
               const val = e.target.value;
               setInputVal(val);
-              onChange(val);
               if (!verifyTime(val)) {
                 setTimeErr(t("task.invalidTime"));
               } else setTimeErr("");
               setOpen(true);
             }}
             onFocus={() => setOpen(true)}
+            onBlur={() => onChange(inputVal)}
             placeholder={t("task.time")}
             className="flex-1 h-10 !text-left border-0 pl-0"
           />
