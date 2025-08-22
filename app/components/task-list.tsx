@@ -213,11 +213,11 @@ export function TaskList(props: { searchValue?: string }) {
         (item) => item.next_run_time === null,
       );
       const length = renderTaskList.length;
-      if (expiredIndex + 5 >= length) {
+      if (expiredIndex + 4 > length) {
         setShowMore(true);
       }
       return showMore
-        ? renderTaskList.slice(0, Math.min(expiredIndex + 5, length))
+        ? renderTaskList.slice(0, Math.min(expiredIndex + 4, length))
         : renderTaskList;
     }
     const lowerSearch = searchValue.toLowerCase();
