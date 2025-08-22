@@ -169,7 +169,7 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
         <SelectValue placeholder="Select model">
           <div className="flex items-center gap-1">
             <ProviderIcon provider={currentProvider} className="size-5" />
-            <div>{modelInfo.model}</div>
+            <div>{modelInfo?.model}</div>
           </div>
         </SelectValue>
       </SelectTrigger>
