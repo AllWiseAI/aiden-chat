@@ -19,7 +19,7 @@ import { AddModelModal } from "./add-model-modal";
 import { getProviderList } from "@/app/services";
 import DeleteDialog from "@/app/components/delete-dialog";
 import { toast } from "sonner";
-import ReloadIcon from "../../icons/reload.svg";
+import DownIcon from "../../icons/down.svg";
 import { ProviderIcon } from "./provider-icon";
 
 export default function ModelList() {
@@ -91,7 +91,7 @@ export default function ModelList() {
   };
 
   return (
-    <div className="gap-2 pt-2.5 pb-6 max-w-135">
+    <div className="gap-2 pt-2.5 pb-6 max-w-135 min-w-106">
       <div className="gap-2.5">
         <div className="font-medium text-base mb-2.5">
           {t("model.defaultModel")}
@@ -126,11 +126,11 @@ export default function ModelList() {
           {!showMore && (
             <Button
               variant="outline"
-              className="w-fit dark:border-[#232627] dark:hover:bg-[#1B1C1C]"
+              className="w-fit gap-1 dark:border-[#232627] dark:hover:bg-[#1B1C1C] rounded-sm"
               onClick={() => setShowMore(true)}
             >
-              <ReloadIcon className="size-[18px]" />
-              View More
+              <DownIcon className="size-[18px]" />
+              {t("model.viewMore")}
             </Button>
           )}
         </div>
@@ -161,10 +161,8 @@ export default function ModelList() {
                       {item.display}
                     </div>
                   </TableCell>
-                  <TableCell className="px-2.5 py-3.5 text-[#141718] dark:text-[#6C7275]">
-                    {item.models?.map((model) => (
-                      <div key={model.value}>{model.label}</div>
-                    ))}
+                  <TableCell className="px-2.5 py-3.5 text-[#141718] dark:text-[#6C7275] max-w-[80px] whitespace-nowrap overflow-hidden text-ellipsis">
+                    {item.models?.map((model) => model.label).join(",")}
                   </TableCell>
                   <TableCell className="px-2.5 py-3.5">
                     <Button
@@ -195,7 +193,7 @@ export default function ModelList() {
           onClick={handleAddModel}
         >
           <PlusIcon className="size-4" />
-          Add
+          {t("model.add")}
         </Button>
       </div>
       {isModalOpen && (

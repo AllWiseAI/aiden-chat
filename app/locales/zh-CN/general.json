@@ -74,7 +74,8 @@
     "deleteFailed": "删除失败",
     "enterTaskName": "请输入任务名称",
     "selectTaskType": "请选择任务类型",
-    "taskDesp": "任务描述"
+    "taskDesp": "任务描述",
+    "viewMore": "查看更多"
   },
   "home": {
     "newChat": "新的聊天",
@@ -167,8 +168,8 @@
     "used": "已使用",
     "unused": "可用",
     "tip": "种子用户在上线后可享受 3 个月免费使用",
-    "text": "注册Aiden立享火爆大模型免费使用权！下载：www.aidenai.info 输入邀请码{{inviteCode}} 开启您的Aiden之旅！",
-    "textVip": "注册Aiden立享火爆大模型免费使用权！下载：www.aidenai.info 输入专属邀请码{{inviteCode}} 开启您的Aiden之旅！"
+    "text": "注册Aiden立享火爆大模型免费使用权！下载：https://aidenai.iofo/ 输入邀请码{{inviteCode}} 开启您的Aiden之旅！",
+    "textVip": "注册Aiden立享火爆大模型免费使用权！下载：https://aidenai.iofo/ 输入专属邀请码{{inviteCode}} 开启您的Aiden之旅！"
   },
   "dialog": {
     "tutorial": "教程",

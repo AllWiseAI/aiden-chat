@@ -48,9 +48,15 @@
     "relaunch": {
       "title": "Restart",
       "description": "Switching regions will result in changes to the available models, and this modification requires restarting the app to take effect. Please confirm whether you wish to proceed and restart the app."
+    },
+    "rag": {
+      "title": "Token Saving Mode",
+      "tip": "In Token Saving Mode, we reduce token consumption by filtering MCP calls. However, enabling this mode may lead to reduced agent performance."
     }
   },
   "model": {
+    "viewMore": "View More",
+    "add": "Add",
     "customModel": "Customized Model",
     "defaultModel": "Default Model",
     "provider": "Provider",

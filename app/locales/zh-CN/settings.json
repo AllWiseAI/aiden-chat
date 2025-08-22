@@ -48,9 +48,15 @@
     "relaunch": {
       "title": "重启应用",
       "description": "切换区域将导致可用模型发生变化，此修改需要重新启动应用程序才能生效。请确认您是否希望继续并重新启动应用程序。"
+    },
+    "rag": {
+      "title": "节约 Token 模式",
+      "tip": "在节约 Token 模式下，我们通过过滤 MCP 调用以减少 Token 消耗。但启用此模式可能会导致代理性能下降。"
     }
   },
   "model": {
+    "viewMore": "查看更多",
+    "add": "添加",
     "customModel": "自定义模型",
     "defaultModel": "默认模型",
     "provider": "提供商",

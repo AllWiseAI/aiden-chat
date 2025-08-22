@@ -309,12 +309,11 @@
   flex: 1;
   overflow: auto;
   overflow-x: hidden;
-  padding: 40px;
-  padding-left: 60px;
-  padding-right: 60px;
-  padding-top: 20px;
+  padding: 20px 60px 70px 60px;
   position: relative;
   overscroll-behavior: none;
+  display: flex;
+  justify-content: center;
 }
 
 .chat-body-main-title {
@@ -609,12 +608,11 @@
 
 .chat-input-panel {
   position: relative;
-
-  margin-left: 60px;
-  margin-right: 60px;
-  margin-bottom: 20px;
+  margin: 0 auto 20px;
   box-sizing: border-box;
   flex-direction: column;
+  width: 100%;
+  max-width: 776px;
 
   .chat-input-actions {
     .chat-input-action {
@@ -707,7 +705,7 @@
   color: var(--black);
   font-family: inherit;
   padding: 10px 14px 10px 14px;
-  margin-bottom: 60px;
+  margin-bottom: 50px;
   resize: none;
   outline: none;
   box-sizing: border-box;

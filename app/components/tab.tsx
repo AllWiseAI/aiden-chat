@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAppConfig, useTaskStore } from "../store";
 import { Path } from "../constant";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 import ChatIcon from "../icons/chat.svg";
@@ -14,7 +14,18 @@ export function Tab() {
   const debugMode = useAppConfig().debugMode;
   const currentTaskId = useTaskStore((state) => state.currentTaskId);
   const { t } = useTranslation("general");
-  const [tabValue, setTabValue] = useState<"chat" | "task">("chat");
+  const [tabValue, setTabValue] = useState<"chat" | "task" | "settings">(
+    "chat",
+  );
+  useEffect(() => {
+    if (location.pathname.includes(Path.Settings)) {
+      setTabValue("settings");
+    } else if (location.pathname.includes(Path.Task)) {
+      setTabValue("task");
+    } else if (location.pathname.includes(Path.Chat)) {
+      setTabValue("chat");
+    }
+  }, [location]);
 
   return (
     <div className="shrink-0 flex flex-col justify-between items-center w-17 pt-10 pb-4 bg-[#6C7275]/20 dark:bg-[#292A2D]">
@@ -22,9 +33,7 @@ export function Tab() {
         <LogoIcon
           className={clsx(
             "size-[34px] hover:text-[#00AB66] transition-colors cursor-pointer",
-            location.pathname === Path.Settings
-              ? "text-[#00AB66]"
-              : "text-[#00AB66]/40",
+            tabValue === "settings" ? "text-[#00AB66]" : "text-[#00AB66]/40",
           )}
           onClick={() => {
             if (location.pathname !== Path.Settings) {
@@ -40,12 +49,9 @@ export function Tab() {
                 ? "text-main bg-[#F3F5F7] dark:bg-[#141718]"
                 : "text-[#6C7275] dark:text-[#E8ECEF]/50 hover:bg-white/80 dark:hover:bg-white/10",
             )}
-            onClick={() => {
-              setTabValue("chat");
-              navigate(Path.Chat);
-            }}
+            onClick={() => navigate(Path.Chat)}
           >
-            <div className="rounded- w-12.5 h-11.5 flex-center flex-col gap-[2px]">
+            <div className="w-12.5 h-11.5 flex-center flex-col gap-[2px]">
               <ChatIcon />
               <span className="text-xs">{t("sidebar.chat")}</span>
             </div>
@@ -57,19 +63,21 @@ export function Tab() {
                 ? "text-main bg-[#F3F5F7] dark:bg-[#141718]"
                 : "text-[#6C7275] dark:text-[#E8ECEF]/50 hover:bg-white/80 dark:hover:bg-white/10",
             )}
-            onClick={() => {
-              setTabValue("task");
-              navigate(`${Path.Task}/${currentTaskId}`);
-            }}
+            onClick={() => navigate(`${Path.Task}/${currentTaskId}`)}
           >
-            <div className=" w-12.5 h-11.5 flex-center flex-col gap-[2px]">
+            <div className="w-12.5 h-11.5 flex-center flex-col gap-[2px]">
               <TaskIcon />
               <span className="text-xs">{t("sidebar.task")}</span>
             </div>
           </div>
         </div>
       </div>
-      {debugMode && "AidenDebug"}
+      {debugMode && (
+        <div className="flex flex-col items-center">
+          <span>Aiden</span>
+          <span>Debug</span>
+        </div>
+      )}
     </div>
   );
 }

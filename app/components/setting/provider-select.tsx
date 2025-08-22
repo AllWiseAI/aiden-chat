@@ -39,7 +39,9 @@ export const ProviderSelect = ({
 
   return (
     <Select value={value} onValueChange={handleChange} disabled={disabled}>
-      <SelectTrigger className={`w-full ${className}`}>
+      <SelectTrigger
+        className={`w-full border-[#E8ECEF] dark:border-[#232627] ${className}`}
+      >
         <SelectValue placeholder="Select provider" />
       </SelectTrigger>
       <SelectContent className="max-h-60">
@@ -48,7 +50,7 @@ export const ProviderSelect = ({
             <SelectItem
               key={provider.id}
               value={provider.provider}
-              className="w-full! !h-9"
+              className="w-full! !h-9 hover:bg-[#F3F5F7] dark:hover:bg-[#232627]"
             >
               <div className="flex items-center gap-2">
                 <ProviderIcon provider={provider.provider} />

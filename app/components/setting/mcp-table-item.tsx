@@ -281,7 +281,7 @@ export function McpTableItem({
                     {showSetting && (
                       <DropdownMenuRadioItem
                         value="setting"
-                        className="rounded-sm text-sm text-[#6C7275] px-1.5 py-2 h-9 gap-1.5"
+                        className="rounded-sm text-sm text-[#141718] dark:text-[#F3F5F7] px-1.5 py-2 h-9 gap-1.5"
                         onClick={handleShowSettingModal}
                       >
                         <SettingIcon className="size-[18px]" />
@@ -291,7 +291,7 @@ export function McpTableItem({
                     {showOauth && (
                       <DropdownMenuRadioItem
                         value="oauth"
-                        className="rounded-sm text-sm text-[#6C7275] px-1.5 py-2 h-9 gap-1.5"
+                        className="rounded-sm text-sm text-[#141718] dark:text-[#F3F5F7] px-1.5 py-2 h-9 gap-1.5"
                         onClick={handleShowOauthModal}
                       >
                         <OauthIcon className="size-[18px]" />

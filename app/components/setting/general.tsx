@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuthStore, useSettingStore } from "../../store";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -13,6 +13,8 @@ import {
   Locales,
   countryList,
 } from "../../locales";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../shadcn/tooltip";
+import { Switch } from "../shadcn/switch";
 import {
   Select,
   SelectContent,
@@ -21,9 +23,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/shadcn/select";
+import { getRagEnabled, updateRagEnabled } from "../../services";
 import LightMode from "../../icons/theme-light.svg";
 import DarkMode from "../../icons/theme-dark.svg";
 import SystemMode from "../../icons/theme-system.svg";
+import InfoIcon from "../../icons/info.svg";
 import { ChangePasswordModal, SuccessModal } from "./change-password-modal";
 import RestartDialog from "../restart-dialog";
 import clsx from "clsx";
@@ -44,6 +48,18 @@ export default function General() {
   const [theme, setTheme] = useState<Theme.Auto | Theme.Dark | Theme.Light>(
     config.theme,
   );
+
+  const getRagStatus = async () => {
+    const res = await getRagEnabled();
+    const { data } = res;
+    setRag(data.mcp_rag_enabled);
+  };
+
+  useEffect(() => {
+    getRagStatus();
+  }, []);
+
+  const [rag, setRag] = useState(false);
   const logout = async () => {
     navigate(Path.Login);
     try {
@@ -79,7 +95,7 @@ export default function General() {
       <div className="w-max h-full pr-8 flex flex-col gap-10 justify-start items-start text-black dark:text-white">
         <div className="w-full flex flex-col gap-3 px-2.5 pt-1">
           <div className="font-medium">{t("general.account")}</div>
-          <div className="w-125 flex justify-between items-center gap-5 p-2.5 bg-[#F3F5F7]/30 dark:bg-[#232627]/30 border border-[#E8ECEF] dark:border-[#232627] rounded-sm text-sm">
+          <div className="w-full flex justify-between items-center gap-5 p-2.5 bg-[#F3F5F7]/30 dark:bg-[#232627]/30 border border-[#E8ECEF] dark:border-[#232627] rounded-sm text-sm">
             <p>{email}</p>
             <div className="flex items-center gap-5">
               <div
@@ -104,10 +120,10 @@ export default function General() {
             value={region}
             onValueChange={(value) => handleRegionChange(value)}
           >
-            <SelectTrigger className="w-125 dark:border-[#343839] text-xs">
+            <SelectTrigger className="w-full dark:border-[#343839] text-xs">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-[#F3F5F7] dark:bg-[#232627] max-w-125 max-h-60 overflow-y-auto">
+            <SelectContent className="bg-[#F3F5F7] dark:bg-[#232627] max-w-full max-h-60 overflow-y-auto">
               <SelectGroup className="space-y-2">
                 {sortedCountryList.map((region) => (
                   <SelectItem
@@ -130,10 +146,10 @@ export default function General() {
               changeLanguage(value as Locales);
             }}
           >
-            <SelectTrigger className="w-125 dark:border-[#343839] text-xs">
+            <SelectTrigger className="w-full dark:border-[#343839] text-xs">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="w-125 bg-[#F3F5F7] dark:bg-[#232627]">
+            <SelectContent className="w-full bg-[#F3F5F7] dark:bg-[#232627]">
               <SelectGroup className="space-y-2">
                 {localeOptions.map((option) => (
                   <SelectItem
@@ -188,6 +204,37 @@ export default function General() {
               {t("general.theme.system")}
             </div>
           </div>
+        </div>
+        <div className="flex justify-between gap-3 px-2.5 w-full max-w-178">
+          <div className="flex gap-4">
+            <div className="font-medium">{t("general.rag.title")}</div>
+            <Tooltip>
+              <TooltipTrigger>
+                <InfoIcon className="size-5 text-[#00D47E]" />
+              </TooltipTrigger>
+              <TooltipContent
+                hasArrow={false}
+                sideOffset={10}
+                className="max-w-80 w-max text-center p-5 bg-white dark:bg-[#232627] text-black dark:text-white text-sm leading-5"
+                style={{
+                  boxShadow: `
+                          0px 0px 24px 4px rgba(0,0,0,0.05),
+                          0px 32px 48px -4px rgba(0,0,0,0.2)
+                      `,
+                }}
+              >
+                <span>{t("general.rag.tip")}</span>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+
+          <Switch
+            checked={rag}
+            onCheckedChange={async (checked) => {
+              await updateRagEnabled(checked);
+              setRag(checked);
+            }}
+          />
         </div>
         <RestartDialog
           title={t("general.relaunch.title")}

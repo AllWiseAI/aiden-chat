@@ -12,6 +12,7 @@ import { copyToClipboard } from "../utils";
 import { useTranslation } from "react-i18next";
 import LoadingIcon from "../icons/loading-spinner.svg";
 import ShareIcon from "../icons/share.svg";
+import ShareDisabledIcon from "../icons/share-disabled.svg";
 
 interface InviteDialogProps {
   open: boolean;
@@ -74,9 +75,12 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         aria-describedby={undefined}
+        closeIconClass={isVip ? "text-[#6C7275] hover:text-white" : ""}
         className={clsx(
-          "flex flex-col max-w-xl w-150 h-95 rounded-sm p-5 pb-2 bg-[#FEFEFE] dark:bg-black",
-          isVip ? "gap-15" : "gap-5",
+          "flex flex-col max-w-xl w-150 h-95 rounded-sm p-5 bg-[#FEFEFE] dark:bg-black overflow-hidden",
+          isVip
+            ? "gap-8 border-0 bg-black bg-[url('https://static.aidenai.io/static/1755670652.png')] bg-cover bg-center"
+            : "gap-8",
         )}
         closeIcon
         onClick={(e) => {
@@ -84,7 +88,12 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
         }}
       >
         <DialogHeader>
-          <DialogTitle className="text-lg text-center dark:text-[#FEFEFE] font-normal">
+          <DialogTitle
+            className={clsx(
+              "text-lg text-center font-normal",
+              isVip ? "text-[#FEFEFE]" : "text-[#141718] dark:text-[#FEFEFE]",
+            )}
+          >
             {isVip ? t("invite.vip.title") : t("invite.title")}
           </DialogTitle>
         </DialogHeader>
@@ -94,14 +103,14 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
           </div>
         ) : isVip ? (
           <div className="flex flex-col gap-8 flex-1">
-            <div className="relative flex-center">
+            <div className="flex-center flex-col gap-5">
               <p className="text-main text-6xl">{lastItem?.code}</p>
-              <ShareIcon
+              <div
                 className={clsx(
-                  "absolute right-16 text-[#6C7275]",
+                  "w-30 h-12 flex-center text-[#FEFEFE] bg-[#000000]/49 backdrop-blur-xl border-3 border-[#00D47E] rounded-4xl",
                   lastItem &&
                     lastItem.current_usage_count < lastItem.usage_limit
-                    ? "light:hover:opacity-70 dark:hover:text-white cursor-pointer"
+                    ? "hover:bg-[#000000]/75 cursor-pointer"
                     : "opacity-40",
                 )}
                 onClick={() => {
@@ -112,16 +121,18 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
                     handleClick();
                   }
                 }}
-              />
+              >
+                <span>Share</span>
+              </div>
             </div>
-            <div className="flex flex-col gap-5 px-8 text-sm">
-              <div className="flex justify-between bg-[#FAFAFA] dark:bg-[#0F0F0F] px-3">
+            <div className="flex flex-col gap-2 px-8 text-sm font-light">
+              <div className="h-9 flex justify-between items-center rounded-4xl backdrop-blur-xl text-white bg-[#000000]/17 px-3">
                 <span>{t("invite.vip.count")}</span>
                 <div className="w-7 flex-center">
                   <span>{lastItem?.current_usage_count}</span>
                 </div>
               </div>
-              <div className="flex justify-between bg-[#FAFAFA] dark:bg-[#0F0F0F] px-3">
+              <div className="h-9 flex justify-between items-center rounded-4xl backdrop-blur-xl text-white bg-[#000000]/17 px-3">
                 <span>{t("invite.vip.max")}</span>
                 <span>{lastItem?.usage_limit}</span>
               </div>
@@ -129,30 +140,39 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
           </div>
         ) : (
           <div className="overflow-y-auto flex-1">
-            <table className="w-full">
-              <thead className="sticky top-0 z-10 bg-[#FEFEFE] dark:bg-black border-b-[14px] border-b-transparent">
-                <tr className="h-[22px]">
-                  <th className="w-1/3 h-full px-2 text-center font-normal">
+            <div className="w-full font-light">
+              <div className="sticky top-0 z-10 bg-[#FEFEFE] dark:bg-black border-b-[14px] border-b-transparent">
+                <div className="h-[22px] flex">
+                  <div className="w-1/3 h-full px-2 text-center font-normal">
                     {t("invite.table.1")}
-                  </th>
-                  <th className="w-1/3 h-full px-2 text-center font-normal">
+                  </div>
+                  <div className="w-1/3 h-full px-2 text-center font-normal">
                     {t("invite.table.2")}
-                  </th>
-                  <th className="w-1/3 h-full px-2 text-center font-normal">
+                  </div>
+                  <div className="w-1/3 h-full px-2 text-center font-normal">
                     {t("invite.table.3")}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
                 {inviteArr.map((item, index) => (
-                  <tr
-                    className="h-[46px] leading-8 border-b-[14px] border-b-transparent"
+                  <div
+                    className="h-8 leading-8 flex justify-between rounded-full bg-[#FAFAFA] dark:bg-[#151718]"
                     key={item.id}
                   >
-                    <td className="text-center">{item.code}</td>
-                    <td>
+                    <div
+                      className={clsx(
+                        "text-center flex-1",
+                        item.current_usage_count < item.usage_limit
+                          ? "text-main"
+                          : "opacity-40 text-[#101213] dark:text-[#FEFEFE]",
+                      )}
+                    >
+                      {item.code}
+                    </div>
+                    <div className="flex-1">
                       {item.current_usage_count < item.usage_limit ? (
-                        <div className="flex-center text-main">
+                        <div className="flex-center text-[#101213] dark:text-[#FEFEFE]">
                           {t("invite.unused")}
                         </div>
                       ) : (
@@ -160,28 +180,21 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
                           {t("invite.used")}
                         </div>
                       )}
-                    </td>
-                    <td>
-                      <div className="flex-center">
+                    </div>
+                    <div className="flex-1 flex-center">
+                      {item.current_usage_count < item.usage_limit ? (
                         <ShareIcon
-                          className={clsx(
-                            "text-[#6C7275]",
-                            item.current_usage_count < item.usage_limit
-                              ? "light:hover:opacity-70 dark:hover:text-white cursor-pointer"
-                              : "opacity-40",
-                          )}
-                          onClick={() => {
-                            if (item.current_usage_count < item.usage_limit) {
-                              handleClick(index);
-                            }
-                          }}
+                          className="hover:opacity-80 text-black dark:text-[#00FF98] cursor-pointer"
+                          onClick={() => handleClick(index)}
                         />
-                      </div>
-                    </td>
-                  </tr>
+                      ) : (
+                        <ShareDisabledIcon className="text-[#6C7275] opacity-40 dark:text-[#FEFEFE]" />
+                      )}
+                    </div>
+                  </div>
                 ))}
-              </tbody>
-            </table>
+              </div>
+            </div>
           </div>
         )}
 

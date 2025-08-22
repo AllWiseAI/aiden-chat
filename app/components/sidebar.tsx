@@ -119,17 +119,39 @@ export function useDragSideBar() {
     window.addEventListener("pointerup", handleDragEnd);
   };
 
-  const isMobileScreen = useMobileScreen();
-  const shouldNarrow =
-    !isMobileScreen && config.sidebarWidth < MIN_SIDEBAR_WIDTH;
-
+  // const isMobileScreen = useMobileScreen();
+  const shouldNarrow = config.sidebarWidth < MIN_SIDEBAR_WIDTH;
+  const shouldNarrowRef = useRef(shouldNarrow);
   useEffect(() => {
     const barWidth = shouldNarrow
       ? NARROW_SIDEBAR_WIDTH
       : limit(config.sidebarWidth ?? DEFAULT_SIDEBAR_WIDTH);
-    const sideBarWidth = isMobileScreen ? "100vw" : `${barWidth}px`;
+    // const sideBarWidth = isMobileScreen ? "100vw" : `${barWidth}px`;
+    const sideBarWidth = `${barWidth}px`;
     document.documentElement.style.setProperty("--sidebar-width", sideBarWidth);
-  }, [config.sidebarWidth, isMobileScreen, shouldNarrow]);
+  }, [config.sidebarWidth, shouldNarrow]);
+
+  // 缩放屏幕小于700px自动收起 - 过小时需做移动端适配
+  useEffect(() => {
+    shouldNarrowRef.current = shouldNarrow;
+  }, [shouldNarrow]);
+
+  useEffect(() => {
+    function handleResize() {
+      const isNarrow = shouldNarrowRef.current;
+
+      if (!isNarrow && window.innerWidth < 700) {
+        toggleSideBar();
+      }
+    }
+
+    window.addEventListener("resize", handleResize);
+    handleResize();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   return {
     onDragStart,

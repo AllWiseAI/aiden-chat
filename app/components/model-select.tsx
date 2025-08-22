@@ -36,6 +36,8 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
   const setGroupedProviders = useAppConfig(
     (state) => state.setGroupedProviders,
   );
+  const [currentProvider, setCurrentProvider] =
+    useState<string>(INNER_PROVIDER_NAME);
   const [groupedLocalProviders, setGroupedLocalProviders] = useState({
     [INNER_PROVIDER_NAME]: {
       id: -1,
@@ -65,7 +67,7 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
         ? `${modelInfo?.provider}:${modelInfo?.model}`
         : modelInfo?.model;
       if (modelNameList.includes(modelName!)) {
-        return modelName;
+        return modelName!;
       }
       return defaultModel;
     }
@@ -138,11 +140,13 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
       const res = currentModel.split(":");
       if (res.length === 2) {
         const [provider] = res;
+        setCurrentProvider(provider);
         const labelKey = localProviders.find(
           (item) => item.provider === provider,
         )?.display;
         setOpenGroup(labelKey!);
       } else {
+        setCurrentProvider(INNER_PROVIDER_NAME);
         setOpenGroup(INNER_PROVIDER_NAME);
       }
     }
@@ -161,11 +165,16 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
 
   return (
     <Select value={currentModel} onValueChange={handleModelChange}>
-      <SelectTrigger className="w-full border-0 hover:bg-muted/20 dark:hover:bg-muted/30 shadow-none">
-        <SelectValue placeholder="Select model" />
+      <SelectTrigger className="w-full border-0 hover:bg-muted/20 dark:hover:bg-muted/30 shadow-none text-base">
+        <SelectValue placeholder="Select model">
+          <div className="flex items-center gap-1">
+            <ProviderIcon provider={currentProvider} className="size-5" />
+            <div>{modelInfo.model}</div>
+          </div>
+        </SelectValue>
       </SelectTrigger>
-      <SelectContent className="max-h-[320px] dark:bg-[#101213] select-none max-w-56 p-0">
-        <div className="overflow-y-auto max-h-[260px] px-1 py-2 space-y-1.5">
+      <SelectContent className="max-h-[320px] bg-[#FEFEFE] dark:bg-[#141718] select-none w-62.5 p-0">
+        <div className="max-w-60 overflow-y-auto max-h-[260px] px-1 py-2 space-y-1.5">
           {Object.entries(groupedLocalProviders).map(
             ([groupLabel, provider]) => {
               const isOpen = openGroup === groupLabel;
@@ -188,15 +197,18 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
                     ) : (
                       <ArrowRightIcon className="h-4 w-4 text-muted-foreground" />
                     )}
-                    <ProviderIcon provider={provider.provider} />
+                    <ProviderIcon
+                      provider={provider.provider}
+                      className="size-4"
+                    />
                     <span>{groupLabel}</span>
                   </SelectLabel>
-                  <div className={clsx("pl-2", isOpen ? "block" : "hidden")}>
+                  <div className={clsx("pl-5", isOpen ? "block" : "hidden")}>
                     {models?.map((model: ModelOption) => (
                       <SelectItem key={model.value} value={model.value}>
                         <div className="flex items-center justify-center gap-2">
                           <div
-                            className="text-sm font-normal truncate max-w-[120px]"
+                            className="text-sm font-normal truncate max-w-[170px]"
                             title={model.label}
                           >
                             {model.label}
@@ -211,9 +223,9 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
           )}
         </div>
 
-        <div className="border-t px-2 py-2 bg-background">
+        <div className="max-w-60 h-max px-2 py-2 bg-[#FEFEFE] dark:bg-[#141718]">
           <div
-            className="cursor-pointer px-2 py-1 bg-muted group rounded flex items-center justify-between"
+            className="h-7.5 cursor-pointer px-2 py-1 bg-[#E8ECEF]/50 dark:bg-[#232627]/50 group rounded flex items-center justify-between"
             onClick={() => navigate(Path.Settings + "?tab=model")}
           >
             <span className="text-sm group-hover:text-[#00AB66]">Manage</span>

@@ -1,7 +1,10 @@
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="6" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/>
-<circle cx="18" cy="6" r="3" stroke="currentColor" stroke-width="1.5"/>
-<circle cx="18" cy="18" r="3" stroke="currentColor" stroke-width="1.5"/>
-<path d="M8.5 10.5L15 7" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-<path d="M8.5 13.5L15 17" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g opacity="0.8" clip-path="url(#clip0_4668_24556)">
+<path d="M15.2917 6.44238L10.7126 11.0205V8.3252H10.2126C7.86378 8.3252 5.77238 8.3144 3.98413 9.23145C2.65239 9.9144 1.53559 11.0816 0.55835 13.0088C0.657175 11.6509 0.917843 10.1513 1.59644 8.79395C2.17425 7.63829 3.05567 6.58982 4.41089 5.8252C5.77058 5.05811 7.6381 4.55957 10.2126 4.55957H10.7126V1.86328L15.2917 6.44238Z" fill="#00D47E" fill-opacity="0.17" stroke="#00D47E"/>
+</g>
+<defs>
+<clipPath id="clip0_4668_24556">
+<rect width="16" height="16" fill="white"/>
+</clipPath>
+</defs>
 </svg>

@@ -287,7 +287,7 @@ export function AddModelModal({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 overflow-hidden">
+        <div className="space-y-5 overflow-hidden">
           <div className="flex gap-2 w-full">
             <Label
               htmlFor="provider"
@@ -311,13 +311,13 @@ export function AddModelModal({
             >
               {tInner("model.apiKey")}
             </Label>
-            <div className="flex-1 w-full">
+            <div className="flex-1 w-full relative">
               <Password
                 id="apiKey"
                 type="apiKey"
                 placeholder={tInner("model.enterApiKey")}
                 className={clsx(
-                  "!w-full h-9 !text-left !px-2.5 !py-2 !rounded-sm text-sm border",
+                  "!w-full h-9 !text-left !px-2.5 !py-2 !rounded-sm text-sm border border-[#E8ECEF] !dark:border-[#232627]",
                   isApiKeyError && "!border-[#EF466F]",
                 )}
                 value={formData.apiKey}
@@ -326,7 +326,7 @@ export function AddModelModal({
                 required
               />
               {isApiKeyError && (
-                <div className="text-sm text-[#EF466F]">
+                <div className="absolute left-0 top-full text-sm text-[#EF466F]">
                   {tInner("model.apiKeyErrorText")}
                 </div>
               )}
@@ -340,23 +340,28 @@ export function AddModelModal({
             >
               {tInner("model.model")}
             </Label>
-            <div className="flex-1 w-full overflow-hidden">
-              <MultiSelectDropdown
+            <div className="flex flex-col flex-1 gap-2 overflow-hidden">
+              <div
                 className={clsx(
-                  "flex-1 w-full max-w-full",
-                  isModelsError && "!border-[#EF466F]",
+                  "w-full rounded-sm border border-[#E8ECEF] dark:border-[#232627]",
+                  isModelsError && "border-[#EF466F] dark:border-[#EF466F]",
                 )}
-                value={formData.models}
-                options={modelList}
-                onChange={handleModelsChange}
-                loading={isGettingModelLoading}
-              />
-
-              {isModelsError && (
-                <div className="text-sm text-[#EF466F]">
-                  {tInner("model.modelErrorText")}
+              >
+                <div className="relative">
+                  <MultiSelectDropdown
+                    className={clsx("flex-1 w-full max-w-full border-0")}
+                    value={formData.models}
+                    options={modelList}
+                    onChange={handleModelsChange}
+                    loading={isGettingModelLoading}
+                  />
+                  {isModelsError && (
+                    <div className="absolute left-0 top-full text-sm text-[#EF466F]">
+                      {tInner("model.modelErrorText")}
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>

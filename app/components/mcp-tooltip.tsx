@@ -80,14 +80,14 @@ function McpPopover({ icon }: { icon: ReactElement }) {
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className="border border-[#E8ECEF] text-black dark:text-white dark:bg-[#141416] dark:border-[#343839] font-medium !rounded-sm p-2.5 h-12"
+          className="border border-[#E8ECEF] text-black dark:text-white dark:bg-[#141416] dark:border-[#343839] font-medium !rounded-sm p-2.5 h-8"
         >
           {icon}
           MCP
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-40 flex flex-col gap-2 items-center bg-white text-black dark:bg-[#101213] dark:text-white p-2 mb-2 text-sm font-medium"
+        className="w-40 flex flex-col gap-2 items-center bg-white text-black dark:bg-[#101213] dark:text-white p-2 text-sm font-medium"
         style={{
           boxShadow: `
                     0px 0px 24px 4px rgba(0,0,0,0.05),
