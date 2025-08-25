@@ -32,6 +32,7 @@ import { createTask, testTask, updateTask } from "../services/task";
 import { toast } from "sonner";
 import { getLang } from "../locales";
 import { useTranslation } from "react-i18next";
+import LoadingIcon from "../icons/loading-spinner.svg";
 
 interface NotificationProps {
   checked: boolean;
@@ -402,7 +403,11 @@ export default function TaskManagement({
           onClick={handleTestClick}
           disabled={!confirmBtn || isTestLoading}
         >
-          {t("task.test")}
+          {isTestLoading ? (
+            <LoadingIcon className="size-4 animate-spin" />
+          ) : (
+            t("task.test")
+          )}
         </Button>
         <Button
           disabled={!confirmBtn}

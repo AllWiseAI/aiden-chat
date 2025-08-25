@@ -52,7 +52,7 @@ export enum StoreKey {
   Task = "task-store",
 }
 
-export const DEFAULT_SIDEBAR_WIDTH = 280;
+export const DEFAULT_SIDEBAR_WIDTH = 240;
 export const MAX_SIDEBAR_WIDTH = 400;
 export const MIN_SIDEBAR_WIDTH = 220;
 export const NARROW_SIDEBAR_WIDTH = 0;
