@@ -206,7 +206,7 @@ function TaskRecords({ currentTask }: { currentTask: TaskType }) {
   }, [currentTask]);
 
   return (
-    <div className="flex-1 min-h-0 space-y-5 overflow-y-auto">
+    <div className="flex-1 min-h-0 space-y-2.5 overflow-y-auto">
       {recordList.map((item) => (
         <TaskItem
           key={item.id}
@@ -227,7 +227,7 @@ function TaskPanel({ task, setIsEdit }: TaskPanelProps) {
   return (
     <div className="flex flex-col gap-5 py-3 px-5 text-sm bg-[#F3F5F7]/50 dark:bg-[#232627]/50 text-[#101213] dark:text-white rounded-xl">
       <div className="flex items-center gap-2">
-        <span className="flex-1 text-lg">{task.name}</span>
+        <span className="flex-1 min-w-0 text-lg truncate">{task.name}</span>
         <Button variant="ghost" className="size-7" onClick={setIsEdit}>
           <EditIcon className="size-6 text-main" />
         </Button>

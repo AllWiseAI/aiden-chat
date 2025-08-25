@@ -142,10 +142,10 @@ export function ChatItem(props: {
                 />
               ) : (
                 <div className="flex justify-between items-center">
-                  <div className="flex justify-start items-center gap-4 leading-6">
+                  <div className="flex justify-start items-center gap-4 leading-6 flex-1 max-w-4/5">
                     <div
                       className={clsx(
-                        "cursor-default text-sm w-full line-clamp-1",
+                        "cursor-default text-sm w-full truncate",
                         props.selected
                           ? "font-medium"
                           : "text-[#232627] dark:text-white",

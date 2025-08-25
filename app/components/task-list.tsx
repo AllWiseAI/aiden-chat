@@ -52,18 +52,20 @@ export function TaskItem(props: {
           : "hover:bg-[#E8ECEF]/50 dark:hover:bg-[#232627]/50",
       )}
     >
-      <div className="flex justify-between items-center">
-        <div
-          className={clsx(
-            "flex justify-start items-center gap-2 leading-6 cursor-default text-sm w-full line-clamp-1",
-            props.selected && location.pathname !== Path.NewTask
-              ? "text-[#141718] dark:text-white font-medium"
-              : props.className
-              ? props.className
-              : "text-[#343839] dark:text-[#FEFEFE] font-normal",
-          )}
-        >
-          {props.name}
+      <div className="flex justify-between items-center gap-2">
+        <div className="flex items-center gap-1 min-w-0 flex-1">
+          <span
+            className={clsx(
+              "leading-6 cursor-default text-sm flex-1 w-full min-w-0 truncate",
+              props.selected && location.pathname !== Path.NewTask
+                ? "text-[#141718] dark:text-white font-medium"
+                : props.className
+                ? props.className
+                : "text-[#343839] dark:text-[#FEFEFE] font-normal",
+            )}
+          >
+            {props.name}
+          </span>
           {props.isUpdate && (
             <div className="size-[5px] bg-[#EF466F] rounded-full"></div>
           )}
@@ -71,7 +73,7 @@ export function TaskItem(props: {
 
         <DropdownMenu open={openMenu} onOpenChange={setOpenMenu} modal={false}>
           <DropdownMenuTrigger
-            className="size-4 flex-center cursor-pointer"
+            className="size-4 flex-center cursor-pointer shrink-0"
             onClick={(e) => e.stopPropagation()}
           >
             <MoreIcon
@@ -209,7 +211,16 @@ export function TaskList(props: { searchValue?: string }) {
   const [showMore, setShowMore] = useState(false);
   const filteredTasks = useMemo(() => {
     if (!searchValue) {
-      return showMore ? renderTaskList : renderTaskList.slice(0, 10);
+      const expiredIndex = renderTaskList.findIndex(
+        (item) => item.next_run_time === null,
+      );
+      const length = renderTaskList.length;
+      if (expiredIndex !== -1 && expiredIndex + 4 > length) {
+        setShowMore(true);
+      }
+      return showMore
+        ? renderTaskList.slice(0, Math.min(expiredIndex + 4, length))
+        : renderTaskList;
     }
     const lowerSearch = searchValue.toLowerCase();
     return renderTaskList.filter((task) =>
@@ -219,12 +230,12 @@ export function TaskList(props: { searchValue?: string }) {
 
   return (
     <div className="flex flex-col gap-2">
-      {filteredTasks.map((item, index) => (
+      {filteredTasks.map((item) => (
         <TaskItem
           key={item.id}
           name={item.name}
           className={
-            index > 5 && !showMore
+            item.next_run_time === null
               ? "text-[#6C7275]/75 dark:text-[#E8ECEF]/50"
               : ""
           }
@@ -242,10 +253,10 @@ export function TaskList(props: { searchValue?: string }) {
           onDelete={() => handleDeleteTask(item)}
         />
       ))}
-      {!searchValue && renderTaskList.length > 10 && !showMore && (
+      {!searchValue && showMore && (
         <div
           className="text-sm text-[#6C7275]/75 dark:text-[#E8ECEF]/50 rounded-sm group h-7.5 p-1.5 flex justify-between cursor-default hover:bg-[#E8ECEF]/50 dark:hover:bg-[#232627]/50"
-          onClick={() => setShowMore(true)}
+          onClick={() => setShowMore(false)}
         >
           {t("task.viewMore")}
           <ArrowDownIcon />

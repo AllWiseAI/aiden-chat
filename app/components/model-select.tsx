@@ -205,7 +205,11 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
                   </SelectLabel>
                   <div className={clsx("pl-5", isOpen ? "block" : "hidden")}>
                     {models?.map((model: ModelOption) => (
-                      <SelectItem key={model.value} value={model.value}>
+                      <SelectItem
+                        key={model.value}
+                        value={model.value}
+                        className="dark:hover:!bg-[#232627]"
+                      >
                         <div className="flex items-center justify-center gap-2">
                           <div
                             className="text-sm font-normal truncate max-w-[170px]"
