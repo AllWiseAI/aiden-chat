@@ -52,18 +52,20 @@ export function TaskItem(props: {
           : "hover:bg-[#E8ECEF]/50 dark:hover:bg-[#232627]/50",
       )}
     >
-      <div className="flex justify-between items-center">
-        <div
-          className={clsx(
-            "flex justify-start items-center gap-2 leading-6 cursor-default text-sm w-full line-clamp-1",
-            props.selected && location.pathname !== Path.NewTask
-              ? "text-[#141718] dark:text-white font-medium"
-              : props.className
-              ? props.className
-              : "text-[#343839] dark:text-[#FEFEFE] font-normal",
-          )}
-        >
-          {props.name}
+      <div className="flex justify-between items-center gap-2">
+        <div className="flex items-center gap-1 min-w-0 flex-1">
+          <span
+            className={clsx(
+              "leading-6 cursor-default text-sm flex-1 w-full min-w-0 truncate",
+              props.selected && location.pathname !== Path.NewTask
+                ? "text-[#141718] dark:text-white font-medium"
+                : props.className
+                ? props.className
+                : "text-[#343839] dark:text-[#FEFEFE] font-normal",
+            )}
+          >
+            {props.name}
+          </span>
           {props.isUpdate && (
             <div className="size-[5px] bg-[#EF466F] rounded-full"></div>
           )}
@@ -71,7 +73,7 @@ export function TaskItem(props: {
 
         <DropdownMenu open={openMenu} onOpenChange={setOpenMenu} modal={false}>
           <DropdownMenuTrigger
-            className="size-4 flex-center cursor-pointer"
+            className="size-4 flex-center cursor-pointer shrink-0"
             onClick={(e) => e.stopPropagation()}
           >
             <MoreIcon
@@ -213,7 +215,7 @@ export function TaskList(props: { searchValue?: string }) {
         (item) => item.next_run_time === null,
       );
       const length = renderTaskList.length;
-      if (expiredIndex + 4 > length) {
+      if (expiredIndex !== -1 && expiredIndex + 4 > length) {
         setShowMore(true);
       }
       return showMore
