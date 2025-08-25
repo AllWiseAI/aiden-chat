@@ -9,7 +9,7 @@ import React, {
 } from "react";
 
 import styles from "./home.module.scss";
-
+import { track, EVENTS } from "@/app/utils/analysis";
 import { Button } from "@/app/components/shadcn/button";
 import { Input } from "@/app/components/shadcn/input";
 import SearchIcon from "../icons/search.svg";
@@ -265,9 +265,11 @@ export function SideBarBody(props: {
               onClick={() => {
                 if (tabValue === "chat") {
                   chatStore.newSession();
+                  track(EVENTS.NEW_CHAT_CLICK);
                   navigate(Path.Chat);
                 } else if (tabValue === "task") {
                   navigate(Path.NewTask);
+                  track(EVENTS.NEW_TASK_CLICK);
                 }
               }}
             >

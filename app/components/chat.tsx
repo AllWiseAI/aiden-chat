@@ -47,6 +47,7 @@ import { useChatCommand } from "../command";
 import { prettyObject } from "../utils/format";
 import clsx from "clsx";
 import { Button } from "./shadcn/button";
+import { track, EVENTS } from "@/app/utils/analysis";
 
 import McpPopover from "./mcp-tooltip";
 import {
@@ -723,6 +724,10 @@ function InnerChat() {
 export function Chat() {
   const chatStore = useChatStore();
   const session = chatStore.currentSession();
+
+  useEffect(() => {
+    track(EVENTS.HOME_EXPOSURE);
+  }, []);
 
   return <InnerChat key={session.id}></InnerChat>;
 }

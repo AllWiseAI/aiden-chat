@@ -7,11 +7,17 @@ import { getLang } from "../../locales";
 import { useAppUpdate } from "@/app/hooks/use-app-update";
 import { showConfirm } from "@/app/components/confirm-modal/confirm";
 import { useTranslation } from "react-i18next";
+import { track, EVENTS } from "@/app/utils/analysis";
+import { useEffect } from "react";
 
 export default function AboutUs() {
   const { isShowUpdate, isLatest, handleUpdate, isUpdating } = useAppUpdate();
   const { t } = useTranslation("settings");
   const lang = getLang() === "zh-CN" ? "zh/" : "";
+
+  useEffect(() => {
+    track(EVENTS.SETTING_ABOUT_EXPOSURE);
+  }, []);
 
   const aboutUsArr = [
     { name: t("aboutUs.export"), onClick: () => exportAndDownloadLog() },

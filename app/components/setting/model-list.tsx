@@ -21,6 +21,7 @@ import DeleteDialog from "@/app/components/delete-dialog";
 import { toast } from "sonner";
 import DownIcon from "../../icons/down.svg";
 import { ProviderIcon } from "./provider-icon";
+import { track, EVENTS } from "@/app/utils/analysis";
 
 export default function ModelList() {
   const modelList: ModelOption[] = useAppConfig((state) => state.models);
@@ -43,6 +44,7 @@ export default function ModelList() {
     useState<ProviderOption>({} as ProviderOption);
 
   useEffect(() => {
+    track(EVENTS.SETTING_MODEL_EXPOSURE);
     async function getProviderData() {
       const data = await getProviderList();
       if (data && data.length) {

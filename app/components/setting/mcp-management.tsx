@@ -8,6 +8,7 @@ import McpDetail from "./mcp-detail";
 import McpEditor from "./mcp-editor";
 
 import { McpConfigKey, McpItemInfo } from "@/app/typing";
+import { track, EVENTS } from "@/app/utils/analysis";
 
 export default function McpConfig() {
   const mcpStore = useMcpStore();
@@ -21,6 +22,7 @@ export default function McpConfig() {
 
   useEffect(() => {
     mcpStore.reCaculateMcpList();
+    track(EVENTS.SETTING_MCP_EXPOSURE);
   }, []);
 
   if (!config) {
