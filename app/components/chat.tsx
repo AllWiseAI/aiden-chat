@@ -257,10 +257,11 @@ function InnerChat() {
   const onInput = (text: string) => {
     setUserInput(text);
   };
-
   const doSubmit = (userInput: string) => {
     if (isChatting) {
-      ChatControllerPool.stopAll();
+      const sessionId = session.id;
+      const messageId = session.messages[session.messages.length - 1].id;
+      ChatControllerPool.stop(sessionId, messageId);
       return;
     }
     if (userInput.trim() === "" && isEmpty(files)) return;
@@ -313,7 +314,7 @@ function InnerChat() {
       e.preventDefault();
       return;
     }
-    if (shouldSubmit(e)) {
+    if (shouldSubmit(e) && !isChatting) {
       doSubmit(userInput);
       e.preventDefault();
     }

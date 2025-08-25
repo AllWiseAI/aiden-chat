@@ -40,7 +40,7 @@ import icloudIcon from "@/app/icons/icloud.png";
 import gmailIcon from "@/app/icons/gmail.png";
 import DeleteIcon from "@/app/icons/delete.svg";
 import AddOutlineIcon from "@/app/icons/add-outline.svg";
-import { AccountItem, McpItemInfo } from "@/app/typing";
+import { AccountItem, McpItemInfo, AidenCredential } from "@/app/typing";
 import DeleteDialog from "@/app/components/delete-dialog";
 import { toast } from "sonner";
 import { validateEmail } from "@/app/utils";
@@ -126,8 +126,8 @@ export function McpOauthModal({
   };
 
   const handleConfirm = useCallback(async () => {
-    const { aiden_credential, mcp_key } = mcpInfo;
-    if (isShowAdd && aiden_credential && aiden_credential.type === "password") {
+    const { mcp_key } = mcpInfo;
+    if (isShowAdd && configCredential && configCredential.type === "password") {
       if (account && !validateEmail(account)) {
         setEmailError(tInner("mcp.inValidEmail"));
         return;
@@ -161,10 +161,11 @@ export function McpOauthModal({
   }, [onConfirm, onOpenChange, mcpInfo, account, pwd, provider]);
 
   const handleAddAcount = useCallback(async () => {
-    const { aiden_credential, mcp_key } = mcpInfo;
-    if (aiden_credential && aiden_credential.type === "oauth") {
+    console.log("mcpInfo", mcpInfo);
+    const { mcp_key } = mcpInfo;
+    if (configCredential && configCredential.type === "oauth") {
       try {
-        const res = await addOAuthCredential(mcp_key, aiden_credential);
+        const res = await addOAuthCredential(mcp_key, configCredential);
         if (res?.message === "Credential added completed") {
           getAccountList();
           toast.success(tInner("mcp.add.success"));
@@ -191,9 +192,15 @@ export function McpOauthModal({
     setPwd(value);
   };
 
-  const providerList = useMemo(() => {
-    return mcpInfo.aiden_credential?.providers || [];
+  const configCredential = useMemo(() => {
+    const { mcp_key, basic_config } = mcpInfo;
+    return (basic_config?.[mcp_key]?.aiden_credential as AidenCredential) || {};
   }, [mcpInfo]);
+
+  const providerList = useMemo(() => {
+    const { providers } = configCredential;
+    return providers || [];
+  }, [configCredential]);
 
   const addBtnDisabled = useMemo(() => {
     return isShowAdd && (!pwd || !account || !provider);

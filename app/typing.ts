@@ -50,6 +50,7 @@ export type MCPServer = {
   command?: string;
   args?: string[];
   env?: Record<string, string>;
+  aiden_credential?: AidenCredential;
 };
 
 export type CustomMCPServer = {
