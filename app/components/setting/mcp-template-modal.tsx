@@ -33,7 +33,6 @@ export function McpTemplateModal({
   const [multiArgs, setMultiArgs] = useState(templateInfo.multiArgs);
   const [envsText, setEnvsText] = useState<string>("");
   const [templateEmptyError, setTemplateEmptyError] = useState<boolean>(false);
-  const [envEmptyError, setEnvEmptyError] = useState<boolean>(false);
   const [multiArgsEmptyError, setMultiArgsEmptyError] =
     useState<boolean>(false);
 
@@ -75,15 +74,6 @@ export function McpTemplateModal({
     }
   };
 
-  const handleEnvBlur = (e: any) => {
-    const { value } = e.target;
-    if (value) {
-      setEnvEmptyError(false);
-    } else {
-      setEnvEmptyError(true);
-    }
-  };
-
   const handleArgsBlur = (e: any) => {
     const { value } = e.target;
     if (value) {
@@ -99,14 +89,6 @@ export function McpTemplateModal({
       for (const template of templates) {
         if (template.key && !template.value) {
           setTemplateEmptyError(true);
-          return;
-        }
-      }
-    }
-    if (parsedEnvs?.length) {
-      for (const env of parsedEnvs) {
-        if (env.key && !env.value) {
-          setEnvEmptyError(true);
           return;
         }
       }
@@ -216,23 +198,14 @@ export function McpTemplateModal({
                     <input
                       className={clsx(
                         "w-full h-[34px] !text-left font-mono text-sm dark:border-[#6C7275] bg-background border border-input rounded-sm px-2.5 py-2 focus:border-primary focus:outline-none",
-                        {
-                          "!border-[#EF466F]": envEmptyError,
-                        },
                       )}
                       value={item.value}
-                      onBlur={handleEnvBlur}
                       onChange={(e) => {
                         const newEnvs = [...envs];
                         newEnvs[idx].value = e.target.value;
                         setEnvs(newEnvs);
                       }}
                     />
-                    {envEmptyError && (
-                      <div className="text-[10px] text-red-500">
-                        {t("dialog.form.empty", { fieldName: item.key })}
-                      </div>
-                    )}
                   </div>
                 </div>
               ))}
