@@ -277,8 +277,8 @@ export function SideBarBody(props: {
               </span>
             </Button>
           </div>
-          <div className="flex-1 flex flex-col gap-2.5 px-4 overflow-y-auto">
-            {children}
+          <div className="scroll-container flex-1 min-h-0">
+            <div className="flex flex-col gap-2.5 pl-4 pr-2">{children}</div>
           </div>
         </>
       )}

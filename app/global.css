@@ -140,32 +140,9 @@
   .disable-select {
     @apply select-none cursor-default;
   }
-  .scrollbar-hover {
-    --bar-width: 10px;
-    scrollbar-gutter: stable overlay;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-  .scrollbar-hover::-webkit-scrollbar {
-    display: none;
-  }
-
-  .scrollbar-hover:hover {
-    scrollbar-width: thin;
-  }
-  .scrollbar-hover:hover::-webkit-scrollbar {
-    width: var(--bar-width);
-    height: var(--bar-width);
-    display: block;
-  }
-  .scrollbar-hover:hover::-webkit-scrollbar-track {
-    background-color: transparent;
-  }
-  .scrollbar-hover:hover::-webkit-scrollbar-thumb {
-    background-color: var(--bar-color);
-    border-radius: 20px;
-    background-clip: content-box;
-    border: 1px solid transparent;
+  .scroll-container {
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
   }
 }
 
