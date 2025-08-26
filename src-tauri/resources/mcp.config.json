@@ -1,7 +1,19 @@
 {
-  "version": "0.0.14",
+  "version": "0.0.15",
   "syncVersion": "0.0.2",
   "mcpServers": {
+    "aiden-terminal": {
+      "aiden_id": "aiden-terminal",
+      "aiden_mcp_version": "",
+      "aiden_type": "default",
+      "aiden_enable": true,
+      "args": [
+        "run",
+        "terminal.py"
+      ],
+      "command": "uv",
+      "transport": "stdio"
+    },
     "aiden-search": {
       "url": "https://mcp.aidenai.io/mcp/tavily/sse",
       "transport": "sse",
@@ -51,7 +63,7 @@
       ],
       "transport": "stdio",
       "aiden_type": "default",
-      "aiden_enable": false,
+      "aiden_enable": true,
       "aiden_mcp_version": "0.6.2",
       "aiden_id": "aiden-sequential-thinking"
     },
