@@ -151,7 +151,7 @@
     "config": "Config"
   },
   "invite": {
-    "btn": "Invite Friends",
+    "btn": "Invite",
     "title": "Invitation",
     "copy": "The invitation link has been copied.",
     "vip": {

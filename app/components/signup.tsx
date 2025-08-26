@@ -79,7 +79,7 @@ const SignUpForm = ({
           <LogoIcon className="size-7.5 text-[#00D47E]" />
           <LogoTextIcon className="h-5.5" />
         </div>
-        <span className="text-lg font-medium">{t("signUp.to")} Aiden.ai</span>
+        <span className="text-lg font-medium">{t("signUp.to")}</span>
       </div>
       <form
         className="flex-center flex-col gap-5 w-full"

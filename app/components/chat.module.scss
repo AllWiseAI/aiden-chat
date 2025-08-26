@@ -307,9 +307,8 @@
 
 .chat-body {
   flex: 1;
-  overflow: auto;
   overflow-x: hidden;
-  padding: 20px 60px 70px 60px;
+  padding: 20px 52px 70px 60px;
   position: relative;
   overscroll-behavior: none;
   display: flex;
@@ -383,8 +382,8 @@
 }
 
 .chat-message-container {
-  max-width: var(--message-max-width);
-  width: var(--message-max-width);
+  max-width: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -404,6 +403,8 @@
 
 .chat-message-user > .chat-message-container {
   align-items: flex-end;
+  max-width: var(--message-max-width);
+  width: var(--message-max-width);
 }
 
 .chat-message-avatar {
@@ -460,8 +461,7 @@
 .chat-message-item {
   box-sizing: border-box;
   max-width: 100%;
-  margin-top: 10px;
-  border-radius: 20px;
+  border-radius: 4px;
   // padding: 12px;
   min-width: 40px;
   font-size: 14px;
@@ -486,9 +486,9 @@
 
 .chat-message-mcp-info {
   width: 100%;
-  border-radius: 10px;
+  border-radius: 4px;
   padding: 8px 10px;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
 }
 
 .group[data-state="open"] .rotate-icon {
@@ -679,7 +679,7 @@
   cursor: text;
   display: flex;
   flex: 1;
-  border-radius: 12px;
+  border-radius: 8px;
   border: 1px solid var(--gray-2);
 }
 

@@ -154,7 +154,7 @@ export function LoginPage() {
           <LogoTextIcon className="h-5.5" />
         </div>
 
-        <span className="text-lg font-medium">{t("signIn.to")} Aiden.ai</span>
+        <span className="text-lg font-medium">{t("signIn.to")}</span>
       </div>
       <form
         className="flex-center flex-col gap-5 w-full"
@@ -258,7 +258,10 @@ export function LoginPage() {
         </div>
         <div className="self-start flex items-center gap-2 text-xs">
           <Checkbox
-            className="!size-[14px] !border-[#6C7275] !rounded-xs cursor-pointer"
+            className={clsx(
+              "!size-[14px] !rounded-xs cursor-pointer",
+              checked ? "border-0 bg-sky-400" : "border-[#6C7275]",
+            )}
             checked={checked}
             onCheckedChange={(val) => {
               if (val !== "indeterminate") {

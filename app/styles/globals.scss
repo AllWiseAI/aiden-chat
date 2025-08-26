@@ -11,12 +11,11 @@
   --gray-2: rgba(232, 236, 239, 1);
   --border-in-light-1: 2px solid var(--gray-2);
 
-
   /* color */
   --white: white;
   --black: rgb(48, 48, 48);
   --gray: rgb(250, 250, 250);
-  --primary: rgba(0, 212, 126, 1);
+  // --primary: rgba(0, 212, 126, 1);
   --second: white;
   --hover-color: #f3f3f3;
   --bar-color: rgb(186, 187, 188);
@@ -41,16 +40,15 @@
   --gray: rgb(21, 21, 21);
   --gray-1: #232627;
   --gray-2: #343839;
-  --primary: rgba(0, 212, 126, 1);
+  // --primary: rgba(0, 212, 126, 1);
   --second: rgb(27 38 42);
   --hover-color: #323232;
-  
+
   --bar-color: rgb(186, 187, 188);
   --bar-active-color: rgb(119, 122, 125);
   --border-in-light: 1px solid rgb(35, 38, 39);
 
   --theme-color: var(--gray);
-
 }
 
 .light {
@@ -99,8 +97,8 @@
 html {
   height: var(--full-height);
 
-  font-family: "PingFang SC", "Noto Sans", "SF Pro SC", "SF Pro Text", "SF Pro Icons",
-     "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-family: "PingFang SC", "Noto Sans", "SF Pro SC", "SF Pro Text",
+    "SF Pro Icons", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 }
 
 body {
@@ -288,7 +286,7 @@ div.math {
 
 pre {
   position: relative;
-  
+
   &:hover .copy-code-button {
     pointer-events: all;
     transform: translateX(0px);
@@ -331,7 +329,7 @@ pre {
     display: inline-flex;
     justify-content: center;
     pointer-events: none;
-    button{
+    button {
       pointer-events: auto;
       margin-top: 3em;
       margin-bottom: 4em;
@@ -342,14 +340,18 @@ pre {
       text-align: center;
       color: white;
       background: #464e4e;
-    } 
+    }
   }
-  
+
   .expanded {
     background-image: none;
   }
   .collapsed {
-    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.06));
+    background-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.8),
+      rgba(0, 0, 0, 0.06)
+    );
   }
 }
 

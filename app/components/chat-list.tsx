@@ -163,7 +163,9 @@ export function ChatItem(props: {
                       <MoreIcon
                         className={clsx(
                           "transition-opacity",
-                          openMenu ? "block" : "hidden group-hover:block",
+                          openMenu
+                            ? "block"
+                            : !props.selected && "hidden group-hover:block",
                         )}
                       />
                     </DropdownMenuTrigger>

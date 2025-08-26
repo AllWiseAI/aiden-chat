@@ -173,7 +173,15 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
           </div>
         </SelectValue>
       </SelectTrigger>
-      <SelectContent className="max-h-[320px] bg-[#FEFEFE] dark:bg-[#141718] select-none w-62.5 p-0">
+      <SelectContent
+        className="max-h-[320px] bg-[#FEFEFE] dark:bg-[#141718] select-none w-62.5 p-0"
+        style={{
+          boxShadow: `
+                    0px 0px 24px 4px rgba(0,0,0,0.05),
+                    0px 32px 48px -4px rgba(0,0,0,0.2)
+                `,
+        }}
+      >
         <div className="max-w-60 overflow-y-auto max-h-[260px] px-1 py-2 space-y-1.5">
           {Object.entries(groupedLocalProviders).map(
             ([groupLabel, provider]) => {
@@ -203,16 +211,21 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
                     />
                     <span>{groupLabel}</span>
                   </SelectLabel>
-                  <div className={clsx("pl-5", isOpen ? "block" : "hidden")}>
+                  <div
+                    className={clsx(
+                      "pl-5",
+                      isOpen ? "block space-y-1 mt-1" : "hidden",
+                    )}
+                  >
                     {models?.map((model: ModelOption) => (
                       <SelectItem
                         key={model.value}
                         value={model.value}
-                        className="dark:hover:!bg-[#232627]"
+                        className="dark:hover:!bg-[#232627] h-9"
                       >
                         <div className="flex items-center justify-center gap-2">
                           <div
-                            className="text-sm font-normal truncate max-w-[170px]"
+                            className="text-sm text-[#141718] dark:text-[#FEFEFE] font-normal truncate max-w-[170px]"
                             title={model.label}
                           >
                             {model.label}
@@ -229,11 +242,13 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
 
         <div className="max-w-60 h-max px-2 py-2 bg-[#FEFEFE] dark:bg-[#141718]">
           <div
-            className="h-7.5 cursor-pointer px-2 py-1 bg-[#E8ECEF]/50 dark:bg-[#232627]/50 group rounded flex items-center justify-between"
+            className="h-7.5 cursor-pointer px-2 py-1 bg-[#E8ECEF]/50 dark:bg-[#232627]/50 group rounded-sm flex items-center justify-between"
             onClick={() => navigate(Path.Settings + "?tab=model")}
           >
-            <span className="text-sm group-hover:text-[#00AB66]">Manage</span>
-            <RightIcon className="size-4 text-muted-foreground group-hover:text-[#00AB66]" />
+            <span className="text-sm font-medium group-hover:text-[#00AB66]">
+              Manage
+            </span>
+            <RightIcon className="size-6 text-muted-foreground group-hover:text-[#00AB66]" />
           </div>
         </div>
       </SelectContent>

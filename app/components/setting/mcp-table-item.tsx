@@ -249,6 +249,7 @@ export function McpTableItem({
             <StatusIcon
               className={clsx("absolute right-0 bottom-0 size-2.5", {
                 "animate-spin text-main": status === McpAction.Loading,
+                "text-main": status === McpAction.Connected,
               })}
             />
           )}

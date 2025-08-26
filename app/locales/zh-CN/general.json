@@ -151,7 +151,7 @@
     "config": "配置"
   },
   "invite": {
-    "btn": "邀请好友",
+    "btn": "邀请",
     "title": "邀请",
     "copy": "邀请链接已复制。",
     "vip": {
@@ -168,8 +168,8 @@
     "used": "已使用",
     "unused": "可用",
     "tip": "种子用户在上线后可享受 3 个月免费使用",
-    "text": "注册Aiden立享火爆大模型免费使用权！下载：https://aidenai.iofo/ 输入邀请码{{inviteCode}} 开启您的Aiden之旅！",
-    "textVip": "注册Aiden立享火爆大模型免费使用权！下载：https://aidenai.iofo/ 输入专属邀请码{{inviteCode}} 开启您的Aiden之旅！"
+    "text": "注册Aiden立享火爆大模型免费使用权！下载：https://aidenai.info/ 输入邀请码{{inviteCode}} 开启您的Aiden之旅！",
+    "textVip": "注册Aiden立享火爆大模型免费使用权！下载：https://aidenai.info/ 输入专属邀请码{{inviteCode}} 开启您的Aiden之旅！"
   },
   "dialog": {
     "tutorial": "教程",
