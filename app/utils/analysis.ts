@@ -1,3 +1,8 @@
+import config from "@/src-tauri/tauri.conf.json";
+import { getOSInfo } from "@/app/utils";
+import { getLang } from "@/app/locales";
+import { useSettingStore } from "../store/setting";
+
 export const EVENTS = {
   // 首页
   HOME_EXPOSURE: "home_exposure", // 首页曝光UV
@@ -31,11 +36,14 @@ type TrackEvent = {
   payload: Record<string, any>;
   timestamp: number;
   appVersion: string;
+  osInfo: string;
+  lang: string;
+  region: string;
 };
 
 const STORAGE_KEY = "analysis_events";
-const FLUSH_INTERVAL = 10_000; // 10 秒批量上报一次
-const API_ENDPOINT = "/api/track"; // 后端接口
+const FLUSH_INTERVAL = 10_000;
+const API_ENDPOINT = "/api/track";
 
 function loadEvents(): TrackEvent[] {
   try {
@@ -50,15 +58,28 @@ function saveEvents(events: TrackEvent[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
 }
 
-export function track(event: EventName, payload: Record<string, any> = {}) {
+let osInfo = "";
+const lang = getLang();
+const appVersion = config.package.version;
+
+export async function track(
+  event: EventName,
+  payload: Record<string, any> = {},
+) {
+  if (!osInfo) {
+    osInfo = await getOSInfo();
+  }
   const newEvent: TrackEvent = {
     event,
     payload,
     timestamp: Date.now(),
-    appVersion: "1.0.0",
+    appVersion: appVersion,
+    osInfo: osInfo,
+    lang: lang,
+    region: useSettingStore.getState().region,
   };
   if (process.env.NODE_ENV !== "production") {
-    console.log("[track:dev]", newEvent);
+    console.log("[track:dev]", event, newEvent);
     return;
   }
 
@@ -91,6 +112,8 @@ async function flush() {
   }
 }
 
-setInterval(flush, FLUSH_INTERVAL);
-
-window.addEventListener("beforeunload", flush);
+export function initAnalysis() {
+  if (typeof window === "undefined") return;
+  setInterval(flush, FLUSH_INTERVAL);
+  window.addEventListener("beforeunload", flush);
+}

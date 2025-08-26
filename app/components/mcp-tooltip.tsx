@@ -15,33 +15,8 @@ import { useMcpStore } from "@/app/store/mcp";
 
 function McpPopover({ icon }: { icon: ReactElement }) {
   const navigate = useNavigate();
-
-  // const mcpIconMap: Map<string, string> = useMemo(
-  //   () => {
-  //     const map = new Map<string, string>();
-  //     for (const [k, v] of Object.entries(iconObj)) {
-  //       map.set(k, v);
-  //     }
-  //     return map;
-  //   },
-  //   [iconObj],
-  // );
-
   const mcpStatusList = useMcpStore((state) => state.mcpStatusList);
   const mcpRenderedMap = useMcpStore((state) => state.mcpRenderedMap);
-
-  // const allFailed = useMemo(() => {
-  //   return mcpStatusList.every((item) => item.action === McpAction.Failed);
-  // }, [mcpStatusList]);
-
-  // const hasLoading = useMemo(() => {
-  //   return mcpStatusList.some((item) => item.action === McpAction.Loading);
-  // }, [mcpStatusList]);
-
-  // const hasSuccess = useMemo(() => {
-  //   if (hasLoading) return false;
-  //   return mcpStatusList.some((item) => item.action === McpAction.Connected);
-  // }, [mcpStatusList, hasLoading]);
 
   const SuccessStatusIcon = useMemo(() => {
     return (
@@ -60,20 +35,6 @@ function McpPopover({ icon }: { icon: ReactElement }) {
       <div className="absolute -bottom-1 -right-[2px] w-1 h-1 bg-[#F8E243] rounded-full animate-ping"></div>
     );
   }, []);
-
-  // const renderStatusIcon = useMemo(() => {
-  //   if (hasSuccess) return SuccessStatusIcon;
-  //   if (allFailed) return FailedStatusIcon;
-  //   if (hasLoading) return LoadingStatusIcon;
-  //   return null;
-  // }, [
-  //   hasSuccess,
-  //   allFailed,
-  //   hasLoading,
-  //   FailedStatusIcon,
-  //   SuccessStatusIcon,
-  //   LoadingStatusIcon,
-  // ]);
 
   return (
     <Popover>

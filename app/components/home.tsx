@@ -15,7 +15,7 @@ import { Path, SlotID } from "../constant";
 import { ErrorBoundary } from "./error";
 import i18n from "i18next";
 import { getLang } from "../locales";
-
+import { initAnalysis } from "@/app/utils/analysis";
 import {
   HashRouter as Router,
   Route,
@@ -246,6 +246,8 @@ export function Home() {
   useHtmlLang();
   useEffect(() => {
     console.log("[Config] got config from build time", getClientConfig());
+
+    initAnalysis();
   }, []);
 
   if (!useHasHydrated()) {
