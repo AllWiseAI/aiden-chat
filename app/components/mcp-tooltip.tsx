@@ -1,22 +1,28 @@
 import { Button } from "@/app/components/shadcn/button";
-import { useMemo } from "react";
+import { useMemo, useEffect, ReactElement } from "react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/app/components/shadcn/popover";
-import { ReactElement } from "react";
 import FetchIcon from "../icons/fetch.svg";
 import RightIcon from "../icons/right-arrow.svg";
 import { useNavigate } from "react-router-dom";
 import { Path } from "../constant";
 import { McpAction } from "@/app/typing";
 import { useMcpStore } from "@/app/store/mcp";
+import { track, EVENTS } from "@/app/utils/analysis";
 
 function McpPopover({ icon }: { icon: ReactElement }) {
   const navigate = useNavigate();
   const mcpStatusList = useMcpStore((state) => state.mcpStatusList);
   const mcpRenderedMap = useMcpStore((state) => state.mcpRenderedMap);
+
+  useEffect(() => {
+    track(EVENTS.MCP_STORE_OPEN, {
+      count: mcpStatusList.length,
+    });
+  }, [mcpStatusList]);
 
   const SuccessStatusIcon = useMemo(() => {
     return (
@@ -36,11 +42,16 @@ function McpPopover({ icon }: { icon: ReactElement }) {
     );
   }, []);
 
+  const handleMcpClick = () => {
+    track(EVENTS.MCP_BUTTON_CLICK);
+  };
+
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
+          onClick={handleMcpClick}
           className="border border-[#E8ECEF] text-black dark:text-white dark:bg-[#141416] dark:border-[#343839] font-medium !rounded-sm p-2.5 h-8"
         >
           {icon}

@@ -2,6 +2,7 @@ import config from "@/src-tauri/tauri.conf.json";
 import { getOSInfo } from "@/app/utils";
 import { getLang } from "@/app/locales";
 import { useSettingStore } from "../store/setting";
+import { aidenFetch as fetch } from "@/app/utils/fetch";
 
 export const EVENTS = {
   // 首页
@@ -12,6 +13,9 @@ export const EVENTS = {
 
   // New Chat
   NEW_CHAT_CLICK: "new_chat_click", // New Chat 按钮点击
+
+  // Chat Count
+  CHAT_COUNT: "chat_count", // 聊天次数
 
   // New Task
   NEW_TASK_CLICK: "new_task_click", // New Task 按钮点击
@@ -32,18 +36,13 @@ export const EVENTS = {
 export type EventName = (typeof EVENTS)[keyof typeof EVENTS];
 
 type TrackEvent = {
-  event: EventName;
-  payload: Record<string, any>;
-  timestamp: number;
-  appVersion: string;
-  osInfo: string;
-  lang: string;
-  region: string;
+  event_name: EventName;
+  params: Record<string, any>;
 };
 
 const STORAGE_KEY = "analysis_events";
 const FLUSH_INTERVAL = 10_000;
-const API_ENDPOINT = "/api/track";
+const API_ENDPOINT = "/api/tracking";
 
 function loadEvents(): TrackEvent[] {
   try {
@@ -70,13 +69,15 @@ export async function track(
     osInfo = await getOSInfo();
   }
   const newEvent: TrackEvent = {
-    event,
-    payload,
-    timestamp: Date.now(),
-    appVersion: appVersion,
-    osInfo: osInfo,
-    lang: lang,
-    region: useSettingStore.getState().region,
+    event_name: event,
+    params: {
+      payload,
+      timestamp: Date.now(),
+      appVersion: appVersion,
+      osInfo: osInfo,
+      lang: lang,
+      region: useSettingStore.getState().region,
+    },
   };
   if (process.env.NODE_ENV !== "production") {
     console.log("[track:dev]", event, newEvent);
@@ -95,17 +96,17 @@ async function flush() {
   try {
     const res = await fetch(API_ENDPOINT, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+      body: {
+        type: "Json",
+        payload: events,
       },
-      body: JSON.stringify({ events }),
     });
 
     if (res.ok) {
       console.log(`[analysis] 成功上报 ${events.length} 条事件`);
       saveEvents([]);
     } else {
-      console.warn(`[analysis] 上报失败: ${res.statusText}`);
+      console.warn(`[analysis] 上报失败`);
     }
   } catch (err) {
     console.error("[analysis] 上报异常:", err);

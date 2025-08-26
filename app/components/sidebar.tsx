@@ -29,7 +29,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { isIOS, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
 import clsx from "clsx";
-// import { exportAndDownloadLog } from "../utils/log";
 
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
   loading: () => null,
@@ -221,7 +220,10 @@ export function SideBarHeader(props: {
                 clearable
                 value={searchValue}
                 placeholder="Search"
-                onChange={(e) => setSearchValue(e.target.value)}
+                onChange={(e) => {
+                  track(EVENTS.SEARCH_BUTTON_CLICK);
+                  setSearchValue(e.target.value);
+                }}
               />
 
               <SearchIcon className="absolute top-1/2 left-1.5 transform -translate-y-1/2 size-4 text-[#6C7275]/50" />
