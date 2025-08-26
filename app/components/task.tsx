@@ -40,6 +40,7 @@ import { ModelSelect } from "../components/model-select";
 import { useAppConfig, Theme } from "../store";
 import { toast } from "sonner";
 import { formatMCPData } from "../utils/chat";
+import { track, EVENTS } from "@/app/utils/analysis";
 dayjs.extend(advancedFormat);
 
 interface TaskPanelProps {
@@ -313,6 +314,10 @@ export function Task() {
   const [model, setModel] = useState<string>(
     currentTask?.modelInfo?.model || "",
   );
+
+  useEffect(() => {
+    track(EVENTS.TASK_PAGE_EXPOSURE);
+  }, []);
   useEffect(() => {
     if (!currentTask) return;
     setIsEdit(false);

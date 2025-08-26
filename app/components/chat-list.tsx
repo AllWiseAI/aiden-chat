@@ -36,6 +36,7 @@ import { showConfirm } from "./ui-lib";
 import { useMobileScreen } from "../utils";
 import clsx from "clsx";
 import { Input } from "./shadcn/input";
+import { track, EVENTS } from "@/app/utils/analysis";
 
 export function ChatItem(props: {
   onClick?: () => void;
@@ -265,6 +266,12 @@ export function ChatList(props: { narrow?: boolean; searchValue?: string }) {
   const navigate = useNavigate();
   const isMobileScreen = useMobileScreen();
   const { t } = useTranslation("general");
+
+  useEffect(() => {
+    track(EVENTS.CHAT_COUNT, {
+      count: sessions.length,
+    });
+  }, [sessions]);
 
   const filteredSessions = useMemo(() => {
     if (!props.searchValue)

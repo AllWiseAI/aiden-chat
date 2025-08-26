@@ -30,6 +30,7 @@ import SystemMode from "../../icons/theme-system.svg";
 import InfoIcon from "../../icons/info.svg";
 import { ChangePasswordModal, SuccessModal } from "./change-password-modal";
 import RestartDialog from "../restart-dialog";
+import { track, EVENTS } from "@/app/utils/analysis";
 import clsx from "clsx";
 
 export default function General() {
@@ -57,6 +58,7 @@ export default function General() {
 
   useEffect(() => {
     getRagStatus();
+    track(EVENTS.SETTING_GENERAL_EXPOSURE);
   }, []);
 
   const [rag, setRag] = useState(false);
