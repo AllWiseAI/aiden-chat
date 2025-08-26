@@ -173,7 +173,7 @@ export function TaskList(props: { searchValue?: string }) {
     async function getBackendTasks() {
       const res = await getTaskList();
       const { code, data } = res;
-      if (code === 0 && data && data.length) {
+      if (code === 0 && data) {
         const formatTaskList = data.map((item: Task) => ({
           ...item,
           modelInfo: resolveModelInfo(item.model_info),

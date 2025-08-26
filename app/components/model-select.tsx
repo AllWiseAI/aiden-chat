@@ -163,13 +163,22 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
     [mode, updateModel, onChange],
   );
 
+  const renderDisplayModel = () => {
+    const res = currentModel.split(":");
+    if (res.length === 2) {
+      const [, model] = res;
+      return model;
+    }
+    return currentModel;
+  };
+
   return (
     <Select value={currentModel} onValueChange={handleModelChange}>
       <SelectTrigger className="w-full border-0 hover:bg-muted/20 dark:hover:bg-muted/30 shadow-none text-base">
         <SelectValue placeholder="Select model">
           <div className="flex items-center gap-1">
             <ProviderIcon provider={currentProvider} className="size-5" />
-            <div>{modelInfo?.model}</div>
+            <div>{renderDisplayModel()}</div>
           </div>
         </SelectValue>
       </SelectTrigger>
