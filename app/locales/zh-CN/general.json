@@ -39,11 +39,18 @@
     "delete": "删除",
     "typing": "正在输入…",
     "send": "发送",
-    "image": {
-      "tip": "请上传图片或pdf文件",
-      "fileTypes": "不支持的图片或pdf格式",
+    "file": {
       "disabledTips1": "当前模型不支持",
-      "disabledTips2": "图片和pdf文件识别。"
+      "disabledTips2": "图片和PDF文件识别",
+      "fileTypes": "不支持的文件格式，请选择图片或PDF文件"
+    },
+    "image": {
+      "tip": "请选择图片文件进行上传",
+      "fileTypes": "不支持的文件格式，请选择图片文件"
+    },
+    "pdf": {
+      "tip": "请选择PDF文件进行上传",
+      "fileTypes": "不支持的文件格式，请选择PDF文件"
     }
   },
   "task": {
