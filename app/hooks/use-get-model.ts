@@ -8,6 +8,7 @@ export function useGetModel() {
 
   const defaultModel = useAppConfig((state) => state.defaultModel);
   const getModelInfo = useAppConfig((state) => state.getModelInfo);
+  const defaultModelInfo = getModelInfo(defaultModel);
 
   const chatStore = useChatStore();
   const currentSession = chatStore.currentSession()!;
@@ -26,13 +27,13 @@ export function useGetModel() {
     return {
       modelInfo: currentSession.modelInfo,
       updateModel,
-      defaultModel,
+      defaultModelInfo,
     };
   }
 
   return {
-    modelInfo: getModelInfo(defaultModel),
+    modelInfo: defaultModelInfo,
     updateModel,
-    defaultModel,
+    defaultModelInfo,
   };
 }
