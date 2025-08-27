@@ -15,6 +15,7 @@ import clsx from "clsx";
 import { shell } from "@tauri-apps/api";
 import { getLang } from "../locales";
 import { useTranslation } from "react-i18next";
+import { appDataInit } from "../utils/init";
 import LoadingIcon from "../icons/loading-spinner.svg";
 
 interface FormData {
@@ -403,6 +404,7 @@ export function SignUpPage() {
         "",
       );
       if (success) {
+        appDataInit();
         navigate(Path.Chat);
         toast.success(t("signUp.success"), {
           className: "w-auto max-w-max",
