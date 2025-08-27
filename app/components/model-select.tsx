@@ -30,8 +30,9 @@ type Props = {
 
 export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
   const navigate = useNavigate();
-  const { modelInfo, updateModel, defaultModel } = useGetModel();
+  const { modelInfo, updateModel, defaultModelInfo } = useGetModel();
   const modelList = useAppConfig((s) => s.models);
+  const getModelInfo = useAppConfig((state) => state.getModelInfo);
   const localProviders = useAppConfig((state) => state.localProviders);
   const setGroupedProviders = useAppConfig(
     (state) => state.setGroupedProviders,
@@ -54,24 +55,49 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
     const list = Object.values(groupedLocalProviders)
       .flatMap((provider) => provider.models)
       .map((item) => {
-        return item.value;
+        return item.display || item.label;
       });
     return list;
   }, [groupedLocalProviders]);
 
-  const currentModel = useMemo(() => {
+  const modelValueList = useMemo(() => {
+    const list = Object.values(groupedLocalProviders)
+      .flatMap((provider) => provider.models)
+      .map((item) => {
+        return item.value || item.model;
+      });
+    return list;
+  }, [groupedLocalProviders]);
+
+  const currentModelDisplay = useMemo(() => {
+    if (value) {
+      const modelInfo = getModelInfo(value);
+      if (modelInfo) {
+        return modelInfo.apiKey ? modelInfo.model : modelInfo.display;
+      }
+      return defaultModelInfo.display;
+    } else {
+      const modelName = modelInfo.apiKey ? modelInfo.model : modelInfo.display;
+      if (modelNameList.includes(modelName!)) {
+        return modelName!;
+      }
+      return defaultModelInfo.display;
+    }
+  }, [value, modelInfo, defaultModelInfo, modelNameList, getModelInfo]);
+
+  const currentModelValue = useMemo(() => {
     if (value) {
       return value;
     } else {
       const modelName = modelInfo?.apiKey
         ? `${modelInfo?.provider}:${modelInfo?.model}`
         : modelInfo?.model;
-      if (modelNameList.includes(modelName!)) {
+      if (modelValueList.includes(modelName!)) {
         return modelName!;
       }
-      return defaultModel;
+      return defaultModelInfo.model;
     }
-  }, [value, modelInfo, defaultModel, modelNameList]);
+  }, [value, modelInfo, defaultModelInfo, modelValueList]);
 
   const formatProvider = (inputData: ProviderOption[]) => {
     const result = inputData.reduce(
@@ -136,8 +162,8 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
   );
 
   useEffect(() => {
-    if (currentModel) {
-      const res = currentModel.split(":");
+    if (currentModelValue) {
+      const res = currentModelValue.split(":");
       if (res.length === 2) {
         const [provider] = res;
         setCurrentProvider(provider);
@@ -150,7 +176,7 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
         setOpenGroup(INNER_PROVIDER_NAME);
       }
     }
-  }, [currentModel, localProviders, modelList]);
+  }, [currentModelValue, localProviders, modelList]);
 
   const handleModelChange = useCallback(
     (value: string) => {
@@ -163,22 +189,13 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
     [mode, updateModel, onChange],
   );
 
-  const renderDisplayModel = () => {
-    const res = currentModel.split(":");
-    if (res.length === 2) {
-      const [, model] = res;
-      return model;
-    }
-    return currentModel;
-  };
-
   return (
-    <Select value={currentModel} onValueChange={handleModelChange}>
+    <Select value={currentModelValue} onValueChange={handleModelChange}>
       <SelectTrigger className="w-full border-0 hover:bg-muted/20 dark:hover:bg-muted/30 shadow-none text-base">
         <SelectValue placeholder="Select model">
           <div className="flex items-center gap-1">
             <ProviderIcon provider={currentProvider} className="size-5" />
-            <div>{renderDisplayModel()}</div>
+            <div>{currentModelDisplay}</div>
           </div>
         </SelectValue>
       </SelectTrigger>
