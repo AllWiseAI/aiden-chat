@@ -114,7 +114,7 @@
     "updater": {
       "active": true,
       "endpoints": [
-        "https://github.com/AllWiseAI/aiden-chat/releases/latest/download/latest.json"
+        "https://static.aidenai.info/chat/releases/latest.json"
       ],
       "dialog": false,
       "windows": {
