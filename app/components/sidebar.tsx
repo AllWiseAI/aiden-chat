@@ -138,14 +138,12 @@ export function useDragSideBar() {
   useEffect(() => {
     function handleResize() {
       const isNarrow = shouldNarrowRef.current;
-
       if (!isNarrow && window.innerWidth < 700) {
         toggleSideBar();
       }
     }
 
     window.addEventListener("resize", handleResize);
-    handleResize();
 
     return () => {
       window.removeEventListener("resize", handleResize);
@@ -188,7 +186,7 @@ export function SideBarContainer(props: {
     >
       {children}
       <div
-        className="absolute w-[2px] h-full top-0 right-0 transition-all ease-in-out duration-300 bg-[#E8ECEF] dark:bg-[#232627]/50 hover:bg-[#00D47E] dark:hover:bg-[#00D47E] cursor-ew-resize"
+        className="absolute w-[2px] h-full top-0 right-0 transition-all ease-in-out duration-300 bg-[#F3F5F7] dark:bg-[#232627]/50 hover:bg-[#00D47E] dark:hover:bg-[#00D47E] cursor-ew-resize"
         onPointerDown={(e) => onDragStart(e as any)}
       ></div>
     </div>
@@ -216,7 +214,7 @@ export function SideBarHeader(props: {
           <div className="flex gap-1.5">
             <div className="flex-center relative">
               <Input
-                className="h-[30px] !text-left bg-[#E8ECEF] dark:bg-[#232627] focus:bg-white dark:focus:bg-[#101213] focus:border-[#00D47E] focus:dark:border-[#00D47E] placeholder:text-sm !placeholder:text-[#6C7275] pl-6 pr-2.5 py-1 rounded-sm"
+                className="h-[30px] !text-left bg-[#E8ECEF] dark:bg-[#232627] focus:bg-white dark:focus:bg-[#101213] focus:border-[#00D47E] focus:dark:border-[#00D47E] hover:bg-accent dark:hover:bg-[#2F2F2F] placeholder:text-sm !placeholder:text-[#6C7275] pl-6 pr-2.5 py-1 rounded-sm"
                 clearable
                 value={searchValue}
                 placeholder="Search"
@@ -230,7 +228,7 @@ export function SideBarHeader(props: {
             </div>
             <Button
               variant="ghost"
-              className="bg-[#E8ECEF] dark:bg-[#232627] size-[30px]"
+              className="bg-[#E8ECEF] dark:bg-[#232627] size-[30px] rounded-sm"
               onClick={toggleSideBar}
             >
               <CollapseIcon className="size-5" />
@@ -281,8 +279,8 @@ export function SideBarBody(props: {
               </span>
             </Button>
           </div>
-          <div className="flex-1 flex flex-col gap-2.5 px-4 overflow-y-auto">
-            {children}
+          <div className="scroll-container flex-1 min-h-0">
+            <div className="flex flex-col gap-2.5 pl-4 pr-2">{children}</div>
           </div>
         </>
       )}

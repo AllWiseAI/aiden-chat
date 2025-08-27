@@ -154,7 +154,7 @@ export function LoginPage() {
           <LogoTextIcon className="h-5.5" />
         </div>
 
-        <span className="text-lg font-medium">{t("signIn.to")} Aiden.ai</span>
+        <span className="text-lg font-medium">{t("signIn.to")}</span>
       </div>
       <form
         className="flex-center flex-col gap-5 w-full"
@@ -229,23 +229,26 @@ export function LoginPage() {
             Captcha
           </Label>
           <div className="flex items-center gap-2">
-            <Input
-              id="captchaAnswer"
-              type="text"
-              placeholder="Enter captcha"
-              className={clsx(
-                "w-full h-9 !text-left px-2.5 py-2 rounded-sm text-sm hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]",
-                {
-                  "border-[#EF466F] dark:border-[#EF466F]": error.captcha,
-                },
-              )}
-              value={formData.captchaAnswer}
-              onChange={handleChange}
-            />
+            <div className="flex-1">
+              <Input
+                id="captchaAnswer"
+                type="text"
+                placeholder="Enter captcha"
+                className={clsx(
+                  "w-full h-9 !text-left px-2.5 py-2 rounded-sm text-sm hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]",
+                  {
+                    "border-[#EF466F] dark:border-[#EF466F]": error.captcha,
+                  },
+                )}
+                value={formData.captchaAnswer}
+                onChange={handleChange}
+              />
+            </div>
+
             <img
               src={captcha.captcha_image}
               alt=""
-              className="h-10 cursor-pointer border rounded"
+              className="w-30 h-10 cursor-pointer border rounded"
               onClick={getCaptcha}
             ></img>
           </div>
@@ -255,7 +258,10 @@ export function LoginPage() {
         </div>
         <div className="self-start flex items-center gap-2 text-xs">
           <Checkbox
-            className="!size-[14px] !border-[#6C7275] !rounded-xs cursor-pointer"
+            className={clsx(
+              "!size-[14px] !rounded-xs cursor-pointer",
+              checked ? "border-0 bg-sky-400" : "border-[#6C7275]",
+            )}
             checked={checked}
             onCheckedChange={(val) => {
               if (val !== "indeterminate") {

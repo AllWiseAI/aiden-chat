@@ -77,7 +77,7 @@ function ServerTable({
   return (
     <>
       {servers.length ? (
-        <div className="grid grid-cols-1 @xss:grid-cols-2 @headerMd:grid-cols-3 justify-items-center items-center gap-5">
+        <div className="grid grid-cols-1 @xss:grid-cols-2 @headerMd:grid-cols-3 justify-items-between items-center gap-5">
           {servers.map((item) => (
             <McpTableItem
               key={item.mcp_id + item.mcp_name}

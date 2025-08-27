@@ -54,6 +54,7 @@ export const useSettingStore = createPersistStore(
         }
       } catch (e) {
         console.error("getRegion error:", e);
+        set({ region: "CN" });
       }
     },
     setRegion: (region: string) => {

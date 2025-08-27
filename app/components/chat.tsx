@@ -485,12 +485,12 @@ function InnerChat() {
             <AccordionContent
               className={styles["chat-message-item-mcp-result"]}
             >
-              <div className="mb-2.5 rounded-2xl bg-white dark:bg-[#141718] border p-4">
+              <div className="mb-2.5 rounded-sm bg-white dark:bg-[#141718] border p-2.5">
                 <div className="mb-2 font-medium">Request</div>
                 <div>{renderCallRequest(message.mcpInfo.request)}</div>
               </div>
-              <div className="rounded-2xl bg-white dark:bg-[#141718] border p-4">
-                <div className="mt-2 mb-2 font-medium">Response </div>
+              <div className="rounded-sm bg-white dark:bg-[#141718] border p-2.5">
+                <div className="mb-2 font-medium">Response</div>
                 <div>{renderMcpToolResponse(message.mcpInfo.response)}</div>
               </div>
             </AccordionContent>
@@ -530,7 +530,7 @@ function InnerChat() {
               </>
             ) : (
               <div
-                className={styles["chat-body"]}
+                className={clsx(styles["chat-body"], "scroll-container")}
                 ref={scrollRef}
                 onScroll={(e) => onChatBodyScroll(e.currentTarget)}
                 onMouseDown={() => inputRef.current?.blur()}
@@ -539,7 +539,7 @@ function InnerChat() {
                   setAutoScroll(false);
                 }}
               >
-                <div className="w-full h-max max-w-[776px]">
+                <div className="flex flex-col gap-5 w-full h-max max-w-[776px]">
                   {renderMessages.map((message, i) => {
                     const isUser = message.role === "user";
                     const isMcpMsg = message.mcpInfo !== undefined;
@@ -696,12 +696,12 @@ function InnerChat() {
                     <FileUploader />
                     <McpPopover
                       icon={
-                        <McpIcon className="size-[18px] text-black dark:text-white" />
+                        <McpIcon className="size-[18px] text-black dark:text-white stroke-[1.125]" />
                       }
                     />
                   </div>
                   <Button
-                    className="absolute bottom-3 right-3 size-8 bg-main rounded-full hover:bg-[#00D47E]/90 p-0 disabled:bg-[#373A3B] disabled:opacity-100 dark:disabled:bg-[#343839] !disabled:cursor-not-allowed"
+                    className="absolute bottom-3 right-3 size-8 bg-main rounded-full hover:bg-[#00D47E]/90 p-0 disabled:bg-[#6C7275] disabled:opacity-100 dark:disabled:bg-[#343839] !disabled:cursor-not-allowed"
                     onClick={() => doSubmit(userInput)}
                     disabled={shouldDisabled}
                   >

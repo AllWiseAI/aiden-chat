@@ -229,7 +229,11 @@ function TaskPanel({ task, setIsEdit }: TaskPanelProps) {
     <div className="flex flex-col gap-5 py-3 px-5 text-sm bg-[#F3F5F7]/50 dark:bg-[#232627]/50 text-[#101213] dark:text-white rounded-xl">
       <div className="flex items-center gap-2">
         <span className="flex-1 min-w-0 text-lg truncate">{task.name}</span>
-        <Button variant="ghost" className="size-7" onClick={setIsEdit}>
+        <Button
+          variant="ghost"
+          className="size-8 hover:opacity-70"
+          onClick={setIsEdit}
+        >
           <EditIcon className="size-6 text-main" />
         </Button>
       </div>
@@ -274,7 +278,7 @@ function TaskPanel({ task, setIsEdit }: TaskPanelProps) {
             <span>{t("task.notification")}</span>
           </div>
 
-          <div className="flex items-center justify-center gap-1 text-[#141718] dark:text-[#FEFEFE] bg-[#E8ECEF] dark:bg-[#343839] px-1.5 py-1 font-medium">
+          <div className="flex items-center justify-center gap-1 text-[#141718] dark:text-[#FEFEFE] bg-[#E8ECEF] dark:bg-[#343839] px-1.5 py-1 font-medium rounded-sm">
             {task.original_info.enable_notification ? (
               <>
                 <NotificationOnIcon className="size-5 text-main" />

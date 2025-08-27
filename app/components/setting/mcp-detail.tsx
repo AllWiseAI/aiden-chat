@@ -9,7 +9,7 @@ import { useState, useMemo, useCallback } from "react";
 import { useMcpStore } from "@/app/store/mcp";
 import { useTranslation } from "react-i18next";
 import { checkShowTemplateModal } from "@/app/utils/mcp";
-
+import clsx from "clsx";
 import { McpConfigKey, McpItemInfo, TTemplateInfo } from "@/app/typing";
 import { McpTemplateModal } from "./mcp-template-modal";
 import { McpOauthModal } from "./mcp-oauth-modal";
@@ -139,12 +139,28 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
         <div className="header flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="bg-[#E8ECEF] dark:bg-[#343839] rounded-full flex items-center justify-center w-[30px] h-[30px]">
-              {detailInfo.mcp_logo ? (
-                <img width="18" height="18" src={detailInfo.mcp_logo}></img>
-              ) : (
-                <FetchIcon className="w-[18px] h-[18px] text-[#343839] dark:text-[#6C7275]" />
-              )}
+              <div
+                className={clsx(
+                  "flex-center rounded-full",
+                  detailInfo.mcp_logo &&
+                    detailInfo.mcp_key !== "aiden-search" &&
+                    detailInfo.mcp_key !== "aiden-time"
+                    ? "w-full h-full overflow-hidden"
+                    : "w-[18px] h-[18px]",
+                )}
+              >
+                {detailInfo.mcp_logo ? (
+                  <img
+                    src={detailInfo.mcp_logo}
+                    width="100%"
+                    height="100%"
+                  ></img>
+                ) : (
+                  <FetchIcon className="w-full h-full text-[#343839] dark:text-[#6C7275]" />
+                )}
+              </div>
             </div>
+
             <div className="font-medium text-sm">{detailInfo.mcp_name}</div>
           </div>
           <div className="mt-1">

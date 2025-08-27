@@ -32,6 +32,7 @@ import { createTask, testTask, updateTask } from "../services/task";
 import { toast } from "sonner";
 import { getLang } from "../locales";
 import { useTranslation } from "react-i18next";
+import LoadingIcon from "../icons/loading-spinner.svg";
 
 interface NotificationProps {
   checked: boolean;
@@ -255,7 +256,7 @@ export default function TaskManagement({
       <div className="flex flex-col gap-1.5">
         <span className="text-[#6C7275]">{t("task.name")}</span>
         <Input
-          className="h-10 !text-left rounded-sm bg-white dark:bg-[#101213] border border-white dark:border-[#101213] focus:border-[#00AB66] dark:focus:border-[#00AB66] p-2.5"
+          className="h-10 !text-left rounded-sm bg-white dark:bg-[#101213] border border-white dark:border-[#101213] hover:border-[#232627]/50 dark:hover:border-white focus:border-[#00AB66] dark:focus:border-[#00D47E] p-2.5"
           placeholder={t("task.enterTaskName")}
           value={newTask.name}
           onChange={(e) =>
@@ -271,7 +272,7 @@ export default function TaskManagement({
           <span className="text-[#6C7275]">{t("task.date")}</span>
           <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
             <PopoverTrigger asChild>
-              <div className="h-full flex justify-between items-center pr-1.5 bg-white dark:bg-[#101213] rounded-sm">
+              <div className="h-full flex justify-between items-center pr-1.5 bg-white dark:bg-[#101213] border border-white dark:border-[#101213] hover:border-[#232627]/50 dark:hover:border-white data-[state=open]:border-[#00AB66] dark:data-[state=open]:border-[#00D47E] rounded-sm">
                 <div
                   className={clsx(
                     "flex items-center gap-1 px-2.5 py-2 text-sm",
@@ -354,7 +355,7 @@ export default function TaskManagement({
             }));
           }}
         >
-          <SelectTrigger className="!w-full !h-10 bg-white dark:bg-[#101213] dark:hover:bg-[#101213] rounded-sm border-0 !data-[placeholder]:text-black">
+          <SelectTrigger className="!w-full !h-10 bg-white dark:bg-[#101213] hover:border-[#232627]/50 dark:hover:border-white rounded-sm border data-[state=open]:border-[#00AB66] dark:data-[state=open]:border-[#00D47E] !data-[placeholder]:text-black">
             <SelectValue placeholder={t("task.selectTaskType")} />
           </SelectTrigger>
           <SelectContent className="w-[var(--radix-select-trigger-width)]">
@@ -373,7 +374,7 @@ export default function TaskManagement({
       <div className="flex flex-col gap-1.5">
         <span className="text-[#6C7275]">{t("task.description")}</span>
         <textarea
-          className="bg-white dark:bg-[#101213] placeholder:text-[#6C7275]/50 dark:placeholder:text-[#E8ECEF]/50 rounded-sm p-2.5 resize-none border border-white dark:border-[#101213] focus:border-[#00AB66] dark:focus:border-[#00AB66] overflow-y-auto max-h-[40vh]"
+          className="bg-white dark:bg-[#101213] placeholder:text-[#6C7275]/50 dark:placeholder:text-[#E8ECEF]/50 rounded-sm p-2.5 resize-none border border-white dark:border-[#101213] focus:border-[#00AB66] dark:focus:border-[#00AB66] hover:border-[#232627]/50 dark:hover:border-white overflow-y-auto max-h-[40vh]"
           ref={textareaRef}
           rows={1}
           placeholder={t("task.taskDesp")}
@@ -402,7 +403,11 @@ export default function TaskManagement({
           onClick={handleTestClick}
           disabled={!confirmBtn || isTestLoading}
         >
-          {t("task.test")}
+          {isTestLoading ? (
+            <LoadingIcon className="size-4 animate-spin" />
+          ) : (
+            t("task.test")
+          )}
         </Button>
         <Button
           disabled={!confirmBtn}

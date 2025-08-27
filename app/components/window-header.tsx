@@ -22,7 +22,7 @@ export function WindowHeader({ children }: { children?: ReactNode }) {
         {shouldNarrow && (
           <Button
             variant="ghost"
-            className="bg-[#F3F5F7] dark:bg-[#232627] size-[30px]"
+            className="bg-[#F3F5F7] dark:bg-[#232627] size-[30px] rounded-sm hover:bg-[#E8ECEF]"
             onClick={toggleSideBar}
           >
             <CollapseIcon className="size-5" />
