@@ -51,15 +51,6 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
     },
   });
 
-  const modelNameList = useMemo(() => {
-    const list = Object.values(groupedLocalProviders)
-      .flatMap((provider) => provider.models)
-      .map((item) => {
-        return item.display || item.label;
-      });
-    return list;
-  }, [groupedLocalProviders]);
-
   const modelValueList = useMemo(() => {
     const list = Object.values(groupedLocalProviders)
       .flatMap((provider) => provider.models)
@@ -68,22 +59,6 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
       });
     return list;
   }, [groupedLocalProviders]);
-
-  const currentModelDisplay = useMemo(() => {
-    if (value) {
-      const modelInfo = getModelInfo(value);
-      if (modelInfo) {
-        return modelInfo.apiKey ? modelInfo.model : modelInfo.display;
-      }
-      return defaultModelInfo.display;
-    } else {
-      const modelName = modelInfo.apiKey ? modelInfo.model : modelInfo.display;
-      if (modelNameList.includes(modelName!)) {
-        return modelName!;
-      }
-      return defaultModelInfo.display;
-    }
-  }, [value, modelInfo, defaultModelInfo, modelNameList, getModelInfo]);
 
   const currentModelValue = useMemo(() => {
     if (value) {
@@ -95,15 +70,33 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
       if (modelValueList.includes(modelName!)) {
         return modelName!;
       }
-      return defaultModelInfo.model;
+      return defaultModelInfo?.model;
     }
   }, [value, modelInfo, defaultModelInfo, modelValueList]);
+
+  const getCustomModelName = (modelInfo: ProviderOption) => {
+    const models = modelInfo.models;
+    const model = modelInfo.model;
+    const customModel = models.find(
+      (item) => item.value.split(":")[1] === model,
+    );
+    return customModel?.label;
+  };
+
+  const currentModelDisplay = useMemo(() => {
+    const modelInfo = getModelInfo(currentModelValue!);
+    if (modelInfo) {
+      return modelInfo.apiKey
+        ? getCustomModelName(modelInfo)
+        : modelInfo.display;
+    }
+    return defaultModelInfo?.display;
+  }, [currentModelValue, defaultModelInfo, getModelInfo]);
 
   const formatProvider = (inputData: ProviderOption[]) => {
     const result = inputData.reduce(
       (acc: Record<string, ProviderOption>, item) => {
         const { models, provider, display } = item;
-
         if (acc[display]) {
           const existingModels = acc[display].models;
           acc[display].models = [
