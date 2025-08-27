@@ -105,10 +105,15 @@ export const getHeaders = async ({
       console.log("[refresh token] token is going to expired, refresh token.");
       // 防止多次同时触发 refresh 请求
       if (!refreshingTokenPromise) {
-        refreshingTokenPromise = refreshToken().finally(() => {
-          refreshingTokenPromise = null;
-          console.log("[refresh token] refresh token done.");
-        });
+        refreshingTokenPromise = refreshToken()
+          .catch((e) => {
+            console.log("[refresh token] refresh token error: ", e);
+            window.location.href = "/#/login";
+          })
+          .finally(() => {
+            refreshingTokenPromise = null;
+            console.log("[refresh token] refresh token done.");
+          });
       }
       await refreshingTokenPromise;
     }
