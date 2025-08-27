@@ -9,6 +9,7 @@ import {
   SelectLabel,
   SelectItem,
 } from "@/app/components/shadcn/select";
+import Image from "next/image";
 import clsx from "clsx";
 import { useAppConfig } from "../store";
 import { useCallback, useEffect, useState, useMemo } from "react";
@@ -189,12 +190,30 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
     [mode, updateModel, onChange],
   );
 
+  const renderProviderIcon = () => {
+    if (currentProvider === INNER_PROVIDER_NAME) {
+      return (
+        <Image
+          src={modelInfo.logo_uri ?? ""}
+          height={16}
+          width={16}
+          alt="model"
+        ></Image>
+      );
+    }
+    return (
+      <>
+        <ProviderIcon provider={currentProvider} className="size-5" />
+      </>
+    );
+  };
+
   return (
     <Select value={currentModelValue} onValueChange={handleModelChange}>
       <SelectTrigger className="w-full border-0 hover:bg-muted/20 dark:hover:bg-muted/30 shadow-none text-base">
         <SelectValue placeholder="Select model">
           <div className="flex items-center gap-1">
-            <ProviderIcon provider={currentProvider} className="size-5" />
+            {renderProviderIcon()}
             <div>{currentModelDisplay}</div>
           </div>
         </SelectValue>

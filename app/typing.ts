@@ -194,6 +194,7 @@ export type ModelOption = {
   provider: string;
   value: string;
   label: string;
+  logo_uri: null | string;
 };
 
 export type CustomModelOption = {

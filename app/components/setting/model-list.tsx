@@ -7,13 +7,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/app/components/shadcn/table";
+import Image from "next/image";
 import { Button } from "../shadcn/button";
 import { useAppConfig } from "@/app/store";
 import { ModelOption, ProviderOption } from "@/app/typing";
 import EditIcon from "@/app/icons/edit.svg";
 import PlusIcon from "@/app/icons/plus.svg";
 import DeleteIcon from "@/app/icons/delete.svg";
-import DefaultModelIcon from "@/app/icons/default-model-icon.svg";
 import { useTranslation } from "react-i18next";
 import { AddModelModal } from "./add-model-modal";
 import { getProviderList } from "@/app/services";
@@ -57,7 +57,7 @@ export default function ModelList() {
   const renderModelList = useMemo(() => {
     if (!showMore) return modelList.slice(0, 6);
     else return modelList;
-  }, [showMore]);
+  }, [showMore, modelList]);
 
   const handleAddModel = () => {
     setIsModalEdit(false);
@@ -65,7 +65,6 @@ export default function ModelList() {
   };
 
   const handleModelConfirm = (provider: ProviderOption) => {
-    console.log("provider", provider);
     if (isModalEdit) {
       updateLocalProviders(provider);
     } else {
@@ -114,12 +113,19 @@ export default function ModelList() {
                   key={model.id}
                   className="border-[#F3F5F7] dark:border-[#232627]/50"
                 >
-                  <TableCell className="flex-1 mr-0 px-2.5 py-3.5 h-13 font-medium flex gap-2 items-center">
-                    <DefaultModelIcon size="4" />
+                  <TableCell className="flex-1 mr-0 px-2.5 py-3.5 h-13 font-medium text-base flex gap-2 items-center">
                     Aiden
                   </TableCell>
                   <TableCell className="px-2.5 py-3.5 h-13 text-sm">
-                    {model.display}
+                    <div className="flex items-center gap-1">
+                      <Image
+                        src={model.logo_uri ?? ""}
+                        height={20}
+                        width={20}
+                        alt="model"
+                      ></Image>
+                      {model.display}
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -157,8 +163,8 @@ export default function ModelList() {
                   key={item.itemId}
                   className="border-[#F3F5F7] dark:border-[#232627]/50"
                 >
-                  <TableCell className="px-2.5 py-3.5 font-medium">
-                    <div className="flex gap-2 items-center">
+                  <TableCell className="px-2.5 py-3.5 font-medium text-base">
+                    <div className="flex gap-1 items-center">
                       <ProviderIcon
                         provider={item.provider}
                         className="size-5"
