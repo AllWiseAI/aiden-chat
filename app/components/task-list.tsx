@@ -209,19 +209,31 @@ export function TaskList(props: { searchValue?: string }) {
   };
 
   const [showMore, setShowMore] = useState(false);
+
+  useEffect(() => {
+    if (!searchValue) {
+      const expiredIndex = renderTaskList.findIndex(
+        (item) => item.next_run_time === null,
+      );
+      if (expiredIndex !== -1 && expiredIndex + 4 < renderTaskList.length) {
+        setShowMore(true);
+      } else {
+        setShowMore(false);
+      }
+    }
+  }, [renderTaskList, searchValue]);
+
   const filteredTasks = useMemo(() => {
     if (!searchValue) {
       const expiredIndex = renderTaskList.findIndex(
         (item) => item.next_run_time === null,
       );
       const length = renderTaskList.length;
-      if (expiredIndex !== -1 && expiredIndex + 4 > length) {
-        setShowMore(true);
-      }
       return showMore
         ? renderTaskList.slice(0, Math.min(expiredIndex + 4, length))
         : renderTaskList;
     }
+
     const lowerSearch = searchValue.toLowerCase();
     return renderTaskList.filter((task) =>
       task.name.toLowerCase().includes(lowerSearch),

@@ -83,7 +83,7 @@ export default function TimeSelect({
         <div
           className={clsx(
             "flex items-center gap-1.5 rounded-sm pl-1.5 w-full border border-white dark:border-[#101213] hover:border-[#232627]/50 dark:hover:border-white hover:focus-within:border-[#00AB66] dark:hover:focus-within:border-[#00D47E] focus-within:border-[#00AB66] dark:focus-within:border-[#00D47E]",
-            timeErr && "border-[#EF466F] dark:border-[#EF466F]",
+            timeErr && "!border-[#EF466F] !dark:border-[#EF466F]",
           )}
         >
           <TimeCalendarIcon className="text-main shrink-0" />
@@ -118,11 +118,13 @@ export default function TimeSelect({
               ref={isMatched ? matchedRef : null}
               className={clsx(
                 "hover:bg-[#F5F5F5] dark:hover:bg-[#101213] px-2.5 py-2 cursor-default",
-                time === inputVal && "bg-[#F5F5F5] hover:bg-[#101213]",
+                time === inputVal &&
+                  "bg-[#F5F5F5] dark:bg-[#101213] hover:bg-[#101213]",
               )}
               key={time}
               onClick={() => {
                 setInputVal(time);
+                setTimeErr("");
                 onChange(time);
                 setOpen(false);
               }}
