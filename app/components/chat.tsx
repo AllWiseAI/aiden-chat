@@ -695,7 +695,7 @@ function InnerChat() {
                     <FileUploader />
                     <McpPopover
                       icon={
-                        <McpIcon className="size-[18px] text-black dark:text-white" />
+                        <McpIcon className="size-[18px] text-black dark:text-white stroke-[1.125]" />
                       }
                     />
                   </div>

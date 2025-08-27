@@ -1,8 +1,8 @@
-<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M3 6H6.5M21 6H11.5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-<circle cx="9" cy="6" r="2.5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-<path d="M21 12H19M3 12H14" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-<circle cx="2.5" cy="2.5" r="2.5" transform="matrix(-1 0 0 1 19 9.5)" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-<path d="M3 18H8M21 18H13" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-<circle cx="10.5" cy="18" r="2.5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 4H4.33333M14 4H7.66667" stroke="currentColor" stroke-width="inherit" stroke-linejoin="round"/>
+<ellipse cx="6.00016" cy="4.00065" rx="1.66667" ry="1.66667" stroke="currentColor" stroke-width="inherit" stroke-linejoin="round"/>
+<path d="M14 8H12.6667M2 8H9.33333" stroke="currentColor" stroke-width="inherit" stroke-linejoin="round"/>
+<ellipse cx="1.66667" cy="1.66667" rx="1.66667" ry="1.66667" transform="matrix(-1 0 0 1 12.6665 6.33398)" stroke="currentColor" stroke-width="inherit" stroke-linejoin="round"/>
+<path d="M2 12H5.33333M14 12H8.66667" stroke="currentColor" stroke-width="inherit" stroke-linejoin="round"/>
+<ellipse cx="7.00016" cy="12.0007" rx="1.66667" ry="1.66667" stroke="currentColor" stroke-width="inherit" stroke-linejoin="round"/>
 </svg>

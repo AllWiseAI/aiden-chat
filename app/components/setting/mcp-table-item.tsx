@@ -233,17 +233,26 @@ export function McpTableItem({
 
   return (
     <div
-      className="w-full h-full flex flex-col gap-2.5 rounded-sm border border-[#E8ECEF] dark:border-[#232627] px-2.5 py-3 cursor-pointer hover:bg-[#F3F5F74D] dark:hover:bg-[#232627]/30 transition-colors mim-w-[207px] max-w-[336px]"
+      className="w-full h-full flex flex-col gap-2.5 rounded-sm border border-[#E8ECEF] dark:border-[#232627] px-2.5 py-3 cursor-pointer hover:bg-[#F3F5F74D] dark:hover:bg-[#232627]/30 transition-colors mim-w-[207px] max-w-[383px]"
       key={mcp_id + mcp_key}
       onClick={onSelect}
     >
       <div className="flex items-top gap-4">
         <div className="w-[30px] h-[30px] flex-shrink-0 flex-center bg-[#E8ECEF] dark:bg-[#343839] rounded-full relative">
-          {mcp_logo ? (
-            <img src={mcp_logo} width="18" height="18"></img>
-          ) : (
-            <FetchIcon className="w-[18px] h-[18px] text-[#343839] dark:text-[#6C7275]" />
-          )}
+          <div
+            className={clsx(
+              "flex-center rounded-full",
+              mcp_logo && mcp_key !== "aiden-search" && mcp_key !== "aiden-time"
+                ? "w-full h-full overflow-hidden"
+                : "w-[18px] h-[18px]",
+            )}
+          >
+            {mcp_logo ? (
+              <img src={mcp_logo} width="100%" height="100%"></img>
+            ) : (
+              <FetchIcon className="w-full h-full text-[#343839] dark:text-[#6C7275]" />
+            )}
+          </div>
 
           {checked && StatusIcon && (
             <StatusIcon

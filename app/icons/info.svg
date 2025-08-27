@@ -1,11 +1,11 @@
 <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_698_4912)">
-<circle cx="8.00004" cy="8.00016" r="6.66667" stroke="currentColor" stroke-width="1.5"/>
-<path d="M8 12.4443V5.77767" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-<path d="M8 5.03711V3.55563" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+<g clip-path="url(#clip0_5092_5967)">
+<circle cx="7.99992" cy="8.00016" r="6.66667" stroke="currentColor" stroke-width="inherit"/>
+<path d="M8 12.4443V5.77767" stroke="currentColor" stroke-width="inherit" stroke-linejoin="round"/>
+<path d="M8 5.03711V3.55563" stroke="currentColor" stroke-width="inherit" stroke-linejoin="round"/>
 </g>
 <defs>
-<clipPath id="clip0_698_4912">
+<clipPath id="clip0_5092_5967">
 <rect width="16" height="16" fill="white"/>
 </clipPath>
 </defs>

@@ -5,6 +5,7 @@ import McpManagement from "./setting/mcp-management";
 import ModelList from "./setting/model-list";
 import Subscription from "./setting/subscription";
 import AboutUs from "./setting/about-us";
+import clsx from "clsx";
 import { Button } from "@/app/components/shadcn/button";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -115,7 +116,14 @@ export function Settings() {
                       : "hover:bg-[#F3F5F7]/50 dark:hover:text-white/60 dark:hover:bg-[#232627]"
                   }`}
                 >
-                  <item.icon className="size-4 flex-shrink-0" />
+                  <item.icon
+                    className={clsx(
+                      "size-4 shrink-0",
+                      selected === item.value
+                        ? "stroke-[1.5]"
+                        : "stroke-[1.13]",
+                    )}
+                  />
                   <p className="text-sm">{item.name}</p>
                 </li>
               ))}

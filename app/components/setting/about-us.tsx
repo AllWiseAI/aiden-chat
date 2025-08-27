@@ -60,7 +60,7 @@ export default function AboutUs() {
             <div
               key={item.name}
               onClick={item.onClick}
-              className="group h-13 flex justify-between items-center hover:bg-[#E8ECEF] dark:hover:bg-[#232627]/50 px-4 py-2.5 cursor-pointer text-black dark:text-white text-sm border-t border-[#F3F5F7] dark:border-[#232627]/50"
+              className="group h-13 flex justify-between items-center hover:bg-[#F3F5F7] dark:hover:bg-[#232627]/50 px-4 py-2.5 cursor-pointer text-black dark:text-white text-sm border-t border-[#F3F5F7] dark:border-[#232627]/50"
             >
               {item.name}
               <RightIcon className="size-5 hidden group-hover:inline-block text-[#6C7275] dark:text-[#6C7275]" />

@@ -210,7 +210,7 @@ export default function General() {
             <div className="font-medium">{t("general.rag.title")}</div>
             <Tooltip>
               <TooltipTrigger>
-                <InfoIcon className="size-5 text-[#00D47E]" />
+                <InfoIcon className="size-5 text-main stroke-[1.5]" />
               </TooltipTrigger>
               <TooltipContent
                 hasArrow={false}
