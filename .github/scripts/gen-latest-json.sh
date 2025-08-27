@@ -33,6 +33,9 @@ SIGNATURE_X64=$(cat "$SIG_X64")
 CRC64_DMG_ARM64=$(python3 "$CRC_TOOL" "$DMG_ARM64")
 CRC64_DMG_X64=$(python3 "$CRC_TOOL" "$DMG_X64")
 
+CRC64_ZIP_ARM64=$(python3 "$CRC_TOOL" "$ZIP_ARM64")
+CRC64_ZIP_X64=$(python3 "$CRC_TOOL" "$ZIP_X64")
+
 
 # === 构建 latest.json ===
 echo "📝 生成合并版 latest.json..."
@@ -47,14 +50,16 @@ cat > dist/latest.json <<EOF
     "darwin-aarch64": {
       "signature": "$SIGNATURE_ARM64",
       "url": "$REPO_URL/$(basename "$ZIP_ARM64")",
-      "dmg_url": "$REPO_URL/$(basename "$DMG_ARM64")",
-      "dmg_crc64": "$CRC64_DMG_ARM64"
+      "zip_crc64": "$CRC64_ZIP_ARM64",
+      "installer_url": "$REPO_URL/$(basename "$DMG_ARM64")",
+      "installer_crc64": "$CRC64_DMG_ARM64"
     },
     "darwin-x86_64": {
       "signature": "$SIGNATURE_X64",
       "url": "$REPO_URL/$(basename "$ZIP_X64")",
-      "dmg_url": "$REPO_URL/$(basename "$DMG_X64")",
-      "dmg_crc64": "$CRC64_DMG_X64"
+       "zip_crc64": "$CRC64_ZIP_X64",
+      "installer_url": "$REPO_URL/$(basename "$DMG_X64")",
+      "installer_crc64": "$CRC64_DMG_X64"
     }
   }
 }
