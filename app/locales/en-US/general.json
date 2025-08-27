@@ -39,11 +39,18 @@
     "delete": "Delete",
     "typing": "Typing…",
     "send": "Send",
-    "image": {
-      "tip": "Please select an image or pdf file to upload",
-      "fileTypes": "The file type is not supported, please select an image or pdf file",
+    "file": {
       "disabledTips1": "The current model does not",
-      "disabledTips2": "support image and pdf file recognition."
+      "disabledTips2": "support image and pdf file recognition.",
+      "fileTypes": "The file type is not supported, please select an image or pdf file"
+    },
+    "image": {
+      "tip": "Please select an image file to upload",
+      "fileTypes": "The file type is not supported, please select an image file"
+    },
+    "pdf": {
+      "tip": "Please select a pdf file to upload",
+      "fileTypes": "The file type is not supported, please select a pdf file"
     }
   },
   "task": {

@@ -24,24 +24,31 @@ export const FileUploader = () => {
 
   const validateAndUpload = (file: File) => {
     if (!file) return;
-
-    if (!file.type.startsWith("image/") && file.type !== "application/pdf") {
-      toast.error(t("chat.image.tip"));
-      return;
-    }
-    const validExtensions = [
+    const validImageExtensions = [
       ".jpg",
       ".jpeg",
       ".png",
       ".gif",
       ".webp",
       ".bmp",
-      ".pdf",
     ];
+
+    const validPDFExtensions = [".pdf"];
     const fileName = file.name.toLowerCase();
-    const isValid = validExtensions.some((ext) => fileName.endsWith(ext));
-    if (!isValid) {
+    const isImageValid = validImageExtensions.some((ext) =>
+      fileName.endsWith(ext),
+    );
+    const isPDFValid = validPDFExtensions.some((ext) => fileName.endsWith(ext));
+    if (supportImage && !supportPDF && !isImageValid) {
       toast.error(t("chat.image.fileTypes"));
+      return;
+    }
+    if (supportPDF && !supportImage && !isPDFValid) {
+      toast.error(t("chat.pdf.fileTypes"));
+      return;
+    }
+    if (supportImage && supportPDF && !isImageValid && !isPDFValid) {
+      toast.error(t("chat.file.fileTypes"));
       return;
     }
     uploadFile(file);
@@ -114,8 +121,8 @@ export const FileUploader = () => {
         <Tooltip>
           <TooltipTrigger asChild>{renderButton(disable)}</TooltipTrigger>
           <TooltipContent>
-            <p>{t("chat.image.disabledTips1")}</p>
-            <p>{t("chat.image.disabledTips2")}</p>
+            <p>{t("chat.file.disabledTips1")}</p>
+            <p>{t("chat.file.disabledTips2")}</p>
           </TooltipContent>
         </Tooltip>
       );
