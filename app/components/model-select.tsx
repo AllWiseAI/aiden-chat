@@ -223,7 +223,9 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
                     }
                     className={clsx(
                       "cursor-pointer gap-1 text-xs font-medium px-2 py-1 text-muted-foreground hover:text-foreground transition flex items-center",
-                      isOpen ? "text-[#6C7275]" : "text-[#6C727580]",
+                      isOpen
+                        ? "text-[#6C7275] dark:text-[#E8ECEF]"
+                        : "text-[#6C7275]/50 dark:text-[#6C7275] hover:text-[#6C7275] dark:hover:text-[#E8ECEF]",
                     )}
                   >
                     {isOpen ? (
