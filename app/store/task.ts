@@ -48,6 +48,12 @@ export const useTaskStore = createPersistStore(
         const newTasks = currentTasks.filter((t) => t.id !== id);
         set({ tasks: newTasks });
       },
+      markTaskAsRead: (id: string) => {
+        const tasks = get().tasks.map((t) =>
+          t.id === id ? { ...t, show_unread: false } : t,
+        );
+        set({ tasks });
+      },
     };
     return methods;
   },

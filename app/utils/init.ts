@@ -1,5 +1,6 @@
 import { initLocalToken } from "../utils/fetch";
 import { useMcpStore } from "../store/mcp";
+import { useSettingStore } from "../store/setting";
 import { useAppConfig } from "../store/config";
 import { showNotification } from "../utils/notification";
 import { websocketManager } from "../utils/websocket";
@@ -37,4 +38,6 @@ export const appDataInit = async () => {
   useMcpStore.getState().init();
   useAppConfig.getState().initModelList();
   initWebsocket();
+  const getRegion = useSettingStore.getState().getRegion;
+  getRegion();
 };
