@@ -70,7 +70,7 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
       if (modelValueList.includes(modelName!)) {
         return modelName!;
       }
-      return defaultModelInfo?.model;
+      return defaultModelInfo?.model ?? "";
     }
   }, [value, modelInfo, defaultModelInfo, modelValueList]);
 
@@ -80,7 +80,7 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
     const customModel = models.find(
       (item) => item.value.split(":")[1] === model,
     );
-    return customModel?.label;
+    return customModel?.label ?? "";
   };
 
   const currentModelDisplay = useMemo(() => {
@@ -90,7 +90,7 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
         ? getCustomModelName(modelInfo)
         : modelInfo.display;
     }
-    return defaultModelInfo?.display;
+    return defaultModelInfo?.display ?? "";
   }, [currentModelValue, defaultModelInfo, getModelInfo]);
 
   const formatProvider = (inputData: ProviderOption[]) => {
