@@ -8,7 +8,7 @@ import LogoTextIcon from "@/app/icons/logo-text.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Path } from "../constant";
-import { useAuthStore, useSettingStore } from "../store";
+import { useAuthStore } from "../store";
 import { toast } from "sonner";
 import clsx from "clsx";
 import { shell } from "@tauri-apps/api";
@@ -19,7 +19,6 @@ import { appDataInit } from "../utils/init";
 import { apiGetCaptcha } from "../services";
 
 export function LoginPage() {
-  const getRegion = useSettingStore((state) => state.getRegion);
   const login = useAuthStore((state) => state.login);
   const navigate = useNavigate();
   const lang = getLang() === "zh-CN" ? "zh/" : "";
@@ -92,7 +91,6 @@ export function LoginPage() {
       setLoading(false);
       getCaptcha();
     }
-    getRegion();
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -258,10 +256,7 @@ export function LoginPage() {
         </div>
         <div className="self-start flex items-center gap-2 text-xs">
           <Checkbox
-            className={clsx(
-              "!size-[14px] !rounded-xs cursor-pointer",
-              checked ? "border-0 bg-sky-400" : "border-[#6C7275]",
-            )}
+            className={clsx("!size-[14px] !rounded-xs cursor-pointer")}
             checked={checked}
             onCheckedChange={(val) => {
               if (val !== "indeterminate") {

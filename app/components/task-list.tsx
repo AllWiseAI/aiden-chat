@@ -1,5 +1,5 @@
 import { useTaskStore, useAppConfig } from "../store";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -147,17 +147,9 @@ export function TaskList(props: { searchValue?: string }) {
   const deleteTask = useTaskStore((state) => state.deleteTask);
   const selectedId = useTaskStore((state) => state.currentTaskId);
   const setSelectedId = useTaskStore((state) => state.setCurrentTaskId);
+  const markTaskAsRead = useTaskStore((state) => state.markTaskAsRead);
   const navigate = useNavigate();
   const getModelInfo = useAppConfig((state) => state.getModelInfo);
-  const [taskList, setTaskList] = useState<(Task & { isUpdate: boolean })[]>(
-    [],
-  );
-
-  useEffect(() => {
-    if (tasks) {
-      setTaskList(tasks.map((t) => ({ ...t, isUpdate: t.show_unread })));
-    }
-  }, [tasks]);
 
   const resolveModelInfo = (modelInfo: ModelHeaderInfo) => {
     const apiKey = modelInfo["Aiden-Model-Api-Key"];
@@ -185,13 +177,15 @@ export function TaskList(props: { searchValue?: string }) {
   }, []);
 
   const renderTaskList = useMemo(() => {
-    if (!taskList) return [];
-    return taskList.sort((a, b) => {
-      return (
-        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-      );
-    });
-  }, [taskList]);
+    if (!tasks) return [];
+    return tasks
+      .map((t) => ({ ...t, isUpdate: t.show_unread }))
+      .sort((a, b) => {
+        return (
+          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+        );
+      });
+  }, [tasks]);
 
   const handleDeleteTask = async (item: Task) => {
     const { id } = item || {};
@@ -209,9 +203,10 @@ export function TaskList(props: { searchValue?: string }) {
   };
 
   const [showMore, setShowMore] = useState(false);
+  const isInit = useRef(false);
 
   useEffect(() => {
-    if (!searchValue) {
+    if (!searchValue && !isInit.current) {
       const expiredIndex = renderTaskList.findIndex(
         (item) => item.next_run_time === null,
       );
@@ -220,6 +215,7 @@ export function TaskList(props: { searchValue?: string }) {
       } else {
         setShowMore(false);
       }
+      isInit.current = true;
     }
   }, [renderTaskList, searchValue]);
 
@@ -254,11 +250,7 @@ export function TaskList(props: { searchValue?: string }) {
           isUpdate={item.isUpdate}
           selected={item.id === selectedId}
           onClick={() => {
-            setTaskList((prev) =>
-              prev.map((t) =>
-                t.id === item.id ? { ...t, isUpdate: false } : t,
-              ),
-            );
+            markTaskAsRead(item.id);
             setSelectedId(item.id);
             navigate(`${Path.Task}/${item.id}`);
           }}
