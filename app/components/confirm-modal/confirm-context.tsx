@@ -167,24 +167,26 @@ export const ConfirmProvider = ({
     }
 
     return (
-      <AlertDialogDescription className="w-[278px] flex flex-col items-center gap-2.5 text-base font-normal text-[#141718] dark:text-white border border-[#E8ECEF] dark:border-[#232627] rounded-sm px-2.5 py-2 whitespace-nowrap">
-        <Accordion type="single" collapsible className="w-full">
-          <AccordionItem value={options.title}>
-            <AccordionTrigger className="max-w-full flex !py-0">
-              <div className="flex-1 flex min-w-0 gap-2">
-                <MapIcon className="size-[18px] shrink-0" />
-                <span className="flex-1 truncate">{options.description}</span>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="!pb-0 w-full">
-              <div className="mt-2.5 max-w-full overflow-x-scroll">
-                <div className="w-max">
-                  <Markdown content={prettyObject(options.mcpInfo || "")} />
+      <AlertDialogDescription asChild>
+        <div className="w-[278px] flex flex-col items-center gap-2.5 text-base font-normal text-[#141718] dark:text-white border border-[#E8ECEF] dark:border-[#232627] rounded-sm px-2.5 py-2 whitespace-nowrap">
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value={options.title}>
+              <AccordionTrigger className="max-w-full flex !py-0">
+                <div className="flex-1 flex min-w-0 gap-2">
+                  <MapIcon className="size-[18px] shrink-0" />
+                  <span className="flex-1 truncate">{options.description}</span>
                 </div>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+              </AccordionTrigger>
+              <AccordionContent className="!pb-0 w-full">
+                <div className="mt-2.5 max-w-full overflow-x-scroll">
+                  <div className="w-max">
+                    <Markdown content={prettyObject(options.mcpInfo || "")} />
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
       </AlertDialogDescription>
     );
   }, [options]);
