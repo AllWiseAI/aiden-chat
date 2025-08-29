@@ -166,7 +166,7 @@ export default function TaskManagement({
 
   useEffect(() => {
     handleInput();
-  }, []);
+  }, [newTask.details]);
 
   const handleTestClick = async () => {
     const { name, date, hour, minute, type, notification, details } = newTask;
