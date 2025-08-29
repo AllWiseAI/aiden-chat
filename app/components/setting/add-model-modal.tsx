@@ -27,7 +27,7 @@ import {
 } from "@/app/typing";
 import { fetch } from "@tauri-apps/api/http";
 import { useAppConfig } from "@/app/store";
-import { toast } from "sonner";
+import { toast } from "@/app/utils/toast";
 
 interface ModelInfo {
   provider: string;
@@ -230,6 +230,7 @@ export function AddModelModal({
     } catch (error) {
       setModelList([]);
       setIsGettingModelLoading(false);
+      toast.error(error as string);
       console.error("Error fetching models:", error);
     }
   };
@@ -350,6 +351,7 @@ export function AddModelModal({
                 <div className="relative">
                   <MultiSelectDropdown
                     className={clsx("flex-1 w-full max-w-full border-0")}
+                    provider={formData.provider}
                     value={formData.models}
                     options={modelList}
                     onChange={handleModelsChange}

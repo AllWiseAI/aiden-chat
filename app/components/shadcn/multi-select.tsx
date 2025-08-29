@@ -11,11 +11,12 @@ import clsx from "clsx";
 import ArrowDownIcon from "@/app/icons/arrow-down.svg";
 import ArrowUpIcon from "@/app/icons/arrow-up.svg";
 import LoadingSpinner from "@/app/icons/loading-spinner.svg";
-import GPTIcon from "@/app/icons/gpt.svg";
 import { CustomModelOption } from "@/app/typing";
+import { ProviderIcon } from "@/app/components/setting/provider-icon";
 
 type MultiSelectDropdownProps = {
   className?: string;
+  provider: string;
   value?: string[];
   options: CustomModelOption[];
   loading?: boolean;
@@ -33,6 +34,7 @@ export function MultiSelectDropdown({
   options,
   onChange,
   loading,
+  provider,
 }: MultiSelectDropdownProps) {
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
@@ -95,7 +97,7 @@ export function MultiSelectDropdown({
             onCheckedChange={() => toggleChecked(opt.value)}
           >
             <div className="flex items-center gap-1">
-              <GPTIcon className="h-4 w-4" />
+              <ProviderIcon provider={provider} className="h-4 w-4" />
               {opt.label}
             </div>
           </DropdownMenuCheckboxItem>
