@@ -474,7 +474,6 @@ export const useMcpStore = createPersistStore(
           const serverNames = loadingItems.map((item) => item.name);
           try {
             const statusList = await batchFetchMcpStatus(serverNames);
-            console.log("statusList", statusList);
             const localStatusList = statusList.map((item) => ({
               name: item.server,
               action: item.status,
