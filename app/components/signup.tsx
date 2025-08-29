@@ -409,6 +409,7 @@ export function SignUpPage() {
         toast.success(t("signUp.success"), {
           className: "w-auto max-w-max",
         });
+        localStorage.setItem("user-email", formData.email);
       }
     } catch (e: any) {
       toast.error(e.message, {
