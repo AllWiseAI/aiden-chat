@@ -337,7 +337,7 @@ export const useChatStore = createPersistStore(
         });
 
         get().updateStat(message, targetSession);
-        get().summarizeSession(false, targetSession);
+        get().summarizeSession(true, targetSession);
       },
 
       async onUserInput(
@@ -358,7 +358,6 @@ export const useChatStore = createPersistStore(
             ...(content ? [{ type: "text" as const, text: content }] : []),
             ...attachFiles
               .map((fileItem) => {
-                console.log("fileItem===", fileItem);
                 const {
                   file: { type },
                   url,
@@ -380,7 +379,6 @@ export const useChatStore = createPersistStore(
               })
               .filter((item) => item !== undefined),
           ];
-          console.log("mContent===", mContent);
         }
 
         const userMessage: ChatMessage = createMessage({
