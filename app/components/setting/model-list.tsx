@@ -113,10 +113,10 @@ export default function ModelList() {
                   key={model.id}
                   className="border-[#F3F5F7] dark:border-[#232627]/50"
                 >
-                  <TableCell className="flex-1 mr-0 px-2.5 py-3.5 h-13 font-medium text-base flex gap-2 items-center">
+                  <TableCell className="max-w-1/2 mr-0 px-2.5 py-3.5 h-13 font-medium text-base flex gap-2 items-center">
                     Aiden
                   </TableCell>
-                  <TableCell className="px-2.5 py-3.5 h-13 text-sm">
+                  <TableCell className="w-max px-2.5 py-3.5 h-13 text-sm">
                     <div className="flex items-center gap-1">
                       <Image
                         src={model.logo_uri ?? ""}
