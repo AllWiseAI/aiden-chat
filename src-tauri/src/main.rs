@@ -3,6 +3,7 @@ mod logger;
 mod mcp;
 mod request;
 mod stream;
+mod cleanup;
 
 use crate::constants::{HOST_SERVER_EVENT_NAME, HOST_SERVER_READY_TEXT, PORTS_TO_KILL};
 use dotenvy;
@@ -341,6 +342,7 @@ async fn main() {
                 .unwrap();
 
             log::info!("AidenAI started successfully!");
+            cleanup::cleanup_database(&config);
             kill_ports(PORTS_TO_KILL);
             let app_handle: AppHandle = app.handle();
             let env_path: PathBuf = get_env_path(&app_handle).expect("Cannot find .env");
