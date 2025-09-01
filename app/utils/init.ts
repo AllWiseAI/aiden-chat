@@ -3,14 +3,20 @@ import { useMcpStore } from "../store/mcp";
 import { useSettingStore } from "../store/setting";
 import { useAppConfig } from "../store/config";
 import { showNotification } from "../utils/notification";
-import { websocketManager } from "../utils/websocket";
+import {
+  TaskFailed,
+  websocketManager,
+  TaskCompletedOrTested,
+} from "../utils/websocket";
 import { getHeaders } from "../utils/fetch";
+import { track, EventName } from "../utils/analysis";
 
 const titleMap = {
   task_completed: "Task Completed",
   task_failed: "Task Failed",
   task_tested: "Task Tested",
   get_latest_refresh_token: "Get Latest Refresh Token",
+  analytics_event: "Analytics Event",
 };
 
 const initWebsocket = () => {
@@ -25,10 +31,14 @@ const initWebsocket = () => {
         token: headers["Aiden-Authorization"],
       });
     }
+    if (msg.type === "analytics_event") {
+      const { event_name, params } = msg;
+      track(event_name as EventName, params);
+    }
     if (["task_completed", "task_failed", "task_tested"].includes(msg.type))
       showNotification({
         title: titleMap[msg.type] ?? msg.type,
-        body: msg.task_description,
+        body: (msg as TaskCompletedOrTested | TaskFailed).task_description,
       });
   });
 };
