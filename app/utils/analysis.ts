@@ -5,34 +5,20 @@ import { useSettingStore } from "../store/setting";
 import { aidenFetch as fetch } from "@/app/utils/fetch";
 
 export const EVENTS = {
-  // 首页
   HOME_EXPOSURE: "home_exposure", // 首页曝光UV
-
-  // Task 页面
   TASK_PAGE_EXPOSURE: "task_page_exposure", // Task 页面曝光UV
-
-  // New Chat
   NEW_CHAT_CLICK: "new_chat_click", // New Chat 按钮点击
-
-  // Chat Count
   CHAT_COUNT: "chat_count", // 聊天次数
-
-  // New Task
   NEW_TASK_CLICK: "new_task_click", // New Task 按钮点击
-
-  // MCP
   MCP_BUTTON_CLICK: "mcp_button_click", // MCP 按钮点击
   MCP_STORE_OPEN: "mcp_store_open", // MCP 开启数
-
-  // 设置页面
   SETTING_GENERAL_EXPOSURE: "setting_general_exposure",
   SETTING_MODEL_EXPOSURE: "setting_model_exposure",
   SETTING_MCP_EXPOSURE: "setting_mcp_exposure",
   SETTING_ABOUT_EXPOSURE: "setting_about_exposure",
-
-  // 搜索
   SEARCH_BUTTON_CLICK: "search_button_click",
 } as const;
+
 export type EventName = (typeof EVENTS)[keyof typeof EVENTS];
 
 type TrackEvent = {
@@ -61,6 +47,12 @@ let osInfo = "";
 const lang = getLang();
 const appVersion = config.package.version;
 
+function appendEvent(newEvent: TrackEvent) {
+  const events = loadEvents();
+  events.push(newEvent);
+  saveEvents(events);
+}
+
 export async function track(
   event: EventName,
   payload: Record<string, any> = {},
@@ -79,19 +71,26 @@ export async function track(
       region: useSettingStore.getState().region,
     },
   };
+
   if (process.env.NODE_ENV !== "production") {
     console.log("[track:dev]", event, newEvent);
     return;
   }
 
-  const events = loadEvents();
-  events.push(newEvent);
-  saveEvents(events);
+  appendEvent(newEvent);
 }
 
+let flushing = false;
+
 async function flush() {
+  if (flushing) return;
+  flushing = true;
+
   const events = loadEvents();
-  if (events.length === 0) return;
+  if (events.length === 0) {
+    flushing = false;
+    return;
+  }
 
   try {
     const res = await fetch(API_ENDPOINT, {
@@ -104,12 +103,16 @@ async function flush() {
 
     if (res.ok) {
       console.log(`[analysis] 成功上报 ${events.length} 条事件`);
-      saveEvents([]);
+      const current = loadEvents();
+      const remaining = current.slice(events.length);
+      saveEvents(remaining);
     } else {
       console.warn(`[analysis] 上报失败`);
     }
   } catch (err) {
     console.error("[analysis] 上报异常:", err);
+  } finally {
+    flushing = false;
   }
 }
 
