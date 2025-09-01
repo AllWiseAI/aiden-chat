@@ -12,6 +12,7 @@ export type TaskBase = {
 export type TaskCompletedOrTested = TaskBase & {
   type: "task_completed" | "task_tested";
   response_data: string;
+  task_description: string;
 };
 
 export type TaskFailed = TaskBase & {
@@ -19,14 +20,25 @@ export type TaskFailed = TaskBase & {
   error_msg: string;
   error_type: string;
   exception_type: string;
+  task_description: string;
 };
 
 export type TaskRefreshToken = {
   type: "get_latest_refresh_token";
-  task_description: "";
+  task_description: string;
 };
 
-export type TaskMessage = TaskCompletedOrTested | TaskFailed | TaskRefreshToken;
+export type AnalyticsEvent = {
+  type: "analytics_event";
+  event_name: string;
+  params: Record<string, string>;
+};
+
+export type TaskMessage =
+  | TaskCompletedOrTested
+  | TaskFailed
+  | TaskRefreshToken
+  | AnalyticsEvent;
 
 type MessageCallback = (msg: TaskMessage) => void;
 class WebSocketManager {
@@ -74,6 +86,7 @@ class WebSocketManager {
             "task_tested",
             "task_failed",
             "get_latest_refresh_token",
+            "analytics_event",
           ].includes(data.type)
         ) {
           this.listeners.forEach((cb) => cb(data));
