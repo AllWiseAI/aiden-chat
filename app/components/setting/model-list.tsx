@@ -117,7 +117,7 @@ export default function ModelList() {
                     Aiden
                   </TableCell>
                   <TableCell className="w-max px-2.5 py-3.5 h-13 text-sm">
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 w-max">
                       <Image
                         src={model.logo_uri ?? ""}
                         height={20}
