@@ -98,18 +98,20 @@ jobs:
         shell: bash
         run: |
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            echo "NPM_CONFIG_REGISTRY=${{ secrets.NPM_CONFIG_REGISTRY }}" | Out-File -FilePath src-tauri/bin/.env -Encoding utf8
-            Add-Content src-tauri/bin/.env "UV_INDEX=${{ secrets.UV_INDEX }}"
-            Add-Content src-tauri/bin/.env "UV_DEFAULT_INDEX=${{ secrets.UV_DEFAULT_INDEX }}"
-            Add-Content src-tauri/bin/.env "UV_EXTRA_INDEX_URL=${{ secrets.UV_EXTRA_INDEX_URL }}"
+            {
+              echo "NPM_CONFIG_REGISTRY=${{ secrets.NPM_CONFIG_REGISTRY }}"
+              echo "UV_INDEX=${{ secrets.UV_INDEX }}"
+              echo "UV_DEFAULT_INDEX=${{ secrets.UV_DEFAULT_INDEX }}"
+              echo "UV_EXTRA_INDEX_URL=${{ secrets.UV_EXTRA_INDEX_URL }}"
+            } > src-tauri/bin/.env
           else
-            cat <<EOF > src-tauri/bin/.env
-            NPM_CONFIG_REGISTRY=${{ secrets.NPM_CONFIG_REGISTRY }}
-            UV_INDEX=${{ secrets.UV_INDEX }}
-            UV_DEFAULT_INDEX=${{ secrets.UV_DEFAULT_INDEX }}
-            UV_EXTRA_INDEX_URL=${{ secrets.UV_EXTRA_INDEX_URL }}
-            HOST_SERVER_VERSION=$(cat .host_server_version)
-            EOF
+            {
+              echo "NPM_CONFIG_REGISTRY=${{ secrets.NPM_CONFIG_REGISTRY }}"
+              echo "UV_INDEX=${{ secrets.UV_INDEX }}"
+              echo "UV_DEFAULT_INDEX=${{ secrets.UV_DEFAULT_INDEX }}"
+              echo "UV_EXTRA_INDEX_URL=${{ secrets.UV_EXTRA_INDEX_URL }}"
+              echo "HOST_SERVER_VERSION=$(cat .host_server_version)"
+            } > src-tauri/bin/.env
           fi
 
       - uses: tauri-apps/tauri-action@v0
