@@ -143,7 +143,7 @@ export function parseSSE(text: string): TParseSSEResult {
 
   const content = choices[0]?.delta?.content;
   if (!content || content.length === 0) {
-    const errorMsg = choices[0]?.delta?.msg;
+    const errorMsg = choices[0]?.delta?.msg || "";
     /**
      * 
      * "choices": [
