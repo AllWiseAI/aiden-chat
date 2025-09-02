@@ -9,12 +9,14 @@ import {
   SelectLabel,
   SelectItem,
 } from "@/app/components/shadcn/select";
+import Image from "next/image";
 import clsx from "clsx";
-import { useAppConfig } from "../store";
+import { useAppConfig, Theme } from "../store";
 import { useCallback, useEffect, useState, useMemo } from "react";
 import { ModelOption, ProviderOption } from "@/app/typing";
 import { useNavigate } from "react-router-dom";
 import { Path } from "../constant";
+import { useTheme } from "../hooks/use-theme";
 import RightIcon from "@/app/icons/right-arrow.svg";
 import ArrowDownIcon from "@/app/icons/arrow-down.svg";
 import ArrowRightIcon from "@/app/icons/arrow-right.svg";
@@ -37,6 +39,7 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
   const setGroupedProviders = useAppConfig(
     (state) => state.setGroupedProviders,
   );
+  const theme = useTheme();
   const [currentProvider, setCurrentProvider] =
     useState<string>(INNER_PROVIDER_NAME);
   const [groupedLocalProviders, setGroupedLocalProviders] = useState({
@@ -182,12 +185,34 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
     [mode, updateModel, onChange],
   );
 
+  const renderProviderIcon = () => {
+    if (currentProvider === INNER_PROVIDER_NAME) {
+      return (
+        <Image
+          src={
+            (theme === Theme.Light
+              ? modelInfo.logo_uri
+              : modelInfo.dark_logo_uri) ?? ""
+          }
+          height={16}
+          width={16}
+          alt="model"
+        ></Image>
+      );
+    }
+    return (
+      <>
+        <ProviderIcon provider={currentProvider} className="size-5" />
+      </>
+    );
+  };
+
   return (
     <Select value={currentModelValue} onValueChange={handleModelChange}>
       <SelectTrigger className="w-full border-0 hover:bg-muted/20 dark:hover:bg-muted/30 shadow-none text-base">
         <SelectValue placeholder="Select model">
           <div className="flex items-center gap-1">
-            <ProviderIcon provider={currentProvider} className="size-5" />
+            {renderProviderIcon()}
             <div>{currentModelDisplay}</div>
           </div>
         </SelectValue>

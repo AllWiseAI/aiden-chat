@@ -194,6 +194,8 @@ export type ModelOption = {
   provider: string;
   value: string;
   label: string;
+  logo_uri: null | string;
+  dark_logo_uri: null | string;
 };
 
 export type CustomModelOption = {
@@ -212,6 +214,7 @@ export type ProviderOption = {
   id: number;
   models_path: string;
   logo_uri: null | string;
+  dark_logo_uri: null | string;
   enabled: boolean;
   headers: Record<string, string>;
   display: string;
