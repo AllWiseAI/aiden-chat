@@ -201,6 +201,7 @@ export const useAuthStore = createPersistStore(
                 expires: expires_at,
               },
             });
+            return access_token;
           } else if ("error" in response) {
             throw new Error(response.error);
           } else {

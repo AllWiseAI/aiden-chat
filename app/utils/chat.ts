@@ -143,6 +143,22 @@ export function parseSSE(text: string): TParseSSEResult {
 
   const content = choices[0]?.delta?.content;
   if (!content || content.length === 0) {
+    const errorMsg = choices[0]?.delta?.msg || "";
+    /**
+     * 
+     * "choices": [
+      {
+        "delta": {
+          "msg": "An error seems to have occurred. Please try again later.\nError code: 401 - {'error': 'Invalid JWT token'}",
+          "code": "-1"
+        }
+      }
+    ]
+     */
+    if (errorMsg.includes("code: 401")) {
+      window.location.href = "/#/login";
+    }
+
     return {
       isMcpInfo: false,
       content: "",
