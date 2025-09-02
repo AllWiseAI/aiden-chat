@@ -42,7 +42,6 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
   const theme = useTheme();
   const [currentProvider, setCurrentProvider] =
     useState<string>(INNER_PROVIDER_NAME);
-
   const [groupedLocalProviders, setGroupedLocalProviders] = useState({
     [INNER_PROVIDER_NAME]: {
       id: -1,
@@ -77,9 +76,6 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
       return defaultModelInfo?.model ?? "";
     }
   }, [value, modelInfo, defaultModelInfo, modelValueList]);
-
-  const [currentInnerModel, setCurrentInnerModel] =
-    useState<string>(currentModelValue);
 
   const getCustomModelName = (modelInfo: ProviderOption) => {
     const models = modelInfo.models;
@@ -184,37 +180,19 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
         updateModel(value);
       } else {
         onChange?.(value);
-        setCurrentInnerModel(value);
       }
     },
     [mode, updateModel, onChange],
   );
 
   const renderProviderIcon = () => {
-    if (mode === "inner" && currentProvider === INNER_PROVIDER_NAME) {
+    if (currentProvider === INNER_PROVIDER_NAME) {
       return (
         <Image
           src={
             (theme === Theme.Light
               ? modelInfo.logo_uri
               : modelInfo.dark_logo_uri) ?? ""
-          }
-          height={16}
-          width={16}
-          alt="model"
-        ></Image>
-      );
-    } else if (
-      groupedLocalProviders["Built-in"].models.find(
-        (item) => item.model === value,
-      )
-    ) {
-      return (
-        <Image
-          src={
-            (theme === Theme.Light
-              ? getModelInfo(currentInnerModel).logo_uri
-              : getModelInfo(currentInnerModel).dark_logo_uri) ?? ""
           }
           height={16}
           width={16}
