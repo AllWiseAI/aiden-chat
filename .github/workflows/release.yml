@@ -124,9 +124,10 @@ jobs:
           releaseId: ${{ needs.create-release.outputs.release_id }}
           args: --target ${{ matrix.rust_target }}
 
-      - name: Notarize app and DMG
-        if: matrix.config.os == 'macos-latest'
-        run: bash .github/scripts/notarize.sh ${{ matrix.config.arch }}
+      - name: Notarize app and DMG (macOS only)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: bash .github/scripts/notarize.sh ${{ matrix.arch }}
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
