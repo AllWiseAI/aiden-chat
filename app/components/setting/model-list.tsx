@@ -9,7 +9,8 @@ import {
 } from "@/app/components/shadcn/table";
 import Image from "next/image";
 import { Button } from "../shadcn/button";
-import { useAppConfig } from "@/app/store";
+import { useAppConfig, Theme } from "@/app/store";
+import { useTheme } from "@/app/hooks/use-theme";
 import { ModelOption, ProviderOption } from "@/app/typing";
 import EditIcon from "@/app/icons/edit.svg";
 import PlusIcon from "@/app/icons/plus.svg";
@@ -42,6 +43,7 @@ export default function ModelList() {
   const [isModalEdit, setIsModalEdit] = useState(false);
   const [currentProviderInfo, setCurrentProviderInfo] =
     useState<ProviderOption>({} as ProviderOption);
+  const theme = useTheme();
 
   useEffect(() => {
     track(EVENTS.SETTING_MODEL_EXPOSURE);
@@ -119,7 +121,11 @@ export default function ModelList() {
                   <TableCell className="w-max px-2.5 py-3.5 h-13 text-sm">
                     <div className="flex items-center gap-1 w-max">
                       <Image
-                        src={model.logo_uri ?? ""}
+                        src={
+                          (theme === Theme.Light
+                            ? model.logo_uri
+                            : model.dark_logo_uri) ?? ""
+                        }
                         height={20}
                         width={20}
                         alt="model"
