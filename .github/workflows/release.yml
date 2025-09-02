@@ -166,6 +166,57 @@ jobs:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
 
+      - name: List build artifacts
+        shell: bash
+        run: ls -R src-tauri/target/
+
+      - name: Set mapped arch name
+        id: arch_map
+        shell: bash
+        run: |
+          if [ "${{ matrix.artifact_arch }}" == "arm64" ]; then
+            echo "mapped_arch=aarch64" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.artifact_arch }}" == "x64" ]; then
+            echo "mapped_arch=x64" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Unknown arch: ${{ matrix.artifact_arch }}"
+            exit 1
+          fi
+
+      - name: Output tag list for debugging
+        shell: bash
+        run: |
+          git fetch --tags
+          echo "📃 所有远端 tag："
+          git tag --sort=-creatordate
+          LATEST_TAG=$(git tag --sort=-creatordate | head -n 1)
+          if [ -z "$LATEST_TAG" ]; then
+            echo "⚠️ 未找到 tag，使用默认 tag：v0.1.13"
+            LATEST_TAG="v0.1.13"
+          fi
+          echo "✅ 使用的 tag 是：$LATEST_TAG"
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+
+      - uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.LATEST_TAG }}
+          overwrite: true
+          files: |
+            # macOS 产物
+            ${{ matrix.os == 'macos-latest' && format('src-tauri/target/{0}/release/bundle/macos/AidenChat_{1}.app.tar.gz', matrix.rust_target, steps.arch_map.outputs.mapped_arch) || '' }}
+            ${{ matrix.os == 'macos-latest' && format('src-tauri/target/{0}/release/bundle/macos/AidenChat_{1}.app.tar.gz.sig', matrix.rust_target, steps.arch_map.outputs.mapped_arch) || '' }}
+            ${{ matrix.os == 'macos-latest' && format('src-tauri/target/{0}/release/bundle/dmg/AidenChat_{1}_{2}_signed.dmg', matrix.rust_target, env.PACKAGE_VERSION, steps.arch_map.outputs.mapped_arch) || '' }}
+
+            # Windows 产物
+            ${{ matrix.os == 'windows-latest' && format('src-tauri/target/{0}/release/bundle/msi/AidenChat_{1}_x64_en-US.msi', matrix.rust_target, env.PACKAGE_VERSION) || '' }}
+            ${{ matrix.os == 'windows-latest' && format('src-tauri/target/{0}/release/bundle/msi/AidenChat_{1}_x64_en-US.msi.zip', matrix.rust_target, env.PACKAGE_VERSION) || '' }}
+            ${{ matrix.os == 'windows-latest' && format('src-tauri/target/{0}/release/bundle/msi/AidenChat_{1}_x64_en-US.msi.zip.sig', matrix.rust_target, env.PACKAGE_VERSION) || '' }}
+            ${{ matrix.os == 'windows-latest' && format('src-tauri/target/{0}/release/bundle/nsis/AidenChat_{1}_x64-setup.exe', matrix.rust_target, env.PACKAGE_VERSION) || '' }}
+            ${{ matrix.os == 'windows-latest' && format('src-tauri/target/{0}/release/bundle/nsis/AidenChat_{1}_x64-setup.nsis.zip', matrix.rust_target, env.PACKAGE_VERSION) || '' }}
+            ${{ matrix.os == 'windows-latest' && format('src-tauri/target/{0}/release/bundle/nsis/AidenChat_{1}_x64-setup.nsis.zip.sig', matrix.rust_target, env.PACKAGE_VERSION) || '' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -211,7 +262,7 @@ jobs:
       - name: Upload latest.json to release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref_name }}
+          tag_name: ${{ env.LATEST_TAG }}
           overwrite: true
           files: dist/latest.json
         env:
