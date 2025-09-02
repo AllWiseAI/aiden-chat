@@ -32,6 +32,7 @@ done
 # === 编码签名 ===
 SIGNATURE_ARM64=$(cat "$SIG_ARM64")
 SIGNATURE_X64=$(cat "$SIG_X64")
+SIGNATURE_WIN_X64=$(cat "$SIG_WIN_X64")
 
 # === CRC64 计算 ===
 CRC64_DMG_ARM64=$(python3 "$CRC_TOOL" "$DMG_ARM64")
