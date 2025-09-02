@@ -20,7 +20,10 @@ export function Tab() {
   useEffect(() => {
     if (location.pathname.includes(Path.Settings)) {
       setTabValue("settings");
-    } else if (location.pathname.includes(Path.Task)) {
+    } else if (
+      location.pathname.includes(Path.Task) ||
+      location.pathname.includes(Path.NewTask)
+    ) {
       setTabValue("task");
     } else if (location.pathname.includes(Path.Chat)) {
       setTabValue("chat");
