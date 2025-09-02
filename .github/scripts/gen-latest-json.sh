@@ -19,7 +19,7 @@ DMG_X64="${ARTIFACT_DIR}/macos-latest-x86_64-artifacts/dmg/AidenChat_${PACKAGE_V
 
 SIG_WIN_X64="${ARTIFACT_DIR}/windows-latest-x86_64-artifacts/msi/AidenChat_${PACKAGE_VERSION}_x64_en-US.msi.zip.sig"
 ZIP_WIN_X64="${ARTIFACT_DIR}/windows-latest-x86_64-artifacts/msi/AidenChat_${PACKAGE_VERSION}_x64_en-US.msi.zip"
-MSI_WIN_X64="${ARTIFACT_DIR}/windows-latest-x86_64-artifacts/dmg/AidenChat_${PACKAGE_VERSION}_x64_en-US.msi" 
+MSI_WIN_X64="${ARTIFACT_DIR}/windows-latest-x86_64-artifacts/msi/AidenChat_${PACKAGE_VERSION}_x64_en-US.msi" 
 
 # === 检查产物是否存在 ===
 for f in "$SIG_ARM64" "$ZIP_ARM64" "$SIG_X64" "$ZIP_X64"; do
