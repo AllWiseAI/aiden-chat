@@ -185,7 +185,8 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
     [mode, updateModel, onChange],
   );
 
-  const renderProviderIcon = () => {
+  const renderProviderIcon = useCallback(() => {
+    const modelInfo = getModelInfo(currentModelValue);
     if (currentProvider === INNER_PROVIDER_NAME) {
       return (
         <Image
@@ -205,7 +206,7 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
         <ProviderIcon provider={currentProvider} className="size-5" />
       </>
     );
-  };
+  }, [currentProvider, currentModelValue, theme, getModelInfo]);
 
   return (
     <Select value={currentModelValue} onValueChange={handleModelChange}>
