@@ -82,7 +82,8 @@ jobs:
       - name: Get package version
         shell: bash
         run: |
-          echo "PACKAGE_VERSION=$(node -p \"require('./src-tauri/tauri.conf.json').package.version\")" >> $GITHUB_ENV
+          VERSION=$(node -p "require('./src-tauri/tauri.conf.json').package.version")
+          echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Update tauri config
         run: bash ./update_tauri_config.sh --mode release
@@ -155,8 +156,10 @@ jobs:
         run: ls -R artifacts
 
       - name: Get version
+        shell: bash
         run: |
-          echo "PACKAGE_VERSION=$(node -p "require('./src-tauri/tauri.conf.json').package.version")" >> $GITHUB_ENV
+          VERSION=$(node -p "require('./src-tauri/tauri.conf.json').package.version")
+          echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Generate latest.json
         run: bash .github/scripts/gen-latest-json.sh
