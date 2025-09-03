@@ -320,7 +320,10 @@ export function SideBar(props: { className?: string }) {
     const pathName = location.pathname;
     if (pathName.includes(Path.Chat)) {
       setTabValue("chat");
-    } else if (pathName.includes(Path.Task)) {
+    } else if (
+      pathName.includes(Path.Task) ||
+      pathName.includes(Path.NewTask)
+    ) {
       setTabValue("task");
     }
   }, [location]);
