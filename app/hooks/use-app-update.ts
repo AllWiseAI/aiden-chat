@@ -74,6 +74,7 @@ export function useAppUpdate() {
         }
       } catch (err) {
         console.error("Update check failed:", err);
+        setUpdating(false);
         setError((err as Error).message);
       }
     }

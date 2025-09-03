@@ -1,4 +1,7 @@
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+#[cfg(target_os = "windows")]
+use std::os::windows::process::CommandExt;
+#[cfg(target_os = "windows")]
+const CREATE_NO_WINDOW: u32 = 0x08000000;
 
 mod constants;
 mod logger;
@@ -123,6 +126,7 @@ fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProc
 
     let new_path = append_bin_to_path(app);
     log::info!("Setting PATH to host_server: {}", new_path);
+
     let port = if cfg!(debug_assertions) {
         log::info!("Development mode, using fixed port 6888");
         6888
@@ -132,7 +136,28 @@ fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProc
         free_port
     };
 
-    let mut child: Child = TokioCommand::new(binary_path.to_string_lossy().to_string())
+    // ====== 启动子进程 ======
+    #[cfg(target_os = "windows")]
+    let mut child: tokio::process::Child = {
+        let mut cmd = std::process::Command::new(binary_path.clone());
+        cmd.args([
+            "--config_file", &mcp_config_path.to_string_lossy(),
+            "--disable_reload",
+            "--enable_authorization",
+            "--port", &port.to_string(),
+        ])
+        .envs(env::vars())
+        .env("PATH", &new_path)
+        .stdout(StdStdio::piped())
+        .stderr(StdStdio::piped())
+        .creation_flags(CREATE_NO_WINDOW);
+        tokio::process::Command::from(cmd)
+            .spawn()
+            .expect("Failed to start host_server (windows)")
+    };
+
+    #[cfg(not(target_os = "windows"))]
+    let mut child: tokio::process::Child = TokioCommand::new(binary_path.to_string_lossy().to_string())
         .args([
             "--config_file".into(),
             mcp_config_path.to_string_lossy().to_string(),
@@ -148,11 +173,13 @@ fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProc
         .spawn()
         .expect("Failed to start host_server");
 
+    // ====== 日志捕获 ======
     let stdout = child.stdout.take().expect("Failed to capture stdout");
     let stderr = child.stderr.take().expect("Failed to capture stderr");
 
-    // 保存子进程到全局状态
     *state.0.lock().unwrap() = Some(child);
+
+    // stdout 日志 + ready 检测
     let app_clone = app.clone();
     task::spawn(async move {
         let reader = tokio::io::BufReader::new(stdout);
@@ -168,6 +195,7 @@ fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProc
         }
     });
 
+    // stderr 日志 + sentry 上报
     task::spawn(async move {
         let reader = tokio::io::BufReader::new(stderr);
         let mut lines = reader.lines();
