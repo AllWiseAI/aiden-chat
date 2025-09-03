@@ -1,10 +1,11 @@
-import { useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Path } from "../constant";
 import { useAppConfig, useChatStore } from "../store";
 
 export function useGetModel() {
   const { pathname } = useLocation();
   const isChat = pathname === Path.Chat;
+  const navigate = useNavigate();
 
   const defaultModel = useAppConfig((state) => state.defaultModel);
   const getModelInfo = useAppConfig((state) => state.getModelInfo);
@@ -16,10 +17,27 @@ export function useGetModel() {
 
   const updateModel = (newModel: string) => {
     const modelInfo = getModelInfo(newModel);
-    if (isChat) {
-      updateTargetSession(currentSession, (session) => {
-        session.modelInfo = modelInfo;
-      });
+    const { messages } = currentSession;
+    let hasFile = false;
+    messages.forEach((item) => {
+      const { content } = item;
+      if (Array.isArray(content)) {
+        content.forEach((item) => {
+          if (item.type === "file_url") {
+            hasFile = true;
+          }
+        });
+      }
+    });
+    if (hasFile) {
+      chatStore.newSession(undefined, modelInfo);
+      navigate(Path.Chat);
+    } else {
+      if (isChat) {
+        updateTargetSession(currentSession, (session) => {
+          session.modelInfo = modelInfo;
+        });
+      }
     }
   };
 
