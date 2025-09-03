@@ -44,6 +44,7 @@ import { AccountItem, McpItemInfo, AidenCredential } from "@/app/typing";
 import DeleteDialog from "@/app/components/delete-dialog";
 import { toast } from "sonner";
 import { validateEmail } from "@/app/utils";
+import LoadingSpinner from "@/app/icons/loading-spinner.svg";
 
 const mailIconMap = {
   QQ: QQIcon,
@@ -74,6 +75,7 @@ export function McpOauthModal({
   const [account, setAccount] = useState<string>("");
   const [pwd, setPwd] = useState<string>("");
   const [emailError, setEmailError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const [credentials, setCredentials] = useState<AccountItem[]>([]);
 
@@ -87,7 +89,7 @@ export function McpOauthModal({
     } catch {
       toast.error(tInner("mcp.query.fail"));
     }
-  }, [mcpInfo]);
+  }, [mcpInfo, tInner]);
 
   useEffect(() => {
     getAccountList();
@@ -125,6 +127,11 @@ export function McpOauthModal({
     }
   };
 
+  const configCredential = useMemo(() => {
+    const { mcp_key, basic_config } = mcpInfo;
+    return (basic_config?.[mcp_key]?.aiden_credential as AidenCredential) || {};
+  }, [mcpInfo]);
+
   const handleConfirm = useCallback(async () => {
     const { mcp_key } = mcpInfo;
     if (isShowAdd && configCredential && configCredential.type === "password") {
@@ -135,12 +142,14 @@ export function McpOauthModal({
         setEmailError("");
       }
       try {
+        setIsLoading(true);
         const res = await addPasswordCredential({
           server_name: mcp_key,
           service: provider,
           account: account,
           password: pwd,
         });
+        setIsLoading(false);
         if (res?.message === "Credential added completed") {
           getAccountList();
           setIsShowAdd(false);
@@ -152,13 +161,25 @@ export function McpOauthModal({
           toast.error(res.message);
         }
       } catch {
+        setIsLoading(false);
         toast.error(tInner("mcp.add.fail"));
       }
     } else {
       onConfirm();
       onOpenChange?.(false);
     }
-  }, [onConfirm, onOpenChange, mcpInfo, account, pwd, provider]);
+  }, [
+    onConfirm,
+    onOpenChange,
+    mcpInfo,
+    account,
+    pwd,
+    provider,
+    tInner,
+    configCredential,
+    getAccountList,
+    isShowAdd,
+  ]);
 
   const handleAddAcount = useCallback(async () => {
     console.log("mcpInfo", mcpInfo);
@@ -191,11 +212,6 @@ export function McpOauthModal({
     const { value } = e.target;
     setPwd(value);
   };
-
-  const configCredential = useMemo(() => {
-    const { mcp_key, basic_config } = mcpInfo;
-    return (basic_config?.[mcp_key]?.aiden_credential as AidenCredential) || {};
-  }, [mcpInfo]);
 
   const providerList = useMemo(() => {
     const { providers } = configCredential;
@@ -364,9 +380,10 @@ export function McpOauthModal({
           <Button
             className="flex-1 h-8 rounded-sm bg-[#00D47E] text-white dark:text-black px-2.5 py-2"
             onClick={handleConfirm}
-            disabled={addBtnDisabled}
+            disabled={addBtnDisabled || isLoading}
             type="button"
           >
+            {isLoading && <LoadingSpinner className="size-4 animate-spin" />}
             {t("dialog.confirm")}
           </Button>
           <DeleteDialog
