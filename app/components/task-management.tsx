@@ -97,6 +97,7 @@ export default function TaskManagement({
   });
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [isTestLoading, setIsTestLoading] = useState(false);
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
   const [notificationEnabled, setNotificationEnabled] = useState(false);
   const [timeErr, setTimeErr] = useState<string>("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -197,58 +198,68 @@ export default function TaskManagement({
   };
 
   const handleConfirmClick = async () => {
-    const { name, date, hour, minute, type, notification, details } = newTask;
-
-    const payload: TaskPayload = {
-      description: details,
-      repeat_every: 1,
-      repeat_unit: type,
-      start_date: date,
-      enable_notification: notification,
-      hour,
-      minute,
-      name,
-    };
-
-    if (task) {
-      payload.task_id = task.id;
-    }
-
-    const { dayString, dayOfMonth } = getCurrentDateObj(date);
-    if (type === TaskTypeEnum.Weekly) {
-      payload.repeat_on = {
-        weekdays: [dayString],
+    try {
+      const { name, date, hour, minute, type, notification, details } = newTask;
+      const payload: TaskPayload = {
+        description: details,
+        repeat_every: 1,
+        repeat_unit: type,
+        start_date: date,
+        enable_notification: notification,
+        hour,
+        minute,
+        name,
       };
-    }
-    if (type === TaskTypeEnum.Monthly) {
-      payload.repeat_on = {
-        days_of_month: [dayOfMonth],
-      };
-    }
-    let res;
-    if (task) {
-      res = await updateTask(payload, newTask);
-    } else {
-      res = await createTask(payload, newTask);
-    }
 
-    const { code, data, detail } = res;
-    if (code === 0) {
-      toast.success(task ? t("task.updateSuccess") : t("task.createSuccess"), {
-        className: "w-auto max-w-max",
-      });
-      const updatedData = { ...data, modelInfo: newTask.modelInfo };
       if (task) {
-        onChange?.(data.id, updatedData);
-      } else {
-        taskStore.addTask(updatedData);
+        payload.task_id = task.id;
       }
-      setSelectedId(data.id);
-      navigate(`${Path.Task}/${data.id}`);
-    } else {
-      toast.error(
-        detail || (task ? t("task.updateFailed") : t("task.createFailed")),
-      );
+
+      const { dayString, dayOfMonth } = getCurrentDateObj(date);
+      if (type === TaskTypeEnum.Weekly) {
+        payload.repeat_on = {
+          weekdays: [dayString],
+        };
+      }
+      if (type === TaskTypeEnum.Monthly) {
+        payload.repeat_on = {
+          days_of_month: [dayOfMonth],
+        };
+      }
+      let res;
+      setIsSubmitLoading(true);
+      if (task) {
+        res = await updateTask(payload, newTask);
+      } else {
+        res = await createTask(payload, newTask);
+      }
+      setIsSubmitLoading(false);
+      const { code, data, detail } = res;
+      if (code === 0) {
+        toast.success(
+          task ? t("task.updateSuccess") : t("task.createSuccess"),
+          {
+            className: "w-auto max-w-max",
+          },
+        );
+        const updatedData = { ...data, modelInfo: newTask.modelInfo };
+        if (task) {
+          onChange?.(data.id, updatedData);
+        } else {
+          taskStore.addTask(updatedData);
+        }
+        setSelectedId(data.id);
+        navigate(`${Path.Task}/${data.id}`);
+      } else {
+        toast.error(
+          detail || (task ? t("task.updateFailed") : t("task.createFailed")),
+        );
+      }
+    } catch (e: any) {
+      setIsSubmitLoading(false);
+      toast.error(e.message);
+    } finally {
+      setIsSubmitLoading(false);
     }
   };
   return (
@@ -410,11 +421,15 @@ export default function TaskManagement({
           )}
         </Button>
         <Button
-          disabled={!confirmBtn}
+          disabled={!confirmBtn || isSubmitLoading}
           className="h-full bg-main rounded-sm font-normal w-34"
           onClick={handleConfirmClick}
         >
-          {t("task.confirm")}
+          {isSubmitLoading ? (
+            <LoadingIcon className="size-4 animate-spin" />
+          ) : (
+            t("task.confirm")
+          )}
         </Button>
       </div>
     </div>
