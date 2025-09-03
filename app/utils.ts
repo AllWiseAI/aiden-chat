@@ -464,55 +464,6 @@ export function semverCompare(a: string, b: string) {
   });
 }
 
-export function replaceObj(
-  obj: object,
-  subObj: object,
-  insertKey?: string,
-): object {
-  // 深拷贝一份，避免改动到原对象
-  const newObj = JSON.parse(JSON.stringify(obj));
-
-  if (insertKey) {
-    // 在这里做一次“类型提升”
-    const key = insertKey;
-
-    let inserted = false;
-    function insert(cur: any) {
-      if (inserted) return;
-      if (
-        Object.prototype.hasOwnProperty.call(cur, key) &&
-        typeof cur[key] === "object" &&
-        cur[key] !== null
-      ) {
-        Object.assign(cur[key], subObj);
-        inserted = true;
-        return;
-      }
-
-      for (const k in cur) {
-        if (cur[k] !== null && typeof cur[k] === "object" && !inserted) {
-          insert(cur[k]);
-        }
-      }
-    }
-
-    insert(newObj);
-    return inserted ? newObj : obj;
-  }
-
-  function replace(cur: any) {
-    for (const k in cur) {
-      if (Object.prototype.hasOwnProperty.call(subObj, k)) {
-        cur[k] = (subObj as any)[k];
-      } else if (cur[k] !== null && typeof cur[k] === "object") {
-        replace(cur[k]);
-      }
-    }
-  }
-  replace(newObj);
-  return newObj;
-}
-
 export function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }

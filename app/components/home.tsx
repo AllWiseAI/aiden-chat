@@ -191,6 +191,16 @@ function MainLayout() {
   useAppSetting();
   useEffect(() => {
     loadAsyncGoogleFont();
+    (async () => {
+      try {
+        const { appWindow } = await import("@tauri-apps/api/window");
+        await appWindow.show();
+        await appWindow.unminimize();
+        await appWindow.setFocus();
+      } catch (err) {
+        console.error("focus err:", err);
+      }
+    })();
   }, []);
 
   return (
@@ -244,6 +254,7 @@ export function WindowContent(props: { children: React.ReactNode }) {
 export function Home() {
   useSwitchTheme();
   useHtmlLang();
+
   useEffect(() => {
     console.log("[Config] got config from build time", getClientConfig());
 
