@@ -35,9 +35,9 @@
   --color-fg-subtle: #6e7781;
   --color-canvas-default: transparent;
   --color-canvas-subtle: #f6f8fa;
-  --color-border-default: #d0d7de;
-  --color-border-muted: hsla(210, 18%, 87%, 1);
-  --color-neutral-muted: rgba(175, 184, 193, 0.2);
+  --color-border-default: rgba(243, 245, 247, 1);
+  --color-border-muted: rgba(243, 245, 247, 1);
+  --color-neutral-muted: rgba(243, 245, 247, 1);
   --color-accent-fg: #0969da;
   --color-accent-emphasis: #0969da;
   --color-attention-subtle: #fff8c5;
@@ -81,9 +81,9 @@
   --color-fg-subtle: #6e7681;
   --color-canvas-default: transparent;
   --color-canvas-subtle: #161b22;
-  --color-border-default: #30363d;
-  --color-border-muted: #21262d;
-  --color-neutral-muted: rgba(110, 118, 129, 0.4);
+  --color-border-default: rgba(35, 38, 39, 1);
+  --color-border-muted: rgba(35, 38, 39, 1);
+  --color-neutral-muted: rgba(35, 38, 39, 1);
   --color-accent-fg: #58a6ff;
   --color-accent-emphasis: #1f6feb;
   --color-attention-subtle: rgba(187, 128, 9, 0.15);
@@ -99,6 +99,15 @@
   font-size: 14px;
   line-height: 1.5;
   word-wrap: break-word;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    border-bottom: none !important;
+  }
 }
 
 .light {
@@ -230,11 +239,10 @@
   box-sizing: content-box;
   overflow: hidden;
   background: transparent;
-  // border-bottom: 1px solid var(--color-border-muted);
   height: 1px;
   padding: 0;
   margin: 24px 0;
-  background-color: var(--color-border-default);
+  background-color: var(--color-neutral-muted);
   border: 0;
 }
 
