@@ -187,6 +187,7 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
 
   const renderProviderIcon = useCallback(() => {
     const modelInfo = getModelInfo(currentModelValue);
+    if (!modelInfo) return;
     if (currentProvider === INNER_PROVIDER_NAME) {
       return (
         <Image
