@@ -259,6 +259,20 @@ jobs:
         env:
           PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
 
+      - name: Output tag list for debugging
+        shell: bash
+        run: |
+          git fetch --tags
+          echo "📃 所有远端 tag："
+          git tag --sort=-creatordate
+          LATEST_TAG=$(git tag --sort=-creatordate | head -n 1)
+          if [ -z "$LATEST_TAG" ]; then
+            echo "⚠️ 未找到 tag，使用默认 tag：v0.1.13"
+            LATEST_TAG="v0.1.13"
+          fi
+          echo "✅ 使用的 tag 是：$LATEST_TAG"
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+
       - name: Upload latest.json to release
         uses: softprops/action-gh-release@v1
         with:
