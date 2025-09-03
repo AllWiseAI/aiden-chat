@@ -237,7 +237,7 @@ export const useChatStore = createPersistStore(
         });
       },
 
-      newSession(mask?: Mask) {
+      newSession(mask?: Mask, modelInfo?: ProviderOption) {
         const session = createEmptySession();
         if (mask) {
           const config = useAppConfig.getState();
@@ -251,6 +251,10 @@ export const useChatStore = createPersistStore(
             },
           };
           session.topic = mask.name;
+        }
+
+        if (modelInfo) {
+          session.modelInfo = modelInfo;
         }
 
         set((state) => ({
