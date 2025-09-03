@@ -82,7 +82,8 @@ jobs:
       - name: Get package version
         shell: bash
         run: |
-          echo "PACKAGE_VERSION=$(node -p \"require('./src-tauri/tauri.conf.json').package.version\")" >> $GITHUB_ENV
+          VERSION=$(node -p "require('./src-tauri/tauri.conf.json').package.version")
+          echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Update tauri config
         run: bash ./update_tauri_config.sh --mode release
@@ -98,18 +99,20 @@ jobs:
         shell: bash
         run: |
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            echo "NPM_CONFIG_REGISTRY=${{ secrets.NPM_CONFIG_REGISTRY }}" | Out-File -FilePath src-tauri/bin/.env -Encoding utf8
-            Add-Content src-tauri/bin/.env "UV_INDEX=${{ secrets.UV_INDEX }}"
-            Add-Content src-tauri/bin/.env "UV_DEFAULT_INDEX=${{ secrets.UV_DEFAULT_INDEX }}"
-            Add-Content src-tauri/bin/.env "UV_EXTRA_INDEX_URL=${{ secrets.UV_EXTRA_INDEX_URL }}"
+            {
+              echo "NPM_CONFIG_REGISTRY=${{ secrets.NPM_CONFIG_REGISTRY }}"
+              echo "UV_INDEX=${{ secrets.UV_INDEX }}"
+              echo "UV_DEFAULT_INDEX=${{ secrets.UV_DEFAULT_INDEX }}"
+              echo "UV_EXTRA_INDEX_URL=${{ secrets.UV_EXTRA_INDEX_URL }}"
+            } > src-tauri/bin/.env
           else
-            cat <<EOF > src-tauri/bin/.env
-            NPM_CONFIG_REGISTRY=${{ secrets.NPM_CONFIG_REGISTRY }}
-            UV_INDEX=${{ secrets.UV_INDEX }}
-            UV_DEFAULT_INDEX=${{ secrets.UV_DEFAULT_INDEX }}
-            UV_EXTRA_INDEX_URL=${{ secrets.UV_EXTRA_INDEX_URL }}
-            HOST_SERVER_VERSION=$(cat .host_server_version)
-            EOF
+            {
+              echo "NPM_CONFIG_REGISTRY=${{ secrets.NPM_CONFIG_REGISTRY }}"
+              echo "UV_INDEX=${{ secrets.UV_INDEX }}"
+              echo "UV_DEFAULT_INDEX=${{ secrets.UV_DEFAULT_INDEX }}"
+              echo "UV_EXTRA_INDEX_URL=${{ secrets.UV_EXTRA_INDEX_URL }}"
+              echo "HOST_SERVER_VERSION=$(cat .host_server_version)"
+            } > src-tauri/bin/.env
           fi
 
       - uses: tauri-apps/tauri-action@v0
@@ -118,8 +121,101 @@ jobs:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
-          releaseId: ${{ needs.create-release.outputs.release_id }}
           args: --target ${{ matrix.rust_target }}
+
+      - name: Setup macOS code signing (macOS only)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: bash .github/scripts/setup-macos-codesign.sh
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
+
+      - name: Sign all binaries and app (macOS only)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: bash .github/scripts/sign-all.sh ${{ matrix.arch }}
+        env:
+          APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
+
+      - name: Check missing signatures (macOS only)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: bash .github/scripts/check-signature.sh ${{ matrix.arch }}
+        env:
+          APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
+
+      - name: get version (macOS only)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          echo "📦 获取 src-tauri 中配置的版本号..."
+          echo "PACKAGE_VERSION=$(node -p "require('./src-tauri/tauri.conf.json').package.version")" >> $GITHUB_ENV
+
+      - name: Notarize app and DMG (macOS only)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: bash .github/scripts/notarize.sh ${{ matrix.arch }}
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+          APPLE_SIGN_IDENTITY: ${{ secrets.APPLE_SIGN_IDENTITY }}
+          PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+
+      - name: List build artifacts
+        shell: bash
+        run: ls -R src-tauri/target/
+
+      - name: Set mapped arch name
+        id: arch_map
+        shell: bash
+        run: |
+          if [ "${{ matrix.artifact_arch }}" == "arm64" ]; then
+            echo "mapped_arch=aarch64" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.artifact_arch }}" == "x64" ]; then
+            echo "mapped_arch=x64" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Unknown arch: ${{ matrix.artifact_arch }}"
+            exit 1
+          fi
+
+      - name: Output tag list for debugging
+        shell: bash
+        run: |
+          git fetch --tags
+          echo "📃 所有远端 tag："
+          git tag --sort=-creatordate
+          LATEST_TAG=$(git tag --sort=-creatordate | head -n 1)
+          if [ -z "$LATEST_TAG" ]; then
+            echo "⚠️ 未找到 tag，使用默认 tag：v0.1.13"
+            LATEST_TAG="v0.1.13"
+          fi
+          echo "✅ 使用的 tag 是：$LATEST_TAG"
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+
+      - uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.LATEST_TAG }}
+          overwrite: true
+          files: |
+            # macOS 产物
+            ${{ matrix.os == 'macos-latest' && format('src-tauri/target/{0}/release/bundle/macos/AidenChat_{1}.app.tar.gz', matrix.rust_target, steps.arch_map.outputs.mapped_arch) || '' }}
+            ${{ matrix.os == 'macos-latest' && format('src-tauri/target/{0}/release/bundle/macos/AidenChat_{1}.app.tar.gz.sig', matrix.rust_target, steps.arch_map.outputs.mapped_arch) || '' }}
+            ${{ matrix.os == 'macos-latest' && format('src-tauri/target/{0}/release/bundle/dmg/AidenChat_{1}_{2}_signed.dmg', matrix.rust_target, env.PACKAGE_VERSION, steps.arch_map.outputs.mapped_arch) || '' }}
+
+            # Windows 产物
+            ${{ matrix.os == 'windows-latest' && format('src-tauri/target/{0}/release/bundle/msi/AidenChat_{1}_x64_en-US.msi', matrix.rust_target, env.PACKAGE_VERSION) || '' }}
+            ${{ matrix.os == 'windows-latest' && format('src-tauri/target/{0}/release/bundle/msi/AidenChat_{1}_x64_en-US.msi.zip', matrix.rust_target, env.PACKAGE_VERSION) || '' }}
+            ${{ matrix.os == 'windows-latest' && format('src-tauri/target/{0}/release/bundle/msi/AidenChat_{1}_x64_en-US.msi.zip.sig', matrix.rust_target, env.PACKAGE_VERSION) || '' }}
+            ${{ matrix.os == 'windows-latest' && format('src-tauri/target/{0}/release/bundle/nsis/AidenChat_{1}_x64-setup.exe', matrix.rust_target, env.PACKAGE_VERSION) || '' }}
+            ${{ matrix.os == 'windows-latest' && format('src-tauri/target/{0}/release/bundle/nsis/AidenChat_{1}_x64-setup.nsis.zip', matrix.rust_target, env.PACKAGE_VERSION) || '' }}
+            ${{ matrix.os == 'windows-latest' && format('src-tauri/target/{0}/release/bundle/nsis/AidenChat_{1}_x64-setup.nsis.zip.sig', matrix.rust_target, env.PACKAGE_VERSION) || '' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -153,18 +249,34 @@ jobs:
         run: ls -R artifacts
 
       - name: Get version
+        shell: bash
         run: |
-          echo "PACKAGE_VERSION=$(node -p "require('./src-tauri/tauri.conf.json').package.version")" >> $GITHUB_ENV
+          VERSION=$(node -p "require('./src-tauri/tauri.conf.json').package.version")
+          echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Generate latest.json
         run: bash .github/scripts/gen-latest-json.sh
         env:
           PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
 
+      - name: Output tag list for debugging
+        shell: bash
+        run: |
+          git fetch --tags
+          echo "📃 所有远端 tag："
+          git tag --sort=-creatordate
+          LATEST_TAG=$(git tag --sort=-creatordate | head -n 1)
+          if [ -z "$LATEST_TAG" ]; then
+            echo "⚠️ 未找到 tag，使用默认 tag：v0.1.13"
+            LATEST_TAG="v0.1.13"
+          fi
+          echo "✅ 使用的 tag 是：$LATEST_TAG"
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+
       - name: Upload latest.json to release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref_name }}
+          tag_name: ${{ env.LATEST_TAG }}
           overwrite: true
           files: dist/latest.json
         env:
