@@ -133,6 +133,14 @@ function escapeBrackets(text: string) {
   );
 }
 
+// 区分 $+价格 与 $...$ 数学公式
+function preprocessLatex(content: string) {
+  return content.replace(
+    /\$(\d[\d,]*(?:\.\d+)?)/g,
+    (match, num) => `\\$${num}`,
+  );
+}
+
 function tryWrapHtmlCode(text: string) {
   // try add wrap html code (fixed: html codeblock include 2 newline)
   // ignore embed codeblock
@@ -192,7 +200,7 @@ function InnerMarkDownContent(props: { content: string }) {
         },
       }}
     >
-      {escapedContent}
+      {preprocessLatex(escapedContent)}
     </ReactMarkdown>
   );
 }

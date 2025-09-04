@@ -42,7 +42,11 @@ import {
 import dynamic from "next/dynamic";
 import { ChatControllerPool } from "../client/controller";
 import styles from "./chat.module.scss";
-import { REQUEST_TIMEOUT_MS, UNFINISHED_INPUT } from "../constant";
+import {
+  REQUEST_TIMEOUT_MS,
+  UNFINISHED_INPUT,
+  DEFAULT_USER_DELINETED,
+} from "../constant";
 import { useChatCommand } from "../command";
 import { prettyObject } from "../utils/format";
 import clsx from "clsx";
@@ -420,11 +424,7 @@ function InnerChat() {
 
   const renderCallResult = (result: string[] | undefined) => {
     if (!result?.length) return <LoadingIcon />;
-    if (
-      result.includes("declined") ||
-      (Array.isArray(result) &&
-        result.some((item) => item.includes("declined")))
-    ) {
+    if (result.includes(DEFAULT_USER_DELINETED)) {
       return <ErrorIcon className="size-5 text-[#EF466F]" />;
     } else if (
       result.includes("code: -1") ||
