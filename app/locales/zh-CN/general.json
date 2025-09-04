@@ -51,6 +51,11 @@
     "pdf": {
       "tip": "请选择PDF文件进行上传",
       "fileTypes": "不支持的文件格式，请选择PDF文件"
+    },
+    "mcp": {
+      "call": "调用",
+      "called": "调用",
+      "tool": "工具"
     }
   },
   "task": {

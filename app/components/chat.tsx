@@ -475,9 +475,11 @@ function InnerChat() {
           >
             <AccordionTrigger className="!py-0">
               <div className="flex flex-row items-center gap-2">
-                {`${message.mcpInfo.response?.length ? "Called" : "Call"} ${
-                  message.mcpInfo.title
-                } Tool`}
+                {`${
+                  message.mcpInfo.response?.length
+                    ? t("chat.mcp.called")
+                    : t("chat.mcp.call")
+                } ${message.mcpInfo.title} ${t("chat.mcp.tool")}`}
 
                 {renderCallResult(message.mcpInfo.response)}
               </div>
