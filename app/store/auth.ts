@@ -13,6 +13,7 @@ const DEFAULT_AUTH_STATE = {
   isLogin: false,
   user: {} as User,
   userToken: {} as TokenType,
+  refreshingPromise: null as Promise<string> | null,
 };
 
 export const useAuthStore = createPersistStore(
@@ -185,29 +186,46 @@ export const useAuthStore = createPersistStore(
 
       refreshToken: async () => {
         try {
-          const { userToken } = get();
-          const response = (await apiRefreshToken(
-            userToken.refreshToken,
-          )) as RefreshResponse;
-          console.log("refreshToken_Res", response);
-          if ("access_token" in response) {
-            const { access_token, refresh_token, expires_at } = response;
-            set({
-              isLogin: true,
-              user: get().user,
-              userToken: {
-                accessToken: access_token,
-                refreshToken: refresh_token,
-                expires: expires_at,
-              },
-            });
-            return access_token;
-          } else if ("error" in response) {
-            throw new Error(response.error);
-          } else {
-            throw new Error("Token not found in response");
+          const { userToken, refreshingPromise } = get();
+
+          // 如果已经有正在进行的刷新请求，直接返回该 Promise
+          if (refreshingPromise) {
+            return refreshingPromise;
           }
+
+          const newRefreshingPromise = (async () => {
+            try {
+              const response = (await apiRefreshToken(
+                userToken.refreshToken,
+              )) as RefreshResponse;
+              console.log("refreshToken_Res", response);
+              if ("access_token" in response) {
+                const { access_token, refresh_token, expires_at } = response;
+                set({
+                  isLogin: true,
+                  user: get().user,
+                  userToken: {
+                    accessToken: access_token,
+                    refreshToken: refresh_token,
+                    expires: expires_at,
+                  },
+                });
+                return access_token;
+              } else if ("error" in response) {
+                throw new Error(response.error);
+              } else {
+                throw new Error("Token not found in response");
+              }
+            } finally {
+              // 无论成功还是失败，都要清理 refreshingPromise
+              set({ refreshingPromise: null });
+            }
+          })();
+
+          set({ refreshingPromise: newRefreshingPromise });
+          return newRefreshingPromise;
         } catch (e: any) {
+          set({ refreshingPromise: null });
           throw new Error(`Refresh Token Failed: ${e.message}`);
         }
       },

@@ -10,7 +10,6 @@ import { getOSInfo } from "../utils";
 import { getLang } from "../locales";
 
 const FIVE_MINUTES = 5 * 60 * 1000;
-let refreshingTokenPromise: Promise<void> | null = null;
 
 export interface FetchBody {
   method: "POST" | "GET" | "PUT" | "DELETE" | "OPTIONS";
@@ -105,21 +104,17 @@ export const getHeaders = async ({
     console.log("refresh token before:", token.accessToken);
     if (refresh && token.expires * 1000 - Date.now() <= FIVE_MINUTES) {
       console.log("[refresh token] token is going to expired, refresh token.");
-      // 防止多次同时触发 refresh 请求
-      if (!refreshingTokenPromise) {
-        const token = await refreshToken()
-          .catch((e) => {
-            console.log("[refresh token] refresh token error: ", e);
-            window.location.href = "/#/login";
-          })
-          .finally(() => {
-            refreshingTokenPromise = null;
-            console.log("[refresh token] refresh token done.");
-          });
-        console.log("refresh token after:", token);
+      try {
+        const token = await refreshToken();
         if (token) {
           latestToken = token;
         }
+        console.log("refresh token after:", token);
+      } catch (e) {
+        console.log("[refresh token] refresh token error: ", e);
+        window.location.href = "/#/login";
+      } finally {
+        console.log("[refresh token] refresh token done.");
       }
     }
 
