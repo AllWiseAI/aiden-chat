@@ -97,7 +97,7 @@ export function MultiSelectDropdown({
             onCheckedChange={() => toggleChecked(opt.value)}
           >
             <div className="flex items-center gap-1">
-              <ProviderIcon provider={provider} className="h-4 w-4" />
+              <ProviderIcon provider={provider} className="h-4 w-4 shrink-0" />
               {opt.label}
             </div>
           </DropdownMenuCheckboxItem>

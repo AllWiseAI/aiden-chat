@@ -149,6 +149,15 @@ export function AddModelModal({
     onOpenChange?.(false);
   }, [formDataRef.current, modelList, isModelsError, isApiKeyError]);
 
+  const filterGeminiModels = (models: GeminiModelOptions[]) => {
+    const filteredModels = models.filter(
+      (item) =>
+        !item.name.includes("gemma") &&
+        item.supportedGenerationMethods!.includes("generateContent"),
+    );
+    return filteredModels;
+  };
+
   const formatProviderModels = (
     providerInfo: ProviderOption,
     modelsData: [],
@@ -169,7 +178,8 @@ export function AddModelModal({
     }
 
     if (provider === "gemini") {
-      return modelsData.map((model: GeminiModelOptions) => ({
+      const filteredModels = filterGeminiModels(modelsData);
+      return filteredModels.map((model: GeminiModelOptions) => ({
         value: model.name,
         label: model.displayName,
       }));
