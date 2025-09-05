@@ -20,6 +20,7 @@ export interface OpenAIListModelResponse {
 }
 
 export interface RequestPayload {
+  chat_id: string;
   messages: {
     role: "system" | "user" | "assistant";
     content: string | MultimodalContent[];
@@ -61,7 +62,10 @@ export class ChatGPTApi implements LLMApi {
     for (const v of options.messages || []) {
       messages.push({ role: v.role, content: v.content });
     }
-    const requestPayload: RequestPayload = { messages };
+    const requestPayload: RequestPayload = {
+      messages,
+      chat_id: options.chatId,
+    };
     const shouldStream = !!options.config.stream;
 
     const controller = new AbortController();
@@ -120,6 +124,7 @@ export class ChatGPTApi implements LLMApi {
     options.onController?.(controller);
 
     const requestPayload = {
+      chat_id: options.chatId,
       ...options.toolCallInfo,
     };
     const headers = await getHeaders({

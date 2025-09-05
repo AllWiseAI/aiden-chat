@@ -56,6 +56,7 @@ export interface ToolCallInfo {
 }
 
 export interface ChatOptions {
+  chatId: string;
   modelInfo?: ProviderOption;
   isSummary?: boolean;
   messages?: RequestMessage[];
