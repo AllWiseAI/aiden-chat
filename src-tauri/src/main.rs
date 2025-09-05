@@ -353,6 +353,7 @@ async fn main() {
             }
         })
         .setup(|app: &mut tauri::App| {
+            // ====== 日志初始化 ======
             let config: std::sync::Arc<tauri::Config> = app.config();
             let log_file = logger::get_log_file_path(&config).expect("Failed to get log file path");
             let log_dir = log_file.parent().unwrap();
@@ -375,23 +376,85 @@ async fn main() {
             log::info!("AidenAI started successfully!");
             cleanup::cleanup_database(&config);
             kill_ports(PORTS_TO_KILL);
+
             let app_handle: AppHandle = app.handle();
-            let env_path: PathBuf = get_env_path(&app_handle).expect("Cannot find .env");
-            log::info!("Loading env from: {:?}", env_path);
-            dotenvy::from_path(env_path).ok();
-            for key in [
-                "NPM_CONFIG_REGISTRY",
-                "UV_INDEX",
-                "UV_DEFAULT_INDEX",
-                "UV_EXTRA_INDEX_URL",
-                "HOST_SERVER_VERSION",
-            ] {
-                match env::var(key) {
-                    Ok(value) => log::info!("{key} = {value}"),
-                    Err(_) => log::info!("{key} is not set"),
+
+            // ====== 异步地区判断 & env 加载 ======
+            let app_handle_env = app_handle.clone();
+            tauri::async_runtime::spawn(async move {
+                use std::time::Duration;
+                use reqwest::Client;
+                use chrono::Local;
+
+                async fn is_in_china() -> bool {
+                    let client = Client::builder()
+                        .timeout(Duration::from_secs(10)) // 10 秒超时
+                        .build()
+                        .unwrap();
+
+                       match client.get("https://ipapi.co/json").send().await {
+                    Ok(resp) => {
+                        if let Ok(json) = resp.json::<serde_json::Value>().await {
+                            if json.get("error").and_then(|v| v.as_bool()) == Some(true) {
+                                log::warn!(
+                                    "[Region] API returned error: {:?}, fallback to timezone",
+                                    json
+                                );
+                            } else if json["country"].as_str() == Some("CN") {
+                                log::info!("[Region] Detected by API: CN");
+                                return true;
+                            } else {
+                                log::info!(
+                                    "[Region] Detected by API: {:?}, treat as non-CN",
+                                    json["country"]
+                                );
+                                return false;
+                            }
+                        } else {
+                            log::warn!("[Region] API response parse failed, fallback to timezone");
+                        }
+                    }
+                    Err(err) => {
+                        log::warn!("[Region] API request failed: {}, fallback to timezone", err);
+                    }
                 }
-            }
-            let _ = mcp::init_mcp_config(app);
+
+                // fallback only when API not usable or limited
+                let offset = Local::now().offset().local_minus_utc();
+                if offset == 8 * 3600 {
+                    log::info!("[Region] Fallback by timezone: UTC+8 (treat as CN)");
+                    true
+                } else {
+                    log::info!("[Region] Fallback by timezone: offset={}", offset / 3600);
+                    false
+                }
+                }
+
+                if is_in_china().await {
+                    if let Some(env_path) = get_env_path(&app_handle_env) {
+                        log::info!("Detected China region, loading .env from {:?}", env_path);
+                        dotenvy::from_path(env_path).ok();
+                    }
+                } else {
+                    log::info!("Non-China region, skipping .env loading");
+                }
+
+                // ====== 验证 env 是否生效 ======
+                for key in [
+                    "NPM_CONFIG_REGISTRY",
+                    "UV_INDEX",
+                    "UV_DEFAULT_INDEX",
+                    "UV_EXTRA_INDEX_URL",
+                    "HOST_SERVER_VERSION",
+                ] {
+                    match std::env::var(key) {
+                        Ok(value) => log::info!("env {} = {}", key, value),
+                        Err(_) => log::info!("env {} is not set", key),
+                    }
+                }
+            });
+
+            // ====== 启动 host_server ======
             let state: State<'_, HostServerProcess> = app.state::<HostServerProcess>();
             start_host_server(&app_handle, state);
 

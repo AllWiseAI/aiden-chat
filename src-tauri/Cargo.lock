@@ -51,6 +51,7 @@ name = "aidenchat"
 version = "0.1.0"
 dependencies = [
  "bytes",
+ "chrono",
  "dotenvy",
  "flexi_logger",
  "futures-util",
@@ -65,7 +66,7 @@ dependencies = [
  "tauri",
  "tauri-build",
  "tauri-plugin-window-state",
- "time",
+ "time 0.3.41",
  "tokio",
  "tower-http",
  "tracing",
@@ -550,9 +551,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4e3c5919066adf22df73762e50cffcde3a758f2a848b113b586d1f86728b673b"
 dependencies = [
  "iana-time-zone",
+ "js-sys",
  "num-integer",
  "num-traits",
  "serde",
+ "time 0.1.45",
+ "wasm-bindgen",
  "winapi",
 ]
 
@@ -2131,7 +2135,7 @@ dependencies = [
  "dirs-next",
  "objc-foundation",
  "objc_id",
- "time",
+ "time 0.3.41",
 ]
 
 [[package]]
@@ -2820,7 +2824,7 @@ dependencies = [
  "line-wrap",
  "quick-xml 0.28.2",
  "serde",
- "time",
+ "time 0.3.41",
 ]
 
 [[package]]
@@ -3399,7 +3403,7 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror",
- "time",
+ "time 0.3.41",
  "url",
  "uuid",
 ]
@@ -3481,7 +3485,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_with_macros",
- "time",
+ "time 0.3.41",
 ]
 
 [[package]]
@@ -3912,7 +3916,7 @@ dependencies = [
  "tauri-utils",
  "tempfile",
  "thiserror",
- "time",
+ "time 0.3.41",
  "tokio",
  "url",
  "uuid",
@@ -3962,7 +3966,7 @@ dependencies = [
  "sha2",
  "tauri-utils",
  "thiserror",
- "time",
+ "time 0.3.41",
  "uuid",
  "walkdir",
 ]
@@ -4156,6 +4160,17 @@ dependencies = [
  "flate2",
  "jpeg-decoder",
  "weezl",
+]
+
+[[package]]
+name = "time"
+version = "0.1.45"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1b797afad3f312d1c66a56d11d0316f916356d11bd158fbc6ca6389ff6bf805a"
+dependencies = [
+ "libc",
+ "wasi 0.10.0+wasi-snapshot-preview1",
+ "winapi",
 ]
 
 [[package]]
@@ -4388,7 +4403,7 @@ dependencies = [
  "sharded-slab",
  "smallvec",
  "thread_local",
- "time",
+ "time 0.3.41",
  "tracing",
  "tracing-core",
  "tracing-log",
@@ -4583,6 +4598,12 @@ name = "wasi"
 version = "0.9.0+wasi-snapshot-preview1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cccddf32554fecc6acb585f82a32a72e28b48f8c4c1883ddfeeeaa96f7d8e519"
+
+[[package]]
+name = "wasi"
+version = "0.10.0+wasi-snapshot-preview1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1a143597ca7c7793eff794def352d41792a93c481eb1042423ff7ff72ba2c31f"
 
 [[package]]
 name = "wasi"
@@ -5438,7 +5459,7 @@ dependencies = [
  "memchr",
  "pbkdf2",
  "sha1",
- "time",
+ "time 0.3.41",
  "xz2",
  "zeroize",
  "zopfli",
