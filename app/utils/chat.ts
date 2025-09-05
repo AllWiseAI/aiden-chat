@@ -1,4 +1,4 @@
-import { REQUEST_TIMEOUT_MS } from "@/app/constant";
+import { REQUEST_TIMEOUT_MS, ALLOW_TOOL_LIST } from "@/app/constant";
 import { t } from "i18next";
 import {
   EventStreamContentType,
@@ -517,9 +517,13 @@ export function streamWithThink(
               );
 
               let approved = false;
-              if (userHasApproved) {
+              const toolName = chunk.mcpInfo.tool;
+              const isInAllowList = ALLOW_TOOL_LIST.includes(toolName);
+              if (userHasApproved || isInAllowList) {
                 console.log(
-                  "[MCP confirm] User has approved before. No need to show confirm modal. ",
+                  userHasApproved
+                    ? "[MCP confirm] User has approved before. No need to show confirm modal. "
+                    : "[MCP confirm] Tool is in allow list. No need to show confirm modal. ",
                 );
                 approved = true;
               } else {

@@ -84,3 +84,21 @@ export const HOST_SERVER_READY_EVENT = "host_server_ready";
 export const DEFAULT_USER_DELINETED = "User declined the tool call.";
 
 export const INNER_PROVIDER_NAME = "Built-in";
+
+export const ALLOW_TOOL_LIST = [
+  "host_current_time",
+  "host_get_timer",
+  "host_list_timers",
+  "host_weekday",
+  "host_days_in_month",
+  "host_convert_time",
+  "host_glob",
+  "host_grep",
+  "host_read",
+  "host_ls",
+  "host_get_terminal_info",
+  "tavily_web_search",
+  "tavily_answer_search",
+  "tavily_news_search",
+  "sequentialthinking",
+];
