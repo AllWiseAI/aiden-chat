@@ -417,6 +417,7 @@ export const useChatStore = createPersistStore(
         const api: ClientApi = getClientApi();
         // make request
         api.llm.chat({
+          chatId: session.id,
           modelInfo: session.modelInfo,
           messages: sendMessages,
           config: { ...modelConfig, stream: true },
@@ -552,6 +553,7 @@ export const useChatStore = createPersistStore(
 
       onToolCall(toolCallInfo: ToolCallInfo, currentSession?: ChatSession) {
         const session = currentSession ?? get().currentSession();
+        console.log("session in toolcall===", session);
         if (!session) return;
         const modelConfig = session.mask.modelConfig;
         const messageIndex = session.messages.length + 1;
@@ -579,6 +581,7 @@ export const useChatStore = createPersistStore(
         const api: ClientApi = getClientApi();
         api.llm.toolCall({
           toolCallInfo,
+          chatId: session.id,
           modelInfo: session.modelInfo,
           config: { ...modelConfig, stream: true },
           onUpdate(message, mcpInfo) {
@@ -592,7 +595,7 @@ export const useChatStore = createPersistStore(
                 botMessage.mcpInfo.response.push(mcpInfo.response ?? "");
               }
             }
-            get().updateTargetSession(session, (session) => {
+            get().updateTargetSession(session, (session: ChatSession) => {
               session.messages = session.messages.concat();
             });
           },
@@ -836,6 +839,7 @@ export const useChatStore = createPersistStore(
               }),
             );
           api.llm.chat({
+            chatId: session.id,
             isSummary: true,
             messages: topicMessages,
             config: { stream: false },
@@ -880,6 +884,7 @@ export const useChatStore = createPersistStore(
           modelConfig.sendMemory
         ) {
           api.llm.chat({
+            chatId: session.id,
             isSummary: true,
             messages: toBeSummarizedMsgs.concat(
               createMessage({
