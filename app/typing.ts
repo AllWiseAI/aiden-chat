@@ -243,6 +243,7 @@ export type AnthropicModelOptions = {
 export type GeminiModelOptions = {
   name: string;
   displayName: string;
+  supportedGenerationMethods?: string[];
 };
 
 export type ModelHeaderInfo = {
