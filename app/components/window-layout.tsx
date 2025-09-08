@@ -20,7 +20,7 @@ export function WindowLayout({ header = true }: { header: boolean }) {
           [styles["sidebar-show"]]: isHome,
         })}
       />
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 max-w-[calc(100vw-var(--sidebar-width)-68px)]">
         {header && (
           <WindowHeader>
             <ModelSelect />
