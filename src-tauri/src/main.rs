@@ -137,7 +137,6 @@ fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProc
         free_port
     };
 
-    // ====== 启动子进程 ======
     #[cfg(target_os = "windows")]
     let mut child: tokio::process::Child = {
         let mut cmd = std::process::Command::new(binary_path.clone());
@@ -174,7 +173,6 @@ fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProc
         .spawn()
         .expect("Failed to start host_server");
 
-    // ====== 日志捕获 ======
     let stdout = child.stdout.take().expect("Failed to capture stdout");
     let stderr = child.stderr.take().expect("Failed to capture stderr");
 
@@ -353,7 +351,6 @@ async fn main() {
             }
         })
         .setup(|app: &mut tauri::App| {
-            // ====== 日志初始化 ======
             let config: std::sync::Arc<tauri::Config> = app.config();
             let log_file = logger::get_log_file_path(&config).expect("Failed to get log file path");
             let log_dir = log_file.parent().unwrap();
@@ -379,7 +376,6 @@ async fn main() {
 
             let app_handle: AppHandle = app.handle();
 
-            // ====== 异步地区判断 & env 加载 ======
             let app_handle_env = app_handle.clone();
             tauri::async_runtime::spawn(async move {
                 use std::time::Duration;
@@ -439,7 +435,6 @@ async fn main() {
                     log::info!("Non-China region, skipping .env loading");
                 }
 
-                // ====== 验证 env 是否生效 ======
                 for key in [
                     "NPM_CONFIG_REGISTRY",
                     "UV_INDEX",
@@ -454,7 +449,6 @@ async fn main() {
                 }
             });
 
-            // ====== 启动 host_server ======
             let state: State<'_, HostServerProcess> = app.state::<HostServerProcess>();
             start_host_server(&app_handle, state);
 
