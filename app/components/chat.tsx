@@ -452,7 +452,7 @@ function InnerChat() {
               </div>
             </AccordionTrigger>
             <AccordionContent
-              className={styles["chat-message-item-mcp-result"]}
+              className={clsx(styles["chat-message-item-mcp-result"], "pb-0")}
             >
               <Markdown content={message.errorInfo ?? ""} />
             </AccordionContent>
@@ -485,7 +485,7 @@ function InnerChat() {
               </div>
             </AccordionTrigger>
             <AccordionContent
-              className={styles["chat-message-item-mcp-result"]}
+              className={clsx(styles["chat-message-item-mcp-result"], "pb-0")}
             >
               <div className="mb-2.5 rounded-sm bg-white dark:bg-[#141718] border p-2.5">
                 <div className="mb-2 font-medium">Request</div>
