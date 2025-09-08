@@ -135,7 +135,7 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
         </div>
       </div>
 
-      <div className="border rounded-xl mt-6 overflow-y-auto max-h-[calc(100%-80px)] px-[20px] py-[24px]">
+      <div className="border border-[#F3F5F7] dark:border-[#232627]/50 rounded-sm mt-6 overflow-y-auto max-h-[calc(100%-80px)] px-[20px] py-[24px]">
         <div className="header flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="bg-[#E8ECEF] dark:bg-[#343839] rounded-full flex items-center justify-center w-[30px] h-[30px]">

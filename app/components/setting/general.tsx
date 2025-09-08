@@ -97,17 +97,17 @@ export default function General() {
       <div className="w-max h-full pr-8 flex flex-col gap-10 justify-start items-start text-black dark:text-white">
         <div className="w-full flex flex-col gap-3 px-2.5 pt-1">
           <div className="font-medium">{t("general.account")}</div>
-          <div className="w-full flex justify-between items-center gap-5 p-2.5 bg-[#F3F5F7]/30 dark:bg-[#232627]/30 border border-[#E8ECEF] dark:border-[#232627] rounded-sm text-sm">
-            <p>{email}</p>
+          <div className="w-full flex justify-between items-center gap-5 p-2.5 bg-[#F3F5F7]/30 dark:bg-[#232627]/30 border border-[#E8ECEF] dark:border-[#232627] rounded-sm text-base">
+            <p className="text-sm">{email}</p>
             <div className="flex items-center gap-5">
               <div
-                className="text-main text-xs underline cursor-pointer hover:opacity-70"
+                className="text-main underline cursor-pointer hover:opacity-70"
                 onClick={() => setShowPasswordModal(true)}
               >
                 {t("general.password.change")}
               </div>
               <div
-                className="text-[#EF466F] text-xs underline cursor-pointer hover:opacity-70"
+                className="text-[#EF466F] underline cursor-pointer hover:opacity-70"
                 onClick={logout}
               >
                 {t("general.logout")}
@@ -122,7 +122,7 @@ export default function General() {
             value={region}
             onValueChange={(value) => handleRegionChange(value)}
           >
-            <SelectTrigger className="w-full dark:border-[#343839] text-xs">
+            <SelectTrigger className="w-full dark:border-[#343839] text-sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-[#F3F5F7] dark:bg-[#232627] max-w-full max-h-60 overflow-y-auto">
@@ -148,7 +148,7 @@ export default function General() {
               changeLanguage(value as Locales);
             }}
           >
-            <SelectTrigger className="w-full dark:border-[#343839] text-xs">
+            <SelectTrigger className="w-full dark:border-[#343839] text-sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="w-full bg-[#F3F5F7] dark:bg-[#232627]">

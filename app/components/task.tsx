@@ -226,7 +226,7 @@ function TaskPanel({ task, setIsEdit }: TaskPanelProps) {
   const { t } = useTranslation();
 
   return (
-    <div className="flex flex-col gap-5 py-3 px-5 text-sm bg-[#F3F5F7]/50 dark:bg-[#232627]/50 text-[#101213] dark:text-white rounded-xl">
+    <div className="flex flex-col gap-5 py-3 px-5 text-sm bg-[#F3F5F7]/50 dark:bg-[#232627]/50 border border-[#E8ECEF] dark:border-[#343839] text-[#101213] dark:text-white rounded-lg">
       <div className="flex items-center gap-2">
         <span className="flex-1 min-w-0 text-lg truncate">{task.name}</span>
         <Button

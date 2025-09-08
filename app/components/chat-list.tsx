@@ -142,8 +142,8 @@ export function ChatItem(props: {
                   }}
                 />
               ) : (
-                <div className="flex justify-between items-center">
-                  <div className="flex justify-start items-center gap-4 leading-6 flex-1 max-w-4/5">
+                <div className="flex justify-between items-center gap-2">
+                  <div className="flex justify-start items-center gap-4 leading-6 flex-1 min-w-0">
                     <div
                       className={clsx(
                         "cursor-default text-sm w-full truncate",

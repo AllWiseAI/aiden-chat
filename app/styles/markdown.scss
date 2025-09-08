@@ -502,16 +502,16 @@
   appearance: none;
 }
 
-.markdown-body::before {
-  display: table;
-  content: "";
-}
+// .markdown-body::before {
+//   display: table;
+//   content: "";
+// }
 
-.markdown-body::after {
-  display: table;
-  clear: both;
-  content: "";
-}
+// .markdown-body::after {
+//   display: table;
+//   clear: both;
+//   content: "";
+// }
 
 .markdown-body > *:first-child {
   margin-top: 0 !important;
