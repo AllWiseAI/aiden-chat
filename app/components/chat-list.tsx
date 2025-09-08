@@ -273,7 +273,7 @@ export function ChatList(props: { narrow?: boolean; searchValue?: string }) {
     track(EVENTS.CHAT_COUNT, {
       count: sessions.length,
     });
-  }, [sessions]);
+  }, [sessions.length]);
 
   const filteredSessions = useMemo(() => {
     if (!props.searchValue)
