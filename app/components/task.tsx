@@ -1,4 +1,4 @@
-import { useTranslation } from "react-i18next";
+import { useTranslation, Trans } from "react-i18next";
 import { useTaskStore } from "../store";
 import { useMemo, useEffect, useState, useRef } from "react";
 import { Button } from "./shadcn/button";
@@ -178,6 +178,7 @@ function TaskRecords({ currentTask }: { currentTask: TaskType }) {
       if (!currentTask) return;
       const { id } = currentTask;
       const res = await getTaskExecutionRecords(id);
+      console.log(1111111, res);
       const { code, data } = res;
       if (code === 0) {
         const { records } = data;
@@ -311,6 +312,7 @@ export function Task() {
   const { t } = useTranslation();
   const setTask = useTaskStore((state) => state.setTask);
   const [isEdit, setIsEdit] = useState(false);
+  const navigate = useNavigate();
   const currentTask = useTaskStore().currentTask();
   const taskStore = useTaskStore();
   const updateTargetTask = taskStore.updateTargetTask;
@@ -358,8 +360,30 @@ export function Task() {
         )}
       </WindowHeader>
       {!currentTask ? (
-        <div className="flex-center flex-1">
+        <div className="flex-center flex-col flex-1 gap-7.5 -mt-15">
           {theme === Theme.Light ? <ResultLightIcon /> : <ResultDarkIcon />}
+          <div className="flex flex-col text-center whitespace-nowrap text-sm">
+            <span>
+              <Trans
+                i18nKey="task.emptyTip.1"
+                components={{
+                  onSchedule: <span className="font-semibold" />,
+                }}
+              />
+            </span>
+            <span>
+              <Trans
+                i18nKey="task.emptyTip.2"
+                components={{
+                  automate: <span className="font-semibold" />,
+                  save: <span className="font-semibold" />,
+                }}
+              />
+            </span>
+          </div>
+          <Button onClick={() => navigate(Path.NewTask)}>
+            {t("task.emptyTip.create")}
+          </Button>
         </div>
       ) : (
         <div

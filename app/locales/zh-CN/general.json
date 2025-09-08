@@ -59,6 +59,11 @@
     }
   },
   "task": {
+    "emptyTip": {
+      "1": "Aiden 可以<onSchedule>按计划</onSchedule>运行任务，",
+      "2": "帮助您<automate>自动化日常事务</automate>并<save>节省时间。</save>",
+      "create": "立即创建 !"
+    },
     "daily": "每日任务",
     "weekly": "每周任务",
     "monthly": "每月任务",

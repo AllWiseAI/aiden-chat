@@ -59,6 +59,11 @@
     }
   },
   "task": {
+    "emptyTip": {
+      "1": "Aiden can run tasks <onSchedule>on schedule,</onSchedule>",
+      "2": "helping you <automate>automate routines</automate> and <save>save time.</save>",
+      "create": "Create Now !"
+    },
     "daily": "Daily task",
     "weekly": "Weekly task",
     "monthly": "Monthly task",
