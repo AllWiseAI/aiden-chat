@@ -43,6 +43,7 @@
         "setIcon": true,
         "setIgnoreCursorEvents": true,
         "setSize": true,
+        "setFocus": true,
         "setPosition": true,
         "setResizable": true,
         "show": true,
