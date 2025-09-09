@@ -12,11 +12,7 @@ import type {
 } from "../client/api";
 import { getClientApi } from "../client/api";
 import { ChatControllerPool } from "../client/controller";
-import {
-  DEFAULT_INPUT_TEMPLATE,
-  DEFAULT_SYSTEM_TEMPLATE,
-  StoreKey,
-} from "../constant";
+import { DEFAULT_INPUT_TEMPLATE, StoreKey } from "../constant";
 import { getLang } from "../locales";
 import { t } from "i18next";
 import { createPersistStore } from "../utils/store";
@@ -341,7 +337,7 @@ export const useChatStore = createPersistStore(
         });
 
         get().updateStat(message, targetSession);
-        get().summarizeSession(true, targetSession);
+        get().summarizeSession(false, targetSession);
       },
 
       async onUserInput(
@@ -417,6 +413,7 @@ export const useChatStore = createPersistStore(
         const api: ClientApi = getClientApi();
         // make request
         api.llm.chat({
+          chatId: session.id,
           modelInfo: session.modelInfo,
           messages: sendMessages,
           config: { ...modelConfig, stream: true },
@@ -552,6 +549,7 @@ export const useChatStore = createPersistStore(
 
       onToolCall(toolCallInfo: ToolCallInfo, currentSession?: ChatSession) {
         const session = currentSession ?? get().currentSession();
+        console.log("session in toolcall===", session);
         if (!session) return;
         const modelConfig = session.mask.modelConfig;
         const messageIndex = session.messages.length + 1;
@@ -579,6 +577,7 @@ export const useChatStore = createPersistStore(
         const api: ClientApi = getClientApi();
         api.llm.toolCall({
           toolCallInfo,
+          chatId: session.id,
           modelInfo: session.modelInfo,
           config: { ...modelConfig, stream: true },
           onUpdate(message, mcpInfo) {
@@ -592,7 +591,7 @@ export const useChatStore = createPersistStore(
                 botMessage.mcpInfo.response.push(mcpInfo.response ?? "");
               }
             }
-            get().updateTargetSession(session, (session) => {
+            get().updateTargetSession(session, (session: ChatSession) => {
               session.messages = session.messages.concat();
             });
           },
@@ -707,54 +706,13 @@ export const useChatStore = createPersistStore(
 
         // in-context prompts
         const contextPrompts = session.mask.context.slice();
-        const shouldInjectSystemPrompts = false;
-
-        let systemPrompts: ChatMessage[] = [];
-
-        if (shouldInjectSystemPrompts) {
-          systemPrompts = [
-            createMessage({
-              role: "system",
-              content: fillTemplateWith("", {
-                ...modelConfig,
-                template: DEFAULT_SYSTEM_TEMPLATE,
-              }),
-            }),
-          ];
-        }
-
-        if (shouldInjectSystemPrompts) {
-          console.log(
-            "[Global System Prompt] ",
-            systemPrompts.at(0)?.content ?? "empty",
-          );
-        }
-        const memoryPrompt = get().getMemoryPrompt();
-        // long term memory
-        const shouldSendLongTermMemory =
-          modelConfig.sendMemory &&
-          session.memoryPrompt &&
-          session.memoryPrompt.length > 0 &&
-          session.lastSummarizeIndex > clearContextIndex;
-        const longTermMemoryPrompts =
-          shouldSendLongTermMemory && memoryPrompt ? [memoryPrompt] : [];
-        const longTermMemoryStartIndex = session.lastSummarizeIndex;
-
         // short term memory
         const shortTermMemoryStartIndex = Math.max(
           0,
           totalMessageCount - modelConfig.historyMessageCount,
         );
 
-        // lets concat send messages, including 4 parts:
-        // 0. system prompt: to get close to OpenAI Web ChatGPT
-        // 1. long term memory: summarized memory messages
-        // 2. pre-defined in-context prompts
-        // 3. short term memory: latest n messages
-        // 4. newest input message
-        const memoryStartIndex = shouldSendLongTermMemory
-          ? Math.min(longTermMemoryStartIndex, shortTermMemoryStartIndex)
-          : shortTermMemoryStartIndex;
+        const memoryStartIndex = shortTermMemoryStartIndex;
         // and if user has cleared history messages, we should exclude the memory too.
         const contextStartIndex = Math.max(clearContextIndex, memoryStartIndex);
         const maxTokenThreshold = modelConfig.max_tokens;
@@ -773,8 +731,6 @@ export const useChatStore = createPersistStore(
         }
         // concat all messages
         const recentMessages = [
-          ...systemPrompts,
-          ...longTermMemoryPrompts,
           ...contextPrompts,
           ...reversedRecentMessages.reverse(),
         ];
@@ -812,8 +768,8 @@ export const useChatStore = createPersistStore(
         // remove error messages if any
         const messages = session.messages;
 
-        // should summarize topic after chating more than 50 words
-        const SUMMARIZE_MIN_LEN = 50;
+        // should summarize topic after chating more than 10 words
+        const SUMMARIZE_MIN_LEN = 10;
         if (
           (config.enableAutoGenerateTitle &&
             session.topic === "" &&
@@ -836,6 +792,7 @@ export const useChatStore = createPersistStore(
               }),
             );
           api.llm.chat({
+            chatId: session.id,
             isSummary: true,
             messages: topicMessages,
             config: { stream: false },
@@ -880,6 +837,7 @@ export const useChatStore = createPersistStore(
           modelConfig.sendMemory
         ) {
           api.llm.chat({
+            chatId: session.id,
             isSummary: true,
             messages: toBeSummarizedMsgs.concat(
               createMessage({
