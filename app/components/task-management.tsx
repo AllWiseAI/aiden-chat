@@ -85,6 +85,7 @@ export default function TaskManagement({
   model,
 }: TaskManagementProps) {
   const { t } = useTranslation("general");
+  const [testTaskIds, setTestTaskIds] = useState<string[]>([]);
   const [newTask, setNewTask] = useState<TaskFormType>({
     name: "",
     date: "",
@@ -185,19 +186,24 @@ export default function TaskManagement({
     setIsTestLoading(true);
     const res = await testTask(payload);
     setIsTestLoading(false);
-    const { code, detail } = res;
+    const { code, message, data } = res;
     if (code === 0) {
+      const { task_id } = data || {};
+      if (task_id) {
+        setTestTaskIds((ids) => [...ids, task_id]);
+      }
       toast.success(t("task.testSuccess"), {
         className: "w-auto max-w-max",
       });
     } else {
-      toast.error(detail || t("task.testFailed"), {
+      toast.error(message || t("task.testFailed"), {
         className: "w-auto max-w-max",
       });
     }
   };
 
   const handleConfirmClick = async () => {
+    console.log("testTaskIds", testTaskIds);
     try {
       const { name, date, hour, minute, type, notification, details } = newTask;
       const payload: TaskPayload = {
