@@ -10,7 +10,7 @@
 
   pre code {
     display: block;
-    overflow-x: auto;
+    // overflow-x: auto;
     padding: 1em;
   }
 
@@ -20,7 +20,7 @@
 }
 pre code.hljs {
   display: block;
-  overflow-x: auto;
+  // overflow-x: auto;
   padding: 1em;
 }
 code.hljs {
@@ -37,11 +37,11 @@ code.hljs {
 */
 .hljs {
   color: #24292e;
-  background: #F9F9F9 !important;
+  background: #f9f9f9 !important;
 }
 .dark .hljs {
   color: white;
-  background: #3B3F45 !important;
+  background: #3b3f45 !important;
 }
 .hljs-doctag,
 .hljs-keyword,
@@ -81,7 +81,7 @@ code.hljs {
 .hljs-selector-class,
 .hljs-selector-id,
 .hljs-variable {
-  color: #ED652A;
+  color: #ed652a;
 }
 .hljs-meta .hljs-string,
 .hljs-regexp,
@@ -91,7 +91,7 @@ code.hljs {
 .dark .hljs-meta .hljs-string,
 .hljs-regexp,
 .hljs-string {
-  color: #97C384;
+  color: #97c384;
 }
 .hljs-built_in,
 .hljs-symbol {
@@ -112,7 +112,7 @@ code.hljs {
   color: #24292e;
 }
 .dark .hljs-subst {
-  color: #F9F9F9;
+  color: #f9f9f9;
 }
 .hljs-section {
   color: #005cc5;
