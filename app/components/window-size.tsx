@@ -55,6 +55,7 @@ export default function WindowSize() {
         await appWindow.center();
         return;
       }
+      await appWindow.setResizable(true);
       const { x, y, width, height } = windowBounds;
       if (width) {
         await appWindow.setSize(new LogicalSize(width, height));
@@ -63,7 +64,7 @@ export default function WindowSize() {
         await appWindow.setSize(new LogicalSize(1200, 750));
         await appWindow.center();
       }
-      await appWindow.setResizable(true);
+
       const unlistenSize = await appWindow.onResized(
         handleResolveSizeAndPosition,
       );
