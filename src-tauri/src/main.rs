@@ -4,29 +4,29 @@ use std::os::windows::process::CommandExt;
 #[cfg(target_os = "windows")]
 const CREATE_NO_WINDOW: u32 = 0x08000000;
 
+mod cleanup;
 mod constants;
 mod logger;
 mod mcp;
 mod request;
 mod stream;
-mod cleanup;
 
 use crate::constants::{HOST_SERVER_EVENT_NAME, HOST_SERVER_READY_TEXT, PORTS_TO_KILL};
 use dotenvy;
 use flexi_logger::{Duplicate, FileSpec, Logger, WriteMode};
 use sentry;
 use std::env;
+use std::net::TcpListener;
 use std::path::PathBuf;
 use std::process::{Command as StdCommand, Stdio as StdStdio};
 use std::sync::Mutex;
 use tauri::api::path::resource_dir;
 use tauri::{AppHandle, Manager, Runtime, State};
+#[cfg(target_os = "macos")]
 use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
 use tokio::io::AsyncBufReadExt;
 use tokio::process::{Child, Command as TokioCommand};
 use tokio::task;
-use std::net::TcpListener;
-
 
 pub struct HostServerProcess(pub Mutex<Option<Child>>);
 
@@ -141,10 +141,12 @@ fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProc
     let mut child: tokio::process::Child = {
         let mut cmd = std::process::Command::new(binary_path.clone());
         cmd.args([
-            "--config_file", &mcp_config_path.to_string_lossy(),
+            "--config_file",
+            &mcp_config_path.to_string_lossy(),
             "--disable_reload",
             "--enable_authorization",
-            "--port", &port.to_string(),
+            "--port",
+            &port.to_string(),
         ])
         .envs(env::vars())
         .env("PATH", &new_path)
@@ -157,21 +159,22 @@ fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProc
     };
 
     #[cfg(not(target_os = "windows"))]
-    let mut child: tokio::process::Child = TokioCommand::new(binary_path.to_string_lossy().to_string())
-        .args([
-            "--config_file".into(),
-            mcp_config_path.to_string_lossy().to_string(),
-            "--disable_reload".into(),
-            "--enable_authorization".into(),
-            "--port".into(),
-            port.to_string(),
-        ])
-        .envs(env::vars())
-        .env("PATH", new_path)
-        .stdout(StdStdio::piped())
-        .stderr(StdStdio::piped())
-        .spawn()
-        .expect("Failed to start host_server");
+    let mut child: tokio::process::Child =
+        TokioCommand::new(binary_path.to_string_lossy().to_string())
+            .args([
+                "--config_file".into(),
+                mcp_config_path.to_string_lossy().to_string(),
+                "--disable_reload".into(),
+                "--enable_authorization".into(),
+                "--port".into(),
+                port.to_string(),
+            ])
+            .envs(env::vars())
+            .env("PATH", new_path)
+            .stdout(StdStdio::piped())
+            .stderr(StdStdio::piped())
+            .spawn()
+            .expect("Failed to start host_server");
 
     let stdout = child.stdout.take().expect("Failed to capture stdout");
     let stderr = child.stderr.take().expect("Failed to capture stderr");
@@ -301,39 +304,8 @@ async fn main() {
         None
     };
 
-    let setting = CustomMenuItem::new("open_setting".to_string(), "Setting");
-
-    let app_submenu = Submenu::new(
-        "App",
-        Menu::new()
-            .add_item(setting)
-            .add_native_item(MenuItem::Quit),
-    );
-
-    let edit_submenu = Submenu::new(
-        "Edit",
-        Menu::new()
-            .add_native_item(MenuItem::Undo)
-            .add_native_item(MenuItem::Redo)
-            .add_native_item(MenuItem::Separator)
-            .add_native_item(MenuItem::Cut)
-            .add_native_item(MenuItem::Copy)
-            .add_native_item(MenuItem::Paste)
-            .add_native_item(MenuItem::SelectAll),
-    );
-
-    let menu = Menu::new()
-        .add_submenu(app_submenu)
-        .add_submenu(edit_submenu);
-
-    let context = tauri::Builder::default()
-        .menu(menu)
-        .on_menu_event(|event| match event.menu_item_id() {
-            "open_setting" => {
-                let _ = event.window().emit("open-setting", {});
-            }
-            _ => {}
-        })
+    // ---- Tauri Builder ----
+    let mut builder = tauri::Builder::default()
         .manage(HostServerProcess(Mutex::new(None)))
         .invoke_handler(tauri::generate_handler![
             log_from_frontend,
@@ -346,10 +318,54 @@ async fn main() {
         // 监听窗口关闭事件
         .on_window_event(|event| {
             if let tauri::WindowEvent::CloseRequested { api, .. } = event.event() {
-                api.prevent_close();
-                let _ = event.window().minimize();
+                #[cfg(target_os = "macos")]
+                {
+                    api.prevent_close();
+                    let _ = event.window().hide();
+                }
             }
-        })
+        });
+
+    // ---- macOS 独占菜单 ----
+    #[cfg(target_os = "macos")]
+    {
+        let setting = CustomMenuItem::new("open_setting".to_string(), "Setting");
+
+        let app_submenu = Submenu::new(
+            "App",
+            Menu::new()
+                .add_item(setting)
+                .add_native_item(MenuItem::Quit),
+        );
+
+        let edit_submenu = Submenu::new(
+            "Edit",
+            Menu::new()
+                .add_native_item(MenuItem::Undo)
+                .add_native_item(MenuItem::Redo)
+                .add_native_item(MenuItem::Separator)
+                .add_native_item(MenuItem::Cut)
+                .add_native_item(MenuItem::Copy)
+                .add_native_item(MenuItem::Paste)
+                .add_native_item(MenuItem::SelectAll),
+        );
+
+        let menu = Menu::new()
+            .add_submenu(app_submenu)
+            .add_submenu(edit_submenu);
+
+        builder = builder
+            .menu(menu)
+            .on_menu_event(|event| match event.menu_item_id() {
+                "open_setting" => {
+                    let _ = event.window().emit("open-setting", {});
+                }
+                _ => {}
+            });
+    }
+
+    // ---- Setup + Build ----
+    let app = builder
         .setup(|app: &mut tauri::App| {
             let config: std::sync::Arc<tauri::Config> = app.config();
             let log_file = logger::get_log_file_path(&config).expect("Failed to get log file path");
@@ -378,52 +394,56 @@ async fn main() {
 
             let app_handle_env = app_handle.clone();
             tauri::async_runtime::spawn(async move {
-                use std::time::Duration;
-                use reqwest::Client;
                 use chrono::Local;
+                use reqwest::Client;
+                use std::time::Duration;
 
                 async fn is_in_china() -> bool {
                     let client = Client::builder()
-                        .timeout(Duration::from_secs(10)) // 10 秒超时
+                        .timeout(Duration::from_secs(10))
                         .build()
                         .unwrap();
 
-                       match client.get("https://ipapi.co/json").send().await {
-                    Ok(resp) => {
-                        if let Ok(json) = resp.json::<serde_json::Value>().await {
-                            if json.get("error").and_then(|v| v.as_bool()) == Some(true) {
-                                log::warn!(
-                                    "[Region] API returned error: {:?}, fallback to timezone",
-                                    json
-                                );
-                            } else if json["country"].as_str() == Some("CN") {
-                                log::info!("[Region] Detected by API: CN");
-                                return true;
+                    match client.get("https://ipapi.co/json").send().await {
+                        Ok(resp) => {
+                            if let Ok(json) = resp.json::<serde_json::Value>().await {
+                                if json.get("error").and_then(|v| v.as_bool()) == Some(true) {
+                                    log::warn!(
+                                        "[Region] API returned error: {:?}, fallback to timezone",
+                                        json
+                                    );
+                                } else if json["country"].as_str() == Some("CN") {
+                                    log::info!("[Region] Detected by API: CN");
+                                    return true;
+                                } else {
+                                    log::info!(
+                                        "[Region] Detected by API: {:?}, treat as non-CN",
+                                        json["country"]
+                                    );
+                                    return false;
+                                }
                             } else {
-                                log::info!(
-                                    "[Region] Detected by API: {:?}, treat as non-CN",
-                                    json["country"]
+                                log::warn!(
+                                    "[Region] API response parse failed, fallback to timezone"
                                 );
-                                return false;
                             }
-                        } else {
-                            log::warn!("[Region] API response parse failed, fallback to timezone");
+                        }
+                        Err(err) => {
+                            log::warn!(
+                                "[Region] API request failed: {}, fallback to timezone",
+                                err
+                            );
                         }
                     }
-                    Err(err) => {
-                        log::warn!("[Region] API request failed: {}, fallback to timezone", err);
-                    }
-                }
 
-                // fallback only when API not usable or limited
-                let offset = Local::now().offset().local_minus_utc();
-                if offset == 8 * 3600 {
-                    log::info!("[Region] Fallback by timezone: UTC+8 (treat as CN)");
-                    true
-                } else {
-                    log::info!("[Region] Fallback by timezone: offset={}", offset / 3600);
-                    false
-                }
+                    let offset = Local::now().offset().local_minus_utc();
+                    if offset == 8 * 3600 {
+                        log::info!("[Region] Fallback by timezone: UTC+8 (treat as CN)");
+                        true
+                    } else {
+                        log::info!("[Region] Fallback by timezone: offset={}", offset / 3600);
+                        false
+                    }
                 }
 
                 if is_in_china().await {
@@ -457,7 +477,7 @@ async fn main() {
         .build(tauri::generate_context!())
         .expect("error while running tauri application");
 
-    context.run(|app_handle, event| {
+    app.run(|app_handle, event| {
         if let tauri::RunEvent::Exit { .. } = event {
             log::info!("App is exiting — now cleaning processes");
             let state: State<'_, HostServerProcess> = app_handle.state::<HostServerProcess>();

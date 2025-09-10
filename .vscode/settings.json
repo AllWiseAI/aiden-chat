@@ -39,5 +39,8 @@
   "i18n-ally.sourceLanguage": "en-US",
   "i18n-ally.keystyle": "nested",
   "i18n-ally.namespace": true,
-  "i18n-ally.defaultNamespace": "general"
+  "i18n-ally.defaultNamespace": "general",
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer"
+  }
 }
