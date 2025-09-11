@@ -59,6 +59,11 @@
     }
   },
   "task": {
+    "emptyTip": {
+      "1": "Aiden 可以<onSchedule>按计划</onSchedule>运行任务，",
+      "2": "帮助您<automate>自动化日常事务</automate>并<save>节省时间。</save>",
+      "create": "立即创建 !"
+    },
     "daily": "每日任务",
     "weekly": "每周任务",
     "monthly": "每月任务",
@@ -72,10 +77,14 @@
     "description": "任务描述",
     "recurrence": "重复",
     "notification": "通知",
-    "details": "详情",
+    "chat": "聊天",
     "on": "开",
     "off": "关",
+    "details": "详情",
     "test": "测试",
+    "testing": "测试中",
+    "testTitle": "（测试）",
+    "null": "空",
     "confirm": "确认",
     "createSuccess": "创建成功",
     "createFailed": "创建失败",

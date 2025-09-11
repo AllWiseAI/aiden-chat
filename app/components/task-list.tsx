@@ -56,7 +56,7 @@ export function TaskItem(props: {
         <div className="flex items-center gap-1 min-w-0 flex-1">
           <span
             className={clsx(
-              "leading-6 cursor-default text-sm flex-1 w-full min-w-0 truncate",
+              "max-w-max leading-6 cursor-default text-sm flex-1 w-full min-w-0 truncate",
               props.selected && location.pathname !== Path.NewTask
                 ? "text-[#141718] dark:text-white font-medium"
                 : props.className
@@ -263,7 +263,7 @@ export function TaskList(props: { searchValue?: string }) {
           onClick={() => setShowMore(false)}
         >
           {t("task.viewMore")}
-          <ArrowDownIcon />
+          <ArrowDownIcon className="size-[18px]" />
         </div>
       )}
     </div>

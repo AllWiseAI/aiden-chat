@@ -174,7 +174,8 @@ export default function TaskManagement({
     const { name, date, hour, minute, type, notification, details } = newTask;
 
     const payload: TaskPayload = {
-      task_id: testTaskId,
+      // 编辑的时候用 task.id
+      task_id: task?.id || testTaskId,
       description: details,
       repeat_every: 1,
       repeat_unit: type,
@@ -306,7 +307,7 @@ export default function TaskManagement({
                       : dayjs(newTask.date).format("D, MMM")
                     : t("task.date")}
                 </div>
-                <ArrowDownIcon className="opacity-50" />
+                <ArrowDownIcon className="size-4 opacity-50" />
               </div>
             </PopoverTrigger>
             <PopoverContent asChild align="start">
@@ -422,7 +423,10 @@ export default function TaskManagement({
           disabled={!confirmBtn || isTestLoading}
         >
           {isTestLoading ? (
-            <LoadingIcon className="size-4 animate-spin" />
+            <>
+              <LoadingIcon className="size-4 animate-spin" />
+              {t("task.testing")}
+            </>
           ) : (
             t("task.test")
           )}
@@ -433,7 +437,10 @@ export default function TaskManagement({
           onClick={handleConfirmClick}
         >
           {isSubmitLoading ? (
-            <LoadingIcon className="size-4 animate-spin" />
+            <>
+              <LoadingIcon className="size-4 animate-spin" />
+              {t("task.confirm")}
+            </>
           ) : (
             t("task.confirm")
           )}
