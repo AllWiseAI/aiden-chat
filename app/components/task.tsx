@@ -205,7 +205,7 @@ function TaskItem({ title, taskInfo, modelInfo }: TaskItemProps) {
         </div>
       </AccordionTrigger>
       <AccordionContent className="mt-2.5 flex flex-col gap-2.5 p-0">
-        <div className="bg-[#FEFEFE] dark:bg-[#101213] text-sm font-medium rounded-sm p-2.5 max-h-55 overflow-y-auto">
+        <div className="bg-[#FEFEFE] dark:bg-[#101213] text-sm rounded-sm p-2.5 max-h-55 overflow-y-auto">
           {status === TaskAction.Success ? (
             response_data?.length > 0 &&
             response_data.every((item) => item.message?.content === "") ? (
