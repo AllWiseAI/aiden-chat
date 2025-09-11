@@ -4,6 +4,7 @@ import { ModelSize, DalleQuality, DalleStyle } from "@/app/typing";
 import { ChatOptions, LLMApi, MultimodalContent } from "../api";
 import {
   getBaseChatUrl,
+  getBaseSummaryUrl,
   getHeaders,
   getSecondChatUrl,
 } from "@/app/utils/fetch";
@@ -71,6 +72,7 @@ export class ChatGPTApi implements LLMApi {
     const controller = new AbortController();
     options.onController?.(controller);
     const isSummary = options.isSummary ?? false;
+    const url = isSummary ? getBaseSummaryUrl() : DEFAULT_CHAT_URL;
     const headers = await getHeaders({
       aiden: true,
       isSummary,
@@ -79,7 +81,7 @@ export class ChatGPTApi implements LLMApi {
     try {
       if (shouldStream) {
         streamWithThink(
-          DEFAULT_CHAT_URL,
+          url,
           requestPayload,
           headers,
           controller,

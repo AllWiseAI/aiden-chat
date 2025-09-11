@@ -45,6 +45,11 @@ export const getBaseChatUrl = () => {
   return `${baseURL}/agent/chat`;
 };
 
+export const getBaseSummaryUrl = () => {
+  const baseURL = getLocalBaseDomain();
+  return `${baseURL}/agent/summary`;
+};
+
 export const getSecondChatUrl = () => {
   const baseURL = getLocalBaseDomain();
   return `${baseURL}/agent/continue-tool-call`;

@@ -699,41 +699,10 @@ export const useChatStore = createPersistStore(
 
       async getMessagesWithMemory() {
         const session = get().currentSession();
-        const modelConfig = session.mask.modelConfig;
-        const clearContextIndex = session.clearContextIndex ?? 0;
         const messages = session.messages.slice();
-        const totalMessageCount = session.messages.length;
+        const validMessages = messages.filter((msg) => !msg?.isError);
 
-        // in-context prompts
-        const contextPrompts = session.mask.context.slice();
-        // short term memory
-        const shortTermMemoryStartIndex = Math.max(
-          0,
-          totalMessageCount - modelConfig.historyMessageCount,
-        );
-
-        const memoryStartIndex = shortTermMemoryStartIndex;
-        // and if user has cleared history messages, we should exclude the memory too.
-        const contextStartIndex = Math.max(clearContextIndex, memoryStartIndex);
-        const maxTokenThreshold = modelConfig.max_tokens;
-
-        // get recent messages as much as possible
-        const reversedRecentMessages = [];
-        for (
-          let i = totalMessageCount - 1, tokenCount = 0;
-          i >= contextStartIndex && tokenCount < maxTokenThreshold;
-          i -= 1
-        ) {
-          const msg = messages[i];
-          if (!msg || msg.isError) continue;
-          tokenCount += estimateTokenLength(getMessageTextContent(msg));
-          reversedRecentMessages.push(msg);
-        }
-        // concat all messages
-        const recentMessages = [
-          ...contextPrompts,
-          ...reversedRecentMessages.reverse(),
-        ];
+        const recentMessages = validMessages.slice(-20);
 
         return recentMessages;
       },
@@ -795,7 +764,7 @@ export const useChatStore = createPersistStore(
             chatId: session.id,
             isSummary: true,
             messages: topicMessages,
-            config: { stream: false },
+            config: { stream: true },
             onFinish(message, responseRes) {
               if (responseRes?.status === 200 && !message?.includes("Error")) {
                 get().updateTargetSession(
@@ -847,7 +816,7 @@ export const useChatStore = createPersistStore(
               }),
             ),
             config: {
-              stream: false,
+              stream: true,
             },
             onUpdate(message) {
               session.memoryPrompt = message;
