@@ -437,7 +437,10 @@ export default function TaskManagement({
           onClick={handleConfirmClick}
         >
           {isSubmitLoading ? (
-            <LoadingIcon className="size-4 animate-spin" />
+            <>
+              <LoadingIcon className="size-4 animate-spin" />
+              {t("task.confirm")}
+            </>
           ) : (
             t("task.confirm")
           )}
