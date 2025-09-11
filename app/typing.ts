@@ -306,15 +306,19 @@ export type TaskExecutionRecord = {
   next_run_at: string | null;
   response_data: {
     message: {
-      role: MessageRole;
-      message: string;
+      role: "assistant" | "user" | "system";
+      content: string;
     };
-  };
+    id: string; // UUID 格式
+    extra: Record<string, any>;
+  }[];
   request_messages: {
     role: MessageRole;
     message: string;
   }[];
   id: number;
+  error_message: string | null;
+  execution_type: "test" | "scheduled";
 };
 
 export type taskSessionParams = {
