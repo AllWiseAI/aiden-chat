@@ -701,10 +701,7 @@ export const useChatStore = createPersistStore(
         const session = get().currentSession();
         const messages = session.messages.slice();
         const validMessages = messages.filter((msg) => !msg?.isError);
-
-        const recentMessages = validMessages.slice(-20);
-
-        return recentMessages;
+        return validMessages;
       },
 
       updateMessage(
