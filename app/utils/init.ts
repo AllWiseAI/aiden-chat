@@ -25,6 +25,7 @@ const initWebsocket = () => {
   websocketManager.connect(port, localToken);
   websocketManager.onMessage(async (msg) => {
     if (msg.type === "get_latest_refresh_token") {
+      console.log("[websocket] get_latest_refresh_token", msg);
       const headers = await getHeaders({ aiden: true });
       websocketManager.send({
         type: "update_refresh_token",
@@ -32,14 +33,17 @@ const initWebsocket = () => {
       });
     }
     if (msg.type === "analytics_event") {
+      console.log("[websocket] analytics_event", msg);
       const { event_name, params } = msg;
       track(event_name as EventName, params);
     }
-    if (["task_completed", "task_failed", "task_tested"].includes(msg.type))
+    if (["task_completed", "task_failed", "task_tested"].includes(msg.type)) {
+      console.log("[websocket] task result: ", msg.type);
       showNotification({
         title: titleMap[msg.type] ?? msg.type,
         body: (msg as TaskCompletedOrTested | TaskFailed).task_description,
       });
+    }
   });
 };
 
