@@ -321,7 +321,7 @@ async fn main() {
                 #[cfg(target_os = "macos")]
                 {
                     api.prevent_close();
-                    let _ = event.window().hide();
+                    let _ = event.window().minimize();
                 }
             }
         });
