@@ -114,7 +114,13 @@ class WebSocketManager {
   }
 
   onMessage(cb: MessageCallback) {
-    this.listeners.push(cb);
+    if (!this.listeners.includes(cb)) {
+      this.listeners.push(cb);
+    }
+  }
+
+  clearListeners() {
+    this.listeners = [];
   }
 
   send(data: string | object) {

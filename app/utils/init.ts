@@ -18,8 +18,15 @@ const titleMap = {
   get_latest_refresh_token: "Get Latest Refresh Token",
   analytics_event: "Analytics Event",
 };
+let websocketInitialized = false;
 
 const initWebsocket = () => {
+  if (websocketInitialized) {
+    console.warn("WebSocket already initialized, skipping.");
+    return;
+  }
+  websocketInitialized = true;
+  websocketManager.clearListeners();
   const port = useAppConfig.getState().hostServerPort;
   const localToken = useAppConfig.getState().localToken;
   websocketManager.connect(port, localToken);
