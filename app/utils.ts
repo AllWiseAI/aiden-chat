@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "@/app/utils/toast";
 import { t } from "i18next";
-import { RequestMessage } from "./client/api";
+import { RequestMessage, MultimodalContent } from "./client/api";
 import {
   REQUEST_TIMEOUT_MS,
   REQUEST_TIMEOUT_MS_FOR_THINKING,
@@ -63,6 +63,35 @@ export async function copyToClipboard(text: string, toastStr?: string) {
       });
     }
     document.body.removeChild(textArea);
+  }
+}
+
+export async function copyFileToClipboard(content: MultimodalContent) {
+  try {
+    if (content.type === "text" && content.text) {
+      await navigator.clipboard.writeText(content.text);
+    } else if (content.type === "image_url" && content.image_url?.url) {
+      const resp = await fetch(content.image_url.url);
+      const blob = await resp.blob();
+      await navigator.clipboard.write([
+        new ClipboardItem({ [blob.type]: blob }),
+      ]);
+      console.log(1111);
+    } else if (content.type === "file_url" && content.file_url?.url) {
+      const resp = await fetch(content.file_url.url);
+      const blob = await resp.blob();
+      const fileName = content.file_url.url.split("/").pop() || "file";
+      const file = new File([blob], fileName, { type: blob.type });
+      await navigator.clipboard.write([
+        new ClipboardItem({ [file.type]: file }),
+      ]);
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Failed to copy text: ", message);
+    toast.error(message, {
+      className: "w-auto max-w-max",
+    });
   }
 }
 

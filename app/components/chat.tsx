@@ -18,6 +18,7 @@ import LoadingIcon from "../icons/three-dots.svg";
 import SuccessIcon from "../icons/success.svg";
 import ErrorIcon from "../icons/close.svg";
 import McpIcon from "../icons/mcp.svg";
+import { ChatMessageItemTab } from "./chat-message-item-tab";
 import { useTranslation } from "react-i18next";
 import { FileUploader } from "./file-uploader";
 import { useFileUploadStore } from "@/app/store/file-upload";
@@ -548,80 +549,105 @@ function InnerChat() {
 
                     return (
                       <Fragment key={message.id}>
-                        <div
-                          className={
-                            isUser
-                              ? styles["chat-message-user"]
-                              : styles["chat-message"]
-                          }
-                        >
-                          <div className={styles["chat-message-container"]}>
+                        {(message.content || isMcpMsg) && (
+                          <div
+                            className={
+                              isUser
+                                ? styles["chat-message-user"]
+                                : styles["chat-message"]
+                            }
+                          >
                             <div
                               className={clsx(
-                                styles["chat-message-item"],
-                                message.role === "user" && "p-3",
+                                styles["chat-message-container"],
+                                "group relative",
+                                message.content && "pb-5",
                               )}
                             >
-                              {isMcpMsg && renderMessageMcpInfo(message)}
-                              {getMessageImages(message).length == 1 && (
-                                <img
-                                  className={styles["chat-message-item-image"]}
-                                  src={getMessageImages(message)[0]}
-                                  alt=""
-                                />
-                              )}
-                              {getMessageImages(message).length > 1 && (
-                                <div
-                                  className={styles["chat-message-item-images"]}
-                                  style={
-                                    {
-                                      "--image-count":
-                                        getMessageImages(message).length,
-                                    } as React.CSSProperties
-                                  }
-                                >
-                                  {getMessageImages(message).map(
-                                    (image, index) => {
-                                      return (
-                                        <img
-                                          className={
-                                            styles[
-                                              "chat-message-item-image-multi"
-                                            ]
-                                          }
-                                          key={index}
-                                          src={image}
-                                          alt=""
-                                        />
-                                      );
-                                    },
-                                  )}
-                                </div>
-                              )}
-                              {message.isError ? (
-                                renderErrorMsg(message)
-                              ) : (
-                                <Markdown
-                                  key={message.streaming ? "loading" : "done"}
-                                  content={getMessageTextContent(message)}
-                                  loading={
-                                    (message.preview || message.streaming) &&
-                                    message.content.length === 0 &&
-                                    !isUser
-                                  }
-                                  onDoubleClickCapture={() => {
-                                    if (!isMobileScreen) return;
-                                    setUserInput(
-                                      getMessageTextContent(message),
-                                    );
-                                  }}
-                                  parentRef={scrollRef}
-                                  defaultShow={i >= renderMessages.length - 6}
+                              <div
+                                className={clsx(
+                                  styles["chat-message-item"],
+                                  message.role === "user" && "p-3",
+                                )}
+                              >
+                                {isMcpMsg && renderMessageMcpInfo(message)}
+                                {getMessageImages(message).length == 1 && (
+                                  <img
+                                    className={
+                                      styles["chat-message-item-image"]
+                                    }
+                                    src={getMessageImages(message)[0]}
+                                    alt=""
+                                  />
+                                )}
+                                {getMessageImages(message).length > 1 && (
+                                  <div
+                                    className={
+                                      styles["chat-message-item-images"]
+                                    }
+                                    style={
+                                      {
+                                        "--image-count":
+                                          getMessageImages(message).length,
+                                      } as React.CSSProperties
+                                    }
+                                  >
+                                    {getMessageImages(message).map(
+                                      (image, index) => {
+                                        return (
+                                          <img
+                                            className={
+                                              styles[
+                                                "chat-message-item-image-multi"
+                                              ]
+                                            }
+                                            key={index}
+                                            src={image}
+                                            alt=""
+                                          />
+                                        );
+                                      },
+                                    )}
+                                  </div>
+                                )}
+                                {message.isError ? (
+                                  renderErrorMsg(message)
+                                ) : (
+                                  <>
+                                    <Markdown
+                                      key={
+                                        message.streaming ? "loading" : "done"
+                                      }
+                                      content={getMessageTextContent(message)}
+                                      loading={
+                                        (message.preview ||
+                                          message.streaming) &&
+                                        message.content.length === 0 &&
+                                        !isUser
+                                      }
+                                      onDoubleClickCapture={() => {
+                                        if (!isMobileScreen) return;
+                                        setUserInput(
+                                          getMessageTextContent(message),
+                                        );
+                                      }}
+                                      parentRef={scrollRef}
+                                      defaultShow={
+                                        i >= renderMessages.length - 6
+                                      }
+                                    />
+                                  </>
+                                )}
+                              </div>
+                              {message.content && (
+                                <ChatMessageItemTab
+                                  content={message.content}
+                                  className="absolute -bottom-2.5 hidden group-hover:block"
                                 />
                               )}
                             </div>
                           </div>
-                        </div>
+                        )}
                       </Fragment>
                     );
                   })}
