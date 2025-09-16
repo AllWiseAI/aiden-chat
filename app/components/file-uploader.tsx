@@ -100,7 +100,7 @@ export const FileUploader = () => {
           disabled={disable}
           onClick={handleSelectFile}
           variant="outline"
-          className="border border-[#E8ECEF] text-black dark:text-white dark:bg-[#141416] dark:border-[#343839] text-sm font-semibold rounded-sm p-2.5 w-9 h-8"
+          className="border border-[#E8ECEF] text-black dark:text-white dark:bg-[#141416] dark:border-[#343839] hover:bg-[#F3F5F7] dark:hover:bg-[#232627] text-sm font-semibold rounded-sm p-2.5 w-9 h-8"
         >
           <FileIcon className="size-[18px] text-[#141718] dark:text-white" />
         </Button>
@@ -127,7 +127,14 @@ export const FileUploader = () => {
         </Tooltip>
       );
     }
-    return renderButton(disable);
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>{renderButton(disable)}</TooltipTrigger>
+        <TooltipContent>
+          <p>{t("chat.file.upload")}</p>
+        </TooltipContent>
+      </Tooltip>
+    );
   };
 
   return <div>{renderUploadImageButton(disabled)}</div>;

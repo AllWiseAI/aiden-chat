@@ -17,7 +17,7 @@ import SendIcon from "../icons/up-arrow.svg";
 import LoadingIcon from "../icons/three-dots.svg";
 import SuccessIcon from "../icons/success.svg";
 import ErrorIcon from "../icons/close.svg";
-import McpIcon from "../icons/mcp.svg";
+import ToolIcon from "../icons/tool.svg";
 import { ChatMessageItemTab } from "./chat-message-item-tab";
 import { useTranslation } from "react-i18next";
 import { FileUploader } from "./file-uploader";
@@ -542,14 +542,20 @@ function InnerChat() {
                   setAutoScroll(false);
                 }}
               >
-                <div className="flex flex-col gap-5 w-full h-max max-w-[776px]">
+                <div className="flex flex-col gap-2.5 w-full h-max max-w-[776px]">
                   {renderMessages.map((message, i) => {
                     const isUser = message.role === "user";
                     const isMcpMsg = message.mcpInfo !== undefined;
+                    const isDisplay =
+                      message.content ||
+                      isMcpMsg ||
+                      ((message.preview || message.streaming) &&
+                        message.content.length === 0 &&
+                        !isUser);
 
                     return (
                       <Fragment key={message.id}>
-                        {(message.content || isMcpMsg) && (
+                        {isDisplay && (
                           <div
                             className={
                               isUser
@@ -561,7 +567,7 @@ function InnerChat() {
                               className={clsx(
                                 styles["chat-message-container"],
                                 "group relative",
-                                message.content && "pb-5",
+                                message.content && "pb-7",
                               )}
                             >
                               <div
@@ -642,7 +648,7 @@ function InnerChat() {
                               {message.content && (
                                 <ChatMessageItemTab
                                   content={message.content}
-                                  className="absolute -bottom-2.5 hidden group-hover:block"
+                                  className="absolute bottom-0 invisible group-hover:visible"
                                 />
                               )}
                             </div>
@@ -724,7 +730,7 @@ function InnerChat() {
                     <FileUploader />
                     <McpPopover
                       icon={
-                        <McpIcon className="size-[18px] text-black dark:text-white stroke-[1.125]" />
+                        <ToolIcon className="size-[18px] text-black dark:text-white stroke-[1.125]" />
                       }
                     />
                   </div>

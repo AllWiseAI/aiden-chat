@@ -40,9 +40,9 @@ export async function copyToClipboard(text: string, toastStr?: string) {
       await navigator.clipboard.writeText(text);
     }
 
-    toast.success(toastStr ?? t("copy.success"), {
-      className: "w-auto max-w-max",
-    });
+    // toast.success(toastStr ?? t("copy.success"), {
+    //   className: "w-auto max-w-max",
+    // });
   } catch (error) {
     console.error("Failed to copy text: ", error);
     const textArea = document.createElement("textarea");
@@ -66,25 +66,15 @@ export async function copyToClipboard(text: string, toastStr?: string) {
   }
 }
 
-export async function copyFileToClipboard(content: MultimodalContent) {
+export async function copyContentsToClipboard(contents: MultimodalContent[]) {
   try {
-    if (content.type === "text" && content.text) {
-      await navigator.clipboard.writeText(content.text);
-    } else if (content.type === "image_url" && content.image_url?.url) {
-      const resp = await fetch(content.image_url.url);
-      const blob = await resp.blob();
-      await navigator.clipboard.write([
-        new ClipboardItem({ [blob.type]: blob }),
-      ]);
-      console.log(1111);
-    } else if (content.type === "file_url" && content.file_url?.url) {
-      const resp = await fetch(content.file_url.url);
-      const blob = await resp.blob();
-      const fileName = content.file_url.url.split("/").pop() || "file";
-      const file = new File([blob], fileName, { type: blob.type });
-      await navigator.clipboard.write([
-        new ClipboardItem({ [file.type]: file }),
-      ]);
+    const texts = contents
+      .filter((item) => item.type === "text" && item.text)
+      .map((item) => item.text)
+      .join("\n");
+
+    if (texts) {
+      await navigator.clipboard.writeText(texts);
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

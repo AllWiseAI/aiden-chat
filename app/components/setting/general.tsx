@@ -217,7 +217,7 @@ export default function General() {
               <TooltipContent
                 hasArrow={false}
                 sideOffset={10}
-                className="max-w-80 w-max text-center p-5 bg-white dark:bg-[#232627] text-black dark:text-white text-sm leading-5"
+                className="max-w-80 w-max text-center p-5 text-sm leading-5"
                 style={{
                   boxShadow: `
                           0px 0px 24px 4px rgba(0,0,0,0.05),
