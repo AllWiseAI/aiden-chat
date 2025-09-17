@@ -39,10 +39,6 @@ export async function copyToClipboard(text: string, toastStr?: string) {
     } else {
       await navigator.clipboard.writeText(text);
     }
-
-    // toast.success(toastStr ?? t("copy.success"), {
-    //   className: "w-auto max-w-max",
-    // });
   } catch (error) {
     console.error("Failed to copy text: ", error);
     const textArea = document.createElement("textarea");
@@ -52,15 +48,11 @@ export async function copyToClipboard(text: string, toastStr?: string) {
     textArea.select();
     try {
       document.execCommand("copy");
-      toast.success(toastStr ?? t("copy.success"), {
-        className: "w-auto max-w-max",
-      });
+      toast.success(toastStr ?? t("copy.success"));
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       console.error("Failed to copy text: ", message);
-      toast.error(message, {
-        className: "w-auto max-w-max",
-      });
+      toast.error(message);
     }
     document.body.removeChild(textArea);
   }
@@ -79,9 +71,7 @@ export async function copyContentsToClipboard(contents: MultimodalContent[]) {
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error("Failed to copy text: ", message);
-    toast.error(message, {
-      className: "w-auto max-w-max",
-    });
+    toast.error(message);
   }
 }
 
@@ -104,19 +94,13 @@ export async function downloadAs(text: string, filename: string) {
     if (result !== null) {
       try {
         await window.__TAURI__.fs.writeTextFile(result, text);
-        toast.success(t("download.success"), {
-          className: "w-auto max-w-max",
-        });
+        toast.success(t("download.success"));
       } catch (error) {
         console.error("Failed to download text: ", error);
-        toast.error(t("download.failed"), {
-          className: "w-auto max-w-max",
-        });
+        toast.error(t("download.failed"));
       }
     } else {
-      toast.error(t("download.failed"), {
-        className: "w-auto max-w-max",
-      });
+      toast.error(t("download.failed"));
     }
   } else {
     const element = document.createElement("a");
@@ -452,23 +436,17 @@ export function clientUpdate() {
           .installUpdate()
           .then((result) => {
             console.log("[Install Update Result]", result);
-            toast.success(t("settings.update.success"), {
-              className: "w-auto max-w-max",
-            });
+            toast.success(t("settings.update.success"));
           })
           .catch((e) => {
             console.error("[Install Update Error]", e);
-            toast.error(t("settings.update.failed"), {
-              className: "w-auto max-w-max",
-            });
+            toast.error(t("settings.update.failed"));
           });
       }
     })
     .catch((e) => {
       console.error("[Check Update Error]", e);
-      toast.error(t("settings.update.failed"), {
-        className: "w-auto max-w-max",
-      });
+      toast.error(t("settings.update.failed"));
     });
 }
 

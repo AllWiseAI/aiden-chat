@@ -27,7 +27,7 @@ import MoreIcon from "../icons/more.svg";
 import DeleteIcon from "../icons/delete.svg";
 import ArrowDownIcon from "../icons/arrow-down.svg";
 import { deleteTask as deleteTaskService } from "../services/task";
-import { toast } from "sonner";
+import { toast } from "@/app/utils/toast";
 
 export function TaskItem(props: {
   selected: boolean;

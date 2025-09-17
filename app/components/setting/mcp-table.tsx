@@ -2,7 +2,7 @@
 import { Button } from "@/app/components/shadcn/button";
 import { Input } from "@/app/components/shadcn/input";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/app/utils/toast";
 import { useTranslation } from "react-i18next";
 import {
   showConfirm,
@@ -87,9 +87,7 @@ function ServerTable({
                 try {
                   await switchMcpStatus({ id, name, enable, type, version });
                 } catch (e: any) {
-                  toast.error(e, {
-                    className: "w-auto max-w-max",
-                  });
+                  toast.error(e);
                 }
               }}
               onDelete={handleDeleteMcp}

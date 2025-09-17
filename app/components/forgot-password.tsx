@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Path } from "../constant";
 import { apiCompleteResetPassword, apiResetPasswordCode } from "@/app/services";
-import { toast } from "sonner";
+import { toast } from "@/app/utils/toast";
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 
@@ -125,13 +125,9 @@ const ResetPassword = ({
       if ("error" in res) {
         throw new Error(res.error);
       }
-      toast.success(res.message, {
-        className: "w-auto max-w-max",
-      });
+      toast.success(res.message);
     } catch (e: any) {
-      toast.error(e.message, {
-        className: "w-auto max-w-max",
-      });
+      toast.error(e.message);
     }
   };
 
@@ -293,14 +289,10 @@ export const ForgotPasswordPage = () => {
       if ("error" in res) {
         throw new Error(res.error);
       }
-      toast.success(res.message, {
-        className: "w-auto max-w-max",
-      });
+      toast.success(res.message);
       navigate(Path.Login);
     } catch (e: any) {
-      toast.error(e.message, {
-        className: "w-auto max-w-max",
-      });
+      toast.error(e.message);
     } finally {
       setLoading(false);
     }

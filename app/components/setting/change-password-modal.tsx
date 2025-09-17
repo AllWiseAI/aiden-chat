@@ -10,7 +10,7 @@ import { Button } from "../shadcn/button";
 import { Password } from "../password";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toast } from "@/app/utils/toast";
 import { apiChangePassword } from "../../services";
 import { useAuthStore } from "../../store/auth";
 import { useNavigate } from "react-router-dom";
@@ -97,9 +97,7 @@ export function ChangePasswordModal({
 
       onSuccess();
     } catch (e: any) {
-      toast.error(e.error, {
-        className: "w-auto max-w-max",
-      });
+      toast.error(e.error);
     } finally {
       setLoading(false);
     }

@@ -42,7 +42,7 @@ import DeleteIcon from "@/app/icons/delete.svg";
 import AddOutlineIcon from "@/app/icons/add-outline.svg";
 import { AccountItem, McpItemInfo, AidenCredential } from "@/app/typing";
 import DeleteDialog from "@/app/components/delete-dialog";
-import { toast } from "sonner";
+import { toast } from "@/app/utils/toast";
 import { validateEmail } from "@/app/utils";
 import LoadingSpinner from "@/app/icons/loading-spinner.svg";
 

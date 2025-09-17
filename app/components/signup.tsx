@@ -10,7 +10,7 @@ import { useAuthStore } from "../store";
 import { Password } from "./password";
 import { apiCheckInviteCode, apiGetSignUpCode } from "@/app/services";
 import { Path } from "../constant";
-import { toast } from "sonner";
+import { toast } from "@/app/utils/toast";
 import clsx from "clsx";
 import { shell } from "@tauri-apps/api";
 import { getLang } from "../locales";
@@ -266,13 +266,9 @@ const VerifyCodeForm = ({
       if ("error" in res) {
         throw new Error(res.error);
       }
-      toast.success(res.message, {
-        className: "w-auto max-w-max",
-      });
+      toast.success(res.message);
     } catch (e: any) {
-      toast.error(e.message, {
-        className: "w-auto max-w-max",
-      });
+      toast.error(e.message);
     }
   };
 
@@ -383,9 +379,7 @@ export function SignUpPage() {
         throw new Error(t("signUp.invalidCode"));
       }
     } catch (e: any) {
-      toast.error(e.message, {
-        className: "w-auto max-w-max",
-      });
+      toast.error(e.message);
       setCodeErr(t("signUp.invalidCode"));
     } finally {
       setLoading(false);
@@ -406,15 +400,11 @@ export function SignUpPage() {
       if (success) {
         appDataInit();
         navigate(Path.Chat);
-        toast.success(t("signUp.success"), {
-          className: "w-auto max-w-max",
-        });
+        toast.success(t("signUp.success"));
         localStorage.setItem("user-email", formData.email);
       }
     } catch (e: any) {
-      toast.error(e.message, {
-        className: "w-auto max-w-max",
-      });
+      toast.error(e.message);
     } finally {
       setLoading(false);
     }

@@ -19,7 +19,7 @@ import { useTranslation } from "react-i18next";
 import { AddModelModal } from "./add-model-modal";
 import { getProviderList } from "@/app/services";
 import DeleteDialog from "@/app/components/delete-dialog";
-import { toast } from "sonner";
+import { toast } from "@/app/utils/toast";
 import DownIcon from "../../icons/down.svg";
 import { ProviderIcon } from "./provider-icon";
 import { track, EVENTS } from "@/app/utils/analysis";
