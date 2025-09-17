@@ -221,6 +221,7 @@ export type ProviderOption = {
   model?: string;
   models: CustomModelOption[];
   apiKey?: string;
+  context_length?: number;
 };
 
 export type ChatModelInfo = {

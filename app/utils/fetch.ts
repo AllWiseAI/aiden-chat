@@ -146,6 +146,8 @@ export const getHeaders = async ({
       headers["Aiden-Model-Name"] = modelHeaderInfo?.model ?? "";
       headers["Aiden-Endpoint"] = endpoint;
       headers["Aiden-Model-Provider"] = modelHeaderInfo?.provider ?? "";
+      headers["Aiden-Model-Context-Length"] =
+        modelHeaderInfo?.context_length?.toString() ?? "0";
 
       if (modelHeaderInfo?.apiKey) {
         headers["Aiden-Model-Api-Key"] = modelHeaderInfo?.apiKey;
