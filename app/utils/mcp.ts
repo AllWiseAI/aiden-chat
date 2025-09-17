@@ -15,7 +15,7 @@ import {
   batchMcpStatusResp,
 } from "@/app/typing";
 import { invoke } from "@tauri-apps/api/tauri";
-import { toast } from "sonner";
+import { toast } from "@/app/utils/toast";
 
 export type TemplateItem = { key: string; value: string };
 export type MultiArgItem = { key: string; value: string[] };

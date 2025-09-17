@@ -9,7 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Path } from "../constant";
 import { useAuthStore } from "../store";
-import { toast } from "sonner";
+import { toast } from "@/app/utils/toast";
 import clsx from "clsx";
 import { shell } from "@tauri-apps/api";
 import LoadingIcon from "../icons/loading-spinner.svg";
@@ -73,15 +73,11 @@ export function LoginPage() {
       if (success) {
         appDataInit();
         navigate(Path.Chat);
-        toast.success(t("signIn.success"), {
-          className: "w-auto max-w-max",
-        });
+        toast.success(t("signIn.success"));
         localStorage.setItem("user-email", formData.email);
       }
     } catch (e: any) {
-      toast.error(e.message, {
-        className: "w-auto max-w-max",
-      });
+      toast.error(e.message);
       if (e.code === "INVALID_CAPTCHA") {
         setError((error) => ({ ...error, captcha: e.message }));
       } else if (e.code === "INVALID_PASSWORD") {

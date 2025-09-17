@@ -527,18 +527,18 @@
 
 .chat-message-item-images {
   margin-bottom: 10px;
-  width: 100%;
-  display: grid;
-  justify-content: left;
-  grid-gap: 10px;
-  grid-template-columns: repeat(var(--image-count), auto);
+  width: fit-content;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
 }
 
 .chat-message-item-image-multi {
+  flex: 1;
+  max-width: 128px;
+  height: auto;
   object-fit: cover;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
 }
 
 .chat-message-item-image,
@@ -548,39 +548,39 @@
   border: rgba($color: #888, $alpha: 0.2) 1px solid;
 }
 
-@media only screen and (max-width: 600px) {
-  $calc-image-width: calc(100vw / 3 * 2 / var(--image-count));
+// @media only screen and (max-width: 600px) {
+//   $calc-image-width: calc(100vw / 3 * 2 / var(--image-count));
 
-  .chat-message-item-image-multi {
-    width: $calc-image-width;
-    height: $calc-image-width;
-  }
+//   .chat-message-item-image-multi {
+//     width: $calc-image-width;
+//     height: $calc-image-width;
+//   }
 
-  .chat-message-item-image {
-    max-width: calc(100vw / 3 * 2);
-  }
-}
+//   .chat-message-item-image {
+//     max-width: calc(100vw / 3 * 2);
+//   }
+// }
 
-@media screen and (min-width: 600px) {
-  $max-image-width: calc(
-    calc(1200px - var(--sidebar-width)) / 3 * 2 / var(--image-count)
-  );
-  $image-width: calc(
-    calc(var(--window-width) - var(--sidebar-width)) / 3 * 2 /
-      var(--image-count)
-  );
+// @media screen and (min-width: 600px) {
+//   $max-image-width: calc(
+//     calc(1200px - var(--sidebar-width)) / 3 * 2 / var(--image-count)
+//   );
+//   $image-width: calc(
+//     calc(var(--window-width) - var(--sidebar-width)) / 3 * 2 /
+//       var(--image-count)
+//   );
 
-  .chat-message-item-image-multi {
-    width: $image-width;
-    height: $image-width;
-    max-width: $max-image-width;
-    max-height: $max-image-width;
-  }
+//   .chat-message-item-image-multi {
+//     width: $image-width;
+//     height: $image-width;
+//     max-width: $max-image-width;
+//     max-height: $max-image-width;
+//   }
 
-  .chat-message-item-image {
-    max-width: calc(calc(1200px - var(--sidebar-width)) / 3 * 2);
-  }
-}
+//   .chat-message-item-image {
+//     max-width: calc(calc(1200px - var(--sidebar-width)) / 3 * 2);
+//   }
+// }
 
 .chat-message-action-date {
   font-size: 12px;

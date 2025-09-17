@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { Button } from "@/app/components/shadcn/button";
-import { toast } from "sonner";
+import { toast } from "@/app/utils/toast";
 import { McpConfigKey } from "@/app/components/setting/type";
 import BackIcon from "../../icons/back.svg";
 import { useMcpStore } from "@/app/store/mcp";
@@ -85,16 +85,12 @@ const McpEditor: React.FC<Props> = ({ setMode }) => {
       const res = await saveEditorConfig(parsed);
       setLoading(false);
       if (res) {
-        toast.success(t("mcp.editor.success"), {
-          className: "w-auto max-w-max",
-        });
+        toast.success(t("mcp.editor.success"));
         setMode("table");
       }
     } catch (e: any) {
       setError("JSON 解析错误：" + (e.message || e));
-      toast.error(t("mcp.editor.fail"), {
-        className: "w-auto max-w-max",
-      });
+      toast.error(t("mcp.editor.fail"));
       console.error(e);
     } finally {
       setLoading(false);

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuthStore, useSettingStore } from "../../store";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { toast } from "@/app/utils/toast";
 import { Path } from "../../constant";
 import { Theme, useAppConfig } from "@/app/store";
 import { useTranslation } from "react-i18next";
@@ -67,14 +67,10 @@ export default function General() {
     try {
       const success = await authStore.logout();
       if (success) {
-        toast.success("Logout success", {
-          className: "w-auto max-w-max",
-        });
+        toast.success("Logout success");
       }
     } catch (e: any) {
-      toast.error(e.message, {
-        className: "w-auto max-w-max",
-      });
+      toast.error(e.message);
     }
   };
   const handleRegionChange = async (value: string) => {
@@ -217,7 +213,7 @@ export default function General() {
               <TooltipContent
                 hasArrow={false}
                 sideOffset={10}
-                className="max-w-80 w-max text-center p-5 bg-white dark:bg-[#232627] text-black dark:text-white text-sm leading-5"
+                className="max-w-80 w-max text-center p-5 text-sm leading-5"
                 style={{
                   boxShadow: `
                           0px 0px 24px 4px rgba(0,0,0,0.05),

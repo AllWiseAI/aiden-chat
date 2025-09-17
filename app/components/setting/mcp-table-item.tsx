@@ -27,7 +27,7 @@ import {
 } from "@/app/components/shadcn/dropdown-menu";
 import { useMcpStore } from "@/app/store/mcp";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toast } from "@/app/utils/toast";
 import { McpTemplateModal } from "./mcp-template-modal";
 import { checkShowTemplateModal } from "@/app/utils/mcp";
 import { McpOauthModal } from "./mcp-oauth-modal";
@@ -153,9 +153,7 @@ export function McpTableItem({
         await updateLocalMcpVersion(mcp_id, mcp_key, current_version || "");
         toast.success(t("mcp.update.success"));
       } catch (e: any) {
-        toast.error(e, {
-          className: "w-auto max-w-max",
-        });
+        toast.error(e);
       }
     },
     [item, updateLocalMcpVersion, t],
@@ -204,9 +202,7 @@ export function McpTableItem({
         );
         console.log("[Mcp status change]: update remote config done");
       } catch (e: any) {
-        toast.error(e, {
-          className: "w-auto max-w-max",
-        });
+        toast.error(e);
       }
     },
     [

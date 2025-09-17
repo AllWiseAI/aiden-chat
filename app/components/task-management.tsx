@@ -29,7 +29,7 @@ import ArrowDownIcon from "../icons/arrow-down.svg";
 import CalendarIcon from "../icons/calendar.svg";
 import { Path } from "../constant";
 import { createTask, testTask, updateTask } from "../services/task";
-import { toast } from "sonner";
+import { toast } from "@/app/utils/toast";
 import { getLang } from "../locales";
 import { useTranslation } from "react-i18next";
 import LoadingIcon from "../icons/loading-spinner.svg";
@@ -194,13 +194,9 @@ export default function TaskManagement({
       if (task_id) {
         setTestTaskId(task_id);
       }
-      toast.success(t("task.testSuccess"), {
-        className: "w-auto max-w-max",
-      });
+      toast.success(t("task.testSuccess"));
     } else {
-      toast.error(message || t("task.testFailed"), {
-        className: "w-auto max-w-max",
-      });
+      toast.error(message || t("task.testFailed"));
     }
   };
 
@@ -244,12 +240,7 @@ export default function TaskManagement({
       setIsSubmitLoading(false);
       const { code, data, detail } = res;
       if (code === 0) {
-        toast.success(
-          task ? t("task.updateSuccess") : t("task.createSuccess"),
-          {
-            className: "w-auto max-w-max",
-          },
-        );
+        toast.success(task ? t("task.updateSuccess") : t("task.createSuccess"));
         const updatedData = { ...data, modelInfo: newTask.modelInfo };
         if (task) {
           onChange?.(data.id, updatedData);

@@ -3,7 +3,7 @@
 import BackIcon from "../../icons/back.svg";
 import FetchIcon from "../../icons/fetch.svg";
 import { Switch } from "@/app/components/shadcn/switch";
-import { toast } from "sonner";
+import { toast } from "@/app/utils/toast";
 import { Markdown } from "@/app/components/markdown";
 import { useState, useMemo, useCallback } from "react";
 import { useMcpStore } from "@/app/store/mcp";
@@ -69,9 +69,7 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
         });
         toast.success(t("mcp.update.success"));
       } catch (e: any) {
-        toast.error(e, {
-          className: "w-auto max-w-max",
-        });
+        toast.error(e);
         setChecked(!enable);
       }
     },

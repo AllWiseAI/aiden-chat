@@ -40,7 +40,7 @@ import { useChatStore } from "../store/chat";
 import { getLang } from "../locales";
 import { ModelSelect } from "../components/model-select";
 import { useAppConfig, Theme } from "../store";
-import { toast } from "sonner";
+import { toast } from "@/app/utils/toast";
 import { formatMCPData } from "../utils/chat";
 import { track, EVENTS } from "@/app/utils/analysis";
 import {

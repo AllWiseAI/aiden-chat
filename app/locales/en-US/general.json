@@ -40,6 +40,7 @@
     "typing": "Typing…",
     "send": "Send",
     "file": {
+      "upload": "Upload files (Photo & PDF)",
       "disabledTips1": "The current model does not",
       "disabledTips2": "support image and pdf file recognition.",
       "fileTypes": "The file type is not supported, please select an image or pdf file"
@@ -53,6 +54,7 @@
       "fileTypes": "The file type is not supported, please select a pdf file"
     },
     "mcp": {
+      "tip": "Extend Aiden’s abilities with ready-to-use MCP tools",
       "call": "Call",
       "called": "Called",
       "tool": "Tool"
