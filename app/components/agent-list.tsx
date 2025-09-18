@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Label } from "@/app/components/shadcn/label";
 import {
   Dialog,
@@ -10,6 +10,7 @@ import { Input } from "./shadcn/input";
 import { Switch } from "./shadcn/switch";
 import { Button } from "./shadcn/button";
 import { useTranslation } from "react-i18next";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 interface AgentItemProps {
   item: {
@@ -27,7 +28,7 @@ function AgentItem({ item, onEdit }: AgentItemProps) {
   return (
     <div
       key={item.id}
-      className="flex flex-col gap-4 border border-[#E8ECEF] dark:border-[#232627] rounded-sm px-2.5 py-3"
+      className="flex flex-col justify-between gap-4 border border-[#E8ECEF] dark:border-[#232627] rounded-sm px-2.5 py-3"
     >
       <div className="flex gap-2.5">
         <div className="size-7.5 rounded-full bg-[#F3F5F7] dark:bg-[#232627]"></div>
@@ -49,7 +50,7 @@ function AgentItem({ item, onEdit }: AgentItemProps) {
           </span>
         </div>
       </div>
-      <div className="flex justify-between">
+      <div className="flex justify-between items-center">
         <div>Model</div>
         <Button
           onClick={() => onEdit(item)}
@@ -72,12 +73,14 @@ function AgentEditDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const { t } = useTranslation("general");
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className="flex flex-col items-center"
         closeIcon={false}
         dismissible={true}
+        onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <DialogTitle>Edit Agent</DialogTitle>
         <div className="flex flex-col gap-4 w-full text-sm font-normal">
@@ -121,6 +124,21 @@ export default function AgentList() {
   const [selectedItem, setSelectedItem] = useState<
     AgentItemProps["item"] | null
   >(null);
+
+  const params = useSearchParams();
+  const [searchParams] = params;
+  const navigate = useNavigate();
+  const id = searchParams.get("id");
+
+  useEffect(() => {
+    if (id) {
+      const found = agentArr.find((item) => item.id === Number(id));
+      if (found) {
+        setSelectedItem(found);
+        setShowEdit(true);
+      }
+    }
+  }, [id]);
 
   const agentArr = [
     {
@@ -193,7 +211,11 @@ export default function AgentList() {
         <AgentEditDialog
           open={showEdit}
           item={selectedItem}
-          onOpenChange={setShowEdit}
+          onOpenChange={(o) => {
+            searchParams.delete("id");
+            navigate(`?${params.toString()}`, { replace: true });
+            setShowEdit(o);
+          }}
         />
       )}
     </>

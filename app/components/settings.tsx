@@ -11,7 +11,7 @@ import { Button } from "@/app/components/shadcn/button";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import generalIcon from "../icons/general.svg";
-import AgentIcon from "../icons/agent.svg";
+import AgentIcon from "../icons/block.svg";
 import modelIcon from "../icons/model.svg";
 import McpIcon from "../icons/mcp.svg";
 import SubscriptionIcon from "../icons/subscription.svg";
