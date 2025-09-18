@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import CloseIcon from "../icons/close.svg";
 import General from "./setting/general";
+import AgentManagement from "./agent-management";
 import McpManagement from "./setting/mcp-management";
 import ModelList from "./setting/model-list";
 import Subscription from "./setting/subscription";
@@ -10,6 +11,7 @@ import { Button } from "@/app/components/shadcn/button";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import generalIcon from "../icons/general.svg";
+import AgentIcon from "../icons/agent.svg";
 import modelIcon from "../icons/model.svg";
 import McpIcon from "../icons/mcp.svg";
 import SubscriptionIcon from "../icons/subscription.svg";
@@ -17,6 +19,9 @@ import InfoIcon from "../icons/info.svg";
 
 function GeneralPanel() {
   return <General />;
+}
+function AgentPanel() {
+  return <AgentManagement />;
 }
 function ModelPanel() {
   return <ModelList />;
@@ -36,6 +41,7 @@ export function Settings() {
   const { t } = useTranslation("settings");
   const settingList = [
     { name: t("tabs.general"), value: "general", icon: generalIcon },
+    { name: t("tabs.agent"), value: "agent", icon: AgentIcon },
     { name: t("tabs.model"), value: "model", icon: modelIcon },
     { name: t("tabs.mcp"), value: "mcp", icon: McpIcon },
     {
@@ -69,6 +75,8 @@ export function Settings() {
     switch (selected) {
       case "general":
         return <GeneralPanel />;
+      case "agent":
+        return <AgentPanel />;
       case "mcp":
         return <McpServersPanel />;
       case "model":

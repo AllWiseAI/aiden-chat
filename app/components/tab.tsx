@@ -3,10 +3,16 @@ import { useAppConfig, useTaskStore } from "../store";
 import { Path } from "../constant";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useAppUpdate } from "@/app/hooks/use-app-update";
+import { Button } from "./shadcn/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./shadcn/tooltip";
+import { InviteDialog } from "./invite-dialog";
 import clsx from "clsx";
 import ChatIcon from "../icons/chat.svg";
 import TaskIcon from "../icons/task.svg";
 import LogoIcon from "../icons/logo-circle.svg";
+import UpdateIcon from "../icons/up-arrow.svg";
+import InviteIcon from "../icons/invite.svg";
 
 export function Tab() {
   const navigate = useNavigate();
@@ -17,6 +23,9 @@ export function Tab() {
   const [tabValue, setTabValue] = useState<"chat" | "task" | "settings">(
     "chat",
   );
+  const [showInvite, setShowInvite] = useState(false);
+  const { isShowUpdate, handleUpdate, isUpdating } = useAppUpdate();
+
   useEffect(() => {
     if (location.pathname.includes(Path.Settings)) {
       setTabValue("settings");
@@ -75,12 +84,53 @@ export function Tab() {
           </div>
         </div>
       </div>
-      {debugMode && (
-        <div className="flex flex-col items-center">
-          <span>Aiden</span>
-          <span>Debug</span>
+      <div>
+        <div className="flex flex-col gap-2.5 items-center">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={() => setShowInvite(true)}
+                className="size-7 flex-center !px-1.5 py-1 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main rounded-2xl"
+              >
+                <InviteIcon className="size-4 text-main" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent hasArrow={false}>
+              <span>{t("invite.btn")}</span>
+            </TooltipContent>
+          </Tooltip>
+          {isShowUpdate && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  disabled={isUpdating}
+                  className="relative size-7 flex-center px-1.5 py-1 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main rounded-2xl"
+                  onClick={handleUpdate}
+                >
+                  <div className="bg-main rounded-full size-4">
+                    <UpdateIcon className="size-4 text-white dark:text-[#141718]" />
+                  </div>
+                  <div className="absolute right-0 top-0 bg-[#ED6A5F] size-2 rounded-full"></div>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent hasArrow={false}>
+                <span>
+                  {isUpdating
+                    ? t("settings.update.updating")
+                    : t("settings.update.update")}
+                </span>
+              </TooltipContent>
+            </Tooltip>
+          )}
         </div>
-      )}
+        {debugMode && (
+          <div className="flex flex-col items-center">
+            <span>Aiden</span>
+            <span>Debug</span>
+          </div>
+        )}
+      </div>
+      <InviteDialog open={showInvite} onOpenChange={setShowInvite} />
     </div>
   );
 }

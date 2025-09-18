@@ -2,6 +2,7 @@
   "title": "Settings",
   "tabs": {
     "general": "General",
+    "agent": "Agent",
     "mcp": "MCP",
     "mcpManage": "MCP Management",
     "model": "Model",
