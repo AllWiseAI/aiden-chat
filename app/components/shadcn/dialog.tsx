@@ -35,10 +35,18 @@ const DialogContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
     closeIcon?: boolean;
     closeIconClass?: string;
+    dismissible?: boolean; // 区域外可关闭
   }
 >(
   (
-    { className, children, closeIconClass, closeIcon = true, ...props },
+    {
+      className,
+      children,
+      closeIconClass,
+      closeIcon = true,
+      dismissible = false,
+      ...props
+    },
     ref,
   ) => {
     return (
@@ -53,9 +61,11 @@ const DialogContent = React.forwardRef<
         </div>
         <DialogPrimitive.Content
           ref={ref}
-          onInteractOutside={(e) => e.preventDefault()}
+          onInteractOutside={(e) => {
+            if (!dismissible) e.preventDefault();
+          }}
           className={cn(
-            "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg",
+            "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-sm",
             className,
           )}
           {...props}
