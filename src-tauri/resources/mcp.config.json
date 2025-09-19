@@ -1,5 +1,5 @@
 {
-  "version": "0.0.15",
+  "version": "0.0.16",
   "syncVersion": "0.0.2",
   "mcpServers": {
     "aiden-terminal": {
@@ -34,15 +34,15 @@
       "aiden_id": "aiden-desktop-commander"
     },
     "aiden-fetch": {
-      "command": "uvx",
-      "args": [
-        "mcp-server-fetch@2025.4.7"
-      ],
-      "transport": "stdio",
+      "aiden_id": "aiden-fetch",
+      "aiden_mcp_version": "2025.09.18.1707",
       "aiden_type": "default",
-      "aiden_enable": false,
-      "aiden_mcp_version": "2025.4.7",
-      "aiden_id": "aiden-fetch"
+      "args": [
+        "allwise-mcp-fetch"
+      ],
+      "aiden_enable": true,
+      "command": "uvx",
+      "transport": "stdio"
     },
     "aiden-time": {
       "command": "uv",
