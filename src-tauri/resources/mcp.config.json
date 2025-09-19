@@ -15,7 +15,7 @@
       "transport": "stdio"
     },
     "aiden-search": {
-      "url": "https://mcp.aidenai.io/mcp/tavily/sse",
+      "url": "https://mcp.aidenai.io/mcp/perplexity/sse",
       "transport": "sse",
       "aiden_type": "default",
       "aiden_enable": true,
