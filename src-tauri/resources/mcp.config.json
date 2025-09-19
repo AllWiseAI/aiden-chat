@@ -14,8 +14,19 @@
       "command": "uv",
       "transport": "stdio"
     },
+    "mcp-server-chart": {
+      "aiden_id": "aiden-visualization-charts-server",
+      "aiden_mcp_version": "",
+      "aiden_type": "default",
+      "aiden_enable": true,
+      "command": "npx",
+      "args": [
+        "-y",
+        "@antv/mcp-server-chart"
+      ]
+    },
     "aiden-search": {
-      "url": "https://mcp.aidenai.io/mcp/perplexity/sse",
+      "url": "https://mcp.aidenai.io/mcp/search/sse",
       "transport": "sse",
       "aiden_type": "default",
       "aiden_enable": true,
@@ -78,7 +89,7 @@
       },
       "transport": "stdio",
       "aiden_type": "default",
-      "aiden_enable": false,
+      "aiden_enable": true,
       "aiden_mcp_version": "0.9.2",
       "aiden_id": "aiden-excel"
     },
@@ -91,7 +102,7 @@
       ],
       "transport": "stdio",
       "aiden_type": "default",
-      "aiden_enable": false,
+      "aiden_enable": true,
       "aiden_mcp_version": "1.0.0",
       "aiden_id": "aiden-ppt"
     },
@@ -102,7 +113,7 @@
       ],
       "transport": "stdio",
       "aiden_type": "default",
-      "aiden_enable": false,
+      "aiden_enable": true,
       "aiden_mcp_version": "0.0.1a4",
       "aiden_id": "aiden-markitdown"
     }
