@@ -387,6 +387,7 @@ async fn main() {
                 .unwrap();
 
             log::info!("AidenAI started successfully!");
+            mcp::init_mcp_config(app).expect("Failed to init MCP config");
             cleanup::cleanup_database(&config);
             kill_ports(PORTS_TO_KILL);
 
