@@ -14,58 +14,70 @@ export default function Agenttab() {
   const navigate = useNavigate();
   const agentArr = [
     {
-      id: 1,
+      id: "1",
       name: "Multimodal Agent",
       avatar: "",
-      type: "default",
+      source: "default",
       description:
         "Multimodal Agents support text, images, audio, and files — enabling richer, more accurate interactions.",
-      model: "",
+      prompt: "",
+      type: "Multimodal (Image)",
+      model: "deepseek-chat",
     },
     {
-      id: 2,
+      id: "2",
       name: "Text Agent",
       avatar: "",
-      type: "default",
+      source: "default",
       description:
         "A Text Agent supports only text interactions, optimized for chat, Q&A, and content generation with fast, efficient performance.",
-      model: "",
+      prompt: "",
+      type: "Multimodal",
+      model: "doubao-seed-1.6-250615",
     },
     {
-      id: 3,
+      id: "3",
       name: "Product Manager",
       avatar: "",
-      type: "custom",
+      source: "custom",
       description:
         "A Text Agent supports only text interactions, optimized for chat, Q&A, and content generation with fast, efficient performance.A Text Agent supports only text interactions, optimized for chat, Q&A, and content generation with fast, efficient performance.",
-      model: "",
+      prompt: "",
+      type: "Multimodal",
+      model: "claude-3-7-sonnet-20250219",
     },
     {
-      id: 4,
+      id: "4",
       name: "Coding Assistant",
       avatar: "",
-      type: "custom",
+      source: "custom",
       description: "",
-      model: "",
+      prompt: "",
+      type: "Multimodal",
+      model: "anthropic/claude-3.7-sonnet",
     },
     {
-      id: 5,
+      id: "5",
       name: "Coding Assistant",
       avatar: "",
-      type: "custom",
+      source: "custom",
       description: "",
-      model: "",
+      prompt: "",
+      type: "Multimodal",
+      model: "openai/gpt-4o",
     },
     {
-      id: 6,
+      id: "6",
       name: "Strategic Product Manager",
       avatar: "",
-      type: "custom",
+      source: "custom",
       description: "",
-      model: "",
+      prompt: "",
+      type: "Multimodal",
+      model: "qwen3-32b",
     },
   ];
-  const [hoverId, setHoverId] = useState<number | null>(null);
+  const [hoverId, setHoverId] = useState<string | null>(null);
   return (
     <div className="flex items-center group">
       {agentArr.map((item) => (
