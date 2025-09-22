@@ -103,3 +103,8 @@ export const ALLOW_TOOL_LIST = [
   "sequentialthinking",
   "perplexity_research",
 ];
+
+export enum AgentType {
+  MULTIMODAL = "Multimodal (Image)",
+  TEXT = "Text",
+}
