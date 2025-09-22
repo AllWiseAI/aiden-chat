@@ -56,7 +56,7 @@ export default function AboutUs() {
         <div className="flex flex-col justify-center font-medium">
           <div className="text-lg">{"v" + config.package.version}</div>
           <div className="text-xs text-[#6C7275] font-light">
-            {t("aboutUs.contact")} contact@allwise.com
+            {t("aboutUs.contact")} contact@aidenai.io
           </div>
         </div>
       </div>
