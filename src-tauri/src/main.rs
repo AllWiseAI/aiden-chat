@@ -405,7 +405,11 @@ async fn main() {
                         .build()
                         .unwrap();
 
-                    match client.get("https://ipapi.co/json").send().await {
+                    match client
+                        .get("https://prod.aidenai.io/api/country/info")
+                        .send()
+                        .await
+                    {
                         Ok(resp) => {
                             if let Ok(json) = resp.json::<serde_json::Value>().await {
                                 if json.get("error").and_then(|v| v.as_bool()) == Some(true) {
@@ -413,13 +417,13 @@ async fn main() {
                                         "[Region] API returned error: {:?}, fallback to timezone",
                                         json
                                     );
-                                } else if json["country"].as_str() == Some("CN") {
+                                } else if json["country_code"].as_str() == Some("CN") {
                                     log::info!("[Region] Detected by API: CN");
                                     return true;
                                 } else {
                                     log::info!(
                                         "[Region] Detected by API: {:?}, treat as non-CN",
-                                        json["country"]
+                                        json["country_code"]
                                     );
                                     return false;
                                 }
