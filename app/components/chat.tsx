@@ -547,12 +547,9 @@ function InnerChat() {
                     const isUser = message.role === "user";
                     const isMcpMsg = message.mcpInfo !== undefined;
                     const isDisplay =
-                      message.content ||
+                      message.content.length !== 0 ||
                       isMcpMsg ||
-                      ((message.preview || message.streaming) &&
-                        message.content.length === 0 &&
-                        !isUser);
-
+                      ((message.preview || message.streaming) && !isUser);
                     return (
                       <Fragment key={message.id}>
                         {isDisplay && (
@@ -628,7 +625,10 @@ function InnerChat() {
                                       loading={
                                         (message.preview ||
                                           message.streaming) &&
-                                        message.content.length === 0 &&
+                                        (message.content.length === 0 ||
+                                          /^\n*$/.test(
+                                            message.content as string,
+                                          )) &&
                                         !isUser
                                       }
                                       onDoubleClickCapture={() => {
@@ -645,12 +645,13 @@ function InnerChat() {
                                   </>
                                 )}
                               </div>
-                              {message.content && (
-                                <ChatMessageItemTab
-                                  content={message.content}
-                                  className="absolute bottom-0 invisible group-hover:visible"
-                                />
-                              )}
+                              {message.content.length !== 0 &&
+                                !/^\n*$/.test(message.content as string) && (
+                                  <ChatMessageItemTab
+                                    content={message.content}
+                                    className="absolute bottom-0 invisible group-hover:visible"
+                                  />
+                                )}
                             </div>
                           </div>
                         )}
