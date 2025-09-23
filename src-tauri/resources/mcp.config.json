@@ -24,7 +24,7 @@
       "command": "uv",
       "transport": "stdio"
     },
-    "mcp-server-chart": {
+    "aiden-visualization-charts-server": {
       "aiden_id": "aiden-visualization-charts-server",
       "aiden_mcp_version": "",
       "aiden_type": "default",
