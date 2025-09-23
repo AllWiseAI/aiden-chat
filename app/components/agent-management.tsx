@@ -133,23 +133,38 @@ function AgentEditDialog({
                 <Label htmlFor="avatar" className="text-[#6C7275] w-max">
                   Avatar
                 </Label>
-                <div>111</div>
+                <div className="flex gap-1.5 h-9">
+                  <div className="flex-center size-9 bg-[#F3F5F7] dark:bg-[#232627] rounded-sm"></div>
+                  <Button
+                    variant="outline"
+                    className="w-55 h-full dark:border-[#232627]"
+                  >
+                    Change emoji
+                  </Button>
+                </div>
               </div>
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="name" className="text-[#6C7275] w-max">
+                <Label
+                  htmlFor="name"
+                  className="text-[#6C7275] dark:text-[#E8ECEF] w-max"
+                >
                   Name
                 </Label>
-                <Input id="name" value={newAgent.name} className="!text-left" />
+                <Input
+                  id="name"
+                  value={newAgent.name}
+                  className="!text-left border-[#E8ECEF] dark:border-[#232627] focus:border-[#00AB66] dark:focus:border-[#00AB66] hover:border-[#232627]/50 dark:hover:border-white"
+                />
               </div>
               <div className="flex flex-col gap-1.5">
                 <Label
                   htmlFor="description"
-                  className="text-[#6C7275] w-max gap-1 after:content-['*'] after:text-red-500"
+                  className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500"
                 >
                   Description
                 </Label>
                 <Textarea
-                  className="bg-white dark:bg-[#101213] placeholder:text-[#6C7275]/50 dark:placeholder:text-[#E8ECEF]/50 rounded-sm p-2.5 resize-none border border-[#E8ECEF] dark:border-[#101213] focus:border-[#00AB66] dark:focus:border-[#00AB66] hover:border-[#232627]/50 dark:hover:border-white"
+                  className="bg-transparent placeholder:text-[#6C7275]/50 dark:placeholder:text-[#E8ECEF]/50 rounded-sm p-2.5 resize-none border border-[#E8ECEF] dark:border-[#232627] focus:border-[#00AB66] dark:focus:border-[#00AB66] hover:border-[#232627]/50 dark:hover:border-white"
                   rows={1}
                   id="description"
                   value={newAgent.description}
@@ -163,12 +178,12 @@ function AgentEditDialog({
               <div className="flex flex-col gap-1.5">
                 <Label
                   htmlFor="prompt"
-                  className="text-[#6C7275] w-max gap-1 after:content-['*'] after:text-red-500"
+                  className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500"
                 >
                   Prompt
                 </Label>
                 <Textarea
-                  className="bg-white dark:bg-[#101213] placeholder:text-[#6C7275]/50 dark:placeholder:text-[#E8ECEF]/50 rounded-sm p-2.5 resize-none border border-[#E8ECEF] dark:border-[#101213] focus:border-[#00AB66] dark:focus:border-[#00AB66] hover:border-[#232627]/50 dark:hover:border-white"
+                  className="bg-transparent placeholder:text-[#6C7275]/50 dark:placeholder:text-[#E8ECEF]/50 rounded-sm p-2.5 resize-none border border-[#E8ECEF] dark:border-[#232627] focus:border-[#00AB66] dark:focus:border-[#00AB66] hover:border-[#232627]/50 dark:hover:border-white"
                   rows={1}
                   id="prompt"
                   value={newAgent.prompt}
@@ -182,7 +197,7 @@ function AgentEditDialog({
               <div className="flex flex-col gap-1.5">
                 <Label
                   htmlFor="type"
-                  className="text-[#6C7275] w-max gap-1 after:content-['*'] after:text-red-500"
+                  className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500"
                 >
                   Type
                 </Label>
@@ -194,10 +209,13 @@ function AgentEditDialog({
                     })
                   }
                 >
-                  <SelectTrigger id="type" className="w-full border-[#E8ECEF]">
+                  <SelectTrigger
+                    id="type"
+                    className="w-full border-[#E8ECEF] dark:border-[#232627] data-[state=open]:border-[#00AB66] dark:data-[state=open]:border-[#00AB66] hover:border-[#232627]/50 dark:hover:border-white"
+                  >
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="max-h-50 border-[#E8ECEF]">
+                  <SelectContent className="max-h-50 border-[#E8ECEF] dark:border-[#232627]">
                     <SelectGroup className="flex flex-col p-2 gap-3">
                       {Object.values(AgentType).map((item) => (
                         <SelectItem key={item} value={item}>
@@ -212,7 +230,7 @@ function AgentEditDialog({
               <div className="flex flex-col gap-1.5">
                 <Label
                   htmlFor="model"
-                  className="text-[#6C7275] w-max gap-1 after:content-['*'] after:text-red-500"
+                  className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500"
                 >
                   Model
                 </Label>
@@ -224,13 +242,16 @@ function AgentEditDialog({
                     })
                   }
                 >
-                  <SelectTrigger id="model" className="w-full border-[#E8ECEF]">
+                  <SelectTrigger
+                    id="model"
+                    className="w-full border-[#E8ECEF] dark:border-[#232627] data-[state=open]:border-[#00AB66] dark:data-[state=open]:border-[#00AB66] hover:border-[#232627]/50 dark:hover:border-white"
+                  >
                     <SelectValue>
                       {renderProviderIcon()}
                       {currentModel?.display}
                     </SelectValue>
                   </SelectTrigger>
-                  <SelectContent className="max-h-50 border-[#E8ECEF]">
+                  <SelectContent className="max-h-50 border-[#E8ECEF] dark:border-[#232627]">
                     <SelectGroup>
                       {modelList.map((item) => (
                         <SelectItem key={item.model} value={item.model}>
