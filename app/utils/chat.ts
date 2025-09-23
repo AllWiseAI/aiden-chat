@@ -12,6 +12,7 @@ import {
 } from "@/app/components/confirm-modal/confirm";
 import { useSettingStore } from "@/app/store/setting";
 import { McpStepsAction, ProviderOption } from "../typing";
+import { uploadFileWithProgress } from "../services/file";
 
 const settingStore = useSettingStore.getState();
 
@@ -114,7 +115,15 @@ export function parseSSE(text: string): TParseSSEResult {
   const json = JSON.parse(text);
   console.log("[Request] openai chat resJson: ", json);
   const choices = json.choices;
+  const message = json.message;
   const extra = json.extra;
+  if (!choices && message?.content && message?.content?.length) {
+    return {
+      isMcpInfo: false,
+      content: message?.content ?? [],
+    };
+  }
+
   if (!choices?.length) {
     if (
       extra &&
@@ -141,9 +150,9 @@ export function parseSSE(text: string): TParseSSEResult {
     }
   }
 
-  const content = choices[0]?.delta?.content;
+  const content = choices?.[0]?.delta?.content || "";
   if (!content || content.length === 0) {
-    const errorMsg = choices[0]?.delta?.msg || "";
+    const errorMsg = choices?.[0]?.delta?.msg || "";
     /**
      * 
      * "choices": [
@@ -162,7 +171,7 @@ export function parseSSE(text: string): TParseSSEResult {
     return {
       isMcpInfo: false,
       content: "",
-      rawResp: choices[0]?.delta,
+      rawResp: choices?.[0]?.delta,
     };
   }
   return {
@@ -380,6 +389,13 @@ export function stream(
   chatApi(chatPath, headers, requestPayload); // call fetchEventSource
 }
 
+function isAllowed(toolName: string): boolean {
+  return ALLOW_TOOL_LIST.some((pattern) => {
+    const regex = new RegExp("^" + pattern.replace(/\*/g, ".*") + "$");
+    return regex.test(toolName);
+  });
+}
+
 export function streamWithThink(
   chatPath: string,
   requestPayload: any,
@@ -492,6 +508,7 @@ export function streamWithThink(
         if (msg.data === "[DONE]" || finished) {
           return finish();
         }
+        console.log("msg===", msg);
         const text = msg.data;
         // Skip empty messages
         if (!text || text.trim().length === 0) {
@@ -507,7 +524,6 @@ export function streamWithThink(
             }
             return;
           }
-
           if (chunk.mcpInfo) {
             const { type } = chunk.mcpInfo;
             if (type === McpStepsAction.ToolCallConfirm) {
@@ -518,7 +534,7 @@ export function streamWithThink(
 
               let approved = false;
               const toolName = chunk.mcpInfo.tool;
-              const isInAllowList = ALLOW_TOOL_LIST.includes(toolName);
+              const isInAllowList = isAllowed(toolName);
               if (userHasApproved || isInAllowList) {
                 console.log(
                   userHasApproved
@@ -564,6 +580,29 @@ export function streamWithThink(
                 response: chunk.mcpInfo.result,
               });
             }
+          } else if (Array.isArray(chunk.content)) {
+            // only for image, uplpad here and update content
+            const formatContent = [];
+            for (const item of chunk.content) {
+              if (item.type === "image_url") {
+                const url = await uploadFileWithProgress(
+                  item.image_url?.url ?? "",
+                  (percent) => {
+                    console.log("upload progress", percent);
+                  },
+                );
+                console.log("upload image url: ", url);
+                formatContent.push({
+                  type: "image_url",
+                  image_url: {
+                    url: url,
+                  },
+                });
+              } else {
+                formatContent.push(item);
+              }
+            }
+            options.onUpdateImage?.(formatContent);
           } else {
             remainText += chunk.content;
           }

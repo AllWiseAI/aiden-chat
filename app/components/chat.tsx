@@ -414,13 +414,15 @@ function InnerChat() {
 
   const renderMcpToolResponse = (response: string[] | undefined) => {
     if (!response?.length) return null;
-    return typeof response === "string"
-      ? response
-      : response.map((item, index) => (
-          <div key={index} className="max-h-100 overflow-y-auto">
-            {item}
-          </div>
-        ));
+    return typeof response === "string" ? (
+      <div className="max-h-100 overflow-y-auto">{response}</div>
+    ) : (
+      <div className="max-h-100 overflow-y-auto">
+        {response.map((item, index) => (
+          <div key={index}>{item}</div>
+        ))}
+      </div>
+    );
   };
 
   const renderCallResult = (result: string[] | undefined) => {
