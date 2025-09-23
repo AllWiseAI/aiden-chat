@@ -44,7 +44,7 @@ export const useSettingStore = createPersistStore(
       if (get().region) return get().region;
       try {
         const res = (await apiGetRegion()) as any;
-        if ("ip" in res) {
+        if ("country_code" in res && !res.country_code) {
           const code = res.country_code;
           set({ region: code });
         } else {

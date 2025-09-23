@@ -412,18 +412,24 @@ async fn main() {
                     {
                         Ok(resp) => {
                             if let Ok(json) = resp.json::<serde_json::Value>().await {
-                                if json.get("error").and_then(|v| v.as_bool()) == Some(true) {
+                                let country_code = json
+                                    .get("country_code")
+                                    .and_then(|v| v.as_str())
+                                    .unwrap_or_default()
+                                    .trim()
+                                    .to_string();
+                                if country_code.is_empty() {
                                     log::warn!(
                                         "[Region] API returned error: {:?}, fallback to timezone",
                                         json
                                     );
-                                } else if json["country_code"].as_str() == Some("CN") {
+                                } else if country_code == "CN" {
                                     log::info!("[Region] Detected by API: CN");
                                     return true;
                                 } else {
                                     log::info!(
                                         "[Region] Detected by API: {:?}, treat as non-CN",
-                                        json["country_code"]
+                                        country_code
                                     );
                                     return false;
                                 }
