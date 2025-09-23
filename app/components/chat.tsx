@@ -490,14 +490,19 @@ function InnerChat() {
             <AccordionContent
               className={clsx(styles["chat-message-item-mcp-result"], "pb-0")}
             >
-              <div className="mb-2.5 rounded-sm bg-white dark:bg-[#141718] border p-2.5">
-                <div className="mb-2 font-medium">Request</div>
-                <div>{renderCallRequest(message.mcpInfo.request)}</div>
-              </div>
-              <div className="rounded-sm bg-white dark:bg-[#141718] border p-2.5">
-                <div className="mb-2 font-medium">Response</div>
-                <div>{renderMcpToolResponse(message.mcpInfo.response)}</div>
-              </div>
+              {message.mcpInfo.request && (
+                <div className="mb-2.5 rounded-sm bg-white dark:bg-[#141718] border p-2.5">
+                  <div className="mb-2 font-medium">Request</div>
+                  <div>{renderCallRequest(message.mcpInfo.request)}</div>
+                </div>
+              )}
+              {message.mcpInfo.response &&
+                message.mcpInfo.response.length > 0 && (
+                  <div className="rounded-sm bg-white dark:bg-[#141718] border p-2.5">
+                    <div className="mb-2 font-medium">Response</div>
+                    <div>{renderMcpToolResponse(message.mcpInfo.response)}</div>
+                  </div>
+                )}
             </AccordionContent>
           </AccordionItem>
         </Accordion>

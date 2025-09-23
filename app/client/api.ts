@@ -1,4 +1,4 @@
-import { ChatMessageTool } from "../store";
+import { ChatMessageTool, ChatSession } from "../store";
 import { ChatGPTApi } from "./platforms/openai";
 import { ProviderOption } from "../typing";
 
@@ -53,6 +53,7 @@ export interface ToolCallInfo {
   thread_id: string;
   title: string;
   request: string;
+  messages: RequestMessage[];
 }
 
 export interface ChatOptions {
@@ -61,7 +62,14 @@ export interface ChatOptions {
   isSummary?: boolean;
   messages?: RequestMessage[];
   config: LLMConfig;
-  onToolCall?: (toolCallInfo: ToolCallInfo) => void;
+  onToolCall?: (
+    toolCallInfo: ToolCallInfo,
+    currentSession: ChatSession,
+  ) => void;
+  onToolPeek?: (
+    toolPeeknfo: { name: string; type: string },
+    currentSession?: ChatSession,
+  ) => void;
   toolCallInfo?: ToolCallInfo;
   onUpdate?: (
     message: string,

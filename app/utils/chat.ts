@@ -125,7 +125,14 @@ export function parseSSE(text: string): TParseSSEResult {
   }
 
   if (!choices?.length) {
-    if (
+    if (extra && extra.mcp && extra.mcp.type === McpStepsAction.ToolPeek) {
+      console.log("tool_peek: ", extra.mcp);
+      return {
+        isMcpInfo: true,
+        mcpInfo: extra.mcp,
+        content: `\r\n${extra.mcp.name}\r\n::loading[]\r\n`,
+      };
+    } else if (
       extra &&
       extra.mcp &&
       extra.mcp.type === McpStepsAction.ToolCallConfirm
@@ -526,6 +533,10 @@ export function streamWithThink(
           }
           if (chunk.mcpInfo) {
             const { type } = chunk.mcpInfo;
+            if (type === McpStepsAction.ToolPeek) {
+              options.onToolPeek(chunk.mcpInfo);
+            }
+
             if (type === McpStepsAction.ToolCallConfirm) {
               // should check if user has approved the MCP
               const userHasApproved = settingStore.getUserMcpApproveStatus(
@@ -567,7 +578,10 @@ export function streamWithThink(
                   console.log("[MCP confirm] User rejected.");
                 }
               }
+              console.log("options.messages===", options.messages);
+
               options.onToolCall({
+                botMessage: options.messages[options.messages.length - 1],
                 approved,
                 tool_call_id: chunk.mcpInfo.id,
                 thread_id: chunk.mcpInfo.thread_id,
