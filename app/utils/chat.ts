@@ -389,6 +389,13 @@ export function stream(
   chatApi(chatPath, headers, requestPayload); // call fetchEventSource
 }
 
+function isAllowed(toolName: string): boolean {
+  return ALLOW_TOOL_LIST.some((pattern) => {
+    const regex = new RegExp("^" + pattern.replace(/\*/g, ".*") + "$");
+    return regex.test(toolName);
+  });
+}
+
 export function streamWithThink(
   chatPath: string,
   requestPayload: any,
@@ -527,7 +534,7 @@ export function streamWithThink(
 
               let approved = false;
               const toolName = chunk.mcpInfo.tool;
-              const isInAllowList = ALLOW_TOOL_LIST.includes(toolName);
+              const isInAllowList = isAllowed(toolName);
               if (userHasApproved || isInAllowList) {
                 console.log(
                   userHasApproved

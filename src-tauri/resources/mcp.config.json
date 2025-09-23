@@ -2,6 +2,16 @@
   "version": "0.0.16",
   "syncVersion": "0.0.2",
   "mcpServers": {
+    "aiden-playwright": {
+      "aiden_id": "aiden-playwright",
+      "aiden_mcp_version": "",
+      "aiden_type": "default",
+      "aiden_enable": true,
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@0.0.39"
+      ]
+    },
     "aiden-terminal": {
       "aiden_id": "aiden-terminal",
       "aiden_mcp_version": "",
