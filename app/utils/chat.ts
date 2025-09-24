@@ -515,7 +515,6 @@ export function streamWithThink(
         if (msg.data === "[DONE]" || finished) {
           return finish();
         }
-        console.log("msg===", msg);
         const text = msg.data;
         // Skip empty messages
         if (!text || text.trim().length === 0) {

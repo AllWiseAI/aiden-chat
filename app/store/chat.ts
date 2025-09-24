@@ -562,9 +562,9 @@ export const useChatStore = createPersistStore(
       },
       onToolPeek(
         toolCallInfo: { name: string; type: string },
-        currentSession?: ChatSession,
+        currentSession: ChatSession,
       ) {
-        const session = currentSession ?? get().currentSession();
+        const session = currentSession;
         if (!session) return;
 
         const mcpInfo = {
@@ -584,15 +584,11 @@ export const useChatStore = createPersistStore(
         });
       },
 
-      onToolCall(toolCallInfo: ToolCallInfo, currentSession?: ChatSession) {
-        console.log(
-          "toolCallInfo===",
-          currentSession?.messages[currentSession.messages.length - 1],
-        );
+      onToolCall(toolCallInfo: ToolCallInfo, currentSession: ChatSession) {
         const botMessage =
-          currentSession?.messages[currentSession.messages.length - 1];
-        console.log("botMessage before===", botMessage);
-        const session = currentSession ?? get().currentSession();
+          currentSession!.messages[currentSession!.messages.length - 1]!;
+
+        const session = currentSession;
         if (!session) return;
         const modelConfig = session.mask.modelConfig;
         const messageIndex = session.messages.length + 1;
@@ -611,10 +607,10 @@ export const useChatStore = createPersistStore(
         botMessage.mcpInfo = mcpInfo;
         botMessage.role = "assistant";
 
-        console.log("botMessage===", botMessage);
-
         get().updateTargetSession(session, (session: ChatSession) => {
-          session.messages = session.messages.slice(0, -1).concat([botMessage]);
+          session.messages = session.messages
+            .slice(0, -1)
+            .concat([botMessage!]);
         });
 
         const api: ClientApi = getClientApi();
