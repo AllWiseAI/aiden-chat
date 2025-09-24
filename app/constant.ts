@@ -86,7 +86,11 @@ export const DEFAULT_USER_DELINETED = "User declined the tool call.";
 export const INNER_PROVIDER_NAME = "Built-in";
 
 export const ALLOW_TOOL_LIST = [
-  "host_current_time",
+  "browser_*",
+  "convert_to_markdown",
+  "excel_*",
+  "fetch",
+  "generate_*_chart",
   "host_get_timer",
   "host_list_timers",
   "host_weekday",
@@ -97,10 +101,7 @@ export const ALLOW_TOOL_LIST = [
   "host_read",
   "host_ls",
   "host_get_terminal_info",
-  "tavily_web_search",
-  "tavily_answer_search",
-  "tavily_news_search",
+  "perplexity_*",
   "sequentialthinking",
-  "perplexity_research",
-  "browser_*",
+  "tavily_*",
 ];
