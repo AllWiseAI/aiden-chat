@@ -1,21 +1,37 @@
-import { useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Dialog, DialogOverlay } from "../shadcn/dialog";
 import { useTranslation } from "react-i18next";
+import { apiGetUserPlan } from "@/app/services";
 import SuccessIcon from "../../icons/success.svg";
 import FailedIcon from "../../icons/close.svg";
+
+type Plan = "starter" | "standard" | "pro";
 
 export default function Subscription() {
   const [showPlan, setShowPlan] = useState(false);
   const { t } = useTranslation("settings");
+  const [plan, setPlan] = useState<Plan>("standard");
+
+  useEffect(() => {
+    async function getPlan() {
+      const res = (await apiGetUserPlan()) as { subscription_level: Plan };
+      const { subscription_level } = res;
+      setPlan(subscription_level);
+    }
+    getPlan();
+  }, []);
+
+  const userPlan = useMemo(() => {
+    return t(`subscription.${plan}.title`) + t("subscription.planT");
+  }, [plan]);
+
   return (
     <>
       <div className="w-full h-full flex flex-col gap-4 justify-start items-center text-black dark:text-white min-w-60">
         <div className="w-full flex flex-col gap-3 px-2.5 pt-1 pb-5">
           <div className="font-medium">{t("subscription.plan")}</div>
           <div className="flex justify-between items-center gap-5 p-2.5 bg-[#F3F5F7]/30 dark:bg-[#232627]/30 border border-[#E8ECEF] dark:border-[#232627] rounded-sm text-sm">
-            <div className="text-sm flex-1">
-              {t("subscription.starter.title") + t("subscription.planT")}
-            </div>
+            <div className="text-sm flex-1">{userPlan}</div>
             <div
               className="text-main underline hover:opacity-70 cursor-pointer"
               onClick={() => setShowPlan(true)}
