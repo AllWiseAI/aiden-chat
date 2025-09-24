@@ -143,6 +143,7 @@ export type MCPConfig = {
 export enum McpStepsAction {
   ToolCallConfirm = "tool_call_confirm",
   ToolResult = "tool_result",
+  ToolPeek = "tool_peek",
 }
 
 export interface TokenType {
