@@ -4,6 +4,7 @@ import AgentList from "./agent-list";
 import PlusIcon from "../icons/plus.svg";
 import Image from "next/image";
 import Textarea from "./textarea";
+import { EmojiList } from "./emoji-list";
 import { Label } from "./shadcn/label";
 import {
   Dialog,
@@ -11,6 +12,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "./shadcn/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "./shadcn/popover";
 import {
   Select,
   SelectContent,
@@ -29,6 +31,7 @@ import { Theme } from "@/app/store";
 import { useTheme } from "../hooks/use-theme";
 import { useAppConfig } from "../store";
 import { useGetModel } from "../hooks/use-get-model";
+import clsx from "clsx";
 
 interface AgentItemProps {
   item: {
@@ -57,6 +60,7 @@ function AgentEditDialog({
   const theme = useTheme();
   const { defaultModelInfo } = useGetModel();
   const modelList = useAppConfig((s) => s.models);
+  const [openPop, setOpenPop] = useState(false);
   const [newAgent, setNewAgent] = useState<AgentItemProps["item"]>({
     id: nanoid(),
     name: "",
@@ -117,12 +121,13 @@ function AgentEditDialog({
   );
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
+      <div className="absolute top-0 left-0 right-0 w-screen h-screen bg-black/80 dark:bg-[#141718]/75"></div>
       <DialogContent
         className="flex flex-col gap-5 items-center max-h-[max(80vh,648px)] px-0"
         aria-describedby={undefined}
         closeIcon={false}
-        dismissible={true}
+        dismissible={newAgent.source === "default"}
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
         {newAgent.source !== "default" ? (
@@ -134,15 +139,36 @@ function AgentEditDialog({
                   Avatar
                 </Label>
                 <div className="flex gap-1.5 h-9">
-                  <div className="flex-center size-9 bg-[#F3F5F7] dark:bg-[#232627] rounded-sm"></div>
-                  <Button
-                    variant="outline"
-                    className="w-55 h-full dark:border-[#232627]"
-                  >
-                    Change emoji
-                  </Button>
+                  <div className="flex-center size-9 bg-[#F3F5F7] dark:bg-[#232627] rounded-sm">
+                    {newAgent.avatar}
+                  </div>
+                  <Popover open={openPop} onOpenChange={setOpenPop}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={clsx("w-55 h-full dark:border-[#232627]", {
+                          "text-main hover:text-[#00AB66] dark:hover:text-[#00D47E] border-main":
+                            openPop,
+                        })}
+                      >
+                        Change emoji
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="p-0">
+                      <EmojiList
+                        value={newAgent.avatar}
+                        onChange={(emoji) => {
+                          setNewAgent((agent) => {
+                            return { ...agent, avatar: emoji };
+                          });
+                          setOpenPop(false);
+                        }}
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
               </div>
+
               <div className="flex flex-col gap-1.5">
                 <Label
                   htmlFor="name"
