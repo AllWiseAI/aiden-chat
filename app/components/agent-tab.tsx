@@ -106,7 +106,7 @@ export default function Agenttab() {
           </HoverCardTrigger>
           <HoverCardContent
             sideOffset={7}
-            className="border border-[#E8ECEF] w-75"
+            className="border border-[#E8ECEF] dark:border-[#505050] w-75"
             style={{
               boxShadow: `
                       0px 0px 24px 4px rgba(0,0,0,0.05),
@@ -115,7 +115,9 @@ export default function Agenttab() {
             }}
           >
             <div className="flex gap-4">
-              <div className="size-8 rounded-full border border-[#F2F2F2]"></div>
+              <div className="size-8 rounded-full border border-[#F2F2F2] dark:border-[#505050] flex-center">
+                {item.avatar}
+              </div>
               <div className="flex-1 flex flex-col gap-1">
                 <div className="flex justify-between items-center">
                   <span className="text-sm">{item.name}</span>
@@ -126,7 +128,7 @@ export default function Agenttab() {
                     className="size-4 text-[#000000]/86 dark:text-[#FFFFFF] hover:text-[#00D47E] dark:hover:text-[#4ADE80]"
                   />
                 </div>
-                <span className="text-xs text-[#000000]/85 line-clamp-3">
+                <span className="text-xs text-[#000000]/85 dark:text-[#E8ECEF]/50 line-clamp-3">
                   {item.description}
                 </span>
               </div>

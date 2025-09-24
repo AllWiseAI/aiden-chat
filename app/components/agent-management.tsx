@@ -146,10 +146,16 @@ function AgentEditDialog({
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
-                        className={clsx("w-55 h-full dark:border-[#232627]", {
-                          "text-main hover:text-[#00AB66] dark:hover:text-[#00D47E] border-main":
-                            openPop,
-                        })}
+                        className={clsx(
+                          "w-55 h-full dark:border-[#232627]",
+                          {
+                            "text-main hover:text-[#00AB66] dark:hover:text-[#00D47E]":
+                              openPop,
+                          },
+                          openPop
+                            ? "dark:border-[#00D47E]"
+                            : "dark:border-[#232627]",
+                        )}
                       >
                         Change emoji
                       </Button>
@@ -310,7 +316,7 @@ function AgentEditDialog({
               <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-4">
                   <div className="rounded-full size-7.5 bg-[#F3F5F7]"></div>
-                  <span className="text-[#141718] font-medium text-base">
+                  <span className="text-[#141718] dark:text-[#FEFEFE] font-medium text-base">
                     {newAgent.name}
                   </span>
                 </div>
@@ -320,7 +326,7 @@ function AgentEditDialog({
               <div className="flex flex-col gap-3">
                 <div className="flex justify-between">
                   <span className="text-[#6C7275]">Type</span>
-                  <span className="font-medium text-[#141718] text-base">
+                  <span className="font-medium text-[#141718] dark:text-[#FEFEFE] text-base">
                     {newAgent.type}
                   </span>
                 </div>
@@ -328,7 +334,7 @@ function AgentEditDialog({
                   <span className="text-[#6C7275]">Model</span>
                   <div className="flex gap-1">
                     {renderProviderIcon(20)}
-                    <div className="font-medium text-[#141718] text-base">
+                    <div className="font-medium text-[#141718] dark:text-[#FEFEFE] text-base">
                       {currentModel?.display}
                     </div>
                   </div>
