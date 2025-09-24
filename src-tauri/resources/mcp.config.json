@@ -1,6 +1,6 @@
 {
   "version": "0.0.16",
-  "syncVersion": "0.0.2",
+  "syncVersion": "0.0.3",
   "mcpServers": {
     "aiden-playwright": {
       "aiden_id": "aiden-playwright",
@@ -26,13 +26,13 @@
     },
     "aiden-visualization-charts-server": {
       "aiden_id": "aiden-visualization-charts-server",
-      "aiden_mcp_version": "",
+      "aiden_mcp_version": "0.9.0",
       "aiden_type": "default",
       "aiden_enable": true,
       "command": "npx",
       "args": [
         "-y",
-        "@antv/mcp-server-chart"
+        "@antv/mcp-server-chart@0.9.0"
       ]
     },
     "aiden-search": {
@@ -46,20 +46,20 @@
       "command": "npx",
       "args": [
         "-y",
-        "@wonderwhy-er/desktop-commander@0.2.2"
+        "@wonderwhy-er/desktop-commander@0.2.15"
       ],
       "transport": "stdio",
       "aiden_type": "default",
       "aiden_enable": false,
-      "aiden_mcp_version": "0.2.2",
+      "aiden_mcp_version": "0.2.15",
       "aiden_id": "aiden-desktop-commander"
     },
     "aiden-fetch": {
       "aiden_id": "aiden-fetch",
-      "aiden_mcp_version": "2025.09.18.1707",
+      "aiden_mcp_version": "2025.9.24.1407",
       "aiden_type": "default",
       "args": [
-        "allwise-mcp-fetch"
+        "allwise-mcp-fetch@2025.9.24.1407"
       ],
       "aiden_enable": true,
       "command": "uvx",
@@ -80,19 +80,19 @@
       "command": "npx",
       "args": [
         "-y",
-        "@modelcontextprotocol/server-sequential-thinking@0.6.2"
+        "@modelcontextprotocol/server-sequential-thinking@2025.7.1"
       ],
       "transport": "stdio",
       "aiden_type": "default",
       "aiden_enable": true,
-      "aiden_mcp_version": "0.6.2",
+      "aiden_mcp_version": "2025.7.1",
       "aiden_id": "aiden-sequential-thinking"
     },
     "aiden-excel": {
       "command": "npx",
       "args": [
         "--yes",
-        "@negokaz/excel-mcp-server@0.9.2"
+        "@negokaz/excel-mcp-server@0.12.0"
       ],
       "env": {
         "EXCEL_MCP_PAGING_CELLS_LIMIT": "4000"
@@ -100,20 +100,20 @@
       "transport": "stdio",
       "aiden_type": "default",
       "aiden_enable": true,
-      "aiden_mcp_version": "0.9.2",
+      "aiden_mcp_version": "0.12.0",
       "aiden_id": "aiden-excel"
     },
     "aiden-ppt": {
       "command": "uvx",
       "args": [
         "--from",
-        "office-powerpoint-mcp-server@1.0.0",
+        "office-powerpoint-mcp-server@2.0.6",
         "ppt_mcp_server"
       ],
       "transport": "stdio",
       "aiden_type": "default",
       "aiden_enable": true,
-      "aiden_mcp_version": "1.0.0",
+      "aiden_mcp_version": "2.0.6",
       "aiden_id": "aiden-ppt"
     },
     "aiden-markitdown": {
