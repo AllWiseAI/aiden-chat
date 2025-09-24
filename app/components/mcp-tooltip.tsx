@@ -1,5 +1,5 @@
 import { Button } from "@/app/components/shadcn/button";
-import { useMemo, useEffect, ReactElement } from "react";
+import { useMemo, useState, useEffect, ReactElement } from "react";
 import {
   Popover,
   PopoverContent,
@@ -20,6 +20,7 @@ function McpPopover({ icon }: { icon: ReactElement }) {
   const { t } = useTranslation();
   const mcpStatusList = useMcpStore((state) => state.mcpStatusList);
   const mcpRenderedMap = useMcpStore((state) => state.mcpRenderedMap);
+  const [popoverOpen, setPopoverOpen] = useState(false);
 
   useEffect(() => {
     track(EVENTS.MCP_STORE_OPEN, {
@@ -50,9 +51,9 @@ function McpPopover({ icon }: { icon: ReactElement }) {
   };
 
   return (
-    <Tooltip>
+    <Tooltip open={popoverOpen ? false : undefined}>
       <TooltipTrigger>
-        <Popover>
+        <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
