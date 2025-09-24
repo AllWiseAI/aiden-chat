@@ -637,6 +637,9 @@ export const useChatStore = createPersistStore(
           onToolCall(toolCallInfo) {
             get().onToolCall(toolCallInfo, session);
           },
+          onToolPeek(toolCallInfo) {
+            get().onToolPeek(toolCallInfo, session);
+          },
           async onFinish(message, _, mcpInfo) {
             botMessage.streaming = false;
             if (mcpInfo) {

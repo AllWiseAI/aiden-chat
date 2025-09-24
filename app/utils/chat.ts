@@ -413,13 +413,14 @@ export function streamWithThink(
   text = "",
 ) {
   let responseText = text;
-  let remainText = "";
+  let remainQueue: string[] = [];
   let finished = false;
   let responseRes: Response;
 
   function animateResponseText() {
     if (finished || controller.signal.aborted) {
-      responseText += remainText;
+      responseText += remainQueue.join("");
+      options.onUpdate?.(responseText);
       console.log("[Response Animation] finished");
       if (controller.signal.aborted) {
         options.onError?.(new Error("User canceled"), true);
@@ -428,25 +429,46 @@ export function streamWithThink(
       return;
     }
 
-    if (remainText.length > 0) {
-      const fetchCount = Math.max(1, Math.round(remainText.length / 60));
-      const fetchText = remainText.slice(0, fetchCount);
+    if (remainQueue.length > 0) {
+      const fetchCount = Math.max(1, Math.round(remainQueue.length / 60));
+      const fetchText = remainQueue.slice(0, fetchCount).join("");
       responseText += fetchText;
-      remainText = remainText.slice(fetchCount);
+      remainQueue = remainQueue.slice(fetchCount);
       options.onUpdate?.(responseText);
     }
-
-    requestAnimationFrame(animateResponseText);
+    console.log(
+      "[Response Animation] remainQueue.length: ",
+      remainQueue.length,
+      finished,
+    );
+    if (!finished && remainQueue.length > 0) {
+      requestAnimationFrame(animateResponseText);
+    }
   }
 
-  animateResponseText();
+  function pushToQueue(newText: string) {
+    if (newText.length === 0) return;
+    // 按照 60 字拆分，模拟动画效果
+    const chunks = [];
+    let start = 0;
+    const step = Math.max(1, Math.round(newText.length / 60));
+    while (start < newText.length) {
+      chunks.push(newText.slice(start, start + step));
+      start += step;
+    }
+    remainQueue.push(...chunks);
+
+    if (remainQueue.length === chunks.length) {
+      requestAnimationFrame(animateResponseText);
+    }
+  }
 
   const finish = () => {
     if (finished) {
       return;
     }
     finished = true;
-    options.onFinish(responseText + remainText, responseRes);
+    options.onFinish(responseText + remainQueue.join(""), responseRes);
   };
 
   controller.signal.onabort = finish;
@@ -577,10 +599,8 @@ export function streamWithThink(
                   console.log("[MCP confirm] User rejected.");
                 }
               }
-              console.log("options.messages===", options.messages);
 
               options.onToolCall({
-                botMessage: options.messages[options.messages.length - 1],
                 approved,
                 tool_call_id: chunk.mcpInfo.id,
                 thread_id: chunk.mcpInfo.thread_id,
@@ -617,11 +637,10 @@ export function streamWithThink(
             }
             options.onUpdateImage?.(formatContent);
           } else {
-            remainText += chunk.content;
+            pushToQueue(chunk.content);
           }
         } catch (e) {
           console.error("[Request] parse error", text, msg, e);
-          // Don't throw error for parse failures, just log them
         }
       },
       onclose() {
@@ -635,6 +654,6 @@ export function streamWithThink(
       openWhenHidden: true,
     });
   }
-  console.debug("[ChatAPI] start");
+  console.log("[ChatAPI] start");
   chatApi(chatPath, headers, requestPayload); // call fetchEventSource
 }
