@@ -102,6 +102,7 @@ export const ALLOW_TOOL_LIST = [
   "tavily_news_search",
   "sequentialthinking",
   "perplexity_research",
+  "browser_*",
 ];
 
 export enum AgentType {

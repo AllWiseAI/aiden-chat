@@ -387,6 +387,7 @@ async fn main() {
                 .unwrap();
 
             log::info!("AidenAI started successfully!");
+            mcp::init_mcp_config(app).expect("Failed to init MCP config");
             cleanup::cleanup_database(&config);
             kill_ports(PORTS_TO_KILL);
 
@@ -404,21 +405,31 @@ async fn main() {
                         .build()
                         .unwrap();
 
-                    match client.get("https://ipapi.co/json").send().await {
+                    match client
+                        .get("https://prod.aidenai.io/api/country/info")
+                        .send()
+                        .await
+                    {
                         Ok(resp) => {
                             if let Ok(json) = resp.json::<serde_json::Value>().await {
-                                if json.get("error").and_then(|v| v.as_bool()) == Some(true) {
+                                let country_code = json
+                                    .get("country_code")
+                                    .and_then(|v| v.as_str())
+                                    .unwrap_or_default()
+                                    .trim()
+                                    .to_string();
+                                if country_code.is_empty() {
                                     log::warn!(
                                         "[Region] API returned error: {:?}, fallback to timezone",
                                         json
                                     );
-                                } else if json["country"].as_str() == Some("CN") {
+                                } else if country_code == "CN" {
                                     log::info!("[Region] Detected by API: CN");
                                     return true;
                                 } else {
                                     log::info!(
                                         "[Region] Detected by API: {:?}, treat as non-CN",
-                                        json["country"]
+                                        country_code
                                     );
                                     return false;
                                 }

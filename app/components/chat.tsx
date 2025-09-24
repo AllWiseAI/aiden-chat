@@ -414,13 +414,15 @@ function InnerChat() {
 
   const renderMcpToolResponse = (response: string[] | undefined) => {
     if (!response?.length) return null;
-    return typeof response === "string"
-      ? response
-      : response.map((item, index) => (
-          <div key={index} className="max-h-100 overflow-y-auto">
-            {item}
-          </div>
-        ));
+    return typeof response === "string" ? (
+      <div className="max-h-100 overflow-y-auto">{response}</div>
+    ) : (
+      <div className="max-h-100 overflow-y-auto">
+        {response.map((item, index) => (
+          <div key={index}>{item}</div>
+        ))}
+      </div>
+    );
   };
 
   const renderCallResult = (result: string[] | undefined) => {
@@ -547,12 +549,9 @@ function InnerChat() {
                     const isUser = message.role === "user";
                     const isMcpMsg = message.mcpInfo !== undefined;
                     const isDisplay =
-                      message.content ||
+                      message.content.length !== 0 ||
                       isMcpMsg ||
-                      ((message.preview || message.streaming) &&
-                        message.content.length === 0 &&
-                        !isUser);
-
+                      ((message.preview || message.streaming) && !isUser);
                     return (
                       <Fragment key={message.id}>
                         {isDisplay && (
@@ -628,7 +627,10 @@ function InnerChat() {
                                       loading={
                                         (message.preview ||
                                           message.streaming) &&
-                                        message.content.length === 0 &&
+                                        (message.content.length === 0 ||
+                                          /^\n*$/.test(
+                                            message.content as string,
+                                          )) &&
                                         !isUser
                                       }
                                       onDoubleClickCapture={() => {
@@ -645,12 +647,13 @@ function InnerChat() {
                                   </>
                                 )}
                               </div>
-                              {message.content && (
-                                <ChatMessageItemTab
-                                  content={message.content}
-                                  className="absolute bottom-0 invisible group-hover:visible"
-                                />
-                              )}
+                              {message.content.length !== 0 &&
+                                !/^\n*$/.test(message.content as string) && (
+                                  <ChatMessageItemTab
+                                    content={message.content}
+                                    className="absolute bottom-0 invisible group-hover:visible"
+                                  />
+                                )}
                             </div>
                           </div>
                         )}

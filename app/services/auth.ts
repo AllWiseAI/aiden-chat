@@ -163,6 +163,18 @@ export async function apiGetRegion() {
   return result.data;
 }
 
+export async function apiGetUserPlan() {
+  const params = {};
+  const result = await fetch("/api/user/info", {
+    method: "GET",
+    body: {
+      type: "Json",
+      payload: params,
+    },
+  });
+  return result.data;
+}
+
 export async function apiGetInviteCode() {
   const params = {};
   const result = await fetch("/api/invitation_codes", {

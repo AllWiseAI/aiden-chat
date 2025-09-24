@@ -449,6 +449,17 @@ export const useChatStore = createPersistStore(
               session.messages = session.messages.concat();
             });
           },
+          onUpdateImage(content) {
+            const botMessage: ChatMessage = createMessage({
+              role: "assistant",
+              streaming: true,
+            });
+            botMessage.content = content;
+            botMessage.date = new Date().toLocaleString();
+            get().updateTargetSession(session, (session) => {
+              session.messages = session.messages.concat([botMessage]);
+            });
+          },
           async onFinish(message, _, mcpInfo) {
             botMessage.streaming = false;
             if (mcpInfo) {

@@ -67,6 +67,7 @@ export interface ChatOptions {
     message: string,
     mcpInfo?: { title: string; request: string; response: string },
   ) => void;
+  onUpdateImage?: (content: []) => void;
   onFinish: (
     message: string,
     response: Response,
