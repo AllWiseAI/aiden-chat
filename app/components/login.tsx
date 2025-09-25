@@ -220,14 +220,14 @@ export function LoginPage() {
             htmlFor="captchaAnswer"
             className="font-normal after:content['*'] after:content-['*'] after:text-red-500 !gap-1 text-sm"
           >
-            Captcha
+            {t("captcha")}
           </Label>
           <div className="flex items-center gap-2">
             <div className="flex-1">
               <Input
                 id="captchaAnswer"
                 type="text"
-                placeholder="Enter captcha"
+                placeholder={t("enterCaptcha")}
                 className={clsx(
                   "w-full h-9 !text-left px-2.5 py-2 rounded-sm text-sm hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]",
                   {
