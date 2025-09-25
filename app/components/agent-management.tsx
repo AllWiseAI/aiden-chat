@@ -25,25 +25,15 @@ import { ProviderIcon } from "./setting/provider-icon";
 import { Input } from "./shadcn/input";
 import { Button } from "./shadcn/button";
 import { useTranslation } from "react-i18next";
-import { nanoid } from "nanoid";
-import { AgentType } from "../constant";
+import { createAgent, useAgentStore } from "../store";
+import { AgentType, AgentTypeArr, Agent } from "../typing";
 import { Theme } from "@/app/store";
 import { useTheme } from "../hooks/use-theme";
 import { useAppConfig } from "../store";
-import { useGetModel } from "../hooks/use-get-model";
 import clsx from "clsx";
 
 interface AgentItemProps {
-  item: {
-    id: string;
-    name: string;
-    avatar: string;
-    source: string;
-    description: string;
-    type: string;
-    prompt: string;
-    model: string;
-  };
+  item: Agent;
   onEdit: (item: AgentItemProps["item"]) => void;
 }
 
@@ -58,19 +48,15 @@ function AgentEditDialog({
 }) {
   const { t } = useTranslation("general");
   const theme = useTheme();
-  const { defaultModelInfo } = useGetModel();
   const modelList = useAppConfig((s) => s.models);
   const [openPop, setOpenPop] = useState(false);
-  const [newAgent, setNewAgent] = useState<AgentItemProps["item"]>({
-    id: nanoid(),
-    name: "",
-    avatar: "",
-    source: "",
-    description: "",
-    prompt: "",
-    type: "",
-    model: defaultModelInfo.model ?? "",
-  });
+  const [addAgent, updateAgent] = useAgentStore((state) => [
+    state.addAgent,
+    state.updateAgent,
+  ]);
+  const [newAgent, setNewAgent] = useState<AgentItemProps["item"]>(
+    createAgent(),
+  );
   const currentModel = useMemo(() => {
     return modelList.find((item) => item.model === newAgent.model);
   }, [newAgent.model, modelList]);
@@ -120,6 +106,13 @@ function AgentEditDialog({
     [currentModel, theme],
   );
 
+  const handleConfirm = () => {
+    if (item) {
+      updateAgent(newAgent);
+    } else addAgent(newAgent);
+    onOpenChange(false);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
       <div className="absolute top-0 left-0 right-0 w-screen h-screen bg-black/80 dark:bg-[#141718]/75"></div>
@@ -139,7 +132,7 @@ function AgentEditDialog({
                   Avatar
                 </Label>
                 <div className="flex gap-1.5 h-9">
-                  <div className="flex-center size-9 bg-[#F3F5F7] dark:bg-[#232627] rounded-sm">
+                  <div className="flex-center cursor-default size-9 bg-[#F3F5F7] dark:bg-[#232627] rounded-sm">
                     {newAgent.avatar}
                   </div>
                   <Popover open={openPop} onOpenChange={setOpenPop}>
@@ -147,21 +140,22 @@ function AgentEditDialog({
                       <Button
                         variant="outline"
                         className={clsx(
-                          "w-55 h-full dark:border-[#232627]",
+                          "w-55 h-full",
                           {
                             "text-main hover:text-[#00AB66] dark:hover:text-[#00D47E]":
                               openPop,
                           },
                           openPop
-                            ? "dark:border-[#00D47E]"
+                            ? "border-main dark:border-[#00D47E]"
                             : "dark:border-[#232627]",
                         )}
                       >
                         Change emoji
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="p-0">
+                    <PopoverContent className="p-0 w-max">
                       <EmojiList
+                        className="max-h-82"
                         value={newAgent.avatar}
                         onChange={(emoji) => {
                           setNewAgent((agent) => {
@@ -185,6 +179,11 @@ function AgentEditDialog({
                 <Input
                   id="name"
                   value={newAgent.name}
+                  onChange={(e) => {
+                    setNewAgent((agent) => {
+                      return { ...agent, name: e.target.value };
+                    });
+                  }}
                   className="!text-left border-[#E8ECEF] dark:border-[#232627] focus:border-[#00AB66] dark:focus:border-[#00AB66] hover:border-[#232627]/50 dark:hover:border-white"
                 />
               </div>
@@ -196,7 +195,7 @@ function AgentEditDialog({
                   Description
                 </Label>
                 <Textarea
-                  className="bg-transparent placeholder:text-[#6C7275]/50 dark:placeholder:text-[#E8ECEF]/50 rounded-sm p-2.5 resize-none border border-[#E8ECEF] dark:border-[#232627] focus:border-[#00AB66] dark:focus:border-[#00AB66] hover:border-[#232627]/50 dark:hover:border-white"
+                  className="bg-transparent placeholder:text-[#6C7275]/50 dark:placeholder:text-[#E8ECEF]/50 rounded-sm px-3 py-[7.2px] resize-none border border-[#E8ECEF] dark:border-[#232627] focus:border-[#00AB66] dark:focus:border-[#00AB66] hover:border-[#232627]/50 dark:hover:border-white"
                   rows={1}
                   id="description"
                   value={newAgent.description}
@@ -215,7 +214,7 @@ function AgentEditDialog({
                   Prompt
                 </Label>
                 <Textarea
-                  className="bg-transparent placeholder:text-[#6C7275]/50 dark:placeholder:text-[#E8ECEF]/50 rounded-sm p-2.5 resize-none border border-[#E8ECEF] dark:border-[#232627] focus:border-[#00AB66] dark:focus:border-[#00AB66] hover:border-[#232627]/50 dark:hover:border-white"
+                  className="bg-transparent placeholder:text-[#6C7275]/50 dark:placeholder:text-[#E8ECEF]/50 rounded-sm px-3 py-[7.2px] resize-none border border-[#E8ECEF] dark:border-[#232627] focus:border-[#00AB66] dark:focus:border-[#00AB66] hover:border-[#232627]/50 dark:hover:border-white"
                   rows={1}
                   id="prompt"
                   value={newAgent.prompt}
@@ -235,9 +234,9 @@ function AgentEditDialog({
                 </Label>
                 <Select
                   value={newAgent.type}
-                  onValueChange={(value) =>
+                  onValueChange={(value: string) =>
                     setNewAgent((agent) => {
-                      return { ...agent, type: value };
+                      return { ...agent, type: value as AgentType };
                     })
                   }
                 >
@@ -249,11 +248,15 @@ function AgentEditDialog({
                   </SelectTrigger>
                   <SelectContent className="max-h-50 border-[#E8ECEF] dark:border-[#232627]">
                     <SelectGroup className="flex flex-col p-2 gap-3">
-                      {Object.values(AgentType).map((item) => (
-                        <SelectItem key={item} value={item}>
-                          {item}
-                        </SelectItem>
-                      ))}
+                      {AgentTypeArr.map((item) => {
+                        if (item !== undefined) {
+                          return (
+                            <SelectItem key={item} value={item}>
+                              {item}
+                            </SelectItem>
+                          );
+                        }
+                      })}
                     </SelectGroup>
                   </SelectContent>
                 </Select>
@@ -304,7 +307,16 @@ function AgentEditDialog({
                 {t("dialog.cancel")}
               </Button>
 
-              <Button className="flex-1 rounded-sm">
+              <Button
+                className="flex-1 rounded-sm"
+                disabled={
+                  !newAgent.description ||
+                  !newAgent.prompt ||
+                  !newAgent.type ||
+                  !newAgent.model
+                }
+                onClick={() => handleConfirm()}
+              >
                 {t("dialog.confirm")}
               </Button>
             </DialogFooter>
@@ -357,71 +369,7 @@ export default function AgentManagement() {
   const [searchParams] = params;
   const id = searchParams.get("id");
 
-  const agentArr = [
-    {
-      id: "1",
-      name: "Multimodal Agent",
-      avatar: "",
-      source: "default",
-      description:
-        "Multimodal Agents support text, images, audio, and files — enabling richer, more accurate interactions.",
-      prompt: `You are a senior AI - Powered Product Operations expert with over 5 years of practical experience in tech products (SaaS, mobile, web, etc.). You deeply understand the operational logic of the entire product lifecycle. Your role is to translate product strategies into executable business results via data - driven approaches, cross - team collaboration, user insights, and process optimization, ultimately achieving the alignment of "maximizing product value" and "user/business goals".`,
-      type: "Multimodal (Image)",
-      model: "deepseek-chat",
-    },
-    {
-      id: "2",
-      name: "Text Agent",
-      avatar: "",
-      source: "default",
-      description:
-        "A Text Agent supports only text interactions, optimized for chat, Q&A, and content generation with fast, efficient performance.",
-      prompt: "",
-      type: "Multimodal",
-      model: "doubao-seed-1.6-250615",
-    },
-    {
-      id: "3",
-      name: "Product Manager",
-      avatar: "",
-      source: "custom",
-      description:
-        "A Text Agent supports only text interactions, optimized for chat, Q&A, and content generation with fast, efficient performance.A Text Agent supports only text interactions, optimized for chat, Q&A, and content generation with fast, efficient performance.",
-      prompt: "",
-      type: "Multimodal",
-      model: "claude-3-7-sonnet-20250219",
-    },
-    {
-      id: "4",
-      name: "Coding Assistant",
-      avatar: "",
-      source: "custom",
-      description: "",
-      prompt: "",
-      type: "Multimodal",
-      model: "anthropic/claude-3.7-sonnet",
-    },
-    {
-      id: "5",
-      name: "Coding Assistant",
-      avatar: "",
-      source: "custom",
-      description: "",
-      prompt: "",
-      type: "Multimodal",
-      model: "openai/gpt-4o",
-    },
-    {
-      id: "6",
-      name: "Strategic Product Manager",
-      avatar: "",
-      source: "custom",
-      description: "",
-      prompt: "",
-      type: "Multimodal",
-      model: "qwen3-32b",
-    },
-  ];
+  const agentArr = useAgentStore((state) => state.agents);
 
   useEffect(() => {
     if (id) {

@@ -358,3 +358,18 @@ export type AccountItem = {
 };
 
 export type OauthAccounts = AccountItem[];
+
+export type Emoji = string;
+export const AgentTypeArr = ["Text", "Multimodal", undefined] as const;
+
+export type AgentType = (typeof AgentTypeArr)[number];
+export interface Agent {
+  id: string;
+  name: string;
+  avatar: Emoji;
+  source: "custom" | "default";
+  description: string;
+  prompt: string;
+  type: AgentType;
+  model: string;
+}

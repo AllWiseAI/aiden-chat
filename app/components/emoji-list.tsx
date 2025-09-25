@@ -1,8 +1,8 @@
 import { useState } from "react";
 import clsx from "clsx";
 import emojiData from "unicode-emoji-json";
+import { Emoji } from "../typing";
 
-type Emoji = string;
 type EmojiGroupName = (typeof emojiStrArr)[number];
 type EmojiGroupMap = Record<EmojiGroupName, Emoji[]>;
 interface EmojiListProps {
@@ -38,6 +38,7 @@ const emojiStrArr = [
 ];
 
 export function EmojiList({ value, onChange, className }: EmojiListProps) {
+  console.log(emojiGroups);
   const [selectedGroup, setSelectedGroup] = useState("Smileys & Emotion");
   const handleSelectEmoji = (emoji: Emoji) => {
     // 将点击事件传给外部组件（父组件通过 setState 接收）
@@ -45,8 +46,8 @@ export function EmojiList({ value, onChange, className }: EmojiListProps) {
   };
 
   return (
-    <div className={clsx("flex flex-col", className)}>
-      <div className="flex justify-around items-center border-b border-[#E8ECEF] dark:border-[#343839] overflow-hidden">
+    <div className={clsx("flex flex-col w-max", className)}>
+      <div className="shrink-0 flex justify-around items-center border-b border-[#E8ECEF] dark:border-[#343839] overflow-hidden">
         {emojiStrArr.map((item) => (
           <div key={item} className="flex flex-col">
             <div
@@ -63,8 +64,8 @@ export function EmojiList({ value, onChange, className }: EmojiListProps) {
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-8 place-items-center">
-        {emojiGroups[selectedGroup].slice(0, 64).map((emoji) => (
+      <div className="flex-1 grid grid-cols-8 scroll-container place-items-center">
+        {emojiGroups[selectedGroup].map((emoji) => (
           <div
             key={emoji}
             onClick={() => handleSelectEmoji(emoji)}

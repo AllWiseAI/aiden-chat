@@ -50,6 +50,7 @@ export enum StoreKey {
   Auth = "auth-store",
   Setting = "setting-store",
   Task = "task-store",
+  Agent = "agent-store",
 }
 
 export const DEFAULT_SIDEBAR_WIDTH = 240;
@@ -104,8 +105,3 @@ export const ALLOW_TOOL_LIST = [
   "perplexity_research",
   "browser_*",
 ];
-
-export enum AgentType {
-  MULTIMODAL = "Multimodal (Image)",
-  TEXT = "Text",
-}
