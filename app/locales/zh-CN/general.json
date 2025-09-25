@@ -11,8 +11,8 @@
     "chatItemCount": "{{count}} 条对话"
   },
   "sidebar": {
-    "chat": "聊天",
-    "task": "任务"
+    "chat": "会话",
+    "scheduler": "定时器"
   },
   "chat": {
     "title": "嗨，我是",
@@ -40,7 +40,7 @@
     "typing": "正在输入…",
     "send": "发送",
     "file": {
-      "upload": "上传文件（图片或PDF文件）",
+      "upload": "上传图片或PDF",
       "disabledTips1": "当前模型不支持",
       "disabledTips2": "图片和PDF文件识别",
       "fileTypes": "不支持的文件格式，请选择图片或PDF文件"
@@ -54,7 +54,7 @@
       "fileTypes": "不支持的文件格式，请选择PDF文件"
     },
     "mcp": {
-      "tip": "使用现成的 MCP 工具扩展 Aiden 的能力。",
+      "tip": "配置工具扩展 Aiden 的能力",
       "call": "调用",
       "called": "调用",
       "tool": "工具"
@@ -101,8 +101,8 @@
     "viewMore": "查看更多"
   },
   "home": {
-    "newChat": "新的聊天",
-    "newTask": "新的任务",
+    "newChat": "新建会话",
+    "newTask": "创建定时任务",
     "deleteChat": "确认删除选中的对话？",
     "deleteToast": "已删除会话"
   },

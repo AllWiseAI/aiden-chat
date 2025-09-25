@@ -8,8 +8,8 @@
     "busyErr": "The server is busy. Please try again later!"
   },
   "sidebar": {
-    "chat": "Chats",
-    "task": "Tasks"
+    "chat": "Chat",
+    "scheduler": "Scheduler"
   },
   "chatItem": {
     "chatItemCount": "{{count}} messages"
@@ -40,7 +40,7 @@
     "typing": "Typing…",
     "send": "Send",
     "file": {
-      "upload": "Upload files (Photo & PDF)",
+      "upload": "Upload Photo & PDF",
       "disabledTips1": "The current model does not",
       "disabledTips2": "support image and pdf file recognition.",
       "fileTypes": "The file type is not supported, please select an image or pdf file"
@@ -54,7 +54,7 @@
       "fileTypes": "The file type is not supported, please select a pdf file"
     },
     "mcp": {
-      "tip": "Extend Aiden’s abilities with ready-to-use MCP tools",
+      "tip": "Use tools to extend Aiden's capabilities",
       "call": "Call",
       "called": "Called",
       "tool": "Tool"
@@ -102,7 +102,7 @@
   },
   "home": {
     "newChat": "New Chat",
-    "newTask": "New Task",
+    "newTask": "New Scheduled Task",
     "deleteChat": "Confirm to delete the selected conversation?",
     "deleteToast": "Chat Deleted"
   },
