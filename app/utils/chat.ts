@@ -161,16 +161,16 @@ export function parseSSE(text: string): TParseSSEResult {
   if (!content || content.length === 0) {
     const errorMsg = choices?.[0]?.delta?.msg || "";
     /**
-     * 
-     * "choices": [
-      {
-        "delta": {
-          "msg": "An error seems to have occurred. Please try again later.\nError code: 401 - {'error': 'Invalid JWT token'}",
-          "code": "-1"
+       * 
+       * "choices": [
+        {
+          "delta": {
+            "msg": "An error seems to have occurred. Please try again later.\nError code: 401 - {'error': 'Invalid JWT token'}",
+            "code": "-1"
+          }
         }
-      }
-    ]
-     */
+      ]
+      */
     if (errorMsg.includes("code: 401")) {
       window.location.href = "/#/login";
     }
@@ -413,14 +413,13 @@ export function streamWithThink(
   text = "",
 ) {
   let responseText = text;
-  let remainQueue: string[] = [];
+  let remainText = "";
   let finished = false;
   let responseRes: Response;
 
   function animateResponseText() {
     if (finished || controller.signal.aborted) {
-      responseText += remainQueue.join("");
-      options.onUpdate?.(responseText);
+      responseText += remainText;
       console.log("[Response Animation] finished");
       if (controller.signal.aborted) {
         options.onError?.(new Error("User canceled"), true);
@@ -429,46 +428,24 @@ export function streamWithThink(
       return;
     }
 
-    if (remainQueue.length > 0) {
-      const fetchCount = Math.max(1, Math.round(remainQueue.length / 60));
-      const fetchText = remainQueue.slice(0, fetchCount).join("");
+    if (remainText.length > 0) {
+      const fetchCount = Math.max(1, Math.round(remainText.length / 60));
+      const fetchText = remainText.slice(0, fetchCount);
       responseText += fetchText;
-      remainQueue = remainQueue.slice(fetchCount);
+      remainText = remainText.slice(fetchCount);
       options.onUpdate?.(responseText);
     }
-    console.log(
-      "[Response Animation] remainQueue.length: ",
-      remainQueue.length,
-      finished,
-    );
-    if (!finished && remainQueue.length > 0) {
-      requestAnimationFrame(animateResponseText);
-    }
+    requestAnimationFrame(animateResponseText);
   }
 
-  function pushToQueue(newText: string) {
-    if (newText.length === 0) return;
-    // 按照 60 字拆分，模拟动画效果
-    const chunks = [];
-    let start = 0;
-    const step = Math.max(1, Math.round(newText.length / 60));
-    while (start < newText.length) {
-      chunks.push(newText.slice(start, start + step));
-      start += step;
-    }
-    remainQueue.push(...chunks);
-
-    if (remainQueue.length === chunks.length) {
-      requestAnimationFrame(animateResponseText);
-    }
-  }
+  animateResponseText();
 
   const finish = () => {
     if (finished) {
       return;
     }
     finished = true;
-    options.onFinish(responseText + remainQueue.join(""), responseRes);
+    options.onFinish(responseText + remainText, responseRes);
   };
 
   controller.signal.onabort = finish;
@@ -637,7 +614,7 @@ export function streamWithThink(
             }
             options.onUpdateImage?.(formatContent);
           } else {
-            pushToQueue(chunk.content);
+            remainText += chunk.content;
           }
         } catch (e) {
           console.error("[Request] parse error", text, msg, e);
