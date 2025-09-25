@@ -41,7 +41,7 @@ function Community() {
         <AccordionContent className="pb-0">
           <div>
             <div
-              className="text-[#6C7275] hover:text-[#141718] dark:text-[#6C7275] px-5.5 py-2.5 bg-[#FFFFFF] dark:bg-[#101213] hover:bg-[#232627]/50 hover:dark:text-[#FFFFFF] cursor-pointer "
+              className="text-[#6C7275] hover:text-[#141718] dark:text-[#6C7275] px-5.5 py-2.5 bg-[#FFFFFF] dark:bg-[#101213] hover:bg-[#F3F5F7] dark:hover:bg-[#232627]/50 hover:dark:text-[#FFFFFF] cursor-pointer "
               onClick={() => handleClick("https://x.com/AidentheAi")}
             >
               <div className="flex gap-2.5">
@@ -50,7 +50,7 @@ function Community() {
             </div>
 
             <div
-              className="text-[#6C7275] hover:text-[#141718] dark:text-[#6C7275] px-5.5 py-2.5 bg-[#FFFFFF] dark:bg-[#101213] hover:bg-[#232627]/50 hover:dark:text-[#FFFFFF] cursor-pointer"
+              className="text-[#6C7275] hover:text-[#141718] dark:text-[#6C7275] px-5.5 py-2.5 bg-[#FFFFFF] dark:bg-[#101213] hover:bg-[#F3F5F7] dark:hover:bg-[#232627]/50 hover:dark:text-[#FFFFFF] cursor-pointer"
               onClick={() => handleClick("https://medium.com/@AidenAI")}
             >
               <div className="flex gap-2.5">
@@ -58,7 +58,7 @@ function Community() {
               </div>
             </div>
             <div
-              className="text-[#6C7275] hover:text-[#141718] dark:text-[#6C7275] px-5.5 py-2.5 bg-[#FFFFFF] dark:bg-[#101213] hover:bg-[#232627]/50 hover:dark:text-[#FFFFFF] cursor-pointer"
+              className="text-[#6C7275] hover:text-[#141718] dark:text-[#6C7275] px-5.5 py-2.5 bg-[#FFFFFF] dark:bg-[#101213] hover:bg-[#F3F5F7] dark:hover:bg-[#232627]/50 hover:dark:text-[#FFFFFF] cursor-pointer"
               onClick={() => handleClick("https://discord.gg/H2XczVjGJp")}
             >
               <div className="flex gap-2.5">
@@ -66,7 +66,7 @@ function Community() {
               </div>
             </div>
             <div
-              className="text-[#6C7275] hover:text-[#141718] dark:text-[#6C7275] px-5.5 py-2.5 bg-[#FFFFFF] dark:bg-[#101213] hover:bg-[#232627]/50 hover:dark:text-[#FFFFFF] cursor-pointer"
+              className="text-[#6C7275] hover:text-[#141718] dark:text-[#6C7275] px-5.5 py-2.5 bg-[#FFFFFF] dark:bg-[#101213] hover:bg-[#F3F5F7] dark:hover:bg-[#232627]/50 hover:dark:text-[#FFFFFF] cursor-pointer"
               onClick={() =>
                 handleClick("https://www.linkedin.com/company/aidenagent")
               }
