@@ -91,6 +91,7 @@ export const ALLOW_TOOL_LIST = [
   "excel_*",
   "fetch",
   "generate_*_chart",
+  "host_current_time",
   "host_get_timer",
   "host_list_timers",
   "host_weekday",
