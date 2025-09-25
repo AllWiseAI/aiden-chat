@@ -88,7 +88,7 @@ class WebSocketManager {
     this.socket.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data) as TaskMessage | { type: string };
-
+        console.log("[WebSocket] Received message:", data.type);
         if (data.type === "pong") {
           console.log("[WebSocket][Heartbeat] Received pong.");
           this.resetPongTimeout();
