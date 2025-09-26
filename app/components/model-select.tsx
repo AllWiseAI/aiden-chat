@@ -135,6 +135,10 @@ export const ModelSelect = ({ value, mode = "inner", onChange }: Props) => {
   };
 
   useEffect(() => {
+    useAppConfig.getState().initModelList();
+  }, []);
+
+  useEffect(() => {
     const res = formatProvider(localProviders);
     setGroupedProviders(res);
     setGroupedLocalProviders(() => ({

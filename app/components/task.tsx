@@ -324,7 +324,7 @@ function TaskRecords({ currentTask }: { currentTask: TaskType }) {
               modelInfo={currentTask.modelInfo!}
               taskInfo={item}
               title={formatDateToReadableString(
-                item.next_run_at || item.completed_at || item.created_at,
+                item.next_run_at || item.created_at,
               )}
             />
           ))}
