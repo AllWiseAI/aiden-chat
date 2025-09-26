@@ -9,10 +9,10 @@ import type { Metadata, Viewport } from "next";
 import { Toaster } from "@/app/components/shadcn/sonner";
 
 export const metadata: Metadata = {
-  title: "AidenChat",
+  title: "Aiden",
   description: "Your personal ChatGPT Chat Bot.",
   appleWebApp: {
-    title: "AidenChat",
+    title: "Aiden",
     statusBarStyle: "default",
   },
 };

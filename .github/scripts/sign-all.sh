@@ -14,7 +14,7 @@ else
 fi
 
 
-APP_PATH="src-tauri/target/${PLATFORM_ARCH}-apple-darwin/release/bundle/macos/AidenChat.app"
+APP_PATH="src-tauri/target/${PLATFORM_ARCH}-apple-darwin/release/bundle/macos/Aiden.app"
 BIN_DIR="$APP_PATH/Contents/Resources/bin"
 RESOURCES_DIR="$APP_PATH/Contents/Resources/resources"
 DMG_DIR="src-tauri/target/${PLATFORM_ARCH}-apple-darwin/release/bundle/dmg"

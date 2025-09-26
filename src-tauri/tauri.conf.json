@@ -8,7 +8,7 @@
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "AidenChat",
+    "productName": "Aiden",
     "version": "0.1.52"
   },
   "tauri": {
@@ -87,7 +87,7 @@
         "icons/icon.ico"
       ],
       "identifier": "com.aiden.chat",
-      "longDescription": "AidenChat is a cross-platform ChatGPT client, including Web/Win/Linux/OSX/PWA.",
+      "longDescription": "Aiden is a cross-platform ChatGPT client, including Web/Win/Linux/OSX/PWA.",
       "macOS": {
         "entitlements": null,
         "exceptionDomain": "",
@@ -100,7 +100,7 @@
         "resources/mcp.config.json",
         "../node_modules/host_server_*/**/*"
       ],
-      "shortDescription": "AidenChat App",
+      "shortDescription": "Aiden App",
       "targets": "all",
       "windows": {
         "certificateThumbprint": null,
@@ -128,7 +128,7 @@
         "fullscreen": false,
         "height": 750,
         "resizable": true,
-        "title": "AidenChat",
+        "title": "Aiden",
         "width": 426,
         "hiddenTitle": true,
         "titleBarStyle": "Overlay"
