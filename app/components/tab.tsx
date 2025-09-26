@@ -58,6 +58,7 @@ export function Tab() {
               <ChatIcon />
               <span
                 className={clsx(
+                  tabValue === "chat" ? "font-bold" : "font-normal",
                   i18n.language === "en-US" ? "text-[10px]" : "text-xs",
                 )}
               >
@@ -78,6 +79,7 @@ export function Tab() {
               <TaskIcon />
               <span
                 className={clsx(
+                  tabValue === "task" ? "font-bold" : "font-normal",
                   i18n.language === "en-US" ? "text-[10px]" : "text-xs",
                 )}
               >

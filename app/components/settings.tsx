@@ -37,7 +37,7 @@ export function Settings() {
   const settingList = [
     { name: t("tabs.general"), value: "general", icon: generalIcon },
     { name: t("tabs.model"), value: "model", icon: modelIcon },
-    { name: t("tabs.mcp"), value: "mcp", icon: McpIcon },
+    { name: t("tabs.mcpStore"), value: "mcp", icon: McpIcon },
     {
       name: t("tabs.subscription"),
       value: "subscription",
@@ -130,7 +130,7 @@ export function Settings() {
             </ul>
             <div
               ref={renderPanelRef}
-              className="flex-1 px-15 py-12.5 h-full overflow-y-auto  bg-[#FEFEFE] dark:bg-[#101213]"
+              className="flex-1 px-15 py-9 h-full overflow-y-auto  bg-[#FEFEFE] dark:bg-[#101213]"
             >
               {renderPanel()}
             </div>

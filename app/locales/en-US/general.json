@@ -28,7 +28,6 @@
     },
     "commands": {
       "new": "Start a new chat",
-      "newM": "Start a new chat with mask",
       "next": "Next Chat",
       "prev": "Previous Chat",
       "clear": "Clear Context",
