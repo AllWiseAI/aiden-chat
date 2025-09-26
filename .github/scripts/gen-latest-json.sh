@@ -8,18 +8,18 @@ ARTIFACT_DIR="artifacts"
 CRC_TOOL=".github/scripts/crc64.py"
 
 # === 路径设定 ===
-SIG_ARM64="${ARTIFACT_DIR}/macos-latest-arm64-artifacts/macos/AidenChat_aarch64.app.tar.gz.sig"
-ZIP_ARM64="${ARTIFACT_DIR}/macos-latest-arm64-artifacts/macos/AidenChat_aarch64.app.tar.gz"
-DMG_ARM64="${ARTIFACT_DIR}/macos-latest-arm64-artifacts/dmg/AidenChat_${PACKAGE_VERSION}_aarch64_signed.dmg"
+SIG_ARM64="${ARTIFACT_DIR}/macos-latest-arm64-artifacts/macos/Aiden_aarch64.app.tar.gz.sig"
+ZIP_ARM64="${ARTIFACT_DIR}/macos-latest-arm64-artifacts/macos/Aiden_aarch64.app.tar.gz"
+DMG_ARM64="${ARTIFACT_DIR}/macos-latest-arm64-artifacts/dmg/Aiden_${PACKAGE_VERSION}_aarch64_signed.dmg"
 
 
-SIG_X64="${ARTIFACT_DIR}/macos-latest-x86_64-artifacts/macos/AidenChat_x64.app.tar.gz.sig"
-ZIP_X64="${ARTIFACT_DIR}/macos-latest-x86_64-artifacts/macos/AidenChat_x64.app.tar.gz"
-DMG_X64="${ARTIFACT_DIR}/macos-latest-x86_64-artifacts/dmg/AidenChat_${PACKAGE_VERSION}_x64_signed.dmg"
+SIG_X64="${ARTIFACT_DIR}/macos-latest-x86_64-artifacts/macos/Aiden_x64.app.tar.gz.sig"
+ZIP_X64="${ARTIFACT_DIR}/macos-latest-x86_64-artifacts/macos/Aiden_x64.app.tar.gz"
+DMG_X64="${ARTIFACT_DIR}/macos-latest-x86_64-artifacts/dmg/Aiden_${PACKAGE_VERSION}_x64_signed.dmg"
 
-SIG_WIN_X64="${ARTIFACT_DIR}/windows-latest-x86_64-artifacts/msi/AidenChat_${PACKAGE_VERSION}_x64_en-US.msi.zip.sig"
-ZIP_WIN_X64="${ARTIFACT_DIR}/windows-latest-x86_64-artifacts/msi/AidenChat_${PACKAGE_VERSION}_x64_en-US.msi.zip"
-MSI_WIN_X64="${ARTIFACT_DIR}/windows-latest-x86_64-artifacts/msi/AidenChat_${PACKAGE_VERSION}_x64_en-US.msi" 
+SIG_WIN_X64="${ARTIFACT_DIR}/windows-latest-x86_64-artifacts/msi/Aiden_${PACKAGE_VERSION}_x64_en-US.msi.zip.sig"
+ZIP_WIN_X64="${ARTIFACT_DIR}/windows-latest-x86_64-artifacts/msi/Aiden_${PACKAGE_VERSION}_x64_en-US.msi.zip"
+MSI_WIN_X64="${ARTIFACT_DIR}/windows-latest-x86_64-artifacts/msi/Aiden_${PACKAGE_VERSION}_x64_en-US.msi" 
 
 # === 检查产物是否存在 ===
 for f in "$SIG_ARM64" "$ZIP_ARM64" "$SIG_X64" "$ZIP_X64"; do
