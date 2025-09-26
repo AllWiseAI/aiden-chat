@@ -235,7 +235,7 @@ export function Markdown(
     <div
       className="markdown-body"
       style={{
-        fontSize: `${props.fontSize ?? 14}px`,
+        fontSize: `${props.fontSize ?? 15}px`,
         fontFamily: props.fontFamily || "inherit",
       }}
       ref={mdRef}

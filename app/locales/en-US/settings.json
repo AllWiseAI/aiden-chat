@@ -2,8 +2,7 @@
   "title": "Settings",
   "tabs": {
     "general": "General",
-    "mcp": "MCP",
-    "mcpManage": "MCP Management",
+    "mcpStore": "MCP Store",
     "model": "Model",
     "subscription": "Subscription",
     "aboutUs": "About Us"

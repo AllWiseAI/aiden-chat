@@ -2,8 +2,7 @@
   "title": "设置",
   "tabs": {
     "general": "通用",
-    "mcp": "MCP",
-    "mcpManage": "MCP 市场",
+    "mcpStore": "MCP 市场",
     "model": "模型",
     "subscription": "订阅",
     "aboutUs": "关于我们"
