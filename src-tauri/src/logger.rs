@@ -50,10 +50,7 @@ pub fn export_log_zip(app: AppHandle) -> Result<String, String> {
         .format(&time::format_description::well_known::Rfc3339)
         .unwrap_or_else(|_| "log".into());
 
-    let zip_path = downloads.join(format!(
-        "aidenchat-logs-{}.zip",
-        timestamp.replace(":", "-")
-    ));
+    let zip_path = downloads.join(format!("aiden-logs-{}.zip", timestamp.replace(":", "-")));
 
     let zip_file = File::create(&zip_path).map_err(|e| e.to_string())?;
     let mut zip: zip::ZipWriter<File> = zip::ZipWriter::new(zip_file);
