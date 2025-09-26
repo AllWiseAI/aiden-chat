@@ -62,7 +62,7 @@ export const ACCESS_CODE_PREFIX = "nk-";
 export const LAST_INPUT_KEY = "last-input";
 export const UNFINISHED_INPUT = (id: string) => "unfinished-input-" + id;
 
-export const STORAGE_KEY = "aidenchat-storage";
+export const STORAGE_KEY = "aiden-storage";
 
 // TODO: temporary set to 2 minutes, will be changed to 10 seconds in the future
 export const REQUEST_TIMEOUT_MS = 120000;

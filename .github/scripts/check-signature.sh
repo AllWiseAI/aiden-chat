@@ -13,7 +13,7 @@ else
   exit 1
 fi
 
-APP_PATH="src-tauri/target/${PLATFORM_ARCH}-apple-darwin/release/bundle/macos/AidenChat.app"
+APP_PATH="src-tauri/target/${PLATFORM_ARCH}-apple-darwin/release/bundle/macos/Aiden.app"
 SIGN_IDENTITY="${APPLE_SIGN_IDENTITY}"
 
 echo "🔍 正在检查 $ARCH 架构下 .app 中的签名状态..."

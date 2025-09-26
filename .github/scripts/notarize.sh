@@ -15,13 +15,13 @@ else
 fi
 
 
-APP_PATH="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/macos/AidenChat.app"
+APP_PATH="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/macos/Aiden.app"
 ZIP_PATH="${APP_PATH}.zip"
 TAURI_RAW_ZIP_PATH="${APP_PATH}.tar.gz"
 TAURI_SIGN_ZIP_NAME="AidenChat_${ARCH_DMG_SUFFIX}.app.tar.gz"
 DMG_NAME="AidenChat_${PACKAGE_VERSION}_${ARCH_DMG_SUFFIX}_signed.dmg"
 DMG_PATH="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/dmg/${DMG_NAME}"
-VOL_NAME="AidenChat"
+VOL_NAME="Aiden"
 LATEST_JSON_PATH="src-tauri/target/${ARCH_DIR}-apple-darwin/release/bundle/macos/latest.json"
 
 echo "🧾 开始 Apple Notarization 公证流程 for $ARCH"
