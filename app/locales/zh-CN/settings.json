@@ -2,6 +2,7 @@
   "title": "设置",
   "tabs": {
     "general": "通用",
+    "agent": "智能体",
     "mcp": "MCP",
     "mcpManage": "MCP 管理",
     "model": "模型",

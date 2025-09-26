@@ -50,6 +50,7 @@ export enum StoreKey {
   Auth = "auth-store",
   Setting = "setting-store",
   Task = "task-store",
+  Agent = "agent-store",
 }
 
 export const DEFAULT_SIDEBAR_WIDTH = 240;
