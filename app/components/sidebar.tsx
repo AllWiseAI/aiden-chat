@@ -2,7 +2,6 @@ import React, {
   Fragment,
   useEffect,
   useState,
-  useMemo,
   useRef,
   Dispatch,
   SetStateAction,
@@ -26,7 +25,6 @@ import {
 } from "../constant";
 
 import { useNavigate, useLocation } from "react-router-dom";
-import { isIOS, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
 import clsx from "clsx";
 
@@ -163,11 +161,6 @@ export function SideBarContainer(props: {
   shouldNarrow: boolean;
   className?: string;
 }) {
-  const isMobileScreen = useMobileScreen();
-  const isIOSMobile = useMemo(
-    () => isIOS() && isMobileScreen,
-    [isMobileScreen],
-  );
   const { children, className, onDragStart, shouldNarrow } = props;
   return (
     <div
@@ -179,14 +172,10 @@ export function SideBarContainer(props: {
         },
         "bg-[#F3F5F7] dark:bg-[#232627]/50",
       )}
-      style={{
-        // #3016 disable transition on ios mobile screen
-        transition: isMobileScreen && isIOSMobile ? "none" : undefined,
-      }}
     >
       {children}
       <div
-        className="absolute w-[2px] h-full top-0 right-0 transition-all ease-in-out duration-300 bg-[#F3F5F7] dark:bg-[#232627]/50 hover:bg-[#00D47E] dark:hover:bg-[#00D47E] cursor-ew-resize"
+        className="absolute h-full top-0 right-0 transition-all ease-in-out duration-300 bg-[#F3F5F7] dark:bg-[#232627]/50 hover:bg-[#00D47E] dark:hover:bg-[#00D47E] cursor-ew-resize"
         onPointerDown={(e) => onDragStart(e as any)}
       ></div>
     </div>
