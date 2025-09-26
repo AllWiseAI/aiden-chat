@@ -367,7 +367,7 @@ export interface Agent {
   id: string;
   name: string;
   avatar: Emoji;
-  source: "custom" | "default";
+  source: "builtIn" | "default" | "custom";
   description: string;
   prompt: string;
   type: AgentType;

@@ -132,7 +132,7 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
   return (
     <>
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-sm font-bold">{t("tabs.mcpManage")}</h2>
+        <h2 className="text-base font-medium">{t("tabs.mcpManage")}</h2>
         <div className="flex items-center gap-2 self-end h-7">
           <Button
             className="h-full bg-[#00AB66]/12 dark:bg-[#00D47E]/6 hover:bg-[#BEF0DD] dark:hover:bg-[#00D47E]/12 text-main border border-[#00D47E]/10 text-sm rounded-sm px-2.5 py-1 gap-1"
@@ -155,7 +155,7 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
         </div>
       </div>
       <div
-        className="overflow-y-auto h-full"
+        className="scroll-container h-full -mr-2"
         style={{ maxHeight: "calc(100% - 80px)" }}
       >
         <ServerTable

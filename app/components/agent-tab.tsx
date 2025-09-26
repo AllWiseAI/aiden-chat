@@ -10,6 +10,7 @@ import {
 import { useAppConfig } from "../store";
 import { useAgentStore } from "../store";
 import { Path } from "../constant";
+import { Agent } from "../typing";
 import { INNER_PROVIDER_NAME } from "@/app/constant";
 import { ProviderIcon } from "./setting/provider-icon";
 import { ModelOption, ProviderOption } from "@/app/typing";
@@ -21,10 +22,11 @@ import MoreIcon from "../icons/more.svg";
 import BlockIcon from "../icons/block.svg";
 import clsx from "clsx";
 
-function AgentModel({ show }: { show: boolean }) {
+function AgentModel({ show, item }: { show: boolean; item: Agent }) {
   const navigate = useNavigate();
   const modelList = useAppConfig((s) => s.models);
   const localProviders = useAppConfig((state) => state.localProviders);
+  const updateAgent = useAgentStore((state) => state.updateAgent);
   const [openGroup, setOpenGroup] = useState<string | null>(
     INNER_PROVIDER_NAME,
   );
@@ -94,15 +96,28 @@ function AgentModel({ show }: { show: boolean }) {
     }));
   }, [modelList, localProviders]);
 
+  const switchAgentModel = (model: string) => {
+    if (model === item.model) return;
+    const newAgent = {
+      ...item,
+      model,
+    };
+    updateAgent(newAgent);
+  };
+
   return (
     <div>
       {show && (
-        <div className="max-w-60 mx-auto border light:border-[#E8ECEF] rounded-sm">
+        <div className="max-w-60 mx-auto border light:border-[#E8ECEF] rounded-sm overflow-hidden">
           <div className="w-full bg-[#FEFEFE] dark:bg-[#141718] overflow-y-auto max-h-[260px] px-1 py-2 space-y-1.5">
             {Object.entries(groupedLocalProviders).map(
               ([groupLabel, provider]) => {
                 const isOpen = openGroup === groupLabel;
-                const models: ModelOption[] = provider.models;
+                const isMulti = item.type === "Multimodal";
+                const models: ModelOption[] = provider.models.filter(
+                  (model) => model.multi_model === isMulti,
+                );
+
                 return (
                   <div key={groupLabel}>
                     <Label
@@ -143,10 +158,13 @@ function AgentModel({ show }: { show: boolean }) {
                           <div
                             className="text-sm text-[#141718] dark:text-[#FEFEFE] font-normal truncate max-w-[170px]"
                             title={model.label}
+                            onClick={() => switchAgentModel(model.model)}
                           >
                             {model.label}
                           </div>
-                          <AccessIcon className="size-4 text-main" />
+                          {model.model === item.model && (
+                            <AccessIcon className="size-4 text-main" />
+                          )}
                         </div>
                       ))}
                     </div>
@@ -175,13 +193,13 @@ function AgentModel({ show }: { show: boolean }) {
 
 export default function AgentTab() {
   const navigate = useNavigate();
-  const agentArr = useAgentStore((state) => state.agents);
+  const agents = useAgentStore((state) => state.getAgents());
   const [hoverId, setHoverId] = useState<string | null>(null);
   const [showModel, setShowModel] = useState(false);
 
   return (
-    <div className="flex items-center group">
-      {agentArr.map((item) => (
+    <div className="flex items-center">
+      {agents.map((item) => (
         <HoverCard
           key={item.id}
           open={hoverId === item.id}
@@ -220,7 +238,7 @@ export default function AgentTab() {
                 <div className="size-8 cursor-default rounded-full border border-[#F2F2F2] dark:border-[#505050] flex-center">
                   {item.avatar}
                 </div>
-                <div className="flex-1 flex flex-col gap-1">
+                <div className="min-w-0 flex-1 flex flex-col gap-1">
                   <div className="flex justify-between items-center">
                     <span className="text-sm">{item.name}</span>
                     <BlockIcon
@@ -243,13 +261,13 @@ export default function AgentTab() {
                   </Label>
 
                   {!showModel && (
-                    <span className="text-xs text-[#000000]/85 dark:text-[#E8ECEF]/50 line-clamp-3">
+                    <span className="text-xs text-[#000000]/85 dark:text-[#E8ECEF]/50 break-words line-clamp-3">
                       {item.description}
                     </span>
                   )}
                 </div>
               </div>
-              <AgentModel show={showModel} />
+              <AgentModel show={showModel} item={item} />
             </div>
           </HoverCardContent>
         </HoverCard>

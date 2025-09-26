@@ -10,6 +10,7 @@ import {
 } from "../utils/websocket";
 import { getHeaders } from "../utils/fetch";
 import { track, EventName } from "../utils/analysis";
+import { useAgentStore } from "../store";
 
 const titleMap = {
   task_completed: "Task Completed",
@@ -58,6 +59,7 @@ export const appDataInit = async () => {
   await initLocalToken();
   useMcpStore.getState().init();
   useAppConfig.getState().initModelList();
+  useAgentStore.getState().init();
   initWebsocket();
   const getRegion = useSettingStore.getState().getRegion;
   getRegion();
