@@ -107,10 +107,18 @@ function connect() {
           try {
             const refreshToken = useAuthStore.getState().refreshToken;
             if (refreshToken) {
+              console.log(
+                "[Worker][WebSocket] use remote access token",
+                refreshToken,
+              );
               send({ type: "update_refresh_token", token: refreshToken });
             } else {
               // 使用本地存储的兜底
               const localToken = useAuthStore.getState().userToken.accessToken;
+              console.log(
+                "[Worker][WebSocket] use local access token",
+                localToken,
+              );
               send({ type: "update_refresh_token", token: localToken });
             }
           } catch (e) {
@@ -131,7 +139,7 @@ function connect() {
           break;
 
         case "analytics_event":
-          // ⚡ 上报不要求强实时，交给主线程处理
+          // 不要求时效性，交给主线程去处理
           postMessage({ type: "analytics_event", payload: data });
           break;
 
