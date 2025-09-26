@@ -6,13 +6,13 @@
     "mcpManage": "MCP Management",
     "model": "Model",
     "subscription": "Subscription",
-    "aboutUs": "About us"
+    "aboutUs": "About Us"
   },
   "general": {
     "account": "Account",
     "logout": "Log Out",
     "password": {
-      "change": "Change password",
+      "change": "Change Password",
       "success": {
         "title": "Reset Success",
         "content": "Your password will take effect after a restart.",
@@ -57,16 +57,16 @@
   "model": {
     "viewMore": "View More",
     "add": "Add",
-    "customModel": "Customized Model",
-    "defaultModel": "Default Model",
+    "customModel": "Custom Models",
+    "defaultModel": "Built-in Models",
     "provider": "Provider",
     "model": "Model",
     "apiKey": "API Key",
     "operation": "Operation",
     "noCustomModel": "No custom model",
-    "addModelTitle": "Add customized model",
-    "editModelTitle": "Edit customized model",
-    "deleteModelTitle": "Delete customized model",
+    "addModelTitle": "Add custom model",
+    "editModelTitle": "Edit custom model",
+    "deleteModelTitle": "Delete custom model",
     "deleteModelDescription": "Confirm to delete?",
     "saveSuccess": "Saved successfully.",
     "apiKeyErrorText": "Please enter API Key",
