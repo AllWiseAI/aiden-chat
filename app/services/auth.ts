@@ -1,4 +1,6 @@
 import { aidenFetch as fetch, FetchBody } from "@/app/utils/fetch";
+import { useSettingStore } from "@/app/store/setting";
+import { GoogleLoginResponse, GoogleStatusResponse } from "../typing";
 
 export async function apiGetSignUpCode(payload: { email: string }) {
   const params = {
@@ -74,6 +76,29 @@ export async function apiLogout(refreshToken: string) {
     },
   });
   return result.data;
+}
+
+export async function googleLogin(): Promise<GoogleLoginResponse> {
+  const result = await fetch("/auth/google/login ", {
+    method: "GET",
+  });
+  return result.data as GoogleLoginResponse;
+}
+
+export async function googleLoginStatus({
+  session_id,
+}: {
+  session_id: string;
+}): Promise<GoogleStatusResponse> {
+  const device_id = useSettingStore.getState().getDeviceId();
+
+  const result = await fetch(
+    `/auth/google/status?session_id=${session_id}&device_id=${device_id}`,
+    {
+      method: "GET",
+    },
+  );
+  return result.data as GoogleStatusResponse;
 }
 
 export async function apiRefreshToken(refreshToken: string) {
