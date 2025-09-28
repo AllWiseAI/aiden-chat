@@ -2,7 +2,7 @@ import { fetch, Response } from "@tauri-apps/api/http";
 import { useSettingStore } from "../store/setting";
 import { useAuthStore } from "../store/auth";
 import { isRefreshRequest, getLocalToken } from "../services";
-
+import { toast } from "@/app/utils/toast";
 import { t } from "i18next";
 import { useAppConfig } from "../store";
 import { ProviderOption } from "../typing";
@@ -117,7 +117,8 @@ export const getHeaders = async ({
         console.log("refresh token after:", token);
       } catch (e) {
         console.log("[refresh token] refresh token error: ", e);
-        window.location.href = "/#/login";
+        // window.location.href = "/#/login";
+        toast.error(t("error.refreshToken"));
       } finally {
         console.log("[refresh token] refresh token done.");
       }
