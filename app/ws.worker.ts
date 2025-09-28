@@ -1,4 +1,3 @@
-import { useAuthStore } from "./store";
 import { showNotification } from "./utils/notification";
 
 const titleMap = {
@@ -56,19 +55,128 @@ export type TaskMessage =
   | TaskRefreshToken
   | AnalyticsEvent;
 
+interface TokenType {
+  accessToken: string;
+  refreshToken: string;
+  expires: number;
+}
+
+function setupWorkerLogger() {
+  const originalConsole = {
+    log: console.log,
+    warn: console.warn,
+    error: console.error,
+  };
+
+  function sendLog(type: "log" | "warn" | "error", ...args: any[]) {
+    postMessage({
+      type: "worker_log",
+      payload: args.map(String).join(" "),
+    });
+  }
+
+  console.log = (...args: any[]) => {
+    sendLog("log", ...args);
+    originalConsole.log(...args);
+  };
+
+  console.warn = (...args: any[]) => {
+    sendLog("warn", ...args);
+    originalConsole.warn(...args);
+  };
+
+  console.error = (...args: any[]) => {
+    sendLog("error", ...args);
+    originalConsole.error(...args);
+  };
+}
+
+setupWorkerLogger();
+
 let socket: WebSocket | null = null;
 let port = 0;
 let localToken = "";
 let retryCount = 0;
+let userToken = {} as TokenType;
+let baseDomain = "https://prod.aidenai.io";
+
+async function refreshAccessToken(baseDomain: string, refreshToken: string) {
+  try {
+    const response = await fetch(`${baseDomain}/auth/refresh_token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        refresh_token: refreshToken,
+      }),
+    });
+    if (!response.ok) {
+      console.error("[refreshAccessToken] Failed:", response.status);
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+    const data = await response.json();
+    console.log("[refreshAccessToken] Success:", data);
+    return data;
+  } catch (err) {
+    console.error("[refreshAccessToken] Error:", err);
+    throw err;
+  }
+}
+
 const maxRetries = 5;
 
 const reconnectInterval = 3000;
 const pingInterval = 10000;
 const pongTimeout = 3000;
+const FIVE_MINUTES = 5 * 60 * 1000;
+
 let pingTimer: ReturnType<typeof setInterval> | null = null;
 let pongTimer: ReturnType<typeof setTimeout> | null = null;
 
 const baseUrl = "ws://localhost";
+let refreshingPromise: Promise<void> | null = null;
+
+async function resolveLatestRefreshToken() {
+  try {
+    const { refreshToken, expires } = userToken;
+    const needRefresh = expires * 1000 - Date.now() <= FIVE_MINUTES;
+
+    if (needRefresh) {
+      if (refreshingPromise) {
+        console.log("[Worker] Waiting for ongoing token refresh...");
+        await refreshingPromise;
+      } else {
+        refreshingPromise = (async () => {
+          const newToken = await refreshAccessToken(baseDomain, refreshToken);
+          console.log("[Worker] Token refresh successful:", newToken);
+
+          const { access_token, refresh_token, expires_at } = newToken;
+          userToken = {
+            accessToken: access_token,
+            refreshToken: refresh_token,
+            expires: expires_at,
+          };
+          send({
+            type: "get_latest_refresh_token",
+            token: access_token,
+          });
+          refreshingPromise = null;
+        })();
+
+        await refreshingPromise;
+      }
+    } else {
+      console.log("[Worker] Token not expired, no refresh needed.");
+      send({
+        type: "get_latest_refresh_token",
+        token: userToken.accessToken,
+      });
+    }
+  } catch (e) {
+    console.log("[Worker][WebSocket] get_latest_refresh_token error: ", e);
+  }
+}
 
 function connect() {
   if (
@@ -93,7 +201,7 @@ function connect() {
     postMessage({ type: "status", message: "connected" });
   };
 
-  socket.onmessage = (event) => {
+  socket.onmessage = async (event) => {
     try {
       const data = JSON.parse(event.data) as TaskMessage | { type: string };
       console.log("[Worker][WebSocket] Received message:", data.type);
@@ -104,29 +212,7 @@ function connect() {
 
       switch (data.type) {
         case "get_latest_refresh_token":
-          try {
-            const refreshToken = useAuthStore.getState().refreshToken;
-            if (refreshToken) {
-              console.log(
-                "[Worker][WebSocket] use remote access token",
-                refreshToken,
-              );
-              send({ type: "update_refresh_token", token: refreshToken });
-            } else {
-              // 使用本地存储的兜底
-              const localToken = useAuthStore.getState().userToken.accessToken;
-              console.log(
-                "[Worker][WebSocket] use local access token",
-                localToken,
-              );
-              send({ type: "update_refresh_token", token: localToken });
-            }
-          } catch (e) {
-            console.log(
-              "[Worker][WebSocket] get_latest_refresh_token error: ",
-              e,
-            );
-          }
+          resolveLatestRefreshToken();
           break;
 
         case "task_completed":
@@ -202,15 +288,17 @@ onmessage = (e: MessageEvent) => {
     case "connect":
       port = payload.port;
       localToken = payload.localToken;
+      userToken = payload.userToken;
+      baseDomain = payload.baseDomain;
       connect();
       break;
 
+    // case "resolve_latest_refresh_token":
+    //   resolveLatestRefreshToken();
+    //   break;
+
     case "send":
       send(payload);
-      break;
-
-    case "refreshToken":
-      localToken = payload.localToken;
       break;
 
     case "disconnect":
