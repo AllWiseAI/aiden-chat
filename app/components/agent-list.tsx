@@ -20,7 +20,7 @@ function AgentItem({ item, onEdit }: AgentItemProps) {
   const isBuiltIn = item.source === "builtIn";
 
   const currentModel = useMemo(() => {
-    return modelList.find((model) => model.model === item.model);
+    return modelList.find((model) => model.model === item.model.name);
   }, [item.model, modelList]);
 
   const renderProviderIcon = useCallback(

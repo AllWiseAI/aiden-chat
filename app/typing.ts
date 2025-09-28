@@ -210,7 +210,7 @@ export type ProviderOption = {
   itemId: string;
   protocol: string;
   provider: string;
-  default_endpoint: boolean;
+  default_endpoint: string;
   id: number;
   models_path: string;
   logo_uri: null | string;
@@ -371,5 +371,10 @@ export interface Agent {
   description: string;
   prompt: string;
   type: AgentType;
-  model: string;
+  model: {
+    name: string;
+    provider: string;
+    endpoint: string;
+    apiKey: string | undefined;
+  };
 }

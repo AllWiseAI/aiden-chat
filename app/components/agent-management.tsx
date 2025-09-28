@@ -26,7 +26,13 @@ import { Input } from "./shadcn/input";
 import { Button } from "./shadcn/button";
 import { useTranslation } from "react-i18next";
 import { createAgent, useAgentStore } from "../store";
-import { AgentType, AgentTypeArr, Agent } from "../typing";
+import {
+  AgentType,
+  AgentTypeArr,
+  Agent,
+  ModelOption,
+  ProviderOption,
+} from "../typing";
 import { Theme } from "@/app/store";
 import { useTheme } from "../hooks/use-theme";
 import { useAppConfig } from "../store";
@@ -35,6 +41,15 @@ import clsx from "clsx";
 interface AgentItemProps {
   item: Agent;
   onEdit: (item: AgentItemProps["item"]) => void;
+}
+
+interface UserModel {
+  model: string;
+  provider: string;
+  endpoint: string;
+  apiKey: string | undefined;
+  logo_uri: undefined;
+  display: string;
 }
 
 function AgentEditDialog({
@@ -51,7 +66,21 @@ function AgentEditDialog({
   const isDefault = item
     ? item.source === "builtIn" || item.source === "default"
     : false;
-  const models = useAppConfig((s) => s.models);
+  const [models, localProviders] = useAppConfig((s) => [
+    s.models,
+    s.localProviders,
+  ]);
+
+  const formatLocalModels: UserModel[] = localProviders.flatMap((item) =>
+    item.models.map((model) => ({
+      model: model.value,
+      provider: item.provider,
+      endpoint: item.default_endpoint,
+      apiKey: item.apiKey,
+      logo_uri: undefined,
+      display: model.value,
+    })),
+  );
 
   const [openPop, setOpenPop] = useState(false);
   const [addAgent, updateAgent] = useAgentStore((state) => [
@@ -64,10 +93,14 @@ function AgentEditDialog({
   const modelList = useMemo(() => {
     if (newAgent.type === undefined) return [];
     const isMulti = newAgent.type === "Multimodal";
-    return models.filter((item) => item.multi_model === isMulti);
+    return [
+      ...models.filter((item) => item.multi_model === isMulti),
+      ...formatLocalModels,
+    ];
   }, [newAgent.type]);
+
   const currentModel = useMemo(() => {
-    return modelList.find((item) => item.model === newAgent.model);
+    return modelList.find((item) => item.model === newAgent.model.name);
   }, [newAgent.model, modelList]);
 
   useEffect(() => {
@@ -88,14 +121,13 @@ function AgentEditDialog({
   }, [item]);
 
   const renderProviderIcon = useCallback(
-    (size?: number) => {
-      if (currentModel?.logo_uri) {
+    (model: ModelOption | ProviderOption | UserModel, size?: number) => {
+      if (model?.logo_uri) {
         return (
           <Image
             src={
-              (theme === Theme.Light
-                ? currentModel.logo_uri
-                : currentModel.dark_logo_uri) ?? ""
+              (theme === Theme.Light ? model.logo_uri : model.dark_logo_uri) ??
+              ""
             }
             height={size ?? 18}
             width={size ?? 18}
@@ -106,13 +138,13 @@ function AgentEditDialog({
       return (
         <>
           <ProviderIcon
-            provider={currentModel?.provider ?? ""}
+            provider={model?.provider ?? ""}
             className={size ? `size-[${size}px]` : "size-4.5"}
           />
         </>
       );
     },
-    [currentModel, theme],
+    [theme],
   );
 
   const handleConfirm = () => {
@@ -306,10 +338,22 @@ function AgentEditDialog({
               Model
             </Label>
             <Select
-              value={newAgent.model}
+              value={newAgent.model.name}
               onValueChange={(value) =>
                 setNewAgent((agent) => {
-                  return { ...agent, model: value };
+                  const modelInfo = modelList.find(
+                    (item) => item.model === value,
+                  )!;
+                  return {
+                    ...agent,
+                    model: {
+                      name: value,
+                      provider: modelInfo.provider,
+                      endpoint: modelInfo.endpoint,
+                      apiKey:
+                        "apiKey" in modelInfo ? modelInfo.apiKey : undefined,
+                    },
+                  };
                 })
               }
             >
@@ -318,17 +362,23 @@ function AgentEditDialog({
                 className="w-full border-[#E8ECEF] dark:border-[#232627] data-[state=open]:border-[#00AB66] dark:data-[state=open]:border-[#00AB66] hover:border-[#232627]/50 dark:hover:border-white"
               >
                 <SelectValue>
-                  {newAgent.type && currentModel && renderProviderIcon()}
+                  {newAgent.type &&
+                    currentModel &&
+                    renderProviderIcon(currentModel)}
                   {currentModel?.display}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent className="min-h-10 max-h-50 border-[#E8ECEF] dark:border-[#232627]">
                 <SelectGroup>
-                  {modelList.map((item) => (
-                    <SelectItem key={item.model} value={item.model}>
-                      {item.display}
-                    </SelectItem>
-                  ))}
+                  {modelList.map((item) => {
+                    if (item.model)
+                      return (
+                        <SelectItem key={item.model} value={item.model}>
+                          {renderProviderIcon(item)}
+                          {item.display}
+                        </SelectItem>
+                      );
+                  })}
                 </SelectGroup>
               </SelectContent>
             </Select>

@@ -4,7 +4,7 @@ import { useAuthStore } from "../store/auth";
 import { isRefreshRequest, getLocalToken } from "../services";
 
 import { t } from "i18next";
-import { useAppConfig } from "../store";
+import { useAgentStore, useAppConfig } from "../store";
 import { ProviderOption } from "../typing";
 import { getOSInfo } from "../utils";
 import { getLang } from "../locales";
@@ -71,6 +71,7 @@ type HeadersProps = {
   modelInfo?: ProviderOption;
   ignoreHeaders?: boolean;
   refresh?: boolean;
+  agent?: boolean;
 };
 
 let osString = "";
@@ -79,10 +80,11 @@ let osString = "";
 // refresh - should refresh token detect
 export const getHeaders = async ({
   aiden = false,
-  isSummary = false,
+  // isSummary = false,
   ignoreHeaders = false,
   refresh = true,
-  modelInfo,
+  // modelInfo,
+  agent = false,
 }: HeadersProps) => {
   let headers: Record<string, string> = {};
   const lang = getLang();
@@ -130,28 +132,17 @@ export const getHeaders = async ({
     headers["Aiden-User-Lang"] = lang;
     headers["Aiden-User-Os"] = osString;
     const localToken = useAppConfig.getState().localToken;
-    let modelHeaderInfo = modelInfo;
-    if (isSummary) {
-      modelHeaderInfo = useAppConfig
-        .getState()
-        .getSummaryModel() as unknown as ProviderOption;
-    }
+    // let modelHeaderInfo = modelInfo;
+    // if (isSummary) {
+    //   modelHeaderInfo = useAppConfig
+    //     .getState()
+    //     .getSummaryModel() as unknown as ProviderOption;
+    // }
+    // 这里summary 后续记得处理
     headers["Host-Authorization"] = localToken;
-    if (modelHeaderInfo) {
-      const endpoint: string = (
-        modelHeaderInfo.apiKey
-          ? modelHeaderInfo.default_endpoint!
-          : modelHeaderInfo.endpoint!
-      ) as string;
-      headers["Aiden-Model-Name"] = modelHeaderInfo?.model ?? "";
-      headers["Aiden-Endpoint"] = endpoint;
-      headers["Aiden-Model-Provider"] = modelHeaderInfo?.provider ?? "";
-      headers["Aiden-Model-Context-Length"] =
-        modelHeaderInfo?.context_length?.toString() ?? "0";
-
-      if (modelHeaderInfo?.apiKey) {
-        headers["Aiden-Model-Api-Key"] = modelHeaderInfo?.apiKey;
-      }
+    if (agent) {
+      const agentHeaders = useAgentStore.getState().getAgentsHeader();
+      headers = { ...headers, ...agentHeaders };
     }
   }
   return headers;

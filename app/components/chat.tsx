@@ -565,10 +565,26 @@ function InnerChat() {
                             <div
                               className={clsx(
                                 styles["chat-message-container"],
-                                "group relative",
+                                "group relative flex flex-col gap-5",
                                 message.content && "pb-7",
                               )}
                             >
+                              {/* {!isUser && (
+                                <div className="flex items-center gap-2">
+                                  <div className="size-[38px] flex-center rounded-full bg-[#F3F5F7] dark:bg-[#6F6F6F]">
+                                    😝
+                                  </div>
+                                  <div className="flex flex-col">
+                                    <span className="text-[15px] font-medium">
+                                      Multimodal Agent
+                                    </span>
+                                    <span className="text-[10px] font-extralight">
+                                      gpt-4o
+                                    </span>
+                                  </div>
+                                </div>
+                              )} */}
+
                               <div
                                 className={clsx(
                                   styles["chat-message-item"],
