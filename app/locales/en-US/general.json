@@ -2,6 +2,7 @@
   "error": {
     "unauthorized": "Unauthorized",
     "netErr": "Connection Error",
+    "refreshToken": "Oops! Something went wrong. Please try again later!",
     "passwordErr": "Password Error",
     "captchaErr": "Captcha Error",
     "timeoutErr": "The request has timed out. Please try again later!",

@@ -3,6 +3,7 @@
     "unauthorized": "未授权",
     "netErr": "连接异常",
     "passwordErr": "密码错误",
+    "refreshToken": "服务遇到了问题，请稍后重试！",
     "captchaErr": "验证码错误",
     "timeoutErr": "请求已超时，请稍后重试！",
     "busyErr": "服务器繁忙，请稍后重试！"
