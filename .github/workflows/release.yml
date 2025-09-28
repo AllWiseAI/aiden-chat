@@ -203,17 +203,17 @@ jobs:
           overwrite: true
           files: |
             # macOS 产物
-            ${{ matrix.os == 'macos-latest' && format('src-tauri/target/{0}/release/bundle/macos/AidenChat_{1}.app.tar.gz', matrix.rust_target, steps.arch_map.outputs.mapped_arch) || '' }}
-            ${{ matrix.os == 'macos-latest' && format('src-tauri/target/{0}/release/bundle/macos/AidenChat_{1}.app.tar.gz.sig', matrix.rust_target, steps.arch_map.outputs.mapped_arch) || '' }}
-            ${{ matrix.os == 'macos-latest' && format('src-tauri/target/{0}/release/bundle/dmg/AidenChat_{1}_{2}_signed.dmg', matrix.rust_target, env.PACKAGE_VERSION, steps.arch_map.outputs.mapped_arch) || '' }}
+            ${{ matrix.os == 'macos-latest' && format('src-tauri/target/{0}/release/bundle/macos/Aiden_{1}.app.tar.gz', matrix.rust_target, steps.arch_map.outputs.mapped_arch) || '' }}
+            ${{ matrix.os == 'macos-latest' && format('src-tauri/target/{0}/release/bundle/macos/Aiden_{1}.app.tar.gz.sig', matrix.rust_target, steps.arch_map.outputs.mapped_arch) || '' }}
+            ${{ matrix.os == 'macos-latest' && format('src-tauri/target/{0}/release/bundle/dmg/Aiden_{1}_{2}_signed.dmg', matrix.rust_target, env.PACKAGE_VERSION, steps.arch_map.outputs.mapped_arch) || '' }}
 
             # Windows 产物
-            ${{ matrix.os == 'windows-latest' && format('src-tauri/target/{0}/release/bundle/msi/AidenChat_{1}_x64_en-US.msi', matrix.rust_target, env.PACKAGE_VERSION) || '' }}
-            ${{ matrix.os == 'windows-latest' && format('src-tauri/target/{0}/release/bundle/msi/AidenChat_{1}_x64_en-US.msi.zip', matrix.rust_target, env.PACKAGE_VERSION) || '' }}
-            ${{ matrix.os == 'windows-latest' && format('src-tauri/target/{0}/release/bundle/msi/AidenChat_{1}_x64_en-US.msi.zip.sig', matrix.rust_target, env.PACKAGE_VERSION) || '' }}
-            ${{ matrix.os == 'windows-latest' && format('src-tauri/target/{0}/release/bundle/nsis/AidenChat_{1}_x64-setup.exe', matrix.rust_target, env.PACKAGE_VERSION) || '' }}
-            ${{ matrix.os == 'windows-latest' && format('src-tauri/target/{0}/release/bundle/nsis/AidenChat_{1}_x64-setup.nsis.zip', matrix.rust_target, env.PACKAGE_VERSION) || '' }}
-            ${{ matrix.os == 'windows-latest' && format('src-tauri/target/{0}/release/bundle/nsis/AidenChat_{1}_x64-setup.nsis.zip.sig', matrix.rust_target, env.PACKAGE_VERSION) || '' }}
+            ${{ matrix.os == 'windows-latest' && format('src-tauri/target/{0}/release/bundle/msi/Aiden_{1}_x64_en-US.msi', matrix.rust_target, env.PACKAGE_VERSION) || '' }}
+            ${{ matrix.os == 'windows-latest' && format('src-tauri/target/{0}/release/bundle/msi/Aiden_{1}_x64_en-US.msi.zip', matrix.rust_target, env.PACKAGE_VERSION) || '' }}
+            ${{ matrix.os == 'windows-latest' && format('src-tauri/target/{0}/release/bundle/msi/Aiden_{1}_x64_en-US.msi.zip.sig', matrix.rust_target, env.PACKAGE_VERSION) || '' }}
+            ${{ matrix.os == 'windows-latest' && format('src-tauri/target/{0}/release/bundle/nsis/Aiden_{1}_x64-setup.exe', matrix.rust_target, env.PACKAGE_VERSION) || '' }}
+            ${{ matrix.os == 'windows-latest' && format('src-tauri/target/{0}/release/bundle/nsis/Aiden_{1}_x64-setup.nsis.zip', matrix.rust_target, env.PACKAGE_VERSION) || '' }}
+            ${{ matrix.os == 'windows-latest' && format('src-tauri/target/{0}/release/bundle/nsis/Aiden_{1}_x64-setup.nsis.zip.sig', matrix.rust_target, env.PACKAGE_VERSION) || '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
