@@ -430,7 +430,7 @@ function InnerChat() {
   };
 
   const renderCallResult = (message: RenderMessage) => {
-    if (!message.streaming)
+    if (!message.streaming && message.mcpInfo?.response?.length === 0)
       return <ErrorIcon className="size-5 text-[#EF466F]" />;
 
     const result = message.mcpInfo?.response;
