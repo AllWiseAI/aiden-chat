@@ -4,9 +4,9 @@ import { useSettingStore } from "../store/setting";
 import { useAppConfig } from "../store/config";
 import { useAuthStore } from "../store/auth";
 import { track } from "../utils/analysis";
-import { getBaseDomain } from "../utils/fetch";
 
 let websocketInitialized = false;
+const REFRESH_INTERVAL = 2 * 60 * 1000;
 
 const initWebsocketWorker = async () => {
   console.log("[Main][Websocket] init websocket worker");
@@ -21,28 +21,45 @@ const initWebsocketWorker = async () => {
   const port = useAppConfig.getState().hostServerPort;
   const localToken = useAppConfig.getState().localToken;
   const userToken = useAuthStore.getState().userToken;
-  const baseDomain = await getBaseDomain();
+  const refreshToken = useAuthStore.getState().refreshToken;
+
+  async function doRefresh() {
+    try {
+      console.log("[Main][Websocket] Refreshing access token...");
+      const result = await refreshToken();
+      console.log("[Main][Websocket] Refresh token result:", result);
+      if (result) {
+        wsWorker.postMessage({
+          type: "refreshToken",
+          payload: {
+            accessToken: result,
+          },
+        });
+
+        console.log("[Main][Websocket] Token refreshed successfully");
+      } else {
+        console.warn("[Main][Websocket] Invalid refresh result:", result);
+      }
+    } catch (err) {
+      console.error("[Main][Websocket] Failed to refresh token:", err);
+    }
+  }
+
+  doRefresh();
+
+  setInterval(doRefresh, REFRESH_INTERVAL);
 
   wsWorker.postMessage({
     type: "connect",
     payload: {
       port: port,
       localToken: localToken,
-      userToken: userToken,
-      baseDomain: baseDomain,
+      accessToken: userToken.accessToken,
     },
-  });
-
-  wsWorker.postMessage({
-    type: "send",
-    payload: { type: "ping" },
   });
 
   wsWorker.onmessage = (e) => {
     const { type, payload, message } = e.data;
-
-    console.log("[Main][Websocket] onmessage type:", type);
-
     if (type === "status") {
       console.log("[Main][Websocket] status:", message);
       websocketInitialized = true;
