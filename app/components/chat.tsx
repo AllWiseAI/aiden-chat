@@ -292,7 +292,11 @@ function InnerChat() {
       const stopTiming = Date.now() - REQUEST_TIMEOUT_MS;
       session.messages.forEach((m) => {
         // check if should stop all stale messages
-        if (m.isError || new Date(m.date).getTime() < stopTiming) {
+        if (
+          m.isError ||
+          new Date(m.date).getTime() < stopTiming ||
+          (m.content === "" && m.mcpInfo?.response?.length === 0)
+        ) {
           if (m.streaming) {
             m.streaming = false;
           }
@@ -425,7 +429,12 @@ function InnerChat() {
     );
   };
 
-  const renderCallResult = (result: string[] | undefined) => {
+  const renderCallResult = (message: RenderMessage) => {
+    if (!message.streaming)
+      return <ErrorIcon className="size-5 text-[#EF466F]" />;
+
+    const result = message.mcpInfo?.response;
+
     if (!result?.length) return <LoadingIcon />;
     if (result.includes(DEFAULT_USER_DELINETED)) {
       return <ErrorIcon className="size-5 text-[#EF466F]" />;
@@ -484,7 +493,7 @@ function InnerChat() {
                     : t("chat.mcp.call")
                 } ${message.mcpInfo.title} ${t("chat.mcp.tool")}`}
 
-                {renderCallResult(message.mcpInfo.response)}
+                {renderCallResult(message)}
               </div>
             </AccordionTrigger>
             <AccordionContent
