@@ -181,7 +181,7 @@
       "title": "VIP Invitation Code",
       "count": "You have invited",
       "max": "Maxmium",
-      "tip": "Invited users enjoy one year free after launch"
+      "tip": "Invited users enjoy 2-month standard plan for free."
     },
     "table": {
       "1": "Invitation code",
@@ -190,7 +190,7 @@
     },
     "used": "Used",
     "unused": "Unused",
-    "tip": "Seed users enjoy 3-month free after launch",
+    "tip": "100 Extra Calls per invitee for You · 1-month standard plan for Them",
     "text": "Register with Aiden and instantly enjoy 1-month standard plan for free! Download: https://aidenai.io/ Enter the invitation code {{inviteCode}} to start your Aiden journey!",
     "textVip": "Register with Aiden and instantly enjoy 2-month standard plan for free! Download: https://aidenai.io/ Enter your exclusive invitation code {{inviteCode}} to start your Aiden journey!"
   },
