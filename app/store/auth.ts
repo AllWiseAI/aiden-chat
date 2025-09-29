@@ -19,8 +19,9 @@ const DEFAULT_AUTH_STATE = {
   isLogin: false,
   user: {} as User,
   userToken: {} as TokenType,
-  refreshingPromise: null as Promise<string> | null,
 };
+
+let refreshingPromise: Promise<string> | null = null;
 
 export const useAuthStore = createPersistStore(
   {
@@ -195,10 +196,8 @@ export const useAuthStore = createPersistStore(
 
       refreshToken: async () => {
         try {
-          const { userToken, refreshingPromise } = get();
+          const { userToken } = get();
           if (!userToken.refreshToken) throw new Error("No refresh token");
-
-          // 如果已经有正在进行的刷新请求，直接返回该 Promise
           if (refreshingPromise) {
             return refreshingPromise;
           }
@@ -227,15 +226,14 @@ export const useAuthStore = createPersistStore(
                 throw new Error("Token not found in response");
               }
             } finally {
-              // 无论成功还是失败，都要清理 refreshingPromise
-              set({ refreshingPromise: null });
+              refreshingPromise = null;
             }
           })();
 
-          set({ refreshingPromise: newRefreshingPromise });
+          refreshingPromise = newRefreshingPromise;
           return newRefreshingPromise;
         } catch (e: any) {
-          set({ refreshingPromise: null });
+          refreshingPromise = null;
           throw new Error(`Refresh Token Failed: ${e.message}`);
         }
       },
