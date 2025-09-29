@@ -1,4 +1,3 @@
-import { useAuthStore } from "./store";
 import { showNotification } from "./utils/notification";
 
 const titleMap = {
@@ -56,15 +55,50 @@ export type TaskMessage =
   | TaskRefreshToken
   | AnalyticsEvent;
 
+function setupWorkerLogger() {
+  const originalConsole = {
+    log: console.log,
+    warn: console.warn,
+    error: console.error,
+  };
+
+  function sendLog(type: "log" | "warn" | "error", ...args: any[]) {
+    postMessage({
+      type: "worker_log",
+      payload: args.map(String).join(" "),
+    });
+  }
+
+  console.log = (...args: any[]) => {
+    sendLog("log", ...args);
+    originalConsole.log(...args);
+  };
+
+  console.warn = (...args: any[]) => {
+    sendLog("warn", ...args);
+    originalConsole.warn(...args);
+  };
+
+  console.error = (...args: any[]) => {
+    sendLog("error", ...args);
+    originalConsole.error(...args);
+  };
+}
+
+setupWorkerLogger();
+
 let socket: WebSocket | null = null;
 let port = 0;
 let localToken = "";
 let retryCount = 0;
+let accessToken = "";
+
 const maxRetries = 5;
 
 const reconnectInterval = 3000;
 const pingInterval = 10000;
 const pongTimeout = 3000;
+
 let pingTimer: ReturnType<typeof setInterval> | null = null;
 let pongTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -104,29 +138,10 @@ function connect() {
 
       switch (data.type) {
         case "get_latest_refresh_token":
-          try {
-            const refreshToken = useAuthStore.getState().refreshToken;
-            if (refreshToken) {
-              console.log(
-                "[Worker][WebSocket] use remote access token",
-                refreshToken,
-              );
-              send({ type: "update_refresh_token", token: refreshToken });
-            } else {
-              // 使用本地存储的兜底
-              const localToken = useAuthStore.getState().userToken.accessToken;
-              console.log(
-                "[Worker][WebSocket] use local access token",
-                localToken,
-              );
-              send({ type: "update_refresh_token", token: localToken });
-            }
-          } catch (e) {
-            console.log(
-              "[Worker][WebSocket] get_latest_refresh_token error: ",
-              e,
-            );
-          }
+          send({
+            type: "update_refresh_token",
+            token: accessToken,
+          });
           break;
 
         case "task_completed":
@@ -139,7 +154,6 @@ function connect() {
           break;
 
         case "analytics_event":
-          // 不要求时效性，交给主线程去处理
           postMessage({ type: "analytics_event", payload: data });
           break;
 
@@ -202,6 +216,7 @@ onmessage = (e: MessageEvent) => {
     case "connect":
       port = payload.port;
       localToken = payload.localToken;
+      accessToken = payload.accessToken;
       connect();
       break;
 
@@ -210,7 +225,8 @@ onmessage = (e: MessageEvent) => {
       break;
 
     case "refreshToken":
-      localToken = payload.localToken;
+      console.log("[Worker][WebSocket] refreshToken:", payload.accessToken);
+      accessToken = payload.accessToken;
       break;
 
     case "disconnect":

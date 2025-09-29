@@ -2,12 +2,13 @@ import { initLocalToken } from "../utils/fetch";
 import { useMcpStore } from "../store/mcp";
 import { useSettingStore } from "../store/setting";
 import { useAppConfig } from "../store/config";
-
+import { useAuthStore } from "../store/auth";
 import { track } from "../utils/analysis";
 
 let websocketInitialized = false;
+const REFRESH_INTERVAL = 2 * 60 * 1000;
 
-const initWebsocketWorker = () => {
+const initWebsocketWorker = async () => {
   console.log("[Main][Websocket] init websocket worker");
   if (websocketInitialized) {
     console.warn("[Main][Websocket] WebSocket already initialized, skipping.");
@@ -19,25 +20,53 @@ const initWebsocketWorker = () => {
 
   const port = useAppConfig.getState().hostServerPort;
   const localToken = useAppConfig.getState().localToken;
+  const userToken = useAuthStore.getState().userToken;
+  const refreshToken = useAuthStore.getState().refreshToken;
+
+  async function doRefresh() {
+    try {
+      console.log("[Main][Websocket] Refreshing access token...");
+      const result = await refreshToken();
+      console.log("[Main][Websocket] Refresh token result:", result);
+      if (result) {
+        wsWorker.postMessage({
+          type: "refreshToken",
+          payload: {
+            accessToken: result,
+          },
+        });
+
+        console.log("[Main][Websocket] Token refreshed successfully");
+      } else {
+        console.warn("[Main][Websocket] Invalid refresh result:", result);
+      }
+    } catch (err) {
+      console.error("[Main][Websocket] Failed to refresh token:", err);
+    }
+  }
+
+  doRefresh();
+
+  setInterval(doRefresh, REFRESH_INTERVAL);
 
   wsWorker.postMessage({
     type: "connect",
-    payload: { port: port, localToken: localToken },
-  });
-
-  wsWorker.postMessage({
-    type: "send",
-    payload: { type: "ping" },
+    payload: {
+      port: port,
+      localToken: localToken,
+      accessToken: userToken.accessToken,
+    },
   });
 
   wsWorker.onmessage = (e) => {
     const { type, payload, message } = e.data;
-
-    console.log("[Main][Websocket] onmessage type:", type);
-
     if (type === "status") {
       console.log("[Main][Websocket] status:", message);
       websocketInitialized = true;
+    }
+
+    if (type === "worker_log") {
+      console.log("[Worker][Log]", payload);
     }
 
     if (type === "analytics_event") {

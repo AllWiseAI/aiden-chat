@@ -196,6 +196,7 @@ export const useAuthStore = createPersistStore(
       refreshToken: async () => {
         try {
           const { userToken, refreshingPromise } = get();
+          if (!userToken.refreshToken) throw new Error("No refresh token");
 
           // 如果已经有正在进行的刷新请求，直接返回该 Promise
           if (refreshingPromise) {
