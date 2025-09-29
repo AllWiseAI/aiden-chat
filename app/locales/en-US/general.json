@@ -10,7 +10,7 @@
   },
   "sidebar": {
     "chat": "Chat",
-    "scheduler": "Scheduler"
+    "schedule": "Schedule"
   },
   "chatItem": {
     "chatItemCount": "{{count}} messages"

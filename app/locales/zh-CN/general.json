@@ -13,7 +13,7 @@
   },
   "sidebar": {
     "chat": "会话",
-    "scheduler": "定时器"
+    "schedule": "定时器"
   },
   "chat": {
     "title": "嗨，我是",
