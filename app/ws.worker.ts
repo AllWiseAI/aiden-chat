@@ -127,7 +127,7 @@ function connect() {
     postMessage({ type: "status", message: "connected" });
   };
 
-  socket.onmessage = async (event) => {
+  socket.onmessage = (event) => {
     try {
       const data = JSON.parse(event.data) as TaskMessage | { type: string };
       console.log("[Worker][WebSocket] Received message:", data.type);
