@@ -292,11 +292,7 @@ function InnerChat() {
       const stopTiming = Date.now() - REQUEST_TIMEOUT_MS;
       session.messages.forEach((m) => {
         // check if should stop all stale messages
-        if (
-          m.isError ||
-          new Date(m.date).getTime() < stopTiming ||
-          (m.content === "" && m.mcpInfo?.response?.length === 0)
-        ) {
+        if (m.isError || new Date(m.date).getTime() < stopTiming) {
           if (m.streaming) {
             m.streaming = false;
           }
@@ -778,6 +774,12 @@ export function Chat() {
 
   useEffect(() => {
     track(EVENTS.HOME_EXPOSURE);
+    chatStore.updateTargetSession(session, (session) => {
+      // stop loading
+      session.messages.forEach((m) => {
+        m.streaming = false;
+      });
+    });
   }, []);
 
   return <InnerChat key={session.id}></InnerChat>;
