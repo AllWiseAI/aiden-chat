@@ -83,7 +83,7 @@ export function Tab() {
                   i18n.language === "en-US" ? "text-[10px]" : "text-xs",
                 )}
               >
-                {t("sidebar.scheduler")}
+                {t("sidebar.schedule")}
               </span>
             </div>
           </div>
