@@ -452,6 +452,7 @@ export function Task() {
     if (!currentTask) return;
     setModel(model);
     const modelInfo = getModelInfo(model);
+    if (!modelInfo) return;
     const res = await switchTaskModel(currentTask.id, modelInfo);
     const { code } = res;
     if (code === 0) {

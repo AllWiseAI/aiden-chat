@@ -158,7 +158,7 @@ export function TaskList(props: { searchValue?: string }) {
     if (apiKey) {
       return getModelInfo(`${providerName}:${modelName}`);
     }
-    return getModelInfo(modelName);
+    return getModelInfo(modelName ?? "");
   };
 
   useEffect(() => {

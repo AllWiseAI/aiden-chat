@@ -17,6 +17,7 @@ export function useGetModel() {
 
   const updateModel = (newModel: string) => {
     const modelInfo = getModelInfo(newModel);
+    if (!modelInfo) return;
     const { messages } = currentSession;
     let hasFile = false;
     messages.forEach((item) => {
