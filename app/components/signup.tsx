@@ -6,6 +6,7 @@ import LogoIcon from "@/app/icons/logo.svg";
 import LogoTextIcon from "@/app/icons/logo-text.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { GoogleAuth } from "../components/google-auth";
 import { useAuthStore } from "../store";
 import { Password } from "./password";
 import { apiCheckInviteCode, apiGetSignUpCode } from "@/app/services";
@@ -424,23 +425,29 @@ export function SignUpPage() {
     setIsSignUp(true);
   };
   return (
-    <div className="w-full h-full px-6 py-13 my-10 bg-white dark:bg-[#141416] mx-auto flex flex-col justify-start items-center gap-[50px] rounded-2xl">
+    <div className="w-full h-full px-6 py-13 my-10 bg-white dark:bg-[#141416] mx-auto rounded-2xl">
       {isSignUp ? (
-        <SignUpForm
-          formData={formData}
-          onFormChange={handleChange}
-          onSubmit={handleSubmit}
-          codeErr={codeErr}
-          loading={loading}
-        />
+        <div className="gap-5 w-full flex flex-col justify-start items-center">
+          <SignUpForm
+            formData={formData}
+            onFormChange={handleChange}
+            onSubmit={handleSubmit}
+            codeErr={codeErr}
+            loading={loading}
+          />
+          <GoogleAuth type="signup"></GoogleAuth>
+        </div>
       ) : (
-        <VerifyCodeForm
-          formData={formData}
-          onCodeChange={handleChange}
-          onSubmit={handleVerifyCode}
-          onBack={handleBack}
-          loading={loading}
-        />
+        <div className="gap-12 w-full flex flex-col justify-start items-center">
+          <VerifyCodeForm
+            formData={formData}
+            onCodeChange={handleChange}
+            onSubmit={handleVerifyCode}
+            onBack={handleBack}
+            loading={loading}
+          />
+          <GoogleAuth type="signup"></GoogleAuth>
+        </div>
       )}
     </div>
   );
