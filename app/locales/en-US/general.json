@@ -191,8 +191,8 @@
     "used": "Used",
     "unused": "Unused",
     "tip": "Seed users enjoy 3-month free after launch",
-    "text": "Register with Aiden and instantly enjoy free access to our powerful AI model! Download: https://aidenai.io/ Enter the invitation code {{inviteCode}} to start your Aiden journey!",
-    "textVip": "Register with Aiden and instantly enjoy free access to our powerful AI model! Download: https://aidenai.io/ Enter your exclusive invitation code {{inviteCode}} to start your Aiden journey!"
+    "text": "Register with Aiden and instantly enjoy 1-month standard plan for free! Download: https://aidenai.io/ Enter the invitation code {{inviteCode}} to start your Aiden journey!",
+    "textVip": "Register with Aiden and instantly enjoy 2-month standard plan for free! Download: https://aidenai.io/ Enter your exclusive invitation code {{inviteCode}} to start your Aiden journey!"
   },
   "dialog": {
     "tutorial": "Tutorial",
