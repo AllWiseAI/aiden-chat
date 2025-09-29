@@ -8,6 +8,7 @@ import LogoTextIcon from "@/app/icons/logo-text.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Path } from "../constant";
+import { GoogleAuth } from "../components/google-auth";
 import { useAuthStore } from "../store";
 import { toast } from "@/app/utils/toast";
 import clsx from "clsx";
@@ -140,8 +141,9 @@ export function LoginPage() {
       setError((error) => ({ ...error, email: "" }));
     }
   };
+
   return (
-    <div className="w-full h-full px-6 py-13 bg-white dark:bg-[#141416] mx-auto flex flex-col justify-start items-center gap-12 rounded-2xl">
+    <div className="w-full h-full px-6 py-13 bg-white dark:bg-[#141416] mx-auto flex flex-col justify-start items-center gap-10 rounded-2xl">
       <div className="flex-center flex-col gap-4 text-black dark:text-white">
         <div className="flex items-end gap-2">
           <LogoIcon className="size-7.5 text-[#00D47E]" />
@@ -301,6 +303,7 @@ export function LoginPage() {
           {t("signIn.btn")}
         </Button>
       </form>
+      <GoogleAuth type="signin"></GoogleAuth>
       <span className="text-xs text-[#777E90]">
         {t("signIn.noAccount")}{" "}
         <Link to={Path.SignUp} className="underline text-main">
