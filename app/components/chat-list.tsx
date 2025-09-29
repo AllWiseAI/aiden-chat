@@ -87,7 +87,7 @@ export function ChatItem(props: {
       {(provided) => (
         <div
           className={clsx(
-            "rounded-sm group h-7.5 flex flex-col justify-center",
+            "rounded-sm group h-8 flex flex-col justify-center",
             props.selected &&
               (currentPath === Path.Chat || currentPath === Path.Home)
               ? "bg-[#E8ECEF] dark:bg-[#232627]"
@@ -146,7 +146,7 @@ export function ChatItem(props: {
                   <div className="flex justify-start items-center gap-4 leading-6 flex-1 min-w-0">
                     <div
                       className={clsx(
-                        "cursor-default text-sm w-full truncate",
+                        "cursor-default text-[15px] w-full truncate",
                         props.selected
                           ? "font-medium"
                           : "text-[#232627] dark:text-white",

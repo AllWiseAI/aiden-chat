@@ -196,7 +196,7 @@ export function SideBarHeader(props: {
       {!shouldNarrow && (
         <div
           className={clsx(
-            "flex items-center h-15 gap-4 overflow-hidden p-4 dark:border-[#232627] select-none",
+            "flex items-center h-15 gap-4 overflow-hidden p-3 dark:border-[#232627] select-none",
           )}
           data-tauri-drag-region
         >
@@ -247,7 +247,7 @@ export function SideBarBody(props: {
     <>
       {!shouldNarrow && (
         <>
-          <div className="px-4 pb-4">
+          <div className="px-3 pb-4">
             <Button
               variant="ghost"
               className="w-full h-9.5 bg-[#00AB66]/6 hover:bg-[#00AB66]/12 dark:hover:bg-[#00AB66]/12 border border-[#00AB66]/15 text-main flex justify-start items-center gap-2 !px-1.5 py-1.5 rounded-lg"
@@ -269,7 +269,7 @@ export function SideBarBody(props: {
             </Button>
           </div>
           <div className="scroll-container flex-1 min-h-0">
-            <div className="flex flex-col gap-2.5 pl-4 pr-2">{children}</div>
+            <div className="flex flex-col gap-2.5 pl-3 pr-2">{children}</div>
           </div>
         </>
       )}
