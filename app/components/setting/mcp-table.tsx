@@ -69,8 +69,7 @@ function ServerTable({
     try {
       await removeMcpItem(mcp_key);
       toast.success(t("mcp.delete.success"));
-    } catch (e) {
-      console.error(e);
+    } catch {
       toast.error(t("mcp.delete.fail"));
     }
   };
@@ -125,8 +124,12 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
   const [currentMcpName, setCurrentMcpName] = useState<string>("");
   const handleSettingConfirm = async (update: TSettingInfo) => {
     setShowSettingModal(false);
-    await updateMcpArgsEnvs(currentMcpName, update);
-    toast.success(t("mcp.update.success"));
+    try {
+      await updateMcpArgsEnvs(currentMcpName, update);
+      toast.success(t("mcp.update.success"));
+    } catch {
+      toast.error(t("mcp.update.fail"));
+    }
   };
 
   return (

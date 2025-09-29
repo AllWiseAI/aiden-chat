@@ -67,13 +67,12 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
           type: detailInfo.type,
           version: detailInfo.current_version || "",
         });
-        toast.success(t("mcp.update.success"));
       } catch (e: any) {
         toast.error(e);
         setChecked(!enable);
       }
     },
-    [detailInfo, switchMcpStatus, t],
+    [detailInfo, switchMcpStatus],
   );
 
   const showOauth = useMemo(
@@ -112,10 +111,9 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
         );
         console.log("[Mcp status change]: update remote config done");
         toast.success(t("mcp.update.success"));
-      } catch (e: any) {
+      } catch {
         setChecked(false);
-        toast.error(e);
-        console.error(e);
+        toast.error(t("mcp.update.fail"));
       }
     },
     [detailInfo, mcpStore, t],

@@ -161,7 +161,7 @@ export const useMcpStore = createPersistStore(
           return true;
         } catch (e) {
           console.error(e);
-          return false;
+          throw e;
         }
       },
 
@@ -255,6 +255,7 @@ export const useMcpStore = createPersistStore(
           getRemoteMcpStatus(name);
         } catch (e) {
           console.error(e);
+          throw e;
         }
       },
 
@@ -301,6 +302,7 @@ export const useMcpStore = createPersistStore(
           }
         } catch (e) {
           console.error(e);
+          throw e;
         }
       },
 
@@ -437,6 +439,7 @@ export const useMcpStore = createPersistStore(
           }
         } catch (e) {
           console.error(e);
+          throw e;
         }
       },
 
@@ -458,6 +461,7 @@ export const useMcpStore = createPersistStore(
           updateMcpStatusList({ name, action: McpAction.Loading }, "delete");
         } catch (e) {
           console.error(e);
+          throw e;
         }
       },
 
