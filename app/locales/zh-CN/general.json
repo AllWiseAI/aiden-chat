@@ -181,7 +181,7 @@
       "title": "VIP 邀请码",
       "count": "你已邀请",
       "max": "最多可邀请",
-      "tip": "被邀请用户在上线后可享受一年免费使用"
+      "tip": "被邀请用户在上线后可享受 2 个月标准计划免费使用"
     },
     "table": {
       "1": "邀请码",
@@ -190,9 +190,9 @@
     },
     "used": "已使用",
     "unused": "可用",
-    "tip": "种子用户在上线后可享受 3 个月免费使用",
-    "text": "注册Aiden立享火爆大模型免费使用权！下载：https://aidenai.info/ 输入邀请码{{inviteCode}} 开启您的Aiden之旅！",
-    "textVip": "注册Aiden立享火爆大模型免费使用权！下载：https://aidenai.info/ 输入专属邀请码{{inviteCode}} 开启您的Aiden之旅！"
+    "tip": "100 次额外调用/被邀请人 · 1 个月标准计划/被邀请人",
+    "text": "注册Aiden立享火爆大模型 1 个月标准计划免费使用权！下载：https://aidenai.info/ 输入邀请码{{inviteCode}} 开启您的Aiden之旅！",
+    "textVip": "注册Aiden立享火爆大模型 2 个月标准计划免费使用权！下载：https://aidenai.info/ 输入专属邀请码{{inviteCode}} 开启您的Aiden之旅！"
   },
   "dialog": {
     "tutorial": "教程",
