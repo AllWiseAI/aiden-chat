@@ -130,7 +130,10 @@ export const useAppConfig = createPersistStore(
           }
         }
       },
-      getModelInfo: (modelName: string): ProviderOption => {
+      getModelInfo: (modelName: string): ProviderOption | undefined => {
+        if (!modelName) {
+          return;
+        }
         const { groupedProviders, models } = get();
         const res = modelName.split(":");
         if (res.length === 2 && Object.keys(groupedProviders).length > 0) {

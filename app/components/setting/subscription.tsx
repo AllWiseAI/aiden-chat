@@ -5,7 +5,7 @@ import { apiGetUserPlan } from "@/app/services";
 import SuccessIcon from "../../icons/success.svg";
 import FailedIcon from "../../icons/close.svg";
 
-type Plan = "starter" | "standard" | "pro";
+type Plan = "free" | "standard" | "pro";
 
 export default function Subscription() {
   const [showPlan, setShowPlan] = useState(false);
@@ -62,18 +62,18 @@ export default function Subscription() {
               ></div>
               <div className="flex flex-col gap-3">
                 <p className="text-[32px] font-light z-1">
-                  {t("subscription.starter.title") + t("subscription.planT")}
+                  {t("subscription.free.title") + t("subscription.planT")}
                 </p>
                 <div className="flex items-end gap-3">
                   <span className="text-[64px] leading-[77px] font-extralight">
-                    {t("subscription.starter.price")}
+                    {t("subscription.free.price")}
                   </span>
                   <span className="text-2xl pb-2">
                     {t("subscription.month")}
                   </span>
                 </div>
                 <p className="text-[15px] whitespace-nowrap font-extralight">
-                  {t("subscription.starter.content")}
+                  {t("subscription.free.content")}
                 </p>
                 {/* <Button className="bg-black h-12 rounded-full px-6 py-2">
                   Current Plan
@@ -90,16 +90,16 @@ export default function Subscription() {
               <div className="flex flex-col gap-4 text-sm">
                 <div className="flex items-center gap-3">
                   <SuccessIcon className="size-6 shrink-0" />
-                  <span>{t("subscription.starter.included.1")}</span>
+                  <span>{t("subscription.free.included.1")}</span>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <SuccessIcon className="size-6 shrink-0" />
-                  <span>{t("subscription.starter.included.2")}</span>
+                  <span>{t("subscription.free.included.2")}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <FailedIcon className="size-6 shrink-0 text-[#4ADE80]" />
-                  <span>{t("subscription.starter.included.3")}</span>
+                  <span>{t("subscription.free.included.3")}</span>
                 </div>
               </div>
             </div>
