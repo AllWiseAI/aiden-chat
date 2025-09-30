@@ -20,7 +20,7 @@ export function GoogleAuth({ type = "signin" }: { type: "signin" | "signup" }) {
   const { t } = useTranslation("auth");
 
   async function pollLoginStatus(session_id: string): Promise<any> {
-    const interval = 5000;
+    const interval = 3000;
 
     while (true) {
       try {
