@@ -32,6 +32,7 @@ export function LoginPage() {
   });
   const [checked, setChecked] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [captchaLoading, setCaptchaLoading] = useState(false);
   const [error, setError] = useState<{
     email: string;
     password: string;
@@ -106,11 +107,13 @@ export function LoginPage() {
   };
 
   const getCaptcha = async () => {
+    setCaptchaLoading(true);
     const res = (await apiGetCaptcha()) as {
       captcha_id: string;
       captcha_image: string;
       expires_at: number;
     };
+    setCaptchaLoading(false);
     const { captcha_id, captcha_image, expires_at } = res;
     setFormData((data) => ({
       ...data,
@@ -240,13 +243,18 @@ export function LoginPage() {
                 onChange={handleChange}
               />
             </div>
-
-            <img
-              src={captcha.captcha_image}
-              alt=""
-              className="w-30 h-10 cursor-pointer border rounded"
-              onClick={getCaptcha}
-            ></img>
+            {captchaLoading ? (
+              <div className="w-30 h-10 border flex-center rounded-sm">
+                <LoadingIcon className="animate-spin size-4" />
+              </div>
+            ) : (
+              <img
+                src={captcha.captcha_image}
+                alt=""
+                className="w-30 h-10 cursor-pointer border rounded"
+                onClick={getCaptcha}
+              ></img>
+            )}
           </div>
           {error.captcha && (
             <span className="text-[10px] text-red-500">{error.captcha}</span>
