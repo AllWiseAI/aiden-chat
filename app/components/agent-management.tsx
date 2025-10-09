@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import AgentList from "./agent-list";
-import PlusIcon from "../icons/plus.svg";
+// import PlusIcon from "../icons/plus.svg";
 import Image from "next/image";
 import Textarea from "./textarea";
 import { EmojiList } from "./emoji-list";
@@ -150,7 +150,9 @@ function AgentEditDialog({
   const handleConfirm = () => {
     const nextAgent = {
       ...newAgent,
-      name: newAgent.name?.trim() ? newAgent.name : "User Agent",
+      name: newAgent.name?.trim()
+        ? newAgent.name
+        : t("settings:agent.defaultName"),
     };
 
     if (item) {
@@ -169,11 +171,11 @@ function AgentEditDialog({
         dismissible={newAgent.source === "default"}
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
-        <DialogTitle className="px-6">Edit Agent</DialogTitle>
+        <DialogTitle className="px-6">{t("dialog.agent.title")}</DialogTitle>
         <div className="flex-1 flex flex-col gap-4 w-full text-sm font-normal scroll-container pl-6 pr-4">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="avatar" className="text-[#6C7275] w-max">
-              Avatar
+              {t("dialog.agent.avatar.title")}
             </Label>
             <div className="flex gap-1.5 h-9">
               <div className="flex-center cursor-default size-9 bg-[#F3F5F7] dark:bg-[#232627] rounded-sm">
@@ -184,17 +186,13 @@ function AgentEditDialog({
                   <Button
                     variant="outline"
                     className={clsx(
-                      "w-55 h-full",
-                      {
-                        "text-main hover:text-[#00AB66] dark:hover:text-[#00D47E]":
-                          openPop,
-                      },
+                      "w-55 h-full dark:hover:bg-[#232627]/50",
                       openPop
-                        ? "border-main dark:border-[#00D47E]"
+                        ? "border-main dark:border-[#00D47E] text-main hover:text-[#00AB66] dark:hover:text-[#00D47E]"
                         : "dark:border-[#232627]",
                     )}
                   >
-                    Change emoji
+                    {t("dialog.agent.avatar.change")}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="p-0 w-max">
@@ -218,10 +216,10 @@ function AgentEditDialog({
               htmlFor="name"
               className="text-[#6C7275] dark:text-[#E8ECEF] w-max"
             >
-              Name
+              {t("dialog.agent.name")}
             </Label>
             {isDefault ? (
-              <div className="leading-7 rounded-sm h-9 px-3 py-1 border border-[#E8ECEF] dark:border-[#232627]">
+              <div className="bg-[#F3F5F7]/50 dark:bg-[#141718]/50 leading-7 rounded-sm h-9 px-3 py-1 border border-[#E8ECEF] dark:border-[#232627]">
                 {newAgent.name}
               </div>
             ) : (
@@ -242,10 +240,10 @@ function AgentEditDialog({
               htmlFor="description"
               className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500"
             >
-              Description
+              {t("dialog.agent.description")}
             </Label>
             {isDefault ? (
-              <div className="rounded-sm max-h-40 overflow-y-auto px-3 py-1 border border-[#E8ECEF] dark:border-[#232627]">
+              <div className="bg-[#F3F5F7]/50 dark:bg-[#141718]/50 rounded-sm max-h-40 overflow-y-auto px-3 py-1 border border-[#E8ECEF] dark:border-[#232627]">
                 {newAgent.description}
               </div>
             ) : (
@@ -267,10 +265,10 @@ function AgentEditDialog({
               htmlFor="prompt"
               className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500"
             >
-              Prompt
+              {t("dialog.agent.prompt")}
             </Label>
             {isDefault ? (
-              <div className="rounded-sm max-h-40 overflow-y-auto px-3 py-1 border border-[#E8ECEF] dark:border-[#232627]">
+              <div className="bg-[#F3F5F7]/50 dark:bg-[#141718]/50 rounded-sm max-h-40 overflow-y-auto px-3 py-1 border border-[#E8ECEF] dark:border-[#232627]">
                 {newAgent.prompt}
               </div>
             ) : (
@@ -292,10 +290,10 @@ function AgentEditDialog({
               htmlFor="type"
               className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500"
             >
-              Type
+              {t("dialog.agent.type")}
             </Label>
             {isDefault ? (
-              <div className="rounded-sm h-9 px-3 py-2 border border-[#E8ECEF] dark:border-[#232627]">
+              <div className="bg-[#F3F5F7]/50 dark:bg-[#141718]/50 rounded-sm h-9 px-3 py-2 border border-[#E8ECEF] dark:border-[#232627]">
                 {newAgent.type}
               </div>
             ) : (
@@ -335,7 +333,7 @@ function AgentEditDialog({
               htmlFor="model"
               className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500"
             >
-              Model
+              {t("dialog.agent.model")}
             </Label>
             <Select
               value={newAgent.model.name}
@@ -414,6 +412,7 @@ function AgentEditDialog({
 export default function AgentManagement() {
   const [showEdit, setShowEdit] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation("settings");
   const [selectedItem, setSelectedItem] = useState<
     AgentItemProps["item"] | null
   >(null);
@@ -433,22 +432,22 @@ export default function AgentManagement() {
     }
   }, [id]);
 
-  const handleAddAgent = () => {
-    setSelectedItem(null);
-    setShowEdit(true);
-  };
+  // const handleAddAgent = () => {
+  //   setSelectedItem(null);
+  //   setShowEdit(true);
+  // };
 
   return (
     <div className="h-full @container">
       <div className="flex justify-between items-center mb-4">
-        <p className="font-medium">Aiden Agent</p>
-        <Button
+        <p className="font-medium">{t("agent.title")}</p>
+        {/* <Button
           onClick={handleAddAgent}
           className="flex items-center gap-2 h-7 bg-[#00AB66]/12 dark:bg-[#00D47E]/6 hover:bg-[#BEF0DD] dark:hover:bg-[#00D47E]/12 text-main text-sm font-normal rounded-sm"
         >
           <PlusIcon className="size-4" />
-          <span>Add Agent</span>
-        </Button>
+          <span>{t("agent.add")}</span>
+        </Button> */}
       </div>
       <AgentList
         onEdit={(agent) => {

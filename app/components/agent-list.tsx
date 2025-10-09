@@ -8,20 +8,45 @@ import { useAppConfig } from "../store";
 import { Agent } from "../typing";
 import { Switch } from "./shadcn/switch";
 import { Button } from "./shadcn/button";
+import { useTranslation } from "react-i18next";
 
 interface AgentItemProps {
   item: Agent;
   onEdit: (item: AgentItemProps["item"]) => void;
 }
+interface UserModel {
+  model: string;
+  provider: string;
+  endpoint: string;
+  apiKey: string | undefined;
+  logo_uri: undefined;
+  display: string;
+}
 
 function AgentItem({ item, onEdit }: AgentItemProps) {
   const theme = useTheme();
-  const modelList = useAppConfig((s) => s.models);
+  const { t } = useTranslation("settings");
+  const models = useAppConfig((s) => s.models);
+  const localProviders = useAppConfig((s) => s.localProviders);
   const isBuiltIn = item.source === "builtIn";
+  const formatLocalModels: UserModel[] = localProviders.flatMap((item) =>
+    item.models.map((model) => ({
+      model: model.value,
+      provider: item.provider,
+      endpoint: item.default_endpoint,
+      apiKey: item.apiKey,
+      logo_uri: undefined,
+      display: model.value,
+    })),
+  );
+
+  const modelList = useMemo(() => {
+    return [...models, ...formatLocalModels];
+  }, [models, formatLocalModels]);
 
   const currentModel = useMemo(() => {
     return modelList.find((model) => model.model === item.model.name);
-  }, [item.model, modelList]);
+  }, [modelList, item.model.name]);
 
   const renderProviderIcon = useCallback(
     (size?: number) => {
@@ -66,7 +91,7 @@ function AgentItem({ item, onEdit }: AgentItemProps) {
             </span>
             {isBuiltIn ? (
               <div className="bg-[#E8ECEF] dark:bg-[#343839] text-[#6C7275] dark:text-[#E8ECEF] rounded-2xl text-xs w-max px-1.5 py-0.5">
-                Default
+                {t("agent.default")}
               </div>
             ) : (
               <Switch />
@@ -86,7 +111,7 @@ function AgentItem({ item, onEdit }: AgentItemProps) {
           onClick={() => onEdit(item)}
           className="h-7 bg-transparent text-main text-sm font-medium border border-main hover:bg-[#00AB66] dark:hover:bg-[#00D47E] hover:text-[#FEFEFE] dark:hover:text-[#101213]"
         >
-          Edit
+          {t("agent.edit")}
         </Button>
       </div>
     </div>

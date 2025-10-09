@@ -138,7 +138,9 @@ export const useAgentStore = createPersistStore(
       },
       updateAgent: (updatedAgent: Agent) => {
         if (updatedAgent.source === "custom") {
-          const agents = get().getAgents();
+          const agents = get()
+            .getAgents()
+            .filter((item) => item.source === "custom");
           set({
             customAgents: agents.map((a) =>
               a.id === updatedAgent.id ? updatedAgent : a,

@@ -110,6 +110,13 @@
     "accountTip": "Enter Account",
     "pwdTip": "Enter Password"
   },
+  "agent": {
+    "title": "Aiden Agent",
+    "default": "Default",
+    "add": "Add Agent",
+    "edit": "Edit",
+    "defaultName": "User Agent"
+  },
   "subscription": {
     "plan": "Plan",
     "planT": "Plan",

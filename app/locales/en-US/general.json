@@ -213,6 +213,18 @@
     "save": "Save",
     "form": {
       "empty": "{{fieldName}} cannot be empty."
+    },
+    "agent": {
+      "title": "Edit Agent",
+      "avatar": {
+        "title": "Avatar",
+        "change": "Change emoji"
+      },
+      "name": "Name",
+      "description": "Description",
+      "prompt": "Prompt",
+      "type": "Type",
+      "model": "Model"
     }
   }
 }

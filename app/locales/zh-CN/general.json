@@ -213,6 +213,18 @@
     "save": "保存",
     "form": {
       "empty": "{{fieldName}} 不能为空"
+    },
+    "agent": {
+      "title": "编辑智能体",
+      "avatar": {
+        "title": "头像",
+        "change": "切换头像"
+      },
+      "name": "名字",
+      "description": "描述",
+      "prompt": "提示词",
+      "type": "类型",
+      "model": "模型"
     }
   }
 }

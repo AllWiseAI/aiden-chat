@@ -110,6 +110,13 @@
     "accountTip": "输入账号",
     "pwdTip": "输入密码"
   },
+  "agent": {
+    "title": "Aiden 智能体",
+    "default": "默认",
+    "add": "添加智能体",
+    "edit": "编辑",
+    "defaultName": "自定义智能体"
+  },
   "subscription": {
     "plan": "订阅计划",
     "planT": "版",

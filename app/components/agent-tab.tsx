@@ -24,8 +24,13 @@ import clsx from "clsx";
 
 function AgentModel({ show, item }: { show: boolean; item: Agent }) {
   const navigate = useNavigate();
-  const modelList = useAppConfig((s) => s.models);
-  const localProviders = useAppConfig((state) => state.localProviders);
+  const [modelList, getModelInfo, setGroupedProviders, localProviders] =
+    useAppConfig((s) => [
+      s.models,
+      s.getModelInfo,
+      s.setGroupedProviders,
+      s.localProviders,
+    ]);
   const updateAgent = useAgentStore((state) => state.updateAgent);
   const [openGroup, setOpenGroup] = useState<string | null>(
     INNER_PROVIDER_NAME,
@@ -80,6 +85,7 @@ function AgentModel({ show, item }: { show: boolean; item: Agent }) {
   });
   useEffect(() => {
     const res = formatProvider(localProviders);
+    setGroupedProviders(res);
     setGroupedLocalProviders(() => ({
       ...{
         [INNER_PROVIDER_NAME]: {
@@ -97,11 +103,21 @@ function AgentModel({ show, item }: { show: boolean; item: Agent }) {
   }, [modelList, localProviders]);
 
   const switchAgentModel = (model: string) => {
-    if (model === item.model) return;
+    if (model === item.model.name) return;
+    const res = getModelInfo(model);
+
     const newAgent = {
       ...item,
-      model,
+      model: {
+        name: res.apiKey
+          ? res.models.find((item) => item.value === model)!.label
+          : model,
+        provider: res.provider,
+        endpoint: res.apiKey ? res.default_endpoint : res.endpoint,
+        apiKey: res.apiKey ?? undefined,
+      },
     };
+    // @ts-ignore
     updateAgent(newAgent);
   };
 
@@ -114,9 +130,15 @@ function AgentModel({ show, item }: { show: boolean; item: Agent }) {
               ([groupLabel, provider]) => {
                 const isOpen = openGroup === groupLabel;
                 const isMulti = item.type === "Multimodal";
-                const models: ModelOption[] = provider.models.filter(
-                  (model) => model.multi_model === isMulti,
-                );
+                // @ts-ignore
+                const models: ModelOption[] = provider.apiKey
+                  ? provider.models.map((model) => ({
+                      model: model.value,
+                      label: model.label,
+                    }))
+                  : provider.models.filter(
+                      (model) => model.multi_model === isMulti,
+                    );
 
                 return (
                   <div key={groupLabel}>
@@ -154,15 +176,16 @@ function AgentModel({ show, item }: { show: boolean; item: Agent }) {
                         <div
                           key={model.value}
                           className="cursor-default hover:bg-[#F3F5F7] dark:hover:bg-[#232627] p-2 h-9 flex items-center justify-between gap-2"
+                          onClick={() => switchAgentModel(model.model)}
                         >
                           <div
                             className="text-sm text-[#141718] dark:text-[#FEFEFE] font-normal truncate max-w-[170px]"
                             title={model.label}
-                            onClick={() => switchAgentModel(model.model)}
                           >
                             {model.label}
                           </div>
-                          {model.model === item.model && (
+                          {(model.model.split(":")[1] ?? model.model) ===
+                            item.model.name && (
                             <AccessIcon className="size-4 text-main" />
                           )}
                         </div>
@@ -194,24 +217,17 @@ function AgentModel({ show, item }: { show: boolean; item: Agent }) {
 export default function AgentTab() {
   const navigate = useNavigate();
   const agents = useAgentStore((state) => state.getAgents());
-  const [hoverId, setHoverId] = useState<string | null>(null);
+
   const [showModel, setShowModel] = useState(false);
 
   return (
     <div className="flex items-center">
       {agents.map((item) => (
-        <HoverCard
-          key={item.id}
-          open={hoverId === item.id}
-          onOpenChange={(open) => setHoverId(open ? item.id : null)}
-        >
+        <HoverCard key={item.id}>
           <HoverCardTrigger asChild>
             <div
               className={clsx(
-                "cursor-default flex-center rounded-full backdrop-blur-lg border hover:border-[#00D47E] dark:hover:border-[#4ADE80] hover:size-10 transition-all delay-100 -mr-2.5 group-hover:mr-2",
-                hoverId === item.id
-                  ? "border-[#00D47E] dark:border-[#4ADE80] size-10"
-                  : "border-[#F2F2F2] dark:border-[#505050] size-8",
+                "cursor-default flex-center rounded-full backdrop-blur-lg border hover:border-[#00D47E] dark:hover:border-[#4ADE80] data-[state=open]:border-[#00D47E] dark:data-[state=open]:border-[#4ADE80] size-8 hover:size-10 data-[state=open]:size-10 transition-all delay-100 -mr-2.5 group-hover:mr-2",
               )}
               style={{
                 boxShadow: `
@@ -252,7 +268,7 @@ export default function AgentTab() {
                     onClick={() => setShowModel(!showModel)}
                     className="text-xs text-[#101213] dark:text-[#E8ECEF]"
                   >
-                    {item.model}
+                    {item.model.name}
                     {showModel ? (
                       <ArrowDownIcon className="size-4" />
                     ) : (

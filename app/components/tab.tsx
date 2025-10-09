@@ -96,7 +96,7 @@ export function Tab() {
               </Button>
             </TooltipTrigger>
             <TooltipContent hasArrow={false}>
-              <span>{t("invite.btn")}</span>
+              <span className="cursor-default">{t("invite.btn")}</span>
             </TooltipContent>
           </Tooltip>
           {isShowUpdate && (
@@ -114,7 +114,7 @@ export function Tab() {
                 </Button>
               </TooltipTrigger>
               <TooltipContent hasArrow={false}>
-                <span>
+                <span className="cursor-default">
                   {isUpdating
                     ? t("settings.update.updating")
                     : t("settings.update.update")}
