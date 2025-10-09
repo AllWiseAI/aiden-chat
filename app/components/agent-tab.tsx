@@ -104,7 +104,7 @@ function AgentModel({ show, item }: { show: boolean; item: Agent }) {
 
   const switchAgentModel = (model: string) => {
     if (model === item.model.name) return;
-    const res = getModelInfo(model);
+    const res = getModelInfo(model)!;
 
     const newAgent = {
       ...item,
@@ -227,7 +227,7 @@ export default function AgentTab() {
           <HoverCardTrigger asChild>
             <div
               className={clsx(
-                "cursor-default flex-center rounded-full backdrop-blur-lg border hover:border-[#00D47E] dark:hover:border-[#4ADE80] data-[state=open]:border-[#00D47E] dark:data-[state=open]:border-[#4ADE80] size-8 hover:size-10 data-[state=open]:size-10 transition-all delay-100 -mr-2.5 group-hover:mr-2",
+                "cursor-default flex-center rounded-full backdrop-blur-lg border hover:border-[#00D47E] dark:hover:border-[#4ADE80] data-[state=open]:border-[#00D47E] dark:data-[state=open]:border-[#00D47E] size-8 hover:size-10 data-[state=open]:size-10 transition-all delay-100 -mr-2.5 group-hover:mr-2",
               )}
               style={{
                 boxShadow: `

@@ -391,3 +391,22 @@ export type GoogleLoginResponse = {
   session_id: string;
   redirect_url: string;
 };
+
+export type Emoji = string;
+export const AgentTypeArr = ["Text", "Multimodal", undefined] as const;
+export type AgentType = (typeof AgentTypeArr)[number];
+export interface Agent {
+  id: string;
+  name: string;
+  avatar: Emoji;
+  source: "builtIn" | "default" | "custom";
+  description: string;
+  prompt: string;
+  type: AgentType;
+  model: {
+    name: string;
+    provider: string;
+    endpoint: string;
+    apiKey: string | undefined;
+  };
+}
