@@ -8,8 +8,8 @@ import LogoTextIcon from "@/app/icons/logo-text.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Path } from "../constant";
-import { GoogleAuth } from "../components/google-auth";
 import { useAuthStore } from "../store";
+import { GoogleAuthButton } from "../components/google-oauth-button";
 import { toast } from "@/app/utils/toast";
 import clsx from "clsx";
 import { shell } from "@tauri-apps/api";
@@ -303,7 +303,7 @@ export function LoginPage() {
           {t("signIn.btn")}
         </Button>
       </form>
-      <GoogleAuth type="signin"></GoogleAuth>
+      <GoogleAuthButton type="signin"></GoogleAuthButton>
       <span className="text-xs text-[#777E90]">
         {t("signIn.noAccount")}{" "}
         <Link to={Path.SignUp} className="underline text-main">

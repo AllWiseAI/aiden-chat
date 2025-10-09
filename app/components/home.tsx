@@ -43,6 +43,13 @@ const Chat = dynamic(async () => (await import("./chat")).Chat, {
   loading: () => <Loading noLogo />,
 });
 
+const GoogleOAuth = dynamic(
+  async () => (await import("./google-auth")).GoogleAuth,
+  {
+    loading: () => <Loading noLogo />,
+  },
+);
+
 const Task = dynamic(async () => (await import("./task")).Task, {
   loading: () => <Loading noLogo />,
 });
@@ -233,6 +240,7 @@ export function AppRouter() {
           <Route path="/" element={<Navigate to={Path.Loading} replace />} />
           <Route path={Path.Loading} element={<LoadingPage />} />
           <Route path={Path.Login} element={<LoginPage />} />
+          <Route path={Path.GoogleOAuth} element={<GoogleOAuth />} />
           <Route path={Path.SignUp} element={<SignUpPage />} />
           <Route path={Path.ForgotPassword} element={<ForgotPasswordPage />} />
         </Route>

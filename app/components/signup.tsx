@@ -6,7 +6,7 @@ import LogoIcon from "@/app/icons/logo.svg";
 import LogoTextIcon from "@/app/icons/logo-text.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { GoogleAuth } from "../components/google-auth";
+import { GoogleAuthButton } from "../components/google-oauth-button";
 import { useAuthStore } from "../store";
 import { Password } from "./password";
 import { apiCheckInviteCode, apiGetSignUpCode } from "@/app/services";
@@ -435,7 +435,7 @@ export function SignUpPage() {
             codeErr={codeErr}
             loading={loading}
           />
-          <GoogleAuth type="signup"></GoogleAuth>
+          <GoogleAuthButton type="signup"></GoogleAuthButton>
         </div>
       ) : (
         <div className="gap-12 w-full flex flex-col justify-start items-center">
@@ -446,7 +446,7 @@ export function SignUpPage() {
             onBack={handleBack}
             loading={loading}
           />
-          <GoogleAuth type="signup"></GoogleAuth>
+          <GoogleAuthButton type="signup"></GoogleAuthButton>
         </div>
       )}
     </div>
