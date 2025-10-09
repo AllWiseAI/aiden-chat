@@ -25,6 +25,7 @@ export enum Path {
   Auth = "/auth",
   Artifacts = "/artifacts",
   ForgotPassword = "/forgot-password",
+  GoogleOAuth = "/oauth",
 }
 
 export enum ApiPath {
