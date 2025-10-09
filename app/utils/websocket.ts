@@ -1,4 +1,9 @@
-export type TaskEventType = "task_completed" | "task_tested" | "task_failed";
+export type TaskEventType =
+  | "task_completed"
+  | "task_tested"
+  | "task_failed"
+  | "ping"
+  | "pong";
 
 export type TaskBase = {
   type: TaskEventType;
@@ -46,12 +51,15 @@ class WebSocketManager {
   private listeners: MessageCallback[] = [];
   private reconnectInterval = 3000;
   private baseUrl = "ws://localhost";
-
   private port: number = 6888;
   private retryCount = 0;
   private localToken: string = "";
-
   private readonly maxRetries = 5;
+
+  private pingInterval = 10000;
+  private pongTimeout = 3000;
+  private pingTimer: ReturnType<typeof setInterval> | null = null;
+  private pongTimer: ReturnType<typeof setTimeout> | null = null;
 
   connect(port: number, localToken: string) {
     if (
@@ -70,16 +78,23 @@ class WebSocketManager {
     this.port = port;
     this.localToken = localToken;
     const url = `${this.baseUrl}:${this.port}/ws?token=${this.localToken}`;
-
     this.socket = new WebSocket(url);
 
     this.socket.onopen = () => {
       console.log("[WebSocket] Connected to server.");
+      this.startPing();
     };
 
     this.socket.onmessage = (event) => {
       try {
-        const data = JSON.parse(event.data) as TaskMessage;
+        const data = JSON.parse(event.data) as TaskMessage | { type: string };
+        console.log("[WebSocket] Received message:", data.type);
+        if (data.type === "pong") {
+          console.log("[WebSocket][Heartbeat] Received pong.");
+          this.resetPongTimeout();
+          return;
+        }
+
         if (
           [
             "task_completed",
@@ -87,9 +102,10 @@ class WebSocketManager {
             "task_failed",
             "get_latest_refresh_token",
             "analytics_event",
+            "ping",
           ].includes(data.type)
         ) {
-          this.listeners.forEach((cb) => cb(data));
+          this.listeners.forEach((cb) => cb(data as TaskMessage));
         } else {
           console.warn("[WebSocket] Unknown message type:", data);
         }
@@ -99,6 +115,7 @@ class WebSocketManager {
     };
 
     this.socket.onclose = () => {
+      this.stopPing();
       this.retryCount++;
       console.warn("[WebSocket] Connection closed. Reconnecting in 3s...");
       setTimeout(
@@ -111,6 +128,41 @@ class WebSocketManager {
       console.error("[WebSocket] Error:", err);
       this.socket?.close();
     };
+  }
+
+  private startPing() {
+    this.stopPing();
+    console.log("[WebSocket][Heartbeat] Starting ping interval.");
+
+    this.pingTimer = setInterval(() => {
+      if (this.socket?.readyState === WebSocket.OPEN) {
+        console.log("[WebSocket][Heartbeat] Sending ping...");
+        this.send({ type: "ping" });
+        this.pongTimer = setTimeout(() => {
+          console.warn(
+            "[WebSocket] Pong not received. Closing socket to reconnect.",
+          );
+          this.socket?.close();
+        }, this.pongTimeout);
+      }
+    }, this.pingInterval);
+  }
+
+  private resetPongTimeout() {
+    if (this.pongTimer) {
+      clearTimeout(this.pongTimer);
+      this.pongTimer = null;
+      console.log("[WebSocket][Heartbeat] Pong timeout cleared.");
+    }
+  }
+
+  private stopPing() {
+    if (this.pingTimer) {
+      clearInterval(this.pingTimer);
+      this.pingTimer = null;
+      console.log("[WebSocket][Heartbeat] Ping interval stopped.");
+    }
+    this.resetPongTimeout();
   }
 
   onMessage(cb: MessageCallback) {
@@ -131,13 +183,16 @@ class WebSocketManager {
     try {
       const payload = typeof data === "string" ? data : JSON.stringify(data);
       this.socket.send(payload);
+      console.log("[WebSocket][Heartbeat] Ping sent.");
     } catch (err) {
       console.error("[WebSocket] Failed to send message:", err);
     }
   }
 
   disconnect() {
+    this.stopPing();
     if (this.socket) {
+      console.log("[WebSocket] Disconnecting manually.");
       this.socket.close();
       this.socket = null;
     }

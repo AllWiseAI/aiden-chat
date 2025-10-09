@@ -39,6 +39,7 @@ export async function copyToClipboard(text: string, toastStr?: string) {
     } else {
       await navigator.clipboard.writeText(text);
     }
+    toast.success(toastStr ?? t("copy.success"));
   } catch (error) {
     console.error("Failed to copy text: ", error);
     const textArea = document.createElement("textarea");

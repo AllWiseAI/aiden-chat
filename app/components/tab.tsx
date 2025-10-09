@@ -19,7 +19,7 @@ export function Tab() {
   const location = useLocation();
   const debugMode = useAppConfig().debugMode;
   const currentTaskId = useTaskStore((state) => state.currentTaskId);
-  const { t } = useTranslation("general");
+  const { t, i18n } = useTranslation("general");
   const [tabValue, setTabValue] = useState<"chat" | "task" | "settings">(
     "chat",
   );
@@ -65,21 +65,35 @@ export function Tab() {
           >
             <div className="w-12.5 h-11.5 flex-center flex-col gap-[2px]">
               <ChatIcon />
-              <span className="text-xs">{t("sidebar.chat")}</span>
+              <span
+                className={clsx(
+                  tabValue === "chat" ? "font-bold" : "font-normal",
+                  i18n.language === "en-US" ? "text-[10px]" : "text-xs",
+                )}
+              >
+                {t("sidebar.chat")}
+              </span>
             </div>
           </div>
           <div
             className={clsx(
-              "flex-center flex-col cursor-pointer rounded-lg",
+              "flex-center flex-col cursor-pointer rounded-lg px-1 min-w-min",
               tabValue === "task"
                 ? "text-main bg-[#F3F5F7] dark:bg-[#141718]"
                 : "text-[#6C7275] dark:text-[#E8ECEF]/50 hover:bg-white/80 dark:hover:bg-white/10",
             )}
             onClick={() => navigate(`${Path.Task}/${currentTaskId}`)}
           >
-            <div className="w-12.5 h-11.5 flex-center flex-col gap-[2px]">
+            <div className="h-11.5 flex-center flex-col gap-[2px]">
               <TaskIcon />
-              <span className="text-xs">{t("sidebar.task")}</span>
+              <span
+                className={clsx(
+                  tabValue === "task" ? "font-bold" : "font-normal",
+                  i18n.language === "en-US" ? "text-[10px]" : "text-xs",
+                )}
+              >
+                {t("sidebar.schedule")}
+              </span>
             </div>
           </div>
         </div>

@@ -125,7 +125,14 @@ export function parseSSE(text: string): TParseSSEResult {
   }
 
   if (!choices?.length) {
-    if (
+    if (extra && extra.mcp && extra.mcp.type === McpStepsAction.ToolPeek) {
+      console.log("tool_peek: ", extra.mcp);
+      return {
+        isMcpInfo: true,
+        mcpInfo: extra.mcp,
+        content: `\r\n${extra.mcp.name}\r\n::loading[]\r\n`,
+      };
+    } else if (
       extra &&
       extra.mcp &&
       extra.mcp.type === McpStepsAction.ToolCallConfirm
@@ -152,21 +159,21 @@ export function parseSSE(text: string): TParseSSEResult {
 
   const content = choices?.[0]?.delta?.content || "";
   if (!content || content.length === 0) {
-    const errorMsg = choices?.[0]?.delta?.msg || "";
-    /**
-     * 
-     * "choices": [
-      {
-        "delta": {
-          "msg": "An error seems to have occurred. Please try again later.\nError code: 401 - {'error': 'Invalid JWT token'}",
-          "code": "-1"
-        }
-      }
-    ]
-     */
-    if (errorMsg.includes("code: 401")) {
-      window.location.href = "/#/login";
-    }
+    // const errorMsg = choices?.[0]?.delta?.msg || "";
+    // /**
+    //    *
+    //    * "choices": [
+    //     {
+    //       "delta": {
+    //         "msg": "An error seems to have occurred. Please try again later.\nError code: 401 - {'error': 'Invalid JWT token'}",
+    //         "code": "-1"
+    //       }
+    //     }
+    //   ]
+    //   */
+    // if (errorMsg.includes("code: 401")) {
+    //   window.location.href = "/#/login";
+    // }
 
     return {
       isMcpInfo: false,
@@ -428,7 +435,6 @@ export function streamWithThink(
       remainText = remainText.slice(fetchCount);
       options.onUpdate?.(responseText);
     }
-
     requestAnimationFrame(animateResponseText);
   }
 
@@ -525,6 +531,10 @@ export function streamWithThink(
           }
           if (chunk.mcpInfo) {
             const { type } = chunk.mcpInfo;
+            if (type === McpStepsAction.ToolPeek) {
+              options.onToolPeek(chunk.mcpInfo);
+            }
+
             if (type === McpStepsAction.ToolCallConfirm) {
               // should check if user has approved the MCP
               const userHasApproved = settingStore.getUserMcpApproveStatus(
@@ -566,6 +576,7 @@ export function streamWithThink(
                   console.log("[MCP confirm] User rejected.");
                 }
               }
+
               options.onToolCall({
                 approved,
                 tool_call_id: chunk.mcpInfo.id,
@@ -607,7 +618,6 @@ export function streamWithThink(
           }
         } catch (e) {
           console.error("[Request] parse error", text, msg, e);
-          // Don't throw error for parse failures, just log them
         }
       },
       onclose() {
@@ -621,6 +631,6 @@ export function streamWithThink(
       openWhenHidden: true,
     });
   }
-  console.debug("[ChatAPI] start");
+  console.log("[ChatAPI] start");
   chatApi(chatPath, headers, requestPayload); // call fetchEventSource
 }

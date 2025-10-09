@@ -53,6 +53,7 @@ export interface ToolCallInfo {
   thread_id: string;
   title: string;
   request: string;
+  messages: RequestMessage[];
 }
 
 export interface ChatOptions {
@@ -62,6 +63,7 @@ export interface ChatOptions {
   messages?: RequestMessage[];
   config: LLMConfig;
   onToolCall?: (toolCallInfo: ToolCallInfo) => void;
+  onToolPeek?: (toolPeeknfo: { name: string; type: string }) => void;
   toolCallInfo?: ToolCallInfo;
   onUpdate?: (
     message: string,

@@ -1,11 +1,11 @@
 [package]
-name = "aidenchat"
+name = "aiden"
 version = "0.1.0"
 description = "A cross platform app for LLM ChatBot."
 authors = ["Yidadaa"]
 license = "mit"
 repository = ""
-default-run = "aidenchat"
+default-run = "aiden"
 edition = "2021"
 rust-version = "1.60"
 

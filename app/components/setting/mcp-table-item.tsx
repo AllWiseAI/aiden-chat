@@ -152,8 +152,8 @@ export function McpTableItem({
       try {
         await updateLocalMcpVersion(mcp_id, mcp_key, current_version || "");
         toast.success(t("mcp.update.success"));
-      } catch (e: any) {
-        toast.error(e);
+      } catch {
+        toast.error(t("mcp.update.fail"));
       }
     },
     [item, updateLocalMcpVersion, t],

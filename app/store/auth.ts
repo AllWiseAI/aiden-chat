@@ -6,15 +6,22 @@ import {
   apiLogout,
   apiRefreshToken,
 } from "@/app/services";
-import { TokenType, User, LoginResponse, RefreshResponse } from "../typing";
+import {
+  TokenType,
+  User,
+  LoginResponse,
+  LoginResponseInfo,
+  RefreshResponse,
+} from "../typing";
 import { t } from "i18next";
 
 const DEFAULT_AUTH_STATE = {
   isLogin: false,
   user: {} as User,
   userToken: {} as TokenType,
-  refreshingPromise: null as Promise<string> | null,
 };
+
+let refreshingPromise: Promise<string> | null = null;
 
 export const useAuthStore = createPersistStore(
   {
@@ -112,14 +119,36 @@ export const useAuthStore = createPersistStore(
         setDefaultState();
         return false;
       },
-
+      setLoginInfo: (loginInfo: LoginResponseInfo) => {
+        const {
+          access_token,
+          refresh_token,
+          expires_at: expires,
+          profile_image_url,
+          id,
+          email,
+        } = loginInfo;
+        set({
+          isLogin: true,
+          user: {
+            id,
+            email,
+            profile: profile_image_url,
+          },
+          userToken: {
+            accessToken: access_token,
+            refreshToken: refresh_token,
+            expires,
+          },
+        });
+      },
       login: async (
         email: string,
         password: string,
         captchaId: string,
         captchaAnswer: string,
       ) => {
-        const { setDefaultState } = _get();
+        const { setDefaultState, setLoginInfo } = _get();
         try {
           const response = (await apiLogin({
             email,
@@ -131,26 +160,7 @@ export const useAuthStore = createPersistStore(
           })) as LoginResponse;
 
           if ("access_token" in response) {
-            const {
-              access_token,
-              refresh_token,
-              expires_at: expires,
-              profile_image_url,
-              id,
-            } = response;
-            set({
-              isLogin: true,
-              user: {
-                id,
-                email,
-                profile: profile_image_url,
-              },
-              userToken: {
-                accessToken: access_token,
-                refreshToken: refresh_token,
-                expires,
-              },
-            });
+            setLoginInfo({ ...response, email });
             return true;
           } else if ("error" in response) {
             throw new Error(response.error);
@@ -186,9 +196,8 @@ export const useAuthStore = createPersistStore(
 
       refreshToken: async () => {
         try {
-          const { userToken, refreshingPromise } = get();
-
-          // 如果已经有正在进行的刷新请求，直接返回该 Promise
+          const { userToken } = get();
+          if (!userToken.refreshToken) throw new Error("No refresh token");
           if (refreshingPromise) {
             return refreshingPromise;
           }
@@ -217,15 +226,14 @@ export const useAuthStore = createPersistStore(
                 throw new Error("Token not found in response");
               }
             } finally {
-              // 无论成功还是失败，都要清理 refreshingPromise
-              set({ refreshingPromise: null });
+              refreshingPromise = null;
             }
           })();
 
-          set({ refreshingPromise: newRefreshingPromise });
+          refreshingPromise = newRefreshingPromise;
           return newRefreshingPromise;
         } catch (e: any) {
-          set({ refreshingPromise: null });
+          refreshingPromise = null;
           throw new Error(`Refresh Token Failed: ${e.message}`);
         }
       },

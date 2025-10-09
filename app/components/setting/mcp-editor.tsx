@@ -81,7 +81,12 @@ const McpEditor: React.FC<Props> = ({ setMode }) => {
   const handleSave = async () => {
     setLoading(true);
     try {
-      const parsed = JSON.parse(jsonStr);
+      let parsed;
+      try {
+        parsed = JSON.parse(jsonStr);
+      } catch (parseErr: any) {
+        throw new Error("PARSER_ERROR:" + (parseErr.message || parseErr));
+      }
       const res = await saveEditorConfig(parsed);
       setLoading(false);
       if (res) {
@@ -89,9 +94,12 @@ const McpEditor: React.FC<Props> = ({ setMode }) => {
         setMode("table");
       }
     } catch (e: any) {
-      setError("JSON 解析错误：" + (e.message || e));
-      toast.error(t("mcp.editor.fail"));
-      console.error(e);
+      if (e.message?.startsWith("PARSER_ERROR:")) {
+        const msg = e.message.replace("PARSER_ERROR:", "");
+        setError("JSON 解析错误：" + msg);
+      } else {
+        toast.error(t("mcp.editor.fail"));
+      }
     } finally {
       setLoading(false);
     }

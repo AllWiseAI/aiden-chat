@@ -3,6 +3,7 @@
     "unauthorized": "未授权",
     "netErr": "连接异常",
     "passwordErr": "密码错误",
+    "refreshToken": "服务遇到了问题，请稍后重试！",
     "captchaErr": "验证码错误",
     "timeoutErr": "请求已超时，请稍后重试！",
     "busyErr": "服务器繁忙，请稍后重试！"
@@ -11,8 +12,8 @@
     "chatItemCount": "{{count}} 条对话"
   },
   "sidebar": {
-    "chat": "聊天",
-    "task": "任务"
+    "chat": "会话",
+    "schedule": "定时器"
   },
   "chat": {
     "title": "嗨，我是",
@@ -28,7 +29,6 @@
     },
     "commands": {
       "new": "新建聊天",
-      "newM": "从面具新建聊天",
       "next": "下一个聊天",
       "prev": "上一个聊天",
       "clear": "清除上下文",
@@ -40,7 +40,7 @@
     "typing": "正在输入…",
     "send": "发送",
     "file": {
-      "upload": "上传文件（图片或PDF文件）",
+      "upload": "上传图片或PDF",
       "disabledTips1": "当前模型不支持",
       "disabledTips2": "图片和PDF文件识别",
       "fileTypes": "不支持的文件格式，请选择图片或PDF文件"
@@ -54,7 +54,7 @@
       "fileTypes": "不支持的文件格式，请选择PDF文件"
     },
     "mcp": {
-      "tip": "使用现成的 MCP 工具扩展 Aiden 的能力。",
+      "tip": "配置工具扩展 Aiden 的能力",
       "call": "调用",
       "called": "调用",
       "tool": "工具"
@@ -101,8 +101,8 @@
     "viewMore": "查看更多"
   },
   "home": {
-    "newChat": "新的聊天",
-    "newTask": "新的任务",
+    "newChat": "新建会话",
+    "newTask": "创建定时任务",
     "deleteChat": "确认删除选中的对话？",
     "deleteToast": "已删除会话"
   },
@@ -181,7 +181,7 @@
       "title": "VIP 邀请码",
       "count": "你已邀请",
       "max": "最多可邀请",
-      "tip": "被邀请用户在上线后可享受一年免费使用"
+      "tip": "被邀请用户在上线后可享受 2 个月标准计划免费使用"
     },
     "table": {
       "1": "邀请码",
@@ -190,9 +190,9 @@
     },
     "used": "已使用",
     "unused": "可用",
-    "tip": "种子用户在上线后可享受 3 个月免费使用",
-    "text": "注册Aiden立享火爆大模型免费使用权！下载：https://aidenai.info/ 输入邀请码{{inviteCode}} 开启您的Aiden之旅！",
-    "textVip": "注册Aiden立享火爆大模型免费使用权！下载：https://aidenai.info/ 输入专属邀请码{{inviteCode}} 开启您的Aiden之旅！"
+    "tip": "100 次额外调用/被邀请人 · 1 个月标准计划/被邀请人",
+    "text": "注册Aiden立享火爆大模型 1 个月标准计划免费使用权！下载：https://aidenai.info/ 输入邀请码{{inviteCode}} 开启您的Aiden之旅！",
+    "textVip": "注册Aiden立享火爆大模型 2 个月标准计划免费使用权！下载：https://aidenai.info/ 输入专属邀请码{{inviteCode}} 开启您的Aiden之旅！"
   },
   "dialog": {
     "tutorial": "教程",

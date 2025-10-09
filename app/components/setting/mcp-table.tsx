@@ -69,8 +69,7 @@ function ServerTable({
     try {
       await removeMcpItem(mcp_key);
       toast.success(t("mcp.delete.success"));
-    } catch (e) {
-      console.error(e);
+    } catch {
       toast.error(t("mcp.delete.fail"));
     }
   };
@@ -125,14 +124,18 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
   const [currentMcpName, setCurrentMcpName] = useState<string>("");
   const handleSettingConfirm = async (update: TSettingInfo) => {
     setShowSettingModal(false);
-    await updateMcpArgsEnvs(currentMcpName, update);
-    toast.success(t("mcp.update.success"));
+    try {
+      await updateMcpArgsEnvs(currentMcpName, update);
+      toast.success(t("mcp.update.success"));
+    } catch {
+      toast.error(t("mcp.update.fail"));
+    }
   };
 
   return (
     <>
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-base font-medium">{t("tabs.mcpManage")}</h2>
+        <h2 className="font-medium">{t("tabs.mcpStore")}</h2>
         <div className="flex items-center gap-2 self-end h-7">
           <Button
             className="h-full bg-[#00AB66]/12 dark:bg-[#00D47E]/6 hover:bg-[#BEF0DD] dark:hover:bg-[#00D47E]/12 text-main border border-[#00D47E]/10 text-sm rounded-sm px-2.5 py-1 gap-1"

@@ -2,14 +2,15 @@
   "error": {
     "unauthorized": "Unauthorized",
     "netErr": "Connection Error",
+    "refreshToken": "Oops! Something went wrong. Please try again later!",
     "passwordErr": "Password Error",
     "captchaErr": "Captcha Error",
     "timeoutErr": "The request has timed out. Please try again later!",
     "busyErr": "The server is busy. Please try again later!"
   },
   "sidebar": {
-    "chat": "Chats",
-    "task": "Tasks"
+    "chat": "Chat",
+    "schedule": "Schedule"
   },
   "chatItem": {
     "chatItemCount": "{{count}} messages"
@@ -28,7 +29,6 @@
     },
     "commands": {
       "new": "Start a new chat",
-      "newM": "Start a new chat with mask",
       "next": "Next Chat",
       "prev": "Previous Chat",
       "clear": "Clear Context",
@@ -40,7 +40,7 @@
     "typing": "Typing…",
     "send": "Send",
     "file": {
-      "upload": "Upload files (Photo & PDF)",
+      "upload": "Upload Photo & PDF",
       "disabledTips1": "The current model does not",
       "disabledTips2": "support image and pdf file recognition.",
       "fileTypes": "The file type is not supported, please select an image or pdf file"
@@ -54,7 +54,7 @@
       "fileTypes": "The file type is not supported, please select a pdf file"
     },
     "mcp": {
-      "tip": "Extend Aiden’s abilities with ready-to-use MCP tools",
+      "tip": "Use tools to extend Aiden's capabilities",
       "call": "Call",
       "called": "Called",
       "tool": "Tool"
@@ -102,7 +102,7 @@
   },
   "home": {
     "newChat": "New Chat",
-    "newTask": "New Task",
+    "newTask": "New Scheduled Task",
     "deleteChat": "Confirm to delete the selected conversation?",
     "deleteToast": "Chat Deleted"
   },
@@ -181,7 +181,7 @@
       "title": "VIP Invitation Code",
       "count": "You have invited",
       "max": "Maxmium",
-      "tip": "Invited users enjoy one year free after launch"
+      "tip": "Invited users enjoy 2-month standard plan for free."
     },
     "table": {
       "1": "Invitation code",
@@ -190,9 +190,9 @@
     },
     "used": "Used",
     "unused": "Unused",
-    "tip": "Seed users enjoy 3-month free after launch",
-    "text": "Register with Aiden and instantly enjoy free access to our powerful AI model! Download: https://aidenai.io/ Enter the invitation code {{inviteCode}} to start your Aiden journey!",
-    "textVip": "Register with Aiden and instantly enjoy free access to our powerful AI model! Download: https://aidenai.io/ Enter your exclusive invitation code {{inviteCode}} to start your Aiden journey!"
+    "tip": "100 Extra Calls per invitee for You · 1-month standard plan for Them",
+    "text": "Register with Aiden and instantly enjoy 1-month standard plan for free! Download: https://aidenai.io/ Enter the invitation code {{inviteCode}} to start your Aiden journey!",
+    "textVip": "Register with Aiden and instantly enjoy 2-month standard plan for free! Download: https://aidenai.io/ Enter your exclusive invitation code {{inviteCode}} to start your Aiden journey!"
   },
   "dialog": {
     "tutorial": "Tutorial",

@@ -2,7 +2,6 @@ import React, {
   Fragment,
   useEffect,
   useState,
-  useMemo,
   useRef,
   Dispatch,
   SetStateAction,
@@ -26,7 +25,6 @@ import {
 } from "../constant";
 
 import { useNavigate, useLocation } from "react-router-dom";
-import { isIOS, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
 import clsx from "clsx";
 
@@ -163,11 +161,6 @@ export function SideBarContainer(props: {
   shouldNarrow: boolean;
   className?: string;
 }) {
-  const isMobileScreen = useMobileScreen();
-  const isIOSMobile = useMemo(
-    () => isIOS() && isMobileScreen,
-    [isMobileScreen],
-  );
   const { children, className, onDragStart, shouldNarrow } = props;
   return (
     <div
@@ -179,14 +172,10 @@ export function SideBarContainer(props: {
         },
         "bg-[#F3F5F7] dark:bg-[#232627]/50",
       )}
-      style={{
-        // #3016 disable transition on ios mobile screen
-        transition: isMobileScreen && isIOSMobile ? "none" : undefined,
-      }}
     >
       {children}
       <div
-        className="absolute w-[2px] h-full top-0 right-0 transition-all ease-in-out duration-300 bg-[#F3F5F7] dark:bg-[#232627]/50 hover:bg-[#00D47E] dark:hover:bg-[#00D47E] cursor-ew-resize"
+        className="absolute h-full top-0 right-0 transition-all ease-in-out duration-300 bg-[#F3F5F7] dark:bg-[#232627]/50 hover:bg-[#00D47E] dark:hover:bg-[#00D47E] cursor-ew-resize"
         onPointerDown={(e) => onDragStart(e as any)}
       ></div>
     </div>
@@ -207,7 +196,7 @@ export function SideBarHeader(props: {
       {!shouldNarrow && (
         <div
           className={clsx(
-            "flex items-center h-15 gap-4 overflow-hidden p-4 dark:border-[#232627] select-none",
+            "flex items-center h-15 gap-4 overflow-hidden p-3 dark:border-[#232627] select-none",
           )}
           data-tauri-drag-region
         >
@@ -258,7 +247,7 @@ export function SideBarBody(props: {
     <>
       {!shouldNarrow && (
         <>
-          <div className="px-4 pb-4">
+          <div className="px-3 pb-4">
             <Button
               variant="ghost"
               className="w-full h-9.5 bg-[#00AB66]/6 hover:bg-[#00AB66]/12 dark:hover:bg-[#00AB66]/12 border border-[#00AB66]/15 text-main flex justify-start items-center gap-2 !px-1.5 py-1.5 rounded-lg"
@@ -280,7 +269,7 @@ export function SideBarBody(props: {
             </Button>
           </div>
           <div className="scroll-container flex-1 min-h-0">
-            <div className="flex flex-col gap-2.5 pl-4 pr-2">{children}</div>
+            <div className="flex flex-col gap-2.5 pl-3 pr-2">{children}</div>
           </div>
         </>
       )}

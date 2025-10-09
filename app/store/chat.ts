@@ -420,6 +420,9 @@ export const useChatStore = createPersistStore(
           onToolCall: (toolCallInfo) => {
             get().onToolCall(toolCallInfo, session);
           },
+          onToolPeek: (toolPeekInfo: { name: string; type: string }) => {
+            get().onToolPeek(toolPeekInfo, session);
+          },
           onUpdate(message, mcpInfo) {
             botMessage.streaming = true;
             if (message) {
@@ -557,10 +560,35 @@ export const useChatStore = createPersistStore(
           },
         });
       },
+      onToolPeek(
+        toolCallInfo: { name: string; type: string },
+        currentSession: ChatSession,
+      ) {
+        const session = currentSession;
+        if (!session) return;
 
-      onToolCall(toolCallInfo: ToolCallInfo, currentSession?: ChatSession) {
-        const session = currentSession ?? get().currentSession();
-        console.log("session in toolcall===", session);
+        const mcpInfo = {
+          title: toolCallInfo.name ?? "",
+          request: "",
+          response: [] as string[],
+        };
+
+        const botMessage: ChatMessage = createMessage({
+          role: "assistant",
+          streaming: true,
+          mcpInfo: mcpInfo,
+        });
+
+        get().updateTargetSession(session, (session) => {
+          session.messages = session.messages.concat([botMessage]);
+        });
+      },
+
+      onToolCall(toolCallInfo: ToolCallInfo, currentSession: ChatSession) {
+        const botMessage =
+          currentSession!.messages[currentSession!.messages.length - 1]!;
+
+        const session = currentSession;
         if (!session) return;
         const modelConfig = session.mask.modelConfig;
         const messageIndex = session.messages.length + 1;
@@ -576,15 +604,15 @@ export const useChatStore = createPersistStore(
           mcpInfo.response = [DEFAULT_USER_DELINETED];
         }
 
-        const botMessage: ChatMessage = createMessage({
-          role: "assistant",
-          streaming: true,
-          mcpInfo: mcpInfo,
+        botMessage.mcpInfo = mcpInfo;
+        botMessage.role = "assistant";
+
+        get().updateTargetSession(session, (session: ChatSession) => {
+          session.messages = session.messages
+            .slice(0, -1)
+            .concat([botMessage!]);
         });
 
-        get().updateTargetSession(session, (session) => {
-          session.messages = session.messages.concat([botMessage]);
-        });
         const api: ClientApi = getClientApi();
         api.llm.toolCall({
           toolCallInfo,
@@ -608,6 +636,9 @@ export const useChatStore = createPersistStore(
           },
           onToolCall(toolCallInfo) {
             get().onToolCall(toolCallInfo, session);
+          },
+          onToolPeek(toolCallInfo) {
+            get().onToolPeek(toolCallInfo, session);
           },
           async onFinish(message, _, mcpInfo) {
             botMessage.streaming = false;

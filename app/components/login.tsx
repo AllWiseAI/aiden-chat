@@ -9,6 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Path } from "../constant";
 import { useAuthStore } from "../store";
+import { GoogleAuthButton } from "../components/google-oauth-button";
 import { toast } from "@/app/utils/toast";
 import clsx from "clsx";
 import { shell } from "@tauri-apps/api";
@@ -140,8 +141,9 @@ export function LoginPage() {
       setError((error) => ({ ...error, email: "" }));
     }
   };
+
   return (
-    <div className="w-full h-full px-6 py-13 bg-white dark:bg-[#141416] mx-auto flex flex-col justify-start items-center gap-12 rounded-2xl">
+    <div className="w-full h-full px-6 py-13 bg-white dark:bg-[#141416] mx-auto flex flex-col justify-start items-center gap-10 rounded-2xl">
       <div className="flex-center flex-col gap-4 text-black dark:text-white">
         <div className="flex items-end gap-2">
           <LogoIcon className="size-7.5 text-[#00D47E]" />
@@ -220,14 +222,14 @@ export function LoginPage() {
             htmlFor="captchaAnswer"
             className="font-normal after:content['*'] after:content-['*'] after:text-red-500 !gap-1 text-sm"
           >
-            Captcha
+            {t("captcha")}
           </Label>
           <div className="flex items-center gap-2">
             <div className="flex-1">
               <Input
                 id="captchaAnswer"
                 type="text"
-                placeholder="Enter captcha"
+                placeholder={t("enterCaptcha")}
                 className={clsx(
                   "w-full h-9 !text-left px-2.5 py-2 rounded-sm text-sm hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]",
                   {
@@ -301,6 +303,7 @@ export function LoginPage() {
           {t("signIn.btn")}
         </Button>
       </form>
+      <GoogleAuthButton type="signin"></GoogleAuthButton>
       <span className="text-xs text-[#777E90]">
         {t("signIn.noAccount")}{" "}
         <Link to={Path.SignUp} className="underline text-main">

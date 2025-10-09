@@ -143,6 +143,7 @@ export type MCPConfig = {
 export enum McpStepsAction {
   ToolCallConfirm = "tool_call_confirm",
   ToolResult = "tool_result",
+  ToolPeek = "tool_peek",
 }
 
 export interface TokenType {
@@ -175,6 +176,31 @@ type RefreshSuccessResponse = {
   token_type: string;
   expires_at: number;
 };
+
+export type GoogleLoginStatusSuccess = {
+  access_token: string;
+  refresh_token: string;
+  token_type: string;
+  expires_at: number;
+  id: number;
+  email: string;
+  profile_image_url: string;
+  status: string;
+};
+
+export type LoginResponseInfo = Omit<
+  GoogleLoginStatusSuccess,
+  "status" | "token_type"
+>;
+
+export type GoogleLoginStatusPendingAndExpired = {
+  status: string;
+  messasge: string;
+};
+
+export type GoogleStatusResponse =
+  | GoogleLoginStatusSuccess
+  | GoogleLoginStatusPendingAndExpired;
 
 type RefreshErrorResponse = {
   error: string;
@@ -359,22 +385,9 @@ export type AccountItem = {
 
 export type OauthAccounts = AccountItem[];
 
-export type Emoji = string;
-export const AgentTypeArr = ["Text", "Multimodal", undefined] as const;
+export type GoogleAuthType = "signin" | "signup";
 
-export type AgentType = (typeof AgentTypeArr)[number];
-export interface Agent {
-  id: string;
-  name: string;
-  avatar: Emoji;
-  source: "builtIn" | "default" | "custom";
-  description: string;
-  prompt: string;
-  type: AgentType;
-  model: {
-    name: string;
-    provider: string;
-    endpoint: string;
-    apiKey: string | undefined;
-  };
-}
+export type GoogleLoginResponse = {
+  session_id: string;
+  redirect_url: string;
+};

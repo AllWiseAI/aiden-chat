@@ -38,7 +38,7 @@ export const DEFAULT_CONFIG = {
   lastUpdate: Date.now(), // timestamp, to merge state
   submitKey: SubmitKey.Enter,
   avatar: "1f603",
-  fontSize: 14,
+  fontSize: 15,
   fontFamily: "",
   theme: Theme.Light as Theme,
   tightBorder: !!config?.isApp,
@@ -130,7 +130,10 @@ export const useAppConfig = createPersistStore(
           }
         }
       },
-      getModelInfo: (modelName: string): ProviderOption => {
+      getModelInfo: (modelName: string): ProviderOption | undefined => {
+        if (!modelName) {
+          return;
+        }
         const { groupedProviders, models } = get();
         const res = modelName.split(":");
         if (res.length === 2 && Object.keys(groupedProviders).length > 0) {
@@ -228,6 +231,6 @@ export const useAppConfig = createPersistStore(
   },
   {
     name: StoreKey.Config,
-    version: 5,
+    version: 6,
   },
 );

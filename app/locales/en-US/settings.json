@@ -2,18 +2,17 @@
   "title": "Settings",
   "tabs": {
     "general": "General",
+    "mcpStore": "MCP Store",
     "agent": "Agent",
-    "mcp": "MCP",
-    "mcpManage": "MCP Management",
     "model": "Model",
     "subscription": "Subscription",
-    "aboutUs": "About us"
+    "aboutUs": "About Us"
   },
   "general": {
     "account": "Account",
     "logout": "Log Out",
     "password": {
-      "change": "Change password",
+      "change": "Change Password",
       "success": {
         "title": "Reset Success",
         "content": "Your password will take effect after a restart.",
@@ -58,16 +57,16 @@
   "model": {
     "viewMore": "View More",
     "add": "Add",
-    "customModel": "Customized Model",
-    "defaultModel": "Default Model",
+    "customModel": "Custom Models",
+    "defaultModel": "Built-in Models",
     "provider": "Provider",
     "model": "Model",
     "apiKey": "API Key",
     "operation": "Operation",
     "noCustomModel": "No custom model",
-    "addModelTitle": "Add customized model",
-    "editModelTitle": "Edit customized model",
-    "deleteModelTitle": "Delete customized model",
+    "addModelTitle": "Add custom model",
+    "editModelTitle": "Edit custom model",
+    "deleteModelTitle": "Delete custom model",
     "deleteModelDescription": "Confirm to delete?",
     "saveSuccess": "Saved successfully.",
     "apiKeyErrorText": "Please enter API Key",
@@ -123,35 +122,51 @@
     "detail": "Details",
     "included": "What's Included :",
     "month": "/month",
-    "starter": {
+    "feature1": "Model Access:",
+    "feature2": "Usage Limits:",
+    "feature3": "Features:",
+    "feature4": "Best for:",
+    "free": {
       "title": "Starter ",
-      "price": "Free",
+      "price": "$0",
       "content": "Starter package with basic services",
-      "included": {
-        "1": "Qwen-235B unlimited use",
-        "2": "Unlimited use of MCP",
-        "3": "Does not support multi-modal related functions"
-      }
+      "feature1Text": "Access to all supported models",
+      "feature2Text": "First 100 model calls free",
+      "feature3Text": {
+        "1": "- Basic model experience",
+        "2": "- Simple Q&A and conversations",
+        "3": "- Small-scale content generation (short texts, images, summaries, translations, etc.)"
+      },
+      "feature4Text": "New users, casual learners, occasional personal use"
     },
     "standard": {
       "title": "Standard ",
-      "price": "$19",
+      "price": "$9.9",
       "content": "Giving advanced services",
-      "included": {
-        "1": "Access all function of Free Plan",
-        "2": "Unlimited use on all Aiden Access models (most models)",
-        "3": "Unlimited use of multi-modal related functions"
-      }
+      "feature1Text": "Access to all supported models",
+      "feature2Text": "Up to ",
+      "feature2Amount": "100  calls/day",
+      "feature3Text": {
+        "1": "- Support for long-form text, image generation, and advanced conversations",
+        "2": "- Support for image / file parsing",
+        "3": "- Faster responses with reduced queueing compared to the Free plan"
+      },
+      "feature4Text": "Creators, students, freelancers, light professional users"
     },
     "pro": {
       "title": "Pro ",
-      "price": "$199",
+      "price": "$99",
       "content": "Ultimalt Solutions",
-      "included": {
-        "1": "Access all functions",
-        "2": "More advanced models are unlimited",
-        "3": "Priority response in case of congestion"
-      }
+      "feature1Text": "Access to all supported models",
+      "feature2Text": "Up to ",
+      "feature2Amount": "2,000  calls/day",
+      "feature3Text": {
+        "1": "- Unlimited processing for very large tasks (long documents, research projects, full codebases, etc.)",
+        "2": "- Dedicated fast channels with priority execution and lower latency",
+        "3": "- Stable & reliable performance guarantees",
+        "4": "- Dedicated customer service with priority response and issue tracking"
+      },
+      "feature4Text": "Creators, students, freelancers, light professional users"
     },
     "provider": "Provider",
     "account": "Account",
@@ -164,6 +179,7 @@
     "contact": "Contact us:",
     "updating": "Updating...",
     "update": "Update to latest version",
+    "community": "Community",
     "export": "Export log",
     "terms": "User Agreement",
     "privacy": "Privacy Policy"

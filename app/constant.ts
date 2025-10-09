@@ -25,6 +25,7 @@ export enum Path {
   Auth = "/auth",
   Artifacts = "/artifacts",
   ForgotPassword = "/forgot-password",
+  GoogleOAuth = "/oauth",
 }
 
 export enum ApiPath {
@@ -63,7 +64,7 @@ export const ACCESS_CODE_PREFIX = "nk-";
 export const LAST_INPUT_KEY = "last-input";
 export const UNFINISHED_INPUT = (id: string) => "unfinished-input-" + id;
 
-export const STORAGE_KEY = "aidenchat-storage";
+export const STORAGE_KEY = "aiden-storage";
 
 // TODO: temporary set to 2 minutes, will be changed to 10 seconds in the future
 export const REQUEST_TIMEOUT_MS = 120000;
@@ -87,21 +88,25 @@ export const DEFAULT_USER_DELINETED = "User declined the tool call.";
 export const INNER_PROVIDER_NAME = "Built-in";
 
 export const ALLOW_TOOL_LIST = [
-  "host_current_time",
-  "host_get_timer",
-  "host_list_timers",
+  "browser_*",
+  "convert_to_markdown",
+  "excel_*",
+  "fetch",
+  "get_*",
+  "generate_*_chart",
+  "host_*_task",
+  "host_*_tasks",
+  "host_*_timer",
+  "host_*_timers",
+  "host_*_time",
+  "host_get_terminal_info",
   "host_weekday",
   "host_days_in_month",
-  "host_convert_time",
   "host_glob",
   "host_grep",
   "host_read",
   "host_ls",
-  "host_get_terminal_info",
-  "tavily_web_search",
-  "tavily_answer_search",
-  "tavily_news_search",
+  "perplexity_*",
   "sequentialthinking",
-  "perplexity_research",
-  "browser_*",
+  "tavily_*",
 ];

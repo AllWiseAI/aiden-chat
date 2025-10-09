@@ -324,7 +324,7 @@ function TaskRecords({ currentTask }: { currentTask: TaskType }) {
               modelInfo={currentTask.modelInfo!}
               taskInfo={item}
               title={formatDateToReadableString(
-                item.next_run_at || item.completed_at || item.created_at,
+                item.next_run_at || item.created_at,
               )}
             />
           ))}
@@ -452,6 +452,7 @@ export function Task() {
     if (!currentTask) return;
     setModel(model);
     const modelInfo = getModelInfo(model);
+    if (!modelInfo) return;
     const res = await switchTaskModel(currentTask.id, modelInfo);
     const { code } = res;
     if (code === 0) {

@@ -2,57 +2,80 @@ import { initLocalToken } from "../utils/fetch";
 import { useMcpStore } from "../store/mcp";
 import { useSettingStore } from "../store/setting";
 import { useAppConfig } from "../store/config";
-import { showNotification } from "../utils/notification";
-import {
-  TaskFailed,
-  websocketManager,
-  TaskCompletedOrTested,
-} from "../utils/websocket";
-import { getHeaders } from "../utils/fetch";
-import { track, EventName } from "../utils/analysis";
+import { useAuthStore } from "../store/auth";
 import { useAgentStore } from "../store";
+import { track } from "../utils/analysis";
 
-const titleMap = {
-  task_completed: "Task Completed",
-  task_failed: "Task Failed",
-  task_tested: "Task Tested",
-  get_latest_refresh_token: "Get Latest Refresh Token",
-  analytics_event: "Analytics Event",
-};
 let websocketInitialized = false;
+const REFRESH_INTERVAL = 2 * 60 * 1000;
 
-const initWebsocket = () => {
+const initWebsocketWorker = async () => {
+  console.log("[Main][Websocket] init websocket worker");
   if (websocketInitialized) {
-    console.warn("WebSocket already initialized, skipping.");
+    console.warn("[Main][Websocket] WebSocket already initialized, skipping.");
     return;
   }
-  websocketInitialized = true;
-  websocketManager.clearListeners();
+  const wsWorker = new Worker(new URL("../ws.worker.ts", import.meta.url), {
+    type: "module",
+  });
+
   const port = useAppConfig.getState().hostServerPort;
   const localToken = useAppConfig.getState().localToken;
-  websocketManager.connect(port, localToken);
-  websocketManager.onMessage(async (msg) => {
-    if (msg.type === "get_latest_refresh_token") {
-      console.log("[websocket] get_latest_refresh_token", msg);
-      const headers = await getHeaders({ aiden: true });
-      websocketManager.send({
-        type: "update_refresh_token",
-        token: headers["Aiden-Authorization"],
-      });
+  const userToken = useAuthStore.getState().userToken;
+  const refreshToken = useAuthStore.getState().refreshToken;
+
+  async function doRefresh() {
+    try {
+      console.log("[Main][Websocket] Refreshing access token...");
+      const result = await refreshToken();
+      console.log("[Main][Websocket] Refresh token result:", result);
+      if (result) {
+        wsWorker.postMessage({
+          type: "refreshToken",
+          payload: {
+            accessToken: result,
+          },
+        });
+
+        console.log("[Main][Websocket] Token refreshed successfully");
+      } else {
+        console.warn("[Main][Websocket] Invalid refresh result:", result);
+      }
+    } catch (err) {
+      console.error("[Main][Websocket] Failed to refresh token:", err);
     }
-    if (msg.type === "analytics_event") {
-      console.log("[websocket] analytics_event", msg);
-      const { event_name, params } = msg;
-      track(event_name as EventName, params);
-    }
-    if (["task_completed", "task_failed", "task_tested"].includes(msg.type)) {
-      console.log("[websocket] task result: ", msg.type);
-      showNotification({
-        title: titleMap[msg.type] ?? msg.type,
-        body: (msg as TaskCompletedOrTested | TaskFailed).task_description,
-      });
-    }
+  }
+
+  doRefresh();
+
+  setInterval(doRefresh, REFRESH_INTERVAL);
+
+  wsWorker.postMessage({
+    type: "connect",
+    payload: {
+      port: port,
+      localToken: localToken,
+      accessToken: userToken.accessToken,
+    },
   });
+
+  wsWorker.onmessage = (e) => {
+    const { type, payload, message } = e.data;
+    if (type === "status") {
+      console.log("[Main][Websocket] status:", message);
+      websocketInitialized = true;
+    }
+
+    if (type === "worker_log") {
+      console.log("[Worker][Log]", payload);
+    }
+
+    if (type === "analytics_event") {
+      console.log("[Main][Websocket] analytics_event:", payload);
+      const { event_name, params } = payload;
+      track(event_name, params);
+    }
+  };
 };
 
 export const appDataInit = async () => {
@@ -60,7 +83,7 @@ export const appDataInit = async () => {
   useMcpStore.getState().init();
   useAppConfig.getState().initModelList();
   useAgentStore.getState().init();
-  initWebsocket();
+  initWebsocketWorker();
   const getRegion = useSettingStore.getState().getRegion;
   getRegion();
 };

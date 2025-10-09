@@ -50,7 +50,19 @@ export function PreCode(props: { children: any }) {
     if (!ref.current) return;
     const mermaidDom = ref.current.querySelector("code.language-mermaid");
     if (mermaidDom) {
-      setMermaidCode((mermaidDom as HTMLElement).innerText);
+      const code = (mermaidDom as HTMLElement).innerText;
+      try {
+        // check mermaid code before render
+        mermaid.parse(code).then((good) => {
+          if (good) {
+            setMermaidCode(code);
+            // hide code after render
+            (mermaidDom as HTMLElement).style.display = "none";
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
     }
   }, 600);
 
@@ -223,7 +235,7 @@ export function Markdown(
     <div
       className="markdown-body"
       style={{
-        fontSize: `${props.fontSize ?? 14}px`,
+        fontSize: `${props.fontSize ?? 15}px`,
         fontFamily: props.fontFamily || "inherit",
       }}
       ref={mdRef}

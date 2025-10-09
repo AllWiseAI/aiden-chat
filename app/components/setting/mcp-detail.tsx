@@ -67,13 +67,12 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
           type: detailInfo.type,
           version: detailInfo.current_version || "",
         });
-        toast.success(t("mcp.update.success"));
       } catch (e: any) {
         toast.error(e);
         setChecked(!enable);
       }
     },
-    [detailInfo, switchMcpStatus, t],
+    [detailInfo, switchMcpStatus],
   );
 
   const showOauth = useMemo(
@@ -112,10 +111,9 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
         );
         console.log("[Mcp status change]: update remote config done");
         toast.success(t("mcp.update.success"));
-      } catch (e: any) {
+      } catch {
         setChecked(false);
-        toast.error(e);
-        console.error(e);
+        toast.error(t("mcp.update.fail"));
       }
     },
     [detailInfo, mcpStore, t],
@@ -172,7 +170,7 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
         <div className="mt-4 text-[#6C7275] text-sm leading-[24px]">
           {renderedDescription}
         </div>
-        {detailInfo.tutorial && (
+        {renderedTutorial && (
           <div className="tutorial mt-6 border-t border-[#E8ECEF80] dark:border-[#2326274D] text-black dark:text-[#FFFFFF] pt-8">
             <Markdown content={renderedTutorial || ""} />
           </div>
