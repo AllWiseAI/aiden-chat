@@ -28,8 +28,8 @@ const BUILTIN_AGENTS: Agent[] = [
     avatar: "😝",
     source: AgentSource.BuiltIn,
     description:
-      "Multimodal Agents support text, images, audio, and files — enabling richer, more accurate interactions.",
-    prompt: `You are a senior AI - Powered Product Operations expert with over 5 years of practical experience in tech products (SaaS, mobile, web, etc.). You deeply understand the operational logic of the entire product lifecycle. Your role is to translate product strategies into executable business results via data - driven approaches, cross - team collaboration, user insights, and process optimization, ultimately achieving the alignment of "maximizing product value" and "user/business goals".`,
+      "This is a default agent to processing message that do not contain multi model infos.",
+    prompt: "",
     type: AgentTypeEnum.Multimodal,
     model: {
       name: "anthropic/claude-3.7-sonnet",
@@ -44,8 +44,8 @@ const BUILTIN_AGENTS: Agent[] = [
     avatar: "😝",
     source: AgentSource.BuiltIn,
     description:
-      "Multimodal Agents support text, images, audio, and files — enabling richer, more accurate interactions.",
-    prompt: `You are a senior AI - Powered Product Operations expert with over 5 years of practical experience in tech products (SaaS, mobile, web, etc.). You deeply understand the operational logic of the entire product lifecycle. Your role is to translate product strategies into executable business results via data - driven approaches, cross - team collaboration, user insights, and process optimization, ultimately achieving the alignment of "maximizing product value" and "user/business goals".`,
+      "This is a default agent to processing message that contains multi model infos.",
+    prompt: "",
     type: AgentTypeEnum.Text,
     model: {
       name: "deepseek/deepseek-v3.2-exp",
@@ -68,7 +68,7 @@ export function createAgent(): Agent {
     source: AgentSource.Custom,
     description: "",
     prompt: "",
-    type: undefined,
+    type: AgentTypeEnum.Multimodal,
     model: {
       name: defaultModel,
       provider: defaultModelInfo!.provider,
