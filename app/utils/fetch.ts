@@ -133,17 +133,18 @@ export const getHeaders = async ({
     headers["Aiden-User-Os"] = osString;
     const localToken = useAppConfig.getState().localToken;
 
-    // 这里summary 后续记得处理
     headers["Host-Authorization"] = localToken;
     if (agent) {
       const agentHeaders = useAgentStore.getState().getAgentsHeader();
       headers = { ...headers, ...agentHeaders };
     }
-    console.log(111112, headers);
+
     if (isSummary) {
-      // modelHeaderInfo = useAppConfig
-      //   .getState()
-      //   .getSummaryModel() as unknown as ProviderOption;
+      const summaryModel = useAppConfig
+        .getState()
+        .getSummaryModel() as unknown as ProviderOption;
+      const { model, provider, endpoint } = summaryModel;
+      headers["Aiden-Text-Model"] = `${model}$${provider}$${endpoint}`;
     }
   }
   return headers;

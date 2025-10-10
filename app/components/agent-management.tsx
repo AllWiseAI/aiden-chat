@@ -32,6 +32,7 @@ import {
   Agent,
   ModelOption,
   ProviderOption,
+  AgentSource,
 } from "../typing";
 import { Theme } from "@/app/store";
 import { useTheme } from "../hooks/use-theme";
@@ -260,31 +261,33 @@ function AgentEditDialog({
               />
             )}
           </div>
-          <div className="flex flex-col gap-1.5">
-            <Label
-              htmlFor="prompt"
-              className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500"
-            >
-              {t("dialog.agent.prompt")}
-            </Label>
-            {isDefault ? (
-              <div className="bg-[#F3F5F7]/50 dark:bg-[#141718]/50 rounded-sm max-h-40 overflow-y-auto px-3 py-1 border border-[#E8ECEF] dark:border-[#232627]">
-                {newAgent.prompt}
-              </div>
-            ) : (
-              <Textarea
-                className="bg-transparent placeholder:text-[#6C7275]/50 dark:placeholder:text-[#E8ECEF]/50 rounded-sm px-3 py-[7.2px] resize-none border border-[#E8ECEF] dark:border-[#232627] focus:border-[#00AB66] dark:focus:border-[#00AB66] hover:border-[#232627]/50 dark:hover:border-white"
-                rows={1}
-                id="prompt"
-                value={newAgent.prompt}
-                onChange={(e) => {
-                  setNewAgent((agent) => {
-                    return { ...agent, prompt: e.target.value };
-                  });
-                }}
-              />
-            )}
-          </div>
+          {newAgent.source !== AgentSource.BuiltIn && (
+            <div className="flex flex-col gap-1.5">
+              <Label
+                htmlFor="prompt"
+                className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500"
+              >
+                {t("dialog.agent.prompt")}
+              </Label>
+              {isDefault ? (
+                <div className="bg-[#F3F5F7]/50 dark:bg-[#141718]/50 rounded-sm max-h-40 overflow-y-auto px-3 py-1 border border-[#E8ECEF] dark:border-[#232627]">
+                  {newAgent.prompt}
+                </div>
+              ) : (
+                <Textarea
+                  className="bg-transparent placeholder:text-[#6C7275]/50 dark:placeholder:text-[#E8ECEF]/50 rounded-sm px-3 py-[7.2px] resize-none border border-[#E8ECEF] dark:border-[#232627] focus:border-[#00AB66] dark:focus:border-[#00AB66] hover:border-[#232627]/50 dark:hover:border-white"
+                  rows={1}
+                  id="prompt"
+                  value={newAgent.prompt}
+                  onChange={(e) => {
+                    setNewAgent((agent) => {
+                      return { ...agent, prompt: e.target.value };
+                    });
+                  }}
+                />
+              )}
+            </div>
+          )}
           <div className="flex flex-col gap-1.5">
             <Label
               htmlFor="type"
@@ -393,7 +396,7 @@ function AgentEditDialog({
             className="flex-1 rounded-sm"
             disabled={
               !newAgent.description ||
-              !newAgent.prompt ||
+              (newAgent.source !== AgentSource.BuiltIn && !newAgent.prompt) ||
               !newAgent.type ||
               !newAgent.model
             }
