@@ -163,19 +163,10 @@ export const useAgentStore = createPersistStore(
                 apiKey: string | undefined;
               };
             };
-            if (
-              userOverride[updatedAgent.id] &&
-              updatedAgent.avatar !== userOverride[updatedAgent.id].avatar
-            ) {
+            if (updatedAgent.avatar) {
               override.avatar = updatedAgent.avatar;
             }
-            if (
-              userOverride[updatedAgent.id] &&
-              updatedAgent.model.name !==
-                (userOverride[updatedAgent.id].model
-                  ? userOverride[updatedAgent.id].model!.name
-                  : undefined)
-            ) {
+            if (updatedAgent.model) {
               override.model = {
                 name: updatedAgent.model.name,
                 provider: updatedAgent.model.provider,
@@ -185,7 +176,7 @@ export const useAgentStore = createPersistStore(
             }
             set({
               userOverride: {
-                ...get().userOverride,
+                ...userOverride,
                 [updatedAgent.id]: {
                   ...get().userOverride[updatedAgent.id],
                   ...override,

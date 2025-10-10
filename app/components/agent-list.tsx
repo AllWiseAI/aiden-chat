@@ -103,7 +103,7 @@ function AgentItem({ item, onEdit }: AgentItemProps) {
         </div>
       </div>
       <div className="flex justify-between items-center">
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 pl-1.5">
           <div className="shrink-0">{renderProviderIcon()}</div>
           <p className="text-sm">{currentModel?.display}</p>
         </div>
