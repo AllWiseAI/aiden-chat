@@ -396,7 +396,7 @@ function AgentEditDialog({
             className="flex-1 rounded-sm"
             disabled={
               !newAgent.description ||
-              !newAgent.prompt ||
+              (newAgent.source !== AgentSource.BuiltIn && !newAgent.prompt) ||
               !newAgent.type ||
               !newAgent.model
             }

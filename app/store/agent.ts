@@ -186,7 +186,10 @@ export const useAgentStore = createPersistStore(
             set({
               userOverride: {
                 ...get().userOverride,
-                [updatedAgent.id]: override,
+                [updatedAgent.id]: {
+                  ...get().userOverride[updatedAgent.id],
+                  ...override,
+                },
               },
             });
           }
