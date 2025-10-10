@@ -216,7 +216,7 @@ function AgentModel({ show, item }: { show: boolean; item: Agent }) {
 export default function AgentTab() {
   const navigate = useNavigate();
   const agents = useAgentStore((state) => state.getAgents());
-
+  const getModelInfo = useAppConfig((s) => s.getModelInfo);
   const [showModel, setShowModel] = useState(false);
 
   return (
@@ -267,7 +267,7 @@ export default function AgentTab() {
                     onClick={() => setShowModel(!showModel)}
                     className="text-xs text-[#101213] dark:text-[#E8ECEF]"
                   >
-                    {item.model.name}
+                    {getModelInfo(item.model.name)!.display}
                     {showModel ? (
                       <ArrowDownIcon className="size-4" />
                     ) : (
