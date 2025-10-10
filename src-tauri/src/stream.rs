@@ -1,6 +1,3 @@
-//
-//
-
 use futures_util::StreamExt;
 use reqwest::header::{HeaderMap, HeaderName};
 use reqwest::Client;
@@ -8,6 +5,7 @@ use std::collections::HashMap;
 use std::error::Error;
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::time::Duration;
+use tauri::Emitter;
 
 static REQUEST_COUNTER: AtomicU32 = AtomicU32::new(0);
 
@@ -28,7 +26,7 @@ pub struct EndPayload {
 #[derive(Clone, serde::Serialize)]
 pub struct ChunkPayload {
     request_id: u32,
-    chunk: bytes::Bytes,
+    chunk: String, // ✅ 改为 String 而不是 bytes
 }
 
 #[tauri::command]
@@ -42,134 +40,119 @@ pub async fn stream_fetch(
     let event_name = "stream-response";
     let request_id = REQUEST_COUNTER.fetch_add(1, Ordering::SeqCst);
 
+    // 构造 header
     let mut _headers = HeaderMap::new();
     for (key, value) in &headers {
-        _headers.insert(key.parse::<HeaderName>().unwrap(), value.parse().unwrap());
+        if let (Ok(name), Ok(val)) = (key.parse::<HeaderName>(), value.parse()) {
+            _headers.insert(name, val);
+        }
     }
 
-    // println!("method: {:?}", method);
-    // println!("url: {:?}", url);
-    // println!("headers: {:?}", headers);
-    // println!("headers: {:?}", _headers);
-
-    let method = method
-        .parse::<reqwest::Method>()
-        .map_err(|err| format!("failed to parse method: {}", err))?;
+    // 构造请求客户端
     let client = Client::builder()
         .default_headers(_headers)
         .redirect(reqwest::redirect::Policy::limited(3))
-        .connect_timeout(Duration::new(3, 0))
-        .no_proxy()
+        .connect_timeout(Duration::new(5, 0))
         .build()
-        .map_err(|err| format!("failed to generate client: {}", err))?;
+        .map_err(|err| format!("failed to create client: {}", err))?;
 
-    let mut request = client.request(
-        method.clone(),
-        url.parse::<reqwest::Url>()
-            .map_err(|err| format!("failed to parse url: {}", err))?,
-    );
+    let method = method
+        .parse::<reqwest::Method>()
+        .map_err(|err| format!("invalid method: {}", err))?;
 
-    if method == reqwest::Method::POST
-        || method == reqwest::Method::PUT
-        || method == reqwest::Method::PATCH
+    let mut request = client
+        .request(method.clone(), &url)
+        .timeout(Duration::from_secs(60));
+
+    if matches!(
+        method,
+        reqwest::Method::POST | reqwest::Method::PUT | reqwest::Method::PATCH
+    ) && !body.is_empty()
     {
-        let body = bytes::Bytes::from(body);
-        // println!("body: {:?}", body);
         request = request.body(body);
     }
 
-    // println!("client: {:?}", client);
-    // println!("request: {:?}", request);
-
-    let response_future = request.send();
-
-    let res = response_future.await;
-    let response = match res {
-        Ok(res) => {
-            // get response and emit to client
-            let mut headers = HashMap::new();
-            for (name, value) in res.headers() {
-                headers.insert(
-                    name.as_str().to_string(),
-                    std::str::from_utf8(value.as_bytes()).unwrap().to_string(),
-                );
-            }
-            let status = res.status().as_u16();
-
-            tauri::async_runtime::spawn(async move {
-                let mut stream = res.bytes_stream();
-
-                while let Some(chunk) = stream.next().await {
-                    match chunk {
-                        Ok(bytes) => {
-                            // println!("chunk: {:?}", bytes);
-                            if let Err(e) = window.emit(
-                                event_name,
-                                ChunkPayload {
-                                    request_id,
-                                    chunk: bytes,
-                                },
-                            ) {
-                                println!("Failed to emit chunk payload: {:?}", e);
-                            }
-                        }
-                        Err(err) => {
-                            println!("Error chunk: {:?}", err);
-                        }
-                    }
-                }
-                if let Err(e) = window.emit(
-                    event_name,
-                    EndPayload {
-                        request_id,
-                        status: 0,
-                    },
-                ) {
-                    println!("Failed to emit end payload: {:?}", e);
-                }
-            });
-
-            StreamResponse {
-                request_id,
-                status,
-                status_text: "OK".to_string(),
-                headers,
-            }
-        }
+    // 发送请求
+    let res = match request.send().await {
+        Ok(res) => res,
         Err(err) => {
-            let error: String = err
-                .source()
-                .map(|e| e.to_string())
-                .unwrap_or_else(|| "Unknown error occurred".to_string());
-            println!("Error response: {:?}", error);
-            tauri::async_runtime::spawn(async move {
-                if let Err(e) = window.emit(
-                    event_name,
-                    ChunkPayload {
-                        request_id,
-                        chunk: error.into(),
-                    },
-                ) {
-                    println!("Failed to emit chunk payload: {:?}", e);
-                }
-                if let Err(e) = window.emit(
-                    event_name,
-                    EndPayload {
-                        request_id,
-                        status: 0,
-                    },
-                ) {
-                    println!("Failed to emit end payload: {:?}", e);
-                }
-            });
-            StreamResponse {
+            let msg = format!("Request failed: {}", err);
+            send_error_event(&window, event_name, request_id, msg.clone()).await;
+            return Ok(StreamResponse {
                 request_id,
                 status: 599,
-                status_text: "Error".to_string(),
+                status_text: "Network Error".into(),
                 headers: HashMap::new(),
-            }
+            });
         }
     };
-    // println!("Response: {:?}", response);
-    Ok(response)
+
+    // 构造响应头信息
+    let mut headers = HashMap::new();
+    for (name, value) in res.headers() {
+        headers.insert(
+            name.as_str().to_string(),
+            value.to_str().unwrap_or("").to_string(),
+        );
+    }
+    let status = res.status().as_u16();
+
+    // 异步处理响应流
+    let mut stream = res.bytes_stream();
+    let window_clone = window.clone();
+    tauri::async_runtime::spawn(async move {
+        while let Some(chunk_result) = stream.next().await {
+            match chunk_result {
+                Ok(bytes) => {
+                    // 尝试转为 UTF-8，否则使用 base64 兜底
+                    let chunk_str = match String::from_utf8(bytes.to_vec()) {
+                        Ok(s) => s,
+                        Err(_) => base64::encode(bytes),
+                    };
+
+                    if let Err(e) = window_clone.emit(
+                        event_name,
+                        ChunkPayload {
+                            request_id,
+                            chunk: chunk_str,
+                        },
+                    ) {
+                        eprintln!("Failed to emit chunk: {:?}", e);
+                    }
+                }
+                Err(e) => {
+                    eprintln!("Stream error: {:?}", e);
+                    break;
+                }
+            }
+        }
+
+        if let Err(e) = window_clone.emit(event_name, EndPayload { request_id, status }) {
+            eprintln!("Failed to emit end payload: {:?}", e);
+        }
+    });
+
+    Ok(StreamResponse {
+        request_id,
+        status,
+        status_text: "OK".into(),
+        headers,
+    })
+}
+
+async fn send_error_event(window: &tauri::Window, event_name: &str, request_id: u32, msg: String) {
+    let _ = window.emit(
+        event_name,
+        ChunkPayload {
+            request_id,
+            chunk: msg.clone(),
+        },
+    );
+    let _ = window.emit(
+        event_name,
+        EndPayload {
+            request_id,
+            status: 0,
+        },
+    );
 }

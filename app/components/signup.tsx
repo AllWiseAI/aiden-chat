@@ -13,11 +13,12 @@ import { apiCheckInviteCode, apiGetSignUpCode } from "@/app/services";
 import { Path } from "../constant";
 import { toast } from "@/app/utils/toast";
 import clsx from "clsx";
-import { shell } from "@tauri-apps/api";
+import {} from "@tauri-apps/api";
 import { getLang } from "../locales";
 import { useTranslation } from "react-i18next";
 import { appDataInit } from "../utils/init";
 import LoadingIcon from "../icons/loading-spinner.svg";
+import * as shell from "@tauri-apps/plugin-shell";
 
 interface FormData {
   email: string;

@@ -1,4 +1,4 @@
-import { Body } from "@tauri-apps/api/http";
+import { Body } from "@tauri-apps/plugin-http";
 import { aidenFetch as fetch, getLocalBaseDomain } from "@/app/utils/fetch";
 import { fetchNoProxy } from "@/app/utils/fetch-no-proxy";
 import { getHeaders } from "@/app/utils/fetch";

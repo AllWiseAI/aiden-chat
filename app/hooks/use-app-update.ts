@@ -3,8 +3,8 @@ import {
   checkUpdate,
   installUpdate,
   onUpdaterEvent,
-} from "@tauri-apps/api/updater";
-import { relaunch } from "@tauri-apps/api/process";
+} from "@tauri-apps/plugin-updater";
+import { relaunch } from "@tauri-apps/plugin-process";
 import { useUpdateStore } from "@/app/store/app-update";
 
 type UpdateStatus =

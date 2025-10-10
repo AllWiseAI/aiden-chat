@@ -3,126 +3,62 @@
   "build": {
     "beforeBuildCommand": "yarn export",
     "beforeDevCommand": "yarn export:dev",
-    "devPath": "http://127.0.0.1:3001",
-    "distDir": "../out",
-    "withGlobalTauri": true
+    "frontendDist": "../out",
+    "devUrl": "http://127.0.0.1:3001"
   },
-  "package": {
-    "productName": "Aiden",
-    "version": "0.1.55"
-  },
-  "tauri": {
-    "allowlist": {
-      "all": false,
-      "shell": {
-        "all": false,
-        "open": ".*"
-      },
-      "dialog": {
-        "all": true,
-        "ask": true,
-        "confirm": true,
-        "message": true,
-        "open": true,
-        "save": true
-      },
-      "clipboard": {
-        "all": true,
-        "writeText": true,
-        "readText": true
-      },
-      "os": {
-        "all": true
-      },
-      "window": {
-        "all": false,
-        "close": true,
-        "hide": true,
-        "maximize": true,
-        "minimize": true,
-        "setIcon": true,
-        "setIgnoreCursorEvents": true,
-        "setSize": true,
-        "setFocus": true,
-        "setPosition": true,
-        "setResizable": true,
-        "show": true,
-        "startDragging": true,
-        "unmaximize": true,
-        "unminimize": true,
-        "center": true
-      },
-      "path": {
-        "all": true
-      },
-      "process": {
-        "relaunch": true
-      },
-      "fs": {
-        "all": true
-      },
-      "notification": {
-        "all": true
-      },
-      "http": {
-        "all": true,
-        "request": true,
-        "scope": [
-          "https://*",
-          "http://*",
-          "https://dev.aidenai.io/auth/:*"
-        ]
-      }
+  "bundle": {
+    "active": true,
+    "category": "DeveloperTool",
+    "copyright": "@2025 Aidenchat All Rights Reserved.",
+    "targets": "all",
+    "externalBin": [],
+    "icon": [
+      "icons/logo.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": ""
     },
-    "bundle": {
-      "active": true,
-      "category": "DeveloperTool",
-      "copyright": "@2025 Aidenchat All Rights Reserved.",
+    "longDescription": "Aiden is an adaptive, user-centric assistant that turns complex tasks into simple, actionable results.",
+    "macOS": {
+      "entitlements": null,
+      "exceptionDomain": "",
+      "frameworks": [],
+      "providerShortName": null,
+      "signingIdentity": null
+    },
+    "resources": [
+      "bin/*",
+      "resources/mcp.config.json",
+      "../node_modules/host_server_*/**/*"
+    ],
+    "shortDescription": "Aiden App",
+    "linux": {
       "deb": {
         "depends": []
-      },
-      "externalBin": [],
-      "icon": [
-        "icons/logo.icns",
-        "icons/icon.ico"
-      ],
-      "identifier": "com.aiden.chat",
-      "longDescription": "Aiden is an adaptive, user-centric assistant that turns complex tasks into simple, actionable results.",
-      "macOS": {
-        "entitlements": null,
-        "exceptionDomain": "",
-        "frameworks": [],
-        "providerShortName": null,
-        "signingIdentity": null
-      },
-      "resources": [
-        "bin/*",
-        "resources/mcp.config.json",
-        "resources/host_server_*/**/*"
-      ],
-      "shortDescription": "Aiden App",
-      "targets": "all",
-      "windows": {
-        "certificateThumbprint": null,
-        "digestAlgorithm": "sha256",
-        "timestampUrl": ""
       }
     },
-    "security": {
-      "csp": null,
-      "dangerousUseHttpScheme": true
-    },
+    "createUpdaterArtifacts": "v1Compatible"
+  },
+  "productName": "Aiden",
+  "mainBinaryName": "Aiden",
+  "version": "0.1.55",
+  "identifier": "com.aiden.chat",
+  "plugins": {
     "updater": {
-      "active": true,
-      "endpoints": [
-        "https://static.aidenai.info/chat/releases/latest.json"
-      ],
-      "dialog": false,
       "windows": {
         "installMode": "passive"
       },
+      "endpoints": [
+        "https://static.aidenai.info/chat/releases/latest.json"
+      ],
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEQ1MkQ3RERCOUU0RUYwOTMKUldTVDhFNmUyMzB0MVE4MjE0SStVWlVpNXN4dTR0REdDQlV2eHBDUzNJUzNsa1pPNTB3TVV5RU4K"
-    },
+    }
+  },
+  "app": {
+    "withGlobalTauri": true,
     "windows": [
       {
         "fullscreen": false,
@@ -131,8 +67,12 @@
         "title": "Aiden",
         "width": 426,
         "hiddenTitle": true,
-        "titleBarStyle": "Overlay"
+        "titleBarStyle": "Overlay",
+        "useHttpsScheme": false
       }
-    ]
+    ],
+    "security": {
+      "csp": null
+    }
   }
 }

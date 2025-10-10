@@ -14,7 +14,7 @@ import {
   EnvItem,
   batchMcpStatusResp,
 } from "@/app/typing";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 import { toast } from "@/app/utils/toast";
 
 export type TemplateItem = { key: string; value: string };

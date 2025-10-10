@@ -20,7 +20,8 @@ pub async fn fetch_no_proxy(options: FetchOptions) -> Result<FetchResponse, Stri
         .build()
         .map_err(|e| e.to_string())?;
 
-    let mut request: reqwest::RequestBuilder = client.request(options.method.parse().unwrap(), &options.url);
+    let mut request: reqwest::RequestBuilder =
+        client.request(options.method.parse().unwrap(), &options.url);
 
     if let Some(headers) = options.headers {
         for (key, value) in headers {

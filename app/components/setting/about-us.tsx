@@ -1,4 +1,4 @@
-import { shell } from "@tauri-apps/api";
+import {} from "@tauri-apps/api";
 import { exportAndDownloadLog } from "../../utils/log";
 import Logo from "../../icons/aiden-logo.svg";
 import config from "@/src-tauri/tauri.conf.json";
@@ -20,6 +20,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/app/components/shadcn/accordion";
+import * as shell from "@tauri-apps/plugin-shell";
 
 function Community() {
   const { t } = useTranslation("settings");

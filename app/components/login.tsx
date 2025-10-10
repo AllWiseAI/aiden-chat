@@ -12,12 +12,13 @@ import { useAuthStore } from "../store";
 import { GoogleAuthButton } from "../components/google-oauth-button";
 import { toast } from "@/app/utils/toast";
 import clsx from "clsx";
-import { shell } from "@tauri-apps/api";
+import {} from "@tauri-apps/api";
 import LoadingIcon from "../icons/loading-spinner.svg";
 import { getLang } from "../locales";
 import { useTranslation } from "react-i18next";
 import { appDataInit } from "../utils/init";
 import { apiGetCaptcha } from "../services";
+import * as shell from "@tauri-apps/plugin-shell";
 
 export function LoginPage() {
   const login = useAuthStore((state) => state.login);

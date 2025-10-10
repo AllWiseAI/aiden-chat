@@ -3,7 +3,7 @@ import { useAuthStore } from "../store";
 import { useTranslation } from "react-i18next";
 import { appDataInit } from "../utils/init";
 import { useNavigate } from "react-router-dom";
-import { shell } from "@tauri-apps/api";
+import {} from "@tauri-apps/api";
 import { Path } from "../constant";
 import { GoogleLoginResponse, GoogleStatusResponse } from "../typing";
 import LogoIcon from "@/app/icons/logo.svg";
@@ -12,6 +12,7 @@ import { Button } from "@/app/components/shadcn/button";
 import LoadingIcon from "@/app/icons/loading-spinner.svg";
 import ReturnIcon from "@/app/icons/return.svg";
 import { useEffect } from "react";
+import * as shell from "@tauri-apps/plugin-shell";
 
 export function GoogleAuth() {
   const { t } = useTranslation("auth");

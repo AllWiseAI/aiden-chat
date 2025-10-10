@@ -1,101 +1,110 @@
 use semver::Version;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
-
 use std::fs;
 use std::path::PathBuf;
-use tauri::{api::path::app_data_dir, AppHandle, Config};
 
-/// eg: ~/Library/Application Support/com.aiden.chat/Config/mcp.config.json
-pub fn get_user_config_path(config: &Config) -> Option<PathBuf> {
-    let mut path: PathBuf = app_data_dir(config)?;
+use tauri::{async_runtime::block_on, AppHandle, Manager};
+// 导入 BaseDirectory
+use tauri::path::BaseDirectory;
+// 导入文件系统插件提供的扩展，但注意它来自 `tauri-plugin-fs` 而非 `tauri`
+use tauri_plugin_fs::FsExt;
+
+// 移除错误的导入：
+// use tauri_plugin_path::{BaseDirectory, PathExt};
+
+/// 获取用户配置路径
+pub fn get_user_config_path(app: &AppHandle) -> Result<PathBuf, String> {
+    // 使用 tauri::path::app_data_dir()
+    let mut path: PathBuf = app
+        .path()
+        .app_data_dir()
+        .ok_or("Failed to get app data dir.")?;
     path.push("Config");
-    std::fs::create_dir_all(&path).ok()?;
+    // std::fs::create_dir_all 是同步操作，这里使用它没问题
+    std::fs::create_dir_all(&path).map_err(|e| e.to_string())?;
     path.push("mcp.config.json");
-    Some(path)
+    Ok(path)
 }
 
-pub fn get_user_config_path_from_app(app: &tauri::AppHandle) -> Option<PathBuf> {
-    let config = app.config();
-    get_user_config_path(&config)
-}
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MCPConfig {
     pub version: String,
     pub syncVersion: String,
-    pub mcpServers: serde_json::Map<String, serde_json::Value>,
-    pub a2aServers: Option<serde_json::Value>,
+    pub mcpServers: Map<String, Value>,
+    pub a2aServers: Option<Value>,
 }
 
-/// 读取配置
+/// 读取配置 (v2版)
 #[tauri::command]
-pub fn read_mcp_config(app: AppHandle) -> Result<MCPConfig, String> {
-    let path = get_user_config_path_from_app(&app).ok_or("配置路径不存在")?;
-    let contents = fs::read_to_string(&path).map_err(|e| e.to_string())?;
-    let config: MCPConfig = serde_json::from_str(&contents).map_err(|e| e.to_string())?;
-    Ok(config)
+pub async fn read_mcp_config(app: AppHandle) -> Result<MCPConfig, String> {
+    let path = get_user_config_path(&app)?;
+    // 使用文件系统插件的异步方法
+    let contents = app
+        .fs()
+        .read_to_string(&path)
+        .await
+        .map_err(|e| e.to_string())?;
+    serde_json::from_str(&contents).map_err(|e| e.to_string())
 }
 
-/// 写入配置
+/// 写入配置 (v2版)
 #[tauri::command]
-pub fn write_mcp_config(app: AppHandle, new_config: MCPConfig) -> Result<(), String> {
-    let path = get_user_config_path_from_app(&app).ok_or("配置路径不存在")?;
+pub async fn write_mcp_config(app: AppHandle, new_config: MCPConfig) -> Result<(), String> {
+    let path = get_user_config_path(&app)?;
     let json_str = serde_json::to_string_pretty(&new_config).map_err(|e| e.to_string())?;
-    fs::write(&path, json_str).map_err(|e| e.to_string())?;
-    Ok(())
+    // 使用文件系统插件的异步方法
+    app.fs()
+        .write(&path, json_str)
+        .await
+        .map_err(|e| e.to_string())
 }
 
-pub fn init_mcp_config(app: &tauri::App) -> Result<(), String> {
-    let config = app.config();
-    let user_config_path =
-        get_user_config_path(&config).ok_or("Failed to get MCP config file path.")?;
+/// 初始化 MCP 配置（tauri v2 版）
+pub async fn init_mcp_config(app: &AppHandle) -> Result<(), String> {
+    let user_config_path = get_user_config_path(app)?;
 
+    // 默认资源文件路径，使用 tauri::path::resolve()
     let default_path: PathBuf = app
-        .path_resolver()
-        .resolve_resource("resources/mcp.config.json")
+        .path()
+        .resolve("resources/mcp.config.json", BaseDirectory::Resource)
         .ok_or("Cannot find default MCP config in resources.")?;
 
-    // 首次安装，用户 config 不存在
-    if !user_config_path.exists() {
-        fs::copy(&default_path, &user_config_path)
+    // 使用文件系统插件的异步方法
+    if !app.fs().exists(&user_config_path).await {
+        app.fs()
+            .copy(&default_path, &user_config_path)
+            .await
             .map_err(|e| format!("Copy MCP config failed: {}", e))?;
         log::info!("MCP config initialized: {:?}", user_config_path);
         return Ok(());
     }
 
-    // 读取默认 config
-    let default_text = fs::read_to_string(&default_path)
+    // 读取默认配置 (异步)
+    let default_text = app
+        .fs()
+        .read_to_string(&default_path)
+        .await
         .map_err(|e| format!("Failed to read default MCP config: {}", e))?;
     let default_json: Value = serde_json::from_str(&default_text)
         .map_err(|e| format!("Invalid JSON in default config: {}", e))?;
 
-    // 读取用户 config
-    let user_text = fs::read_to_string(&user_config_path)
+    // 读取用户配置 (异步)
+    let user_text = app
+        .fs()
+        .read_to_string(&user_config_path)
+        .await
         .map_err(|e| format!("Failed to read user MCP config: {}", e))?;
     let mut user_json: Value = serde_json::from_str(&user_text)
-        .map_err(|e: serde_json::Error| format!("Invalid JSON in user config: {}", e))?;
+        .map_err(|e| format!("Invalid JSON in user config: {}", e))?;
 
-    // ========= Step 1: 强制 syncVersion 同步判断 ============
-    let default_sync_str = default_json
-        .get("syncVersion")
-        .and_then(|v| v.as_str())
-        .unwrap_or("0.0.0");
-    let user_sync_str = user_json
-        .get("syncVersion")
-        .and_then(|v| v.as_str())
-        .unwrap_or("0.0.0");
-
-    let default_sync = Version::parse(default_sync_str).unwrap_or_else(|_| Version::new(0, 0, 0));
-    let user_sync = Version::parse(user_sync_str).unwrap_or_else(|_| Version::new(0, 0, 0));
-
-    log::info!(
-        "MCP config syncVersion: default={}, user={}",
-        default_sync,
-        user_sync
-    );
-
+    // syncVersion 同步判断
+    let default_sync = parse_version(default_json.get("syncVersion"));
+    let user_sync = parse_version(user_json.get("syncVersion"));
     if default_sync > user_sync {
-        fs::copy(&default_path, &user_config_path)
+        app.fs()
+            .copy(&default_path, &user_config_path)
+            .await
             .map_err(|e| format!("Forced sync copy failed: {}", e))?;
         log::info!(
             "MCP config forcibly synced due to syncVersion mismatch: {} -> {}",
@@ -105,33 +114,10 @@ pub fn init_mcp_config(app: &tauri::App) -> Result<(), String> {
         return Ok(());
     }
 
-    // ========= Step 2: 正常 version 增量更新逻辑 ============
-    let default_version_str = default_json
-        .get("version")
-        .and_then(|v| v.as_str())
-        .unwrap_or("");
-    let user_version_str = user_json
-        .get("version")
-        .and_then(|v: &Value| v.as_str())
-        .unwrap_or("");
-
-    log::info!(
-        "MCP config version: default={}, user={}",
-        default_version_str,
-        user_version_str
-    );
-
-    let default_version =
-        Version::parse(default_version_str).unwrap_or_else(|_| Version::new(0, 0, 0));
-    let user_version = Version::parse(user_version_str).unwrap_or_else(|_| Version::new(0, 0, 0));
-
+    // 增量更新逻辑
+    let default_version = parse_version(default_json.get("version"));
+    let user_version = parse_version(user_json.get("version"));
     if default_version > user_version {
-        log::info!(
-            "MCP config update needed: {} -> {}",
-            user_version,
-            default_version
-        );
-
         let mut updated_servers =
             if let Some(user_servers) = user_json.get("mcpServers").and_then(|v| v.as_object()) {
                 user_servers
@@ -158,14 +144,21 @@ pub fn init_mcp_config(app: &tauri::App) -> Result<(), String> {
             user_json["a2aServers"] = default_a2a.clone();
         }
 
-        fs::write(
-            &user_config_path,
-            serde_json::to_string_pretty(&user_json).unwrap(),
-        )
-        .map_err(|e| format!("Failed to write updated MCP config: {}", e))?;
-
+        // 使用文件系统插件的异步方法
+        app.fs()
+            .write(
+                &user_config_path,
+                serde_json::to_string_pretty(&user_json).unwrap(),
+            )
+            .await
+            .map_err(|e| format!("Failed to write updated MCP config: {}", e))?;
         log::info!("MCP config upgraded successfully.");
     }
 
     Ok(())
+}
+
+fn parse_version(value: Option<&Value>) -> Version {
+    let s = value.and_then(|v| v.as_str()).unwrap_or("0.0.0");
+    Version::parse(s).unwrap_or_else(|_| Version::new(0, 0, 0))
 }

@@ -1,12 +1,13 @@
 import { useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import {
-  appWindow,
+  getCurrentWebviewWindow,
   LogicalSize,
   LogicalPosition,
-} from "@tauri-apps/api/window";
+} from "@tauri-apps/api/webviewWindow";
 import { Path } from "../constant";
 import { useSettingStore } from "../store";
+const appWindow = getCurrentWebviewWindow();
 
 export default function WindowSize() {
   const { windowBounds, setWindowBounds } = useSettingStore();
