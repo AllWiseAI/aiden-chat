@@ -393,13 +393,26 @@ export type GoogleLoginResponse = {
 };
 
 export type Emoji = string;
-export const AgentTypeArr = ["Text", "Multimodal", undefined] as const;
+export enum AgentSource {
+  BuiltIn = "builtIn", // builtIn 表示官方内置默认开启项
+  Default = "default", // default 表示官方内置可选是否开启项
+  Custom = "custom", // custom 为用户自添加项
+}
+export enum AgentTypeEnum {
+  Text = "Text",
+  Multimodal = "Multimodal",
+}
+export const AgentTypeArr = [
+  AgentTypeEnum.Text,
+  AgentTypeEnum.Multimodal,
+] as const;
 export type AgentType = (typeof AgentTypeArr)[number];
+
 export interface Agent {
   id: string;
   name: string;
   avatar: Emoji;
-  source: "builtIn" | "default" | "custom";
+  source: AgentSource.BuiltIn | AgentSource.Default | AgentSource.Custom;
   description: string;
   prompt: string;
   type: AgentType;

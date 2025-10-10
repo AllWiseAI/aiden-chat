@@ -1,6 +1,6 @@
 import { StoreKey } from "../constant";
 import { useAppConfig } from "../store";
-import { Agent } from "../typing";
+import { Agent, AgentTypeEnum, AgentSource } from "../typing";
 import { createPersistStore } from "../utils/store";
 import { nanoid } from "nanoid";
 
@@ -26,15 +26,15 @@ const BUILTIN_AGENTS: Agent[] = [
     id: "1",
     name: "Image Agent",
     avatar: "😝",
-    source: "builtIn",
+    source: AgentSource.BuiltIn,
     description:
       "Multimodal Agents support text, images, audio, and files — enabling richer, more accurate interactions.",
     prompt: `You are a senior AI - Powered Product Operations expert with over 5 years of practical experience in tech products (SaaS, mobile, web, etc.). You deeply understand the operational logic of the entire product lifecycle. Your role is to translate product strategies into executable business results via data - driven approaches, cross - team collaboration, user insights, and process optimization, ultimately achieving the alignment of "maximizing product value" and "user/business goals".`,
-    type: "Multimodal",
+    type: AgentTypeEnum.Multimodal,
     model: {
       name: "anthropic/claude-3.7-sonnet",
       provider: "openai",
-      endpoint: "https://dev.aidenai.io/llm/openai",
+      endpoint: "https://prod.aidenai.io/llm/openai",
       apiKey: undefined,
     },
   },
@@ -42,15 +42,15 @@ const BUILTIN_AGENTS: Agent[] = [
     id: "2",
     name: "Text Agent",
     avatar: "😝",
-    source: "builtIn",
+    source: AgentSource.BuiltIn,
     description:
       "Multimodal Agents support text, images, audio, and files — enabling richer, more accurate interactions.",
     prompt: `You are a senior AI - Powered Product Operations expert with over 5 years of practical experience in tech products (SaaS, mobile, web, etc.). You deeply understand the operational logic of the entire product lifecycle. Your role is to translate product strategies into executable business results via data - driven approaches, cross - team collaboration, user insights, and process optimization, ultimately achieving the alignment of "maximizing product value" and "user/business goals".`,
-    type: "Text",
+    type: AgentTypeEnum.Text,
     model: {
-      name: "gpt-4o",
+      name: "deepseek/deepseek-v3.2-exp",
       provider: "openai",
-      endpoint: "https://dev.aidenai.io/llm/openai",
+      endpoint: "https://prod.aidenai.info/llm/openai",
       apiKey: undefined,
     },
   },
@@ -65,14 +65,14 @@ export function createAgent(): Agent {
     id: nanoid(),
     name: "",
     avatar: "😃",
-    source: "custom",
+    source: AgentSource.Custom,
     description: "",
     prompt: "",
     type: undefined,
     model: {
       name: defaultModel,
-      provider: defaultModelInfo.provider,
-      endpoint: defaultModelInfo.endpoint!,
+      provider: defaultModelInfo!.provider,
+      endpoint: defaultModelInfo!.endpoint!,
       apiKey: undefined,
     },
   };
@@ -118,29 +118,31 @@ export const useAgentStore = createPersistStore(
         const agents = get().getAgents();
         // 后续要传用户开启的所有 agent
         const builtInAgent = agents.filter(
-          (agent) => agent.source === "builtIn",
+          (agent) => agent.source === AgentSource.BuiltIn,
         );
-        const textAgent = builtInAgent.find((agent) => agent.type === "Text")!;
-        const MultiAgent = builtInAgent.find(
-          (agent) => agent.type === "Multimodal",
+        const textAgent = builtInAgent.find(
+          (agent) => agent.type === AgentTypeEnum.Text,
+        )!;
+        const multiAgent = builtInAgent.find(
+          (agent) => agent.type === AgentTypeEnum.Multimodal,
         )!;
         headers["Aiden-Text-Model"] = `${textAgent.model.name}$${
           textAgent.model.provider
         }$${textAgent.model.endpoint}${
           textAgent.model.apiKey ? "$" + textAgent.model.apiKey : ""
         }`;
-        headers["Aiden-Multi-Model"] = `${MultiAgent.model.name}$${
-          MultiAgent.model.provider
-        }$${MultiAgent.model.endpoint}${
-          MultiAgent.model.apiKey ? "$" + MultiAgent.model.apiKey : ""
+        headers["Aiden-Multi-Model"] = `${multiAgent.model.name}$${
+          multiAgent.model.provider
+        }$${multiAgent.model.endpoint}${
+          multiAgent.model.apiKey ? "$" + multiAgent.model.apiKey : ""
         }`;
         return headers;
       },
       updateAgent: (updatedAgent: Agent) => {
-        if (updatedAgent.source === "custom") {
+        if (updatedAgent.source === AgentSource.Custom) {
           const agents = get()
             .getAgents()
-            .filter((item) => item.source === "custom");
+            .filter((item) => item.source === AgentSource.Custom);
           set({
             customAgents: agents.map((a) =>
               a.id === updatedAgent.id ? updatedAgent : a,
@@ -200,6 +202,6 @@ export const useAgentStore = createPersistStore(
   },
   {
     name: StoreKey.Agent,
-    version: 0.1,
+    version: 0.2,
   },
 );

@@ -13,7 +13,10 @@ import { Path } from "../constant";
 export function WindowHeader({ children }: { children?: ReactNode }) {
   const { shouldNarrow, toggleSideBar } = useDragSideBar();
   const location = useLocation();
-  const isChat = useMemo(() => location.pathname === Path.Chat, []);
+  const isChat = useMemo(
+    () => location.pathname === Path.Chat,
+    [location.pathname],
+  );
 
   return (
     <div className={clsx("window-header", "h-15")} data-tauri-drag-region>

@@ -38,10 +38,8 @@ const emojiStrArr = [
 ];
 
 export function EmojiList({ value, onChange, className }: EmojiListProps) {
-  console.log(emojiGroups);
   const [selectedGroup, setSelectedGroup] = useState("Smileys & Emotion");
   const handleSelectEmoji = (emoji: Emoji) => {
-    // 将点击事件传给外部组件（父组件通过 setState 接收）
     onChange?.(emoji);
   };
 

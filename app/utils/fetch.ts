@@ -80,10 +80,9 @@ let osString = "";
 // refresh - should refresh token detect
 export const getHeaders = async ({
   aiden = false,
-  // isSummary = false,
+  isSummary = false,
   ignoreHeaders = false,
   refresh = true,
-  // modelInfo,
   agent = false,
 }: HeadersProps) => {
   let headers: Record<string, string> = {};
@@ -133,17 +132,18 @@ export const getHeaders = async ({
     headers["Aiden-User-Lang"] = lang;
     headers["Aiden-User-Os"] = osString;
     const localToken = useAppConfig.getState().localToken;
-    // let modelHeaderInfo = modelInfo;
-    // if (isSummary) {
-    //   modelHeaderInfo = useAppConfig
-    //     .getState()
-    //     .getSummaryModel() as unknown as ProviderOption;
-    // }
+
     // 这里summary 后续记得处理
     headers["Host-Authorization"] = localToken;
     if (agent) {
       const agentHeaders = useAgentStore.getState().getAgentsHeader();
       headers = { ...headers, ...agentHeaders };
+    }
+    console.log(111112, headers);
+    if (isSummary) {
+      // modelHeaderInfo = useAppConfig
+      //   .getState()
+      //   .getSummaryModel() as unknown as ProviderOption;
     }
   }
   return headers;

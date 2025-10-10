@@ -314,13 +314,11 @@ function AgentEditDialog({
                 <SelectContent className="max-h-50 border-[#E8ECEF] dark:border-[#232627]">
                   <SelectGroup className="flex flex-col p-2 gap-3">
                     {AgentTypeArr.map((item) => {
-                      if (item !== undefined) {
-                        return (
-                          <SelectItem key={item} value={item}>
-                            {item}
-                          </SelectItem>
-                        );
-                      }
+                      return (
+                        <SelectItem key={item} value={item}>
+                          {item}
+                        </SelectItem>
+                      );
                     })}
                   </SelectGroup>
                 </SelectContent>

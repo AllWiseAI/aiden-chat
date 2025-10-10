@@ -7,8 +7,7 @@ import {
   HoverCardTrigger,
   HoverCardContent,
 } from "./shadcn/hover-card";
-import { useAppConfig } from "../store";
-import { useAgentStore } from "../store";
+import { useAppConfig, useAgentStore } from "../store";
 import { Path } from "../constant";
 import { Agent } from "../typing";
 import { INNER_PROVIDER_NAME } from "@/app/constant";
