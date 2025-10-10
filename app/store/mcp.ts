@@ -216,7 +216,7 @@ export const useMcpStore = createPersistStore(
             templateInfo.envs.map((item) => [item.key, item.value]),
           );
         }
-        if (templateInfo.templates.length) {
+        if (templateInfo.templates.length || templateInfo.multiArgs.length) {
           newServer.args = replaceTemplate(
             newServer.args,
             templateInfo.templates,
