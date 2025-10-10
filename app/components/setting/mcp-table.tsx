@@ -158,7 +158,7 @@ const McpTable: React.FC<Props> = ({ setMode, setDetail }) => {
         </div>
       </div>
       <div
-        className="overflow-y-auto h-full"
+        className="scroll-container h-full -mr-2"
         style={{ maxHeight: "calc(100% - 80px)" }}
       >
         <ServerTable

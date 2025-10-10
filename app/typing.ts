@@ -236,7 +236,7 @@ export type ProviderOption = {
   itemId: string;
   protocol: string;
   provider: string;
-  default_endpoint: boolean;
+  default_endpoint: string;
   id: number;
   models_path: string;
   logo_uri: null | string;
@@ -391,3 +391,35 @@ export type GoogleLoginResponse = {
   session_id: string;
   redirect_url: string;
 };
+
+export type Emoji = string;
+export enum AgentSource {
+  BuiltIn = "builtIn", // builtIn 表示官方内置默认开启项
+  Default = "default", // default 表示官方内置可选是否开启项
+  Custom = "custom", // custom 为用户自添加项
+}
+export enum AgentTypeEnum {
+  Text = "Text",
+  Multimodal = "Multimodal",
+}
+export const AgentTypeArr = [
+  AgentTypeEnum.Text,
+  AgentTypeEnum.Multimodal,
+] as const;
+export type AgentType = (typeof AgentTypeArr)[number];
+
+export interface Agent {
+  id: string;
+  name: string;
+  avatar: Emoji;
+  source: AgentSource.BuiltIn | AgentSource.Default | AgentSource.Custom;
+  description: string;
+  prompt: string;
+  type: AgentType;
+  model: {
+    name: string;
+    provider: string;
+    endpoint: string;
+    apiKey: string | undefined;
+  };
+}

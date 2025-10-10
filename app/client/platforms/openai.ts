@@ -76,7 +76,7 @@ export class ChatGPTApi implements LLMApi {
     const headers = await getHeaders({
       aiden: true,
       isSummary,
-      modelInfo: options.modelInfo,
+      agent: true,
     });
     try {
       if (shouldStream) {
@@ -131,7 +131,7 @@ export class ChatGPTApi implements LLMApi {
     };
     const headers = await getHeaders({
       aiden: true,
-      modelInfo: options.modelInfo,
+      agent: true,
     });
 
     try {

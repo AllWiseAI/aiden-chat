@@ -4,7 +4,7 @@ import { useAuthStore } from "../store/auth";
 import { isRefreshRequest, getLocalToken } from "../services";
 import { toast } from "@/app/utils/toast";
 import { t } from "i18next";
-import { useAppConfig } from "../store";
+import { useAgentStore, useAppConfig } from "../store";
 import { ProviderOption } from "../typing";
 import { getOSInfo } from "../utils";
 import { getLang } from "../locales";
@@ -71,6 +71,7 @@ type HeadersProps = {
   modelInfo?: ProviderOption;
   ignoreHeaders?: boolean;
   refresh?: boolean;
+  agent?: boolean;
 };
 
 let osString = "";
@@ -82,7 +83,7 @@ export const getHeaders = async ({
   isSummary = false,
   ignoreHeaders = false,
   refresh = true,
-  modelInfo,
+  agent = false,
 }: HeadersProps) => {
   let headers: Record<string, string> = {};
   const lang = getLang();
@@ -131,28 +132,18 @@ export const getHeaders = async ({
     headers["Aiden-User-Lang"] = lang;
     headers["Aiden-User-Os"] = osString;
     const localToken = useAppConfig.getState().localToken;
-    let modelHeaderInfo = modelInfo;
-    if (isSummary) {
-      modelHeaderInfo = useAppConfig
-        .getState()
-        .getSummaryModel() as unknown as ProviderOption;
-    }
-    headers["Host-Authorization"] = localToken;
-    if (modelHeaderInfo) {
-      const endpoint: string = (
-        modelHeaderInfo.apiKey
-          ? modelHeaderInfo.default_endpoint!
-          : modelHeaderInfo.endpoint!
-      ) as string;
-      headers["Aiden-Model-Name"] = modelHeaderInfo?.model ?? "";
-      headers["Aiden-Endpoint"] = endpoint;
-      headers["Aiden-Model-Provider"] = modelHeaderInfo?.provider ?? "";
-      headers["Aiden-Model-Context-Length"] =
-        modelHeaderInfo?.context_length?.toString() ?? "0";
 
-      if (modelHeaderInfo?.apiKey) {
-        headers["Aiden-Model-Api-Key"] = modelHeaderInfo?.apiKey;
-      }
+    // 这里summary 后续记得处理
+    headers["Host-Authorization"] = localToken;
+    if (agent) {
+      const agentHeaders = useAgentStore.getState().getAgentsHeader();
+      headers = { ...headers, ...agentHeaders };
+    }
+    console.log(111112, headers);
+    if (isSummary) {
+      // modelHeaderInfo = useAppConfig
+      //   .getState()
+      //   .getSummaryModel() as unknown as ProviderOption;
     }
   }
   return headers;

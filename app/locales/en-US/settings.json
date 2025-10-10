@@ -3,6 +3,7 @@
   "tabs": {
     "general": "General",
     "mcpStore": "MCP Store",
+    "agent": "Agent",
     "model": "Model",
     "subscription": "Subscription",
     "aboutUs": "About Us"
@@ -107,6 +108,13 @@
     "providerTip": "Select Provider",
     "accountTip": "Enter Account",
     "pwdTip": "Enter Password"
+  },
+  "agent": {
+    "title": "Aiden Agent",
+    "default": "Default",
+    "add": "Add Agent",
+    "edit": "Edit",
+    "defaultName": "User Agent"
   },
   "subscription": {
     "plan": "Plan",

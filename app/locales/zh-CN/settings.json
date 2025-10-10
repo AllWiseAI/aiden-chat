@@ -3,6 +3,7 @@
   "tabs": {
     "general": "通用",
     "mcpStore": "MCP 市场",
+    "agent": "智能体",
     "model": "模型",
     "subscription": "订阅",
     "aboutUs": "关于我们"
@@ -107,6 +108,13 @@
     "providerTip": "选择提供商",
     "accountTip": "输入账号",
     "pwdTip": "输入密码"
+  },
+  "agent": {
+    "title": "Aiden 智能体",
+    "default": "默认",
+    "add": "添加智能体",
+    "edit": "编辑",
+    "defaultName": "自定义智能体"
   },
   "subscription": {
     "plan": "订阅计划",

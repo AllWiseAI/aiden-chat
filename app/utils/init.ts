@@ -3,6 +3,7 @@ import { useMcpStore } from "../store/mcp";
 import { useSettingStore } from "../store/setting";
 import { useAppConfig } from "../store/config";
 import { useAuthStore } from "../store/auth";
+import { useAgentStore } from "../store";
 import { track } from "../utils/analysis";
 
 let websocketInitialized = false;
@@ -81,6 +82,7 @@ export const appDataInit = async () => {
   await initLocalToken();
   useMcpStore.getState().init();
   useAppConfig.getState().initModelList();
+  useAgentStore.getState().init();
   initWebsocketWorker();
   const getRegion = useSettingStore.getState().getRegion;
   getRegion();

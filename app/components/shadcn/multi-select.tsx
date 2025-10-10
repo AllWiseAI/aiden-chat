@@ -95,6 +95,7 @@ export function MultiSelectDropdown({
             key={opt.value}
             checked={checkedItems.includes(opt.value)}
             onCheckedChange={() => toggleChecked(opt.value)}
+            className="hover:bg-[#F3F5F7] dark:hover:bg-[#151717]"
           >
             <div className="flex items-center gap-1">
               <ProviderIcon provider={provider} className="h-4 w-4 shrink-0" />
