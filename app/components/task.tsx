@@ -46,6 +46,7 @@ import {
   AccordionTrigger,
 } from "@/app/components/shadcn/accordion";
 import { Markdown } from "./markdown";
+import { WindowHeader } from "./window-header";
 dayjs.extend(advancedFormat);
 
 interface TaskPanelProps {
@@ -434,6 +435,7 @@ export function Task() {
 
   return (
     <div className="flex flex-col h-screen">
+      <WindowHeader />
       {!currentTask ? (
         <div className="flex-center flex-col flex-1 gap-7.5 -mt-15">
           {theme === Theme.Light ? <ResultLightIcon /> : <ResultDarkIcon />}
@@ -462,7 +464,7 @@ export function Task() {
         </div>
       ) : (
         <div
-          className="flex-1 flex flex-col min-h-0 gap-5 pl-15 pr-13 pt-5 border-t border-[#E8ECEF] dark:border-[#232627]/50 scroll-container"
+          className="flex-1 flex flex-col min-h-0 gap-5 pl-15 pr-13 scroll-container"
           onClick={() => setIsEdit(false)}
         >
           <div className="pb-5 h-max">
