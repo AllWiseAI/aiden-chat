@@ -26,7 +26,9 @@ export function WindowLayout({ header = true }: { header: boolean }) {
       <div className="flex-1 min-w-0 max-w-[calc(100vw-var(--sidebar-width)-68px)]">
         {header && (
           <WindowHeader>
-            <div>{sessions[selectedIndex].topic}</div>
+            <span className="max-w-full line-clamp-1">
+              {sessions[selectedIndex].topic}
+            </span>
           </WindowHeader>
         )}
 
