@@ -19,7 +19,7 @@ import { createPersistStore } from "../utils/store";
 import { estimateTokenLength } from "../utils/token";
 import { ModelConfig, useAppConfig } from "./config";
 import { createEmptyMask, Mask } from "./mask";
-import { taskSessionParams, ProviderOption } from "@/app/typing";
+import { taskSessionParams } from "@/app/typing";
 
 const localStorage = safeLocalStorage();
 
@@ -77,7 +77,6 @@ export interface ChatSession {
   clearContextIndex?: number;
 
   mask: Mask;
-  modelInfo: ProviderOption;
 }
 
 export const defaultTopic = () => t("store.defaultTopic");
@@ -87,8 +86,6 @@ export const BOT_HELLO: ChatMessage = createMessage({
 });
 
 function createEmptySession(id?: string): ChatSession {
-  const config = useAppConfig.getState();
-  const modelInfo = config.getDefaultModel();
   return {
     id: id ? id : nanoid(),
     topic: "",
@@ -103,7 +100,6 @@ function createEmptySession(id?: string): ChatSession {
     lastSummarizeIndex: 0,
 
     mask: createEmptyMask(),
-    modelInfo: modelInfo,
   };
 }
 
@@ -233,7 +229,7 @@ export const useChatStore = createPersistStore(
         });
       },
 
-      newSession(mask?: Mask, modelInfo?: ProviderOption) {
+      newSession(mask?: Mask) {
         const session = createEmptySession();
         if (mask) {
           const config = useAppConfig.getState();
@@ -248,11 +244,6 @@ export const useChatStore = createPersistStore(
           };
           session.topic = mask.name;
         }
-
-        if (modelInfo) {
-          session.modelInfo = modelInfo;
-        }
-
         set((state) => ({
           currentSessionIndex: 0,
           sessions: [session].concat(state.sessions),
@@ -408,7 +399,6 @@ export const useChatStore = createPersistStore(
         // make request
         api.llm.chat({
           chatId: session.id,
-          modelInfo: session.modelInfo,
           messages: sendMessages,
           config: { ...modelConfig, stream: true },
           onToolCall: (toolCallInfo) => {
@@ -611,7 +601,6 @@ export const useChatStore = createPersistStore(
         api.llm.toolCall({
           toolCallInfo,
           chatId: session.id,
-          modelInfo: session.modelInfo,
           config: { ...modelConfig, stream: true },
           onUpdate(message, mcpInfo) {
             botMessage.streaming = true;
