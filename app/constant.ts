@@ -17,6 +17,7 @@ export enum Path {
   Login = "/login",
   Loading = "/loading",
   SignUp = "/signup",
+  Invite = "/invite",
   Chat = "/chat",
   Task = "/task",
   NewTask = "/new-task",

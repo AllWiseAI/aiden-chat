@@ -15,6 +15,7 @@ export default function WindowSize() {
     return (
       pathname === Path.Login ||
       pathname === Path.SignUp ||
+      pathname === Path.Invite ||
       pathname === Path.Loading ||
       pathname === Path.ForgotPassword ||
       pathname === Path.GoogleOAuth

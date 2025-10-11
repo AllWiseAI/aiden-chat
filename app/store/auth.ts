@@ -47,7 +47,6 @@ export const useAuthStore = createPersistStore(
         code: string,
         email: string,
         password: string,
-        inviteCode: string,
         profile: string,
       ) => {
         const { setDefaultState } = _get();
@@ -56,7 +55,6 @@ export const useAuthStore = createPersistStore(
             code,
             email,
             password,
-            inviteCode,
             profile_image_url: profile,
           }).catch((err) => {
             throw new Error(err);
