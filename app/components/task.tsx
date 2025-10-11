@@ -166,7 +166,7 @@ function TaskItem({ title, taskInfo, modelInfo }: TaskItemProps) {
   };
   if (status === TaskAction.Pending || status === TaskAction.Idle) {
     return (
-      <div className="flex justify-between items-center px-4 py-2.5 bg-[#F3F5F7]/50 dark:bg-[#232627]/50 border border-[#E8ECEF] dark:border-[#343839] rounded-xl">
+      <div className="flex justify-between items-center px-4 py-2.5 bg-[#F3F5F7]/50 dark:bg-[#232627]/50 border border-[#E8ECEF] dark:border-[#343839] rounded-lg">
         <div className="w-full flex justify-between items-center gap-2">
           <p className="font-medium">{title}</p>
           {StatusIcon && (
@@ -205,7 +205,7 @@ function TaskItem({ title, taskInfo, modelInfo }: TaskItemProps) {
         </div>
       </AccordionTrigger>
       <AccordionContent className="mt-2.5 flex flex-col gap-2.5 p-0">
-        <div className="bg-[#FEFEFE] dark:bg-[#101213] text-sm rounded-sm p-2.5 max-h-55 overflow-y-auto">
+        <div className="bg-[#FEFEFE] dark:bg-[#101213] text-sm rounded-lg p-2.5 max-h-55 overflow-y-auto">
           {status === TaskAction.Success ? (
             response_data?.length > 0 &&
             response_data.every((item) => item.message?.content === "") ? (

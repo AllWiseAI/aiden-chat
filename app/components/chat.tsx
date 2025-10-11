@@ -677,7 +677,10 @@ function InnerChat() {
                                 !/^\n*$/.test(message.content as string) && (
                                   <ChatMessageItemTab
                                     content={message.content}
-                                    className="absolute bottom-0 invisible group-hover:visible"
+                                    className={clsx(
+                                      "absolute bottom-0 invisible group-hover:visible",
+                                      !isUser && "left-2.5",
+                                    )}
                                   />
                                 )}
                             </div>

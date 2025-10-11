@@ -95,7 +95,9 @@ function AgentEditDialog({
     if (newAgent.type === undefined) return [];
     const isMulti = newAgent.type === "Multimodal";
     return [
-      ...models.filter((item) => item.multi_model === isMulti),
+      ...(isMulti
+        ? models.filter((item) => item.multi_model === true)
+        : models),
       ...formatLocalModels,
     ];
   }, [newAgent.type]);
@@ -164,12 +166,11 @@ function AgentEditDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
-      <div className="absolute top-0 left-0 right-0 w-screen h-screen bg-black/80 dark:bg-[#141718]/75"></div>
+      <div className="fixed inset-0 w-screen h-screen bg-black/80 dark:bg-[#141718]/75"></div>
       <DialogContent
         className="flex flex-col gap-5 items-center max-h-[max(80vh,648px)] px-0"
         aria-describedby={undefined}
         closeIcon={false}
-        dismissible={newAgent.source === "default"}
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <DialogTitle className="px-6">{t("dialog.agent.title")}</DialogTitle>

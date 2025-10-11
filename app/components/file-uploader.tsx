@@ -2,55 +2,20 @@ import React, { useRef, useEffect } from "react";
 import { useFileUpload } from "@/app/hooks/use-file-upload";
 import { Button } from "@/app/components/shadcn/button";
 import FileIcon from "../icons/file.svg";
-import { toast } from "@/app/utils/toast";
 import { useTranslation } from "react-i18next";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/app/components/shadcn/tooltip";
-import { useChatStore } from "../store";
 
 export const FileUploader = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { t } = useTranslation("general");
   const { uploadFile } = useFileUpload();
-  const chatStore = useChatStore();
-  const currentSession = chatStore.currentSession();
-
-  const supportImage = currentSession.modelInfo?.multi_model ?? false;
-  const supportPDF = currentSession.modelInfo?.support_pdf ?? false;
-  const disabled = !supportImage && !supportPDF;
 
   const validateAndUpload = (file: File) => {
     if (!file) return;
-    const validImageExtensions = [
-      ".jpg",
-      ".jpeg",
-      ".png",
-      ".gif",
-      ".webp",
-      ".bmp",
-    ];
-
-    const validPDFExtensions = [".pdf"];
-    const fileName = file.name.toLowerCase();
-    const isImageValid = validImageExtensions.some((ext) =>
-      fileName.endsWith(ext),
-    );
-    const isPDFValid = validPDFExtensions.some((ext) => fileName.endsWith(ext));
-    if (supportImage && !supportPDF && !isImageValid) {
-      toast.error(t("chat.image.fileTypes"));
-      return;
-    }
-    if (supportPDF && !supportImage && !isPDFValid) {
-      toast.error(t("chat.pdf.fileTypes"));
-      return;
-    }
-    if (supportImage && supportPDF && !isImageValid && !isPDFValid) {
-      toast.error(t("chat.file.fileTypes"));
-      return;
-    }
     uploadFile(file);
   };
 
@@ -68,7 +33,6 @@ export const FileUploader = () => {
 
   useEffect(() => {
     const handlePaste = (e: ClipboardEvent) => {
-      if (disabled) return;
       if (!e.clipboardData) return;
 
       const items = Array.from(e.clipboardData.items);
@@ -91,13 +55,12 @@ export const FileUploader = () => {
     return () => {
       document.removeEventListener("paste", handlePaste);
     };
-  }, [disabled]);
+  }, []);
 
-  const renderButton = (disable: boolean) => {
+  const renderButton = () => {
     return (
       <div>
         <Button
-          disabled={disable}
           onClick={handleSelectFile}
           variant="outline"
           className="border border-[#E8ECEF] text-black dark:text-white dark:bg-[#141416] dark:border-[#343839] hover:bg-[#F3F5F7] dark:hover:bg-[#232627] text-sm font-semibold rounded-sm p-2.5 w-9 h-8"
@@ -115,21 +78,10 @@ export const FileUploader = () => {
     );
   };
 
-  const renderUploadImageButton = (disable: boolean) => {
-    if (disable) {
-      return (
-        <Tooltip>
-          <TooltipTrigger asChild>{renderButton(disable)}</TooltipTrigger>
-          <TooltipContent>
-            <p>{t("chat.file.disabledTips1")}</p>
-            <p>{t("chat.file.disabledTips2")}</p>
-          </TooltipContent>
-        </Tooltip>
-      );
-    }
+  const renderUploadImageButton = () => {
     return (
       <Tooltip>
-        <TooltipTrigger asChild>{renderButton(disable)}</TooltipTrigger>
+        <TooltipTrigger asChild>{renderButton()}</TooltipTrigger>
         <TooltipContent>
           <p>{t("chat.file.upload")}</p>
         </TooltipContent>
@@ -137,5 +89,5 @@ export const FileUploader = () => {
     );
   };
 
-  return <div>{renderUploadImageButton(disabled)}</div>;
+  return <div>{renderUploadImageButton()}</div>;
 };
