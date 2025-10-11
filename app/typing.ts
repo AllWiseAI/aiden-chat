@@ -423,7 +423,3 @@ export interface Agent {
     apiKey: string | undefined;
   };
 }
-
-export type TestTaskInfo = {
-  task_id: string;
-};
