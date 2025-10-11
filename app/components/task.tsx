@@ -7,7 +7,6 @@ import {
   TaskAction,
   TaskExecutionRecord,
   TaskTypeEnum,
-  ProviderOption,
 } from "../typing";
 import EditIcon from "../icons/edit.svg";
 import TaskManagement from "./task-management";
@@ -60,7 +59,6 @@ interface TaskPanelProps {
 interface TaskItemProps {
   taskInfo: TaskExecutionRecord;
   title: string;
-  modelInfo: ProviderOption;
 }
 
 function formatDate(date: string): string {
@@ -109,7 +107,7 @@ function formatCustomTime(date: string, hour: number, minute: number): string {
   return `${datePart} ${timePart}`;
 }
 
-function TaskItem({ title, taskInfo, modelInfo }: TaskItemProps) {
+export function TaskItem({ title, taskInfo }: TaskItemProps) {
   const {
     status,
     request_messages,
@@ -153,7 +151,6 @@ function TaskItem({ title, taskInfo, modelInfo }: TaskItemProps) {
     if (!isExist) {
       chatStore.newTaskSession({
         taskId: singleKey,
-        modelInfo: modelInfo,
         // @ts-ignore
         requestData: request_messages,
         // @ts-ignore
@@ -233,7 +230,7 @@ function TaskItem({ title, taskInfo, modelInfo }: TaskItemProps) {
   );
 }
 
-function formatDateToReadableString(isoString: string) {
+export function formatDateToReadableString(isoString: string) {
   const date = dayjs(isoString);
   const hour = date.hour();
   const minute = date.minute();
@@ -321,7 +318,6 @@ function TaskRecords({ currentTask }: { currentTask: TaskType }) {
           {recordList.map((item) => (
             <TaskItem
               key={item.id}
-              modelInfo={currentTask.modelInfo!}
               taskInfo={item}
               title={formatDateToReadableString(
                 item.next_run_at || item.created_at,

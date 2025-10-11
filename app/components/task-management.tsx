@@ -19,7 +19,13 @@ import {
 import { Calendar } from "./shadcn/calendar";
 import TimeSelect from "./time-select";
 import { useNavigate } from "react-router-dom";
-import { TaskTypeEnum, Task, TaskPayload, TaskFormType } from "../typing";
+import {
+  TaskTypeEnum,
+  Task,
+  TaskPayload,
+  TaskFormType,
+  TaskExecutionRecord,
+} from "../typing";
 import { useAppConfig, useTaskStore } from "../store";
 import dayjs from "dayjs";
 import clsx from "clsx";
@@ -33,6 +39,8 @@ import { toast } from "@/app/utils/toast";
 import { getLang } from "../locales";
 import { useTranslation } from "react-i18next";
 import LoadingIcon from "../icons/loading-spinner.svg";
+import { TaskItem, formatDateToReadableString } from "./task";
+import { Accordion } from "@/app/components/shadcn/accordion";
 
 interface NotificationProps {
   checked: boolean;
@@ -85,7 +93,8 @@ export default function TaskManagement({
   model,
 }: TaskManagementProps) {
   const { t } = useTranslation("general");
-  const [testTaskId, setTestTaskId] = useState<string>("");
+  const [activeKey, setActiveKey] = useState("");
+  const [testTaskList, setTestTaskList] = useState<TaskExecutionRecord[]>([]);
   const [newTask, setNewTask] = useState<TaskFormType>({
     name: "",
     date: "",
@@ -103,6 +112,12 @@ export default function TaskManagement({
   const [timeErr, setTimeErr] = useState<string>("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const setSelectedId = useTaskStore((state) => state.setCurrentTaskId);
+
+  useEffect(() => {
+    if (testTaskList.length && testTaskList.length <= 5) {
+      setActiveKey(testTaskList[0].task_id + "-" + testTaskList[0].id);
+    } else setActiveKey("");
+  }, [testTaskList]);
 
   useEffect(() => {
     if (task) {
@@ -174,8 +189,6 @@ export default function TaskManagement({
     const { name, date, hour, minute, type, notification, details } = newTask;
 
     const payload: TaskPayload = {
-      // 编辑的时候用 task.id
-      task_id: task?.id || testTaskId,
       description: details,
       repeat_every: 1,
       repeat_unit: type,
@@ -190,10 +203,7 @@ export default function TaskManagement({
     setIsTestLoading(false);
     const { code, message, data } = res;
     if (code === 0) {
-      const { task_id } = data || {};
-      if (task_id) {
-        setTestTaskId(task_id);
-      }
+      setTestTaskList([data]); // only show the latest record
       toast.success(t("task.testSuccess"));
     } else {
       toast.error(message || t("task.testFailed"));
@@ -204,7 +214,6 @@ export default function TaskManagement({
     try {
       const { name, date, hour, minute, type, notification, details } = newTask;
       const payload: TaskPayload = {
-        task_id: testTaskId,
         description: details,
         repeat_every: 1,
         repeat_unit: type,
@@ -262,180 +271,202 @@ export default function TaskManagement({
     }
   };
   return (
-    <div className="flex flex-col gap-2.5 text-sm bg-[#F3F5F7] dark:bg-[#232627]/50 px-2.5 py-2 border border-[#E8ECEF] dark:border-[#343839] rounded-sm">
-      <div className="flex flex-col gap-1.5">
-        <span className="text-[#6C7275]">{t("task.name")}</span>
-        <Input
-          className="h-10 !text-left rounded-sm bg-white dark:bg-[#101213] border border-white dark:border-[#101213] hover:border-[#232627]/50 dark:hover:border-white focus:border-[#00AB66] dark:focus:border-[#00D47E] p-2.5"
-          placeholder={t("task.enterTaskName")}
-          value={newTask.name}
-          onChange={(e) =>
-            setNewTask((task) => {
-              return { ...task, name: e.target.value };
-            })
-          }
-        />
-      </div>
-
-      <div className="flex gap-2.5 h-16.5">
-        <div className="flex flex-col gap-1.5 flex-1">
-          <span className="text-[#6C7275]">{t("task.date")}</span>
-          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-            <PopoverTrigger asChild>
-              <div className="h-full flex justify-between items-center pr-1.5 bg-white dark:bg-[#101213] border border-white dark:border-[#101213] hover:border-[#232627]/50 dark:hover:border-white data-[state=open]:border-[#00AB66] dark:data-[state=open]:border-[#00D47E] rounded-sm">
-                <div
-                  className={clsx(
-                    "flex items-center gap-1 px-2.5 py-2 text-sm",
-                    {
-                      "text-[#6C7275]/50 dark:text-[#E8ECEF]/50": !newTask.date,
-                    },
-                  )}
-                >
-                  <CalendarIcon className="text-main shrink-0" />
-                  {newTask.date
-                    ? getLang() === "zh-CN"
-                      ? dayjs(newTask.date).format("M月D日")
-                      : dayjs(newTask.date).format("D, MMM")
-                    : t("task.date")}
-                </div>
-                <ArrowDownIcon className="size-4 opacity-50" />
-              </div>
-            </PopoverTrigger>
-            <PopoverContent asChild align="start">
-              <div className="dark:bg-black">
-                <Calendar
-                  mode="single"
-                  className="w-full h-full p-0 pb-4"
-                  selected={new Date(newTask.date)}
-                  required
-                  onSelect={(date: Date) => {
-                    setNewTask((task) => {
-                      return {
-                        ...task,
-                        date: date.toLocaleDateString(),
-                      };
-                    });
-                    setCalendarOpen(false);
-                  }}
-                />
-              </div>
-            </PopoverContent>
-          </Popover>
+    <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-2.5 text-sm bg-[#F3F5F7] dark:bg-[#232627]/50 px-2.5 py-2 border border-[#E8ECEF] dark:border-[#343839] rounded-sm">
+        <div className="flex flex-col gap-1.5">
+          <span className="text-[#6C7275]">{t("task.name")}</span>
+          <Input
+            className="h-10 !text-left rounded-sm bg-white dark:bg-[#101213] border border-white dark:border-[#101213] hover:border-[#232627]/50 dark:hover:border-white focus:border-[#00AB66] dark:focus:border-[#00D47E] p-2.5"
+            placeholder={t("task.enterTaskName")}
+            value={newTask.name}
+            onChange={(e) =>
+              setNewTask((task) => {
+                return { ...task, name: e.target.value };
+              })
+            }
+          />
         </div>
 
-        <div className="flex-1 flex flex-col gap-1.5">
-          <span className="text-[#6C7275]">{t("task.time")}</span>
-          <div className="bg-white dark:bg-[#101213] rounded-sm">
-            <TimeSelect
-              hour={newTask.hour}
-              minute={newTask.minute}
-              timeErr={timeErr}
-              setTimeErr={setTimeErr}
-              onChange={(time) =>
-                setNewTask((task) => {
-                  const [hour, minute] = time
-                    .split(":")
-                    .map((item) => Number(item));
-                  return {
-                    ...task,
-                    hour,
-                    minute,
-                  };
-                })
-              }
-            />
+        <div className="flex gap-2.5 h-16.5">
+          <div className="flex flex-col gap-1.5 flex-1">
+            <span className="text-[#6C7275]">{t("task.date")}</span>
+            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+              <PopoverTrigger asChild>
+                <div className="h-full flex justify-between items-center pr-1.5 bg-white dark:bg-[#101213] border border-white dark:border-[#101213] hover:border-[#232627]/50 dark:hover:border-white data-[state=open]:border-[#00AB66] dark:data-[state=open]:border-[#00D47E] rounded-sm">
+                  <div
+                    className={clsx(
+                      "flex items-center gap-1 px-2.5 py-2 text-sm",
+                      {
+                        "text-[#6C7275]/50 dark:text-[#E8ECEF]/50":
+                          !newTask.date,
+                      },
+                    )}
+                  >
+                    <CalendarIcon className="text-main shrink-0" />
+                    {newTask.date
+                      ? getLang() === "zh-CN"
+                        ? dayjs(newTask.date).format("M月D日")
+                        : dayjs(newTask.date).format("D, MMM")
+                      : t("task.date")}
+                  </div>
+                  <ArrowDownIcon className="size-4 opacity-50" />
+                </div>
+              </PopoverTrigger>
+              <PopoverContent asChild align="start">
+                <div className="dark:bg-black">
+                  <Calendar
+                    mode="single"
+                    className="w-full h-full p-0 pb-4"
+                    selected={new Date(newTask.date)}
+                    required
+                    onSelect={(date: Date) => {
+                      setNewTask((task) => {
+                        return {
+                          ...task,
+                          date: date.toLocaleDateString(),
+                        };
+                      });
+                      setCalendarOpen(false);
+                    }}
+                  />
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <div className="flex-1 flex flex-col gap-1.5">
+            <span className="text-[#6C7275]">{t("task.time")}</span>
+            <div className="bg-white dark:bg-[#101213] rounded-sm">
+              <TimeSelect
+                hour={newTask.hour}
+                minute={newTask.minute}
+                timeErr={timeErr}
+                setTimeErr={setTimeErr}
+                onChange={(time) =>
+                  setNewTask((task) => {
+                    const [hour, minute] = time
+                      .split(":")
+                      .map((item) => Number(item));
+                    return {
+                      ...task,
+                      hour,
+                      minute,
+                    };
+                  })
+                }
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      {timeErr && (
-        <div className="flex justify-end">
-          <p className="w-1/2 pl-2.5 text-[#EF466F] text-sm">{timeErr}</p>
+        {timeErr && (
+          <div className="flex justify-end">
+            <p className="w-1/2 pl-2.5 text-[#EF466F] text-sm">{timeErr}</p>
+          </div>
+        )}
+
+        <div className="flex flex-col gap-1.5">
+          <span className="text-[#6C7275]">{t("task.type")}</span>
+          <Select
+            value={newTask.type}
+            onValueChange={(type: TaskTypeEnum) => {
+              setNewTask((task) => ({
+                ...task,
+                type,
+              }));
+            }}
+          >
+            <SelectTrigger className="!w-full !h-10 bg-white dark:bg-[#101213] hover:border-[#232627]/50 dark:hover:border-white rounded-sm border data-[state=open]:border-[#00AB66] dark:data-[state=open]:border-[#00D47E] !data-[placeholder]:text-black">
+              <SelectValue placeholder={t("task.selectTaskType")} />
+            </SelectTrigger>
+            <SelectContent className="w-[var(--radix-select-trigger-width)]">
+              {Object.values(TaskTypeEnum).map((type) => (
+                <SelectItem
+                  value={type}
+                  key={type}
+                  className="hover:bg-[#F5F5F5] px-2.5 py-2 cursor-default [&_[data-select-item-indicator]]:hidden"
+                >
+                  {t(`task.${type}`)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-      )}
+        <div className="flex flex-col gap-1.5">
+          <span className="text-[#6C7275]">{t("task.description")}</span>
+          <textarea
+            className="bg-white dark:bg-[#101213] placeholder:text-[#6C7275]/50 dark:placeholder:text-[#E8ECEF]/50 rounded-sm p-2.5 resize-none border border-white dark:border-[#101213] focus:border-[#00AB66] dark:focus:border-[#00AB66] hover:border-[#232627]/50 dark:hover:border-white overflow-y-auto max-h-[40vh]"
+            ref={textareaRef}
+            rows={1}
+            placeholder={t("task.taskDesp")}
+            value={newTask.details}
+            onChange={(e) => {
+              setNewTask((task) => {
+                return { ...task, details: e.target.value };
+              });
+              handleInput();
+            }}
+          ></textarea>
+        </div>
 
-      <div className="flex flex-col gap-1.5">
-        <span className="text-[#6C7275]">{t("task.type")}</span>
-        <Select
-          value={newTask.type}
-          onValueChange={(type: TaskTypeEnum) => {
-            setNewTask((task) => ({
-              ...task,
-              type,
-            }));
-          }}
-        >
-          <SelectTrigger className="!w-full !h-10 bg-white dark:bg-[#101213] hover:border-[#232627]/50 dark:hover:border-white rounded-sm border data-[state=open]:border-[#00AB66] dark:data-[state=open]:border-[#00D47E] !data-[placeholder]:text-black">
-            <SelectValue placeholder={t("task.selectTaskType")} />
-          </SelectTrigger>
-          <SelectContent className="w-[var(--radix-select-trigger-width)]">
-            {Object.values(TaskTypeEnum).map((type) => (
-              <SelectItem
-                value={type}
-                key={type}
-                className="hover:bg-[#F5F5F5] px-2.5 py-2 cursor-default [&_[data-select-item-indicator]]:hidden"
-              >
-                {t(`task.${type}`)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <span className="text-[#6C7275]">{t("task.description")}</span>
-        <textarea
-          className="bg-white dark:bg-[#101213] placeholder:text-[#6C7275]/50 dark:placeholder:text-[#E8ECEF]/50 rounded-sm p-2.5 resize-none border border-white dark:border-[#101213] focus:border-[#00AB66] dark:focus:border-[#00AB66] hover:border-[#232627]/50 dark:hover:border-white overflow-y-auto max-h-[40vh]"
-          ref={textareaRef}
-          rows={1}
-          placeholder={t("task.taskDesp")}
-          value={newTask.details}
-          onChange={(e) => {
+        <Notification
+          checked={notificationEnabled}
+          onChange={() => {
+            setNotificationEnabled(!notificationEnabled);
             setNewTask((task) => {
-              return { ...task, details: e.target.value };
+              return { ...task, notification: !notificationEnabled };
             });
-            handleInput();
           }}
-        ></textarea>
+        />
+        <div className="flex justify-end gap-2.5 h-8.5">
+          <Button
+            className="h-full bg-transparent hover:bg-transparent hover:opacity-60 text-black dark:text-white font-normal border border-[#E8ECEF] dark:border-[#343839] rounded-sm w-34"
+            onClick={handleTestClick}
+            disabled={!confirmBtn || isTestLoading}
+          >
+            {isTestLoading ? (
+              <>
+                <LoadingIcon className="size-4 animate-spin" />
+                {t("task.testing")}
+              </>
+            ) : (
+              t("task.test")
+            )}
+          </Button>
+          <Button
+            disabled={!confirmBtn || isSubmitLoading}
+            className="h-full bg-main rounded-sm font-normal w-34"
+            onClick={handleConfirmClick}
+          >
+            {isSubmitLoading ? (
+              <>
+                <LoadingIcon className="size-4 animate-spin" />
+                {t("task.confirm")}
+              </>
+            ) : (
+              t("task.confirm")
+            )}
+          </Button>
+        </div>
       </div>
-
-      <Notification
-        checked={notificationEnabled}
-        onChange={() => {
-          setNotificationEnabled(!notificationEnabled);
-          setNewTask((task) => {
-            return { ...task, notification: !notificationEnabled };
-          });
-        }}
-      />
-      <div className="flex justify-end gap-2.5 h-8.5">
-        <Button
-          className="h-full bg-transparent hover:bg-transparent hover:opacity-60 text-black dark:text-white font-normal border border-[#E8ECEF] dark:border-[#343839] rounded-sm w-34"
-          onClick={handleTestClick}
-          disabled={!confirmBtn || isTestLoading}
+      <div>
+        <Accordion
+          type="single"
+          collapsible
+          value={activeKey}
+          onValueChange={setActiveKey}
+          className="flex-1 min-h-0 space-y-2.5 h-max"
         >
-          {isTestLoading ? (
-            <>
-              <LoadingIcon className="size-4 animate-spin" />
-              {t("task.testing")}
-            </>
-          ) : (
-            t("task.test")
-          )}
-        </Button>
-        <Button
-          disabled={!confirmBtn || isSubmitLoading}
-          className="h-full bg-main rounded-sm font-normal w-34"
-          onClick={handleConfirmClick}
-        >
-          {isSubmitLoading ? (
-            <>
-              <LoadingIcon className="size-4 animate-spin" />
-              {t("task.confirm")}
-            </>
-          ) : (
-            t("task.confirm")
-          )}
-        </Button>
+          {testTaskList.map((item) => (
+            <TaskItem
+              key={item.id}
+              taskInfo={item}
+              title={formatDateToReadableString(
+                item.next_run_at || item.created_at,
+              )}
+            />
+          ))}
+        </Accordion>
       </div>
     </div>
   );
