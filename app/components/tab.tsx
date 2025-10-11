@@ -13,6 +13,7 @@ import TaskIcon from "../icons/task.svg";
 import LogoIcon from "../icons/logo-circle.svg";
 import UpdateIcon from "../icons/up-arrow.svg";
 import InviteIcon from "../icons/invite.svg";
+import UpdatingIcon from "../icons/updating.svg";
 
 export function Tab() {
   const navigate = useNavigate();
@@ -124,7 +125,13 @@ export function Tab() {
                   <div className="bg-main rounded-full size-4">
                     <UpdateIcon className="size-4 text-white dark:text-[#141718]" />
                   </div>
-                  <div className="absolute right-0 top-0 bg-[#ED6A5F] size-2 rounded-full"></div>
+                  {isUpdating ? (
+                    <div className="absolute top-0 left-0 size-7 animate-spin">
+                      <UpdatingIcon className="" />
+                    </div>
+                  ) : (
+                    <div className="absolute right-0 top-0 bg-[#ED6A5F] size-2 rounded-full"></div>
+                  )}
                 </Button>
               </TooltipTrigger>
               <TooltipContent hasArrow={false}>
