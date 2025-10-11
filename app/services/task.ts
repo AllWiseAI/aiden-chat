@@ -15,6 +15,7 @@ async function getLocalFetchOptions(modelInfo?: ProviderOption) {
   const headers = await getHeaders({
     aiden: true,
     modelInfo: modelInfo ?? defaultModelInfo,
+    agent: true,
   });
   return { baseURL, headers };
 }

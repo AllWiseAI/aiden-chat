@@ -19,7 +19,13 @@ import {
 import { Calendar } from "./shadcn/calendar";
 import TimeSelect from "./time-select";
 import { useNavigate } from "react-router-dom";
-import { TaskTypeEnum, Task, TaskPayload, TaskFormType } from "../typing";
+import {
+  TaskTypeEnum,
+  Task,
+  TaskPayload,
+  TaskFormType,
+  TestTaskInfo,
+} from "../typing";
 import { useAppConfig, useTaskStore } from "../store";
 import dayjs from "dayjs";
 import clsx from "clsx";
@@ -45,6 +51,7 @@ interface TaskManagementProps {
   task?: Task;
   onCancel?: () => void;
   onChange?: (id: string, updatedTask: Task) => void;
+  onTestChange?: (testTaskInfo: TestTaskInfo) => void;
 }
 
 function getCurrentDateObj(startDate: string) {
@@ -82,6 +89,7 @@ export function Notification({
 export default function TaskManagement({
   task,
   onChange,
+  onTestChange,
   model,
 }: TaskManagementProps) {
   const { t } = useTranslation("general");
@@ -187,9 +195,11 @@ export default function TaskManagement({
     };
     setIsTestLoading(true);
     const res = await testTask(payload);
+    console.log("res===", res);
     setIsTestLoading(false);
     const { code, message, data } = res;
     if (code === 0) {
+      onTestChange?.(data);
       const { task_id } = data || {};
       if (task_id) {
         setTestTaskId(task_id);
