@@ -26,7 +26,7 @@ import {
   TaskFormType,
   TaskExecutionRecord,
 } from "../typing";
-import { useAppConfig, useTaskStore } from "../store";
+import { useTaskStore } from "../store";
 import dayjs from "dayjs";
 import clsx from "clsx";
 import NotificationOnIcon from "../icons/notification-on.svg";
@@ -49,7 +49,6 @@ interface NotificationProps {
 }
 
 interface TaskManagementProps {
-  model: string;
   task?: Task;
   onCancel?: () => void;
   onChange?: (id: string, updatedTask: Task) => void;
@@ -90,7 +89,6 @@ export function Notification({
 export default function TaskManagement({
   task,
   onChange,
-  model,
 }: TaskManagementProps) {
   const { t } = useTranslation("general");
   const [activeKey, setActiveKey] = useState("");
@@ -103,7 +101,6 @@ export default function TaskManagement({
     type: TaskTypeEnum.Daily,
     notification: false,
     details: "",
-    modelInfo: undefined,
   });
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [isTestLoading, setIsTestLoading] = useState(false);
@@ -146,18 +143,6 @@ export default function TaskManagement({
   }, [task]);
   const navigate = useNavigate();
   const taskStore = useTaskStore();
-
-  const getModelInfo = useAppConfig((s) => s.getModelInfo);
-  useEffect(() => {
-    if (!model) return;
-    const modelInfo = getModelInfo(model);
-    setNewTask((task) => {
-      return {
-        ...task,
-        modelInfo: modelInfo,
-      };
-    });
-  }, [model]);
 
   const handleInput = () => {
     const el = textareaRef.current;
@@ -242,15 +227,15 @@ export default function TaskManagement({
       let res;
       setIsSubmitLoading(true);
       if (task) {
-        res = await updateTask(payload, newTask);
+        res = await updateTask(payload);
       } else {
-        res = await createTask(payload, newTask);
+        res = await createTask(payload);
       }
       setIsSubmitLoading(false);
       const { code, data, detail } = res;
       if (code === 0) {
         toast.success(task ? t("task.updateSuccess") : t("task.createSuccess"));
-        const updatedData = { ...data, modelInfo: newTask.modelInfo };
+        const updatedData = { ...data };
         if (task) {
           onChange?.(data.id, updatedData);
         } else {

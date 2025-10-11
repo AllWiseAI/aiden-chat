@@ -68,7 +68,6 @@ export const getBaseDomain = async () => {
 type HeadersProps = {
   aiden?: boolean;
   isSummary?: boolean;
-  modelInfo?: ProviderOption;
   ignoreHeaders?: boolean;
   refresh?: boolean;
   agent?: boolean;
