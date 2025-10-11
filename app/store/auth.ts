@@ -5,12 +5,15 @@ import {
   apiLogin,
   apiLogout,
   apiRefreshToken,
+  apiGetUserPlan,
 } from "@/app/services";
 import {
   TokenType,
   User,
   LoginResponse,
   LoginResponseInfo,
+  Plan,
+  PlanEnum,
   RefreshResponse,
 } from "../typing";
 import { t } from "i18next";
@@ -27,6 +30,7 @@ export const useAuthStore = createPersistStore(
   {
     _hasHydrated: false,
     ...DEFAULT_AUTH_STATE,
+    userPlan: PlanEnum.Free,
   },
   (set, get) => {
     function _get() {
@@ -234,6 +238,13 @@ export const useAuthStore = createPersistStore(
           refreshingPromise = null;
           throw new Error(`Refresh Token Failed: ${e.message}`);
         }
+      },
+      setUserPlan: async () => {
+        const res = (await apiGetUserPlan()) as { subscription_level: Plan };
+        const { subscription_level } = res;
+        set({
+          userPlan: subscription_level,
+        });
       },
     };
     return methods;
