@@ -258,14 +258,8 @@ export const useChatStore = createPersistStore(
           sessions: [session].concat(state.sessions),
         }));
       },
-      newTaskSession({
-        taskId,
-        modelInfo,
-        requestData,
-        responseData,
-      }: taskSessionParams) {
+      newTaskSession({ taskId, requestData, responseData }: taskSessionParams) {
         const session = createEmptySession(taskId);
-        session.modelInfo = modelInfo;
         session.messages = [
           ...requestData.map((msg: any) => ({
             ...msg,
