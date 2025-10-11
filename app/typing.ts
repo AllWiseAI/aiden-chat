@@ -301,7 +301,6 @@ export interface Task {
 }
 
 export type TaskFormType = {
-  modelInfo?: ProviderOption;
   name: string;
   date: string;
   hour: number | null;

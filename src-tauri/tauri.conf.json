@@ -9,7 +9,7 @@
   },
   "package": {
     "productName": "Aiden",
-    "version": "0.1.56"
+    "version": "0.1.57"
   },
   "tauri": {
     "allowlist": {
@@ -98,7 +98,7 @@
       "resources": [
         "bin/*",
         "resources/mcp.config.json",
-        "../node_modules/host_server_*/**/*"
+        "resources/host_server_*/**/*"
       ],
       "shortDescription": "Aiden App",
       "targets": "all",

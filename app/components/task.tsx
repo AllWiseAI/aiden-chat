@@ -423,9 +423,6 @@ export function Task() {
   const navigate = useNavigate();
   const currentTask = useTaskStore().currentTask();
   const theme = useTheme();
-  const [model, setModel] = useState<string>(
-    currentTask?.modelInfo?.model || "",
-  );
 
   useEffect(() => {
     track(EVENTS.TASK_PAGE_EXPOSURE);
@@ -433,9 +430,6 @@ export function Task() {
   useEffect(() => {
     if (!currentTask) return;
     setIsEdit(false);
-    const { apiKey, model, provider } = currentTask.modelInfo || {};
-    const modelValue = (apiKey ? `${provider}:${model}` : model) ?? "";
-    setModel(modelValue);
   }, [currentTask]);
 
   return (
@@ -478,7 +472,6 @@ export function Task() {
             >
               {isEdit ? (
                 <TaskManagement
-                  model={model}
                   task={currentTask}
                   onCancel={() => {
                     setIsEdit(false);
