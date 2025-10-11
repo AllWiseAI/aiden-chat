@@ -9,7 +9,7 @@ import { useState } from "react";
 import { GoogleAuthButton } from "../components/google-oauth-button";
 import { useAuthStore } from "../store";
 import { Password } from "./password";
-import { apiCheckInviteCode, apiGetSignUpCode } from "@/app/services";
+import { apiGetSignUpCode } from "@/app/services";
 import { Path } from "../constant";
 import { toast } from "@/app/utils/toast";
 import clsx from "clsx";
@@ -23,7 +23,6 @@ interface FormData {
   email: string;
   password: string;
   code: string;
-  inviteCode: string;
 }
 interface SignUpFormProps {
   formData: FormData;
@@ -44,7 +43,6 @@ const SignUpForm = ({
   formData,
   onFormChange,
   onSubmit,
-  codeErr,
   loading,
 }: SignUpFormProps) => {
   const { t } = useTranslation("auth");
@@ -166,28 +164,6 @@ const SignUpForm = ({
             <span className="text-sm text-red-500">{passwordError}</span>
           )}
         </div>
-        <div className="flex flex-col gap-2 w-full">
-          <Label
-            htmlFor="inviteCode"
-            className="font-normal after:content['*'] after:content-['*'] after:text-red-500 !gap-1 text-sm"
-          >
-            {t("signUp.invite")}
-          </Label>
-
-          <Input
-            id="inviteCode"
-            type="text"
-            placeholder={t("signUp.enterInviteCode")}
-            className={clsx(
-              "!w-full h-9 !max-w-130 !text-left !px-2.5 !py-2 !rounded-sm text-sm hover:border-[#6C7275] focus:border-[#00AB66] dark:hover:border-[#E8ECEF] dark:focus:border-[#00AB66]",
-              { "border-2 border-[#EF466F]": codeErr },
-            )}
-            value={formData.inviteCode}
-            onChange={onFormChange}
-            required
-          />
-          {codeErr && <span className="text-sm text-red-500">{codeErr}</span>}
-        </div>
         <div className="self-start flex items-center gap-2 text-xs">
           <Checkbox
             className="!size-[14px] !border-[#6C7275] !rounded-xs cursor-pointer"
@@ -229,7 +205,6 @@ const SignUpForm = ({
               formData.email &&
               formData.password &&
               confirmPassword &&
-              formData.inviteCode &&
               checked
             ) ||
             !!emailError ||
@@ -267,7 +242,7 @@ const VerifyCodeForm = ({
       if ("error" in res) {
         throw new Error(res.error);
       }
-      toast.success(res.message);
+      toast.success(t("codeSuccess"));
     } catch (e: any) {
       toast.error(e.message);
     }
@@ -357,35 +332,14 @@ const VerifyCodeForm = ({
 export function SignUpPage() {
   const authStore = useAuthStore();
   const navigate = useNavigate();
-  const { t } = useTranslation("auth");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     code: "",
-    inviteCode: "",
   });
   const [isSignUp, setIsSignUp] = useState(true);
   const [loading, setLoading] = useState(false);
   const [codeErr, setCodeErr] = useState("");
-  const handleSubmit = async () => {
-    setLoading(true);
-    try {
-      const res = (await apiCheckInviteCode(formData.inviteCode)) as {
-        valid: string;
-        message: string;
-      };
-      if ("valid" in res && res.valid) {
-        setIsSignUp(false);
-      } else {
-        throw new Error(t("signUp.invalidCode"));
-      }
-    } catch (e: any) {
-      toast.error(e.message);
-      setCodeErr(t("signUp.invalidCode"));
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleVerifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -395,13 +349,11 @@ export function SignUpPage() {
         formData.code,
         formData.email,
         formData.password,
-        formData.inviteCode,
         "",
       );
       if (success) {
         appDataInit();
-        navigate(Path.Chat);
-        toast.success(t("signUp.success"));
+        navigate(Path.Invite);
         localStorage.setItem("user-email", formData.email);
       }
     } catch (e: any) {
@@ -431,7 +383,7 @@ export function SignUpPage() {
           <SignUpForm
             formData={formData}
             onFormChange={handleChange}
-            onSubmit={handleSubmit}
+            onSubmit={() => setIsSignUp(false)}
             codeErr={codeErr}
             loading={loading}
           />

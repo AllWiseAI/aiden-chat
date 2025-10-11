@@ -77,6 +77,10 @@ const SignUpPage = dynamic(async () => (await import("./signup")).SignUpPage, {
   loading: () => <Loading noLogo />,
 });
 
+const InvitePage = dynamic(async () => (await import("./invite")).InvitePage, {
+  loading: () => <Loading noLogo />,
+});
+
 const ForgotPasswordPage = dynamic(
   async () => (await import("./forgot-password")).ForgotPasswordPage,
   {
@@ -242,6 +246,7 @@ export function AppRouter() {
           <Route path={Path.Login} element={<LoginPage />} />
           <Route path={Path.GoogleOAuth} element={<GoogleOAuth />} />
           <Route path={Path.SignUp} element={<SignUpPage />} />
+          <Route path={Path.Invite} element={<InvitePage />} />
           <Route path={Path.ForgotPassword} element={<ForgotPasswordPage />} />
         </Route>
 

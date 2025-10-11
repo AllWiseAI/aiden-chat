@@ -22,14 +22,12 @@ export async function apiCompleteSignUp(payload: {
   email: string;
   password: string;
   code: string;
-  inviteCode: string;
   profile_image_url: string;
 }) {
   const params = {
     email: payload.email,
     password: payload.password,
     code: payload.code,
-    invitation_code: payload.inviteCode,
     profile_image_url: payload.profile_image_url,
   };
   const result = await fetch("/auth/complete_signup", {
@@ -215,6 +213,20 @@ export async function apiGetInviteCode() {
 export async function apiCheckInviteCode(code: string) {
   const params = {};
   const result = await fetch(`/api/check/invite_code?code=${code}`, {
+    method: "GET",
+    body: {
+      type: "Json",
+      payload: params,
+    },
+  });
+  return result.data;
+}
+
+export async function apiSetInviteCode(code: string) {
+  const params = {
+    invitation_code: code,
+  };
+  const result = await fetch("/api/user/invitation_code", {
     method: "GET",
     body: {
       type: "Json",
