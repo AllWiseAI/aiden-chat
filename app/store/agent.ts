@@ -24,15 +24,15 @@ const DEFAULT_AGENT_STATE = {
 const BUILTIN_AGENTS: Agent[] = [
   {
     id: "1",
-    name: "Image Agent",
-    avatar: "😝",
+    name: "Artist",
+    avatar: "👩🏻‍💻",
     source: AgentSource.BuiltIn,
     description:
       "This is a default agent to processing message that do not contain multi model infos.",
     prompt: "",
     type: AgentTypeEnum.Multimodal,
     model: {
-      name: "anthropic/claude-3.7-sonnet",
+      name: "google/gemini-2.5-flash-image-preview",
       provider: "openai",
       endpoint: "https://prod.aidenai.io/llm/openai",
       apiKey: undefined,
@@ -40,15 +40,15 @@ const BUILTIN_AGENTS: Agent[] = [
   },
   {
     id: "2",
-    name: "Text Agent",
-    avatar: "😝",
+    name: "Executor",
+    avatar: "👩🏻‍💼",
     source: AgentSource.BuiltIn,
     description:
       "This is a default agent to processing message that contains multi model infos.",
     prompt: "",
     type: AgentTypeEnum.Text,
     model: {
-      name: "deepseek/deepseek-v3.2-exp",
+      name: "anthropic/claude-3.7-sonnet",
       provider: "openai",
       endpoint: "https://prod.aidenai.info/llm/openai",
       apiKey: undefined,
@@ -196,6 +196,6 @@ export const useAgentStore = createPersistStore(
   },
   {
     name: StoreKey.Agent,
-    version: 0.2,
+    version: 0.3,
   },
 );

@@ -135,9 +135,11 @@ function AgentModel({ show, item }: { show: boolean; item: Agent }) {
                       model: model.value,
                       label: model.label,
                     }))
-                  : provider.models.filter(
-                      (model) => model.multi_model === isMulti,
-                    );
+                  : isMulti
+                  ? provider.models.filter(
+                      (model) => model.multi_model === true,
+                    )
+                  : provider.models;
 
                 return (
                   <div key={groupLabel}>
@@ -222,7 +224,7 @@ export default function AgentTab() {
   return (
     <div className="flex items-center">
       {agents.map((item) => (
-        <HoverCard key={item.id}>
+        <HoverCard key={item.id} openDelay={200}>
           <HoverCardTrigger asChild>
             <div
               className={clsx(
@@ -267,7 +269,7 @@ export default function AgentTab() {
                     onClick={() => setShowModel(!showModel)}
                     className="text-xs text-[#101213] dark:text-[#E8ECEF]"
                   >
-                    {getModelInfo(item.model.name)!.display}
+                    {getModelInfo(item.model.name)?.display}
                     {showModel ? (
                       <ArrowDownIcon className="size-4" />
                     ) : (
