@@ -28,7 +28,7 @@ const BUILTIN_AGENTS: Agent[] = [
     avatar: "👩🏻‍💻",
     source: AgentSource.BuiltIn,
     description:
-      "This is a default agent to processing message that do not contain multi model infos.",
+      "Specialized image agent for processing and generating visual content. Capabilities include: image analysis, image generation, visual content creation, and any task involving image processing.",
     prompt: "",
     type: AgentTypeEnum.Multimodal,
     model: {
@@ -44,7 +44,7 @@ const BUILTIN_AGENTS: Agent[] = [
     avatar: "👩🏻‍💼",
     source: AgentSource.BuiltIn,
     description:
-      "This is a default agent to processing message that contains multi model infos.",
+      "Specialized text agent for processing text conversations, answering questions, providing information, and handling text-based tasks. Capabilities include: text analysis, Q&A, writing assistance, code generation, general conversation, file processing, and document understanding.",
     prompt: "",
     type: AgentTypeEnum.Text,
     model: {
