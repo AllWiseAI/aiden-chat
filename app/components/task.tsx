@@ -10,11 +10,10 @@ import {
 } from "../typing";
 import EditIcon from "../icons/edit.svg";
 import TaskManagement from "./task-management";
-import { WindowHeader } from "./window-header";
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
 import advancedFormat from "dayjs/plugin/advancedFormat";
-import { getTaskExecutionRecords, switchTaskModel } from "@/app/services/task";
+import { getTaskExecutionRecords } from "@/app/services/task";
 import clsx from "clsx";
 import { useTheme } from "../hooks/use-theme";
 import NotificationOnIcon from "../icons/notification-on.svg";
@@ -37,9 +36,7 @@ import { Path } from "../constant";
 import { useNavigate } from "react-router-dom";
 import { useChatStore } from "../store/chat";
 import { getLang } from "../locales";
-import { ModelSelect } from "../components/model-select";
-import { useAppConfig, Theme } from "../store";
-import { toast } from "@/app/utils/toast";
+import { Theme } from "../store";
 import { formatMCPData } from "../utils/chat";
 import { track, EVENTS } from "@/app/utils/analysis";
 import {
@@ -425,8 +422,6 @@ export function Task() {
   const [isEdit, setIsEdit] = useState(false);
   const navigate = useNavigate();
   const currentTask = useTaskStore().currentTask();
-  const taskStore = useTaskStore();
-  const updateTargetTask = taskStore.updateTargetTask;
   const theme = useTheme();
   const [model, setModel] = useState<string>(
     currentTask?.modelInfo?.model || "",
@@ -443,34 +438,8 @@ export function Task() {
     setModel(modelValue);
   }, [currentTask]);
 
-  const getModelInfo = useAppConfig((s) => s.getModelInfo);
-  const handleModelChange = async (model: string) => {
-    if (!currentTask) return;
-    setModel(model);
-    const modelInfo = getModelInfo(model);
-    if (!modelInfo) return;
-    const res = await switchTaskModel(currentTask.id, modelInfo);
-    const { code } = res;
-    if (code === 0) {
-      updateTargetTask(currentTask!, (task) => {
-        task.modelInfo = modelInfo;
-      });
-      toast.success(t("task.updateSuccess"));
-    } else {
-      toast.error(t("task.updateFailed"));
-    }
-  };
   return (
     <div className="flex flex-col h-screen">
-      <WindowHeader>
-        {currentTask && (
-          <ModelSelect
-            mode="custom"
-            onChange={handleModelChange}
-            value={model}
-          />
-        )}
-      </WindowHeader>
       {!currentTask ? (
         <div className="flex-center flex-col flex-1 gap-7.5 -mt-15">
           {theme === Theme.Light ? <ResultLightIcon /> : <ResultDarkIcon />}
