@@ -86,4 +86,5 @@ export const appDataInit = async () => {
   initWebsocketWorker();
   const getRegion = useSettingStore.getState().getRegion;
   getRegion();
+  useAuthStore.getState().setUserPlan();
 };

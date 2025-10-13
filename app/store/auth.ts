@@ -241,10 +241,13 @@ export const useAuthStore = createPersistStore(
       },
       setUserPlan: async () => {
         const res = (await apiGetUserPlan()) as { subscription_level: Plan };
+        const { userPlan } = get();
         const { subscription_level } = res;
-        set({
-          userPlan: subscription_level,
-        });
+        if (userPlan !== subscription_level) {
+          set({
+            userPlan: subscription_level,
+          });
+        }
       },
     };
     return methods;
