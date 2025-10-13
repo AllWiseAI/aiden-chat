@@ -30,7 +30,9 @@ export function InvitePage() {
       navigate(Path.Chat);
       toast.success(t("signUp.success"));
     } catch (e: any) {
-      toast.error(e.message);
+      if (e.message === "Invalid invitation code") {
+        toast.error(t("signUp.invalidCode"));
+      } else toast.error(e.message);
     }
   };
 
