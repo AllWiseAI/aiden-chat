@@ -42,5 +42,8 @@
   "i18n-ally.defaultNamespace": "general",
   "[rust]": {
     "editor.defaultFormatter": "rust-lang.rust-analyzer"
-  }
+  },
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": false,
+  "files.eol": "\n"
 }
