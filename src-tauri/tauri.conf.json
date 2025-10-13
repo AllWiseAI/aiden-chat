@@ -101,7 +101,7 @@
         "resources/mcp.config.json",
         "resources/host_server_*/**/*"
       ],
-      "shortDescription": "Aiden App",
+      "shortDescription": "Aiden",
       "targets": "all",
       "windows": {
         "certificateThumbprint": null,
