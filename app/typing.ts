@@ -422,3 +422,10 @@ export interface Agent {
     apiKey: string | undefined;
   };
 }
+
+export enum PlanEnum {
+  Free = "free",
+  Standard = "standard",
+  Pro = "pro",
+}
+export type Plan = PlanEnum.Free | PlanEnum.Standard | PlanEnum.Pro;

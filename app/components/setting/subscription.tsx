@@ -1,25 +1,23 @@
 import { useEffect, useState, useMemo } from "react";
+import { useAuthStore } from "@/app/store";
 import { Dialog, DialogOverlay } from "../shadcn/dialog";
 import { useTranslation } from "react-i18next";
-import { apiGetUserPlan } from "@/app/services";
-
-type Plan = "free" | "standard" | "pro";
+import { Plan } from "../../typing";
 
 export default function Subscription() {
   const [showPlan, setShowPlan] = useState(false);
+  const [userPlan, setUserPlan] = useAuthStore((state) => [
+    state.userPlan,
+    state.setUserPlan,
+  ]);
   const { t } = useTranslation("settings");
-  const [plan, setPlan] = useState<Plan>("standard");
+  const [plan] = useState<Plan>(userPlan);
 
   useEffect(() => {
-    async function getPlan() {
-      const res = (await apiGetUserPlan()) as { subscription_level: Plan };
-      const { subscription_level } = res;
-      setPlan(subscription_level);
-    }
-    getPlan();
-  }, []);
+    setUserPlan();
+  }, [setUserPlan]);
 
-  const userPlan = useMemo(() => {
+  const displayPlan = useMemo(() => {
     return t(`subscription.${plan}.title`) + t("subscription.planT");
   }, [plan]);
 
@@ -29,7 +27,7 @@ export default function Subscription() {
         <div className="w-full flex flex-col gap-3 px-2.5 pt-1 pb-5">
           <div className="font-medium">{t("subscription.plan")}</div>
           <div className="flex justify-between items-center gap-5 p-2.5 bg-[#F3F5F7]/30 dark:bg-[#232627]/30 border border-[#E8ECEF] dark:border-[#232627] rounded-sm text-sm">
-            <div className="text-sm flex-1">{userPlan}</div>
+            <div className="text-sm flex-1">{displayPlan}</div>
             <div
               className="text-main underline hover:opacity-70 cursor-pointer"
               onClick={() => setShowPlan(true)}
