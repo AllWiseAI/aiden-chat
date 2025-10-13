@@ -46,10 +46,15 @@ export function GoogleAuth() {
     if (redirect_url) {
       shell.open(redirect_url);
       const res = await pollLoginStatus(session_id);
-      if (res.status === "completed") {
+      if (res.status === "completed" || res.status === "completed_signup") {
+        const status = res.status;
         setLoginInfo(res);
         appDataInit();
-        navigate(Path.Chat);
+        if (status === "completed") {
+          navigate(Path.Chat);
+        } else if (status === "completed_signup") {
+          navigate(Path.Invite);
+        }
         localStorage.setItem("user-email", res.email);
       }
     }
