@@ -12,6 +12,7 @@ import { Button } from "@/app/components/shadcn/button";
 import LoadingIcon from "@/app/icons/loading-spinner.svg";
 import ReturnIcon from "@/app/icons/return.svg";
 import { useEffect } from "react";
+import { appWindow } from "@tauri-apps/api/window";
 
 export function GoogleAuth() {
   const { t } = useTranslation("auth");
@@ -50,6 +51,7 @@ export function GoogleAuth() {
         const status = res.status;
         setLoginInfo(res);
         appDataInit();
+        await appWindow.setAlwaysOnTop(true);
         if (status === "completed") {
           navigate(Path.Chat);
         } else if (status === "completed_signup") {
