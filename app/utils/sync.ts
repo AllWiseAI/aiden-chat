@@ -3,6 +3,7 @@ import {
   useAppConfig,
   useAuthStore,
   useChatStore,
+  useAgentStore,
 } from "../store";
 import { StoreKey } from "../constant";
 import { merge } from "./merge";
@@ -32,12 +33,14 @@ const LocalStateSetters = {
   [StoreKey.Chat]: useChatStore.setState,
   [StoreKey.Config]: useAppConfig.setState,
   [StoreKey.Auth]: useAuthStore.setState,
+  [StoreKey.Agent]: useAgentStore.setState,
 } as const;
 
 const LocalStateGetters = {
   [StoreKey.Chat]: () => getNonFunctionFileds(useChatStore.getState()),
   [StoreKey.Config]: () => getNonFunctionFileds(useAppConfig.getState()),
   [StoreKey.Auth]: () => getNonFunctionFileds(useAuthStore.getState()),
+  [StoreKey.Agent]: () => getNonFunctionFileds(useAgentStore.getState()),
 } as const;
 
 export type AppState = {
@@ -96,6 +99,7 @@ const MergeStates: StateMerger = {
   },
   [StoreKey.Config]: mergeWithUpdate<AppState[StoreKey.Config]>,
   [StoreKey.Auth]: mergeWithUpdate<AppState[StoreKey.Auth]>,
+  [StoreKey.Agent]: mergeWithUpdate<AppState[StoreKey.Agent]>,
 };
 
 export function getLocalAppState() {
