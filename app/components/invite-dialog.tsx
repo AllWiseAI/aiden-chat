@@ -35,14 +35,13 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
   const [inviteArr, setInviteArr] = useState<inviteArrayItem[]>([]);
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation("general");
-  const lastItem = useMemo(() => {
-    return inviteArr.at(-1);
+
+  const vipItem = useMemo(() => {
+    return inviteArr.find((item) => item.usage_limit === 1000);
   }, [inviteArr]);
   const isVip = useMemo(() => {
-    if (lastItem?.usage_limit === 1000) {
-      return true;
-    } else return false;
-  }, [lastItem]);
+    return vipItem === undefined ? false : true;
+  }, [vipItem]);
 
   useEffect(() => {
     if (!open) return;
@@ -65,7 +64,7 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
   const handleClick = (index?: number) => {
     copyToClipboard(
       t(`invite.${isVip ? "textVip" : "text"}`, {
-        inviteCode: inviteArr.at(index ?? -1)!.code,
+        inviteCode: index ? inviteArr.at(index)!.code : vipItem?.code,
       }),
       t("invite.copy"),
     );
@@ -104,19 +103,18 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
         ) : isVip ? (
           <div className="flex flex-col gap-8 flex-1">
             <div className="flex-center flex-col gap-5">
-              <p className="text-main text-6xl">{lastItem?.code}</p>
+              <p className="text-main text-6xl">{vipItem?.code}</p>
               <div
                 className={clsx(
                   "w-30 h-12 flex-center text-[#FEFEFE] bg-[#000000]/49 backdrop-blur-xl border-3 border-[#00D47E] rounded-4xl",
-                  lastItem &&
-                    lastItem.current_usage_count < lastItem.usage_limit
+                  vipItem && vipItem.current_usage_count < vipItem.usage_limit
                     ? "hover:bg-[#000000]/75 cursor-pointer"
                     : "opacity-40",
                 )}
                 onClick={() => {
                   if (
-                    lastItem &&
-                    lastItem.current_usage_count < lastItem.usage_limit
+                    vipItem &&
+                    vipItem.current_usage_count < vipItem.usage_limit
                   ) {
                     handleClick();
                   }
@@ -129,12 +127,12 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
               <div className="h-9 flex justify-between items-center rounded-4xl backdrop-blur-xl text-white bg-[#000000]/17 px-3">
                 <span>{t("invite.vip.count")}</span>
                 <div className="w-7 flex-center">
-                  <span>{lastItem?.current_usage_count}</span>
+                  <span>{vipItem?.current_usage_count}</span>
                 </div>
               </div>
               <div className="h-9 flex justify-between items-center rounded-4xl backdrop-blur-xl text-white bg-[#000000]/17 px-3">
                 <span>{t("invite.vip.max")}</span>
-                <span>{lastItem?.usage_limit}</span>
+                <span>{vipItem?.usage_limit}</span>
               </div>
             </div>
           </div>
