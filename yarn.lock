@@ -9261,6 +9261,11 @@ react-usestateref@^1.0.9:
   resolved "https://registry.npmmirror.com/react-usestateref/-/react-usestateref-1.0.9.tgz#d40bc54db116e786b6b2bb1cd20fe06e7f8187f3"
   integrity sha512-t8KLsI7oje0HzfzGhxFXzuwbf1z9vhBM1ptHLUIHhYqZDKFuI5tzdhEVxSNzUkYxwF8XdpOErzHlKxvP7sTERw==
 
+react-virtuoso@^4.14.1:
+  version "4.14.1"
+  resolved "https://registry.npmmirror.com/react-virtuoso/-/react-virtuoso-4.14.1.tgz#78a5e796a3f9ec501499f01962ec6fc7eed77d8d"
+  integrity sha512-NRUF1ak8lY+Tvc6WN9cce59gU+lilzVtOozP+pm9J7iHshLGGjsiAB4rB2qlBPHjFbcXOQpT+7womNHGDUql8w==
+
 react@^18.2.0:
   version "18.2.0"
   resolved "https://registry.yarnpkg.com/react/-/react-18.2.0.tgz#555bd98592883255fa00de14f1151a917b5d77d5"

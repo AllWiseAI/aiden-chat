@@ -1,5 +1,6 @@
 "use client";
 import { useDebouncedCallback } from "use-debounce";
+import { Virtuoso } from "react-virtuoso";
 import React, {
   Fragment,
   RefObject,
@@ -412,16 +413,52 @@ function InnerChat() {
     return <Markdown content={prettyObject(request || "")} />;
   };
 
-  const renderMcpToolResponse = (response: string[] | undefined) => {
+  const renderMcpToolResponse = (
+    response: string[] | string | undefined,
+    chunkLength = 300,
+    maxHeight = 400,
+  ) => {
     if (!response?.length) return null;
-    return typeof response === "string" ? (
-      <div className="max-h-100 overflow-y-auto">{response}</div>
-    ) : (
-      <div className="max-h-100 overflow-y-auto">
-        {response.map((item, index) => (
-          <div key={index}>{item}</div>
-        ))}
-      </div>
+
+    let items: string[] = [];
+
+    if (typeof response === "string") {
+      items = Array.from(
+        { length: Math.ceil(response.length / chunkLength) },
+        (_, i) => response.slice(i * chunkLength, (i + 1) * chunkLength),
+      );
+    } else {
+      response.forEach((item) => {
+        if (typeof item === "string" && item.length > chunkLength) {
+          const chunks = Array.from(
+            { length: Math.ceil(item.length / chunkLength) },
+            (_, i) => item.slice(i * chunkLength, (i + 1) * chunkLength),
+          );
+          items = [...items, ...chunks];
+        } else {
+          items.push(item);
+        }
+      });
+    }
+
+    // 小于 50 行就直接渲染，不用虚拟滚动
+    if (items.length < 50) {
+      return (
+        <div className="max-h-100 overflow-y-auto">
+          {items.map((item, i) => (
+            <div key={i}>{item}</div>
+          ))}
+        </div>
+      );
+    }
+
+    // 超过 50 行使用虚拟滚动
+    return (
+      <Virtuoso
+        style={{ height: maxHeight }}
+        totalCount={items.length}
+        itemContent={(index) => <div>{items[index]}</div>}
+      />
     );
   };
 
