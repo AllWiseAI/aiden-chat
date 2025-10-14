@@ -121,6 +121,9 @@
   body {
     @apply bg-background text-foreground;
   }
+  input[type="password"]::-ms-reveal {
+    display: none;
+  }
 }
 
 @layer utilities {
