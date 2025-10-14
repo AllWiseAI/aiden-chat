@@ -7,7 +7,7 @@ import { useAgentStore } from "../store";
 import { track } from "../utils/analysis";
 
 let websocketInitialized = false;
-const REFRESH_INTERVAL = 2 * 60 * 1000;
+const REFRESH_INTERVAL = 5 * 60 * 1000;
 
 const initWebsocketWorker = async () => {
   console.log("[Main][Websocket] init websocket worker");
@@ -23,7 +23,7 @@ const initWebsocketWorker = async () => {
   const localToken = useAppConfig.getState().localToken;
   const userToken = useAuthStore.getState().userToken;
   const refreshToken = useAuthStore.getState().refreshToken;
-
+  let shouldRefresh = true;
   async function doRefresh() {
     try {
       console.log("[Main][Websocket] Refreshing access token...");
@@ -40,15 +40,24 @@ const initWebsocketWorker = async () => {
         console.log("[Main][Websocket] Token refreshed successfully");
       } else {
         console.warn("[Main][Websocket] Invalid refresh result:", result);
+        shouldRefresh = false;
       }
     } catch (err) {
+      shouldRefresh = false;
       console.error("[Main][Websocket] Failed to refresh token:", err);
     }
   }
 
   doRefresh();
 
-  setInterval(doRefresh, REFRESH_INTERVAL);
+  const refreshTimer = setInterval(() => {
+    if (!shouldRefresh) {
+      clearInterval(refreshTimer);
+      console.log("[Main][Websocket] Stopped token refresh loop.");
+      return;
+    }
+    doRefresh();
+  }, REFRESH_INTERVAL);
 
   wsWorker.postMessage({
     type: "connect",
