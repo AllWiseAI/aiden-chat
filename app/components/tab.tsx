@@ -101,19 +101,6 @@ export function Tab() {
       </div>
       <div>
         <div className="flex flex-col gap-2.5 items-center">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                onClick={() => setShowInvite(true)}
-                className="size-7 flex-center !px-1.5 py-1 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main rounded-2xl"
-              >
-                <InviteIcon className="size-4 text-main" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent hasArrow={false}>
-              <span className="cursor-default">{t("invite.btn")}</span>
-            </TooltipContent>
-          </Tooltip>
           {isShowUpdate && (
             <Tooltip>
               <TooltipTrigger asChild>
@@ -143,6 +130,19 @@ export function Tab() {
               </TooltipContent>
             </Tooltip>
           )}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={() => setShowInvite(true)}
+                className="size-7 flex-center !px-1.5 py-1 bg-[#00D47E]/12 hover:bg-[#00D47E]/20 text-main rounded-2xl"
+              >
+                <InviteIcon className="size-4 text-main" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent hasArrow={false}>
+              <span className="cursor-default">{t("invite.btn")}</span>
+            </TooltipContent>
+          </Tooltip>
         </div>
         {debugMode && (
           <div className="flex flex-col items-center">
