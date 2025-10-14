@@ -417,66 +417,89 @@ export function streamWithThink(
   let finished = false;
   let responseRes: Response;
 
-  function animateResponseText() {
+  // 每 80ms 更新一次 UI
+  const FRAME_INTERVAL = 80;
+  let lastUpdate = performance.now();
+  let pendingBuffer = "";
+
+  function scheduleAnimation() {
     if (finished || controller.signal.aborted) {
-      responseText += remainText;
-      console.log("[Response Animation] finished");
+      responseText += pendingBuffer + remainText;
+      pendingBuffer = "";
+      remainText = "";
       if (controller.signal.aborted) {
         options.onError?.(new Error("User canceled"), true);
-        return;
       }
+      console.log("[Response Animation] finished");
       return;
     }
 
+    const now = performance.now();
     if (remainText.length > 0) {
-      const fetchCount = Math.max(1, Math.round(remainText.length / 60));
+      // 动态分配取文本块
+      const fetchCount = Math.max(1, Math.round(remainText.length / 80));
       const fetchText = remainText.slice(0, fetchCount);
-      responseText += fetchText;
+      pendingBuffer += fetchText;
       remainText = remainText.slice(fetchCount);
+    }
+
+    if (now - lastUpdate >= FRAME_INTERVAL && pendingBuffer.length > 0) {
+      // 仅在超过间隔时才更新UI
+      responseText += pendingBuffer;
+      pendingBuffer = "";
+      lastUpdate = now;
       options.onUpdate?.(responseText);
     }
-    requestAnimationFrame(animateResponseText);
+
+    requestAnimationFrame(scheduleAnimation);
   }
 
-  animateResponseText();
+  requestAnimationFrame(scheduleAnimation);
 
   const finish = () => {
-    if (finished) {
-      return;
-    }
+    if (finished) return;
     finished = true;
-    options.onFinish(responseText + remainText, responseRes);
+
+    // 收尾，清空缓存
+    responseText += pendingBuffer + remainText;
+    pendingBuffer = "";
+    remainText = "";
+
+    options.onFinish?.(responseText, responseRes);
+
+    // 主动 hint GC
+    setTimeout(() => {
+      responseText = "";
+    }, 1000);
   };
 
   controller.signal.onabort = finish;
 
   async function chatApi(chatPath: string, headers: any, requestPayload: any) {
-    console.log("[Request] request chatApi: ", chatPath);
+    console.log("[Request] request chatApi:", chatPath);
     const chatPayload = {
       method: "POST",
-      body: JSON.stringify({
-        ...requestPayload,
-        stream: true,
-      }),
+      body: JSON.stringify({ ...requestPayload, stream: true }),
       signal: controller.signal,
       headers: {
         ...headers,
         Accept: "text/event-stream",
       },
     };
-    console.log("[Request] chatApi payload headers: ", chatPayload.headers);
+
     const requestTimeoutId = setTimeout(
       () => controller.abort(),
       REQUEST_TIMEOUT_MS,
     );
+
     fetchEventSource(chatPath, {
       fetch: tauriFetch as any,
       ...chatPayload,
       async onopen(res) {
         clearTimeout(requestTimeoutId);
-        const contentType = res.headers.get("content-type");
         responseRes = res;
 
+        const contentType = res.headers.get("content-type");
         if (contentType?.startsWith("text/plain")) {
           responseText = await res.clone().text();
           return finish();
@@ -495,46 +518,32 @@ export function streamWithThink(
             const resJson = await res.clone().json();
             extraInfo = prettyObject(resJson);
           } catch {}
-
-          if (res.status === 401) {
-            responseTexts.push(t("error.unauthorized"));
-          }
-
-          if (extraInfo) {
-            responseTexts.push(extraInfo);
-          }
-
+          if (res.status === 401) responseTexts.push(t("error.unauthorized"));
+          if (extraInfo) responseTexts.push(extraInfo);
           responseText = responseTexts.join("\n\n");
-
           return finish();
         }
       },
       async onmessage(msg) {
-        responseText = responseText.replace("::loading[]", "");
-        if (msg.data === "[DONE]" || finished) {
-          return finish();
-        }
-        const text = msg.data;
-        // Skip empty messages
-        if (!text || text.trim().length === 0) {
-          return;
-        }
+        if (finished) return;
+        if (msg.data === "[DONE]") return finish();
+
+        const text = msg.data?.trim();
+        if (!text) return;
+
         try {
           const chunk = parseSSE(text);
 
           if (!chunk?.content || chunk.content.length === 0) {
             const { msg, code } = chunk.rawResp || {};
-            if (msg || code) {
-              options.onError(chunk.rawResp, true);
-            }
+            if (msg || code) options.onError?.(chunk.rawResp, true);
             return;
           }
+
           if (chunk.mcpInfo) {
             const { type } = chunk.mcpInfo;
-            if (type === McpStepsAction.ToolPeek) {
-              options.onToolPeek(chunk.mcpInfo);
-            }
-
+            if (type === McpStepsAction.ToolPeek)
+              options.onToolPeek?.(chunk.mcpInfo);
             if (type === McpStepsAction.ToolCallConfirm) {
               // should check if user has approved the MCP
               const userHasApproved = settingStore.getUserMcpApproveStatus(
@@ -585,29 +594,19 @@ export function streamWithThink(
                 request: prettyObject(chunk.mcpInfo || "") + "\n\n",
               });
             } else if (type === McpStepsAction.ToolResult) {
-              console.log("[MCP] Tool result: ", chunk.mcpInfo.result);
               options.onUpdate?.(responseText, {
                 response: chunk.mcpInfo.result,
               });
             }
           } else if (Array.isArray(chunk.content)) {
-            // only for image, uplpad here and update content
             const formatContent = [];
             for (const item of chunk.content) {
               if (item.type === "image_url") {
                 const url = await uploadFileWithProgress(
                   item.image_url?.url ?? "",
-                  (percent) => {
-                    console.log("upload progress", percent);
-                  },
+                  (percent) => console.log("upload progress", percent),
                 );
-                console.log("upload image url: ", url);
-                formatContent.push({
-                  type: "image_url",
-                  image_url: {
-                    url: url,
-                  },
-                });
+                formatContent.push({ type: "image_url", image_url: { url } });
               } else {
                 formatContent.push(item);
               }
@@ -626,11 +625,12 @@ export function streamWithThink(
       onerror(e) {
         console.error("[Request] stream error", e);
         options?.onError?.(e, true);
-        throw e;
+        finish();
       },
       openWhenHidden: true,
     });
   }
+
   console.log("[ChatAPI] start");
-  chatApi(chatPath, headers, requestPayload); // call fetchEventSource
+  chatApi(chatPath, headers, requestPayload);
 }
