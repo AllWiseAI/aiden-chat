@@ -19,51 +19,63 @@ export function GoogleAuth() {
   const setLoginInfo = useAuthStore((state) => state.setLoginInfo);
   const navigate = useNavigate();
 
-  async function pollLoginStatus(session_id: string): Promise<any> {
-    const interval = 3000;
-
-    while (true) {
-      try {
-        const loginStatus: GoogleStatusResponse = await googleLoginStatus({
-          session_id,
-        });
-        console.log("[pollLoginStatus] 当前状态:", loginStatus.status);
-
-        if (loginStatus.status !== "pending") {
-          console.log("[pollLoginStatus] 登录状态已确定:", loginStatus);
-          return loginStatus;
-        }
-        await new Promise((resolve) => setTimeout(resolve, interval));
-      } catch (err) {
-        console.error("[pollLoginStatus] 请求出错:", err);
-        throw err;
-      }
-    }
-  }
-
-  const handleGoogleLogin = async () => {
-    const result = await googleLogin();
-    const { session_id, redirect_url }: GoogleLoginResponse = result;
-    if (redirect_url) {
-      shell.open(redirect_url);
-      const res = await pollLoginStatus(session_id);
-      if (res.status === "completed" || res.status === "completed_signup") {
-        const status = res.status;
-        setLoginInfo(res);
-        appDataInit();
-        await appWindow.setAlwaysOnTop(true);
-        if (status === "completed") {
-          navigate(Path.Chat);
-        } else if (status === "completed_signup") {
-          navigate(Path.Invite);
-        }
-        localStorage.setItem("user-email", res.email);
-      }
-    }
-  };
-
   useEffect(() => {
+    const controller = new AbortController();
+
+    async function pollLoginStatus(session_id: string): Promise<any> {
+      const interval = 3000;
+      while (!controller.signal.aborted) {
+        try {
+          const res: GoogleStatusResponse = await googleLoginStatus({
+            session_id,
+          });
+          console.log("[pollLoginStatus] 当前状态:", res.status);
+
+          if (res.status !== "pending") {
+            console.log("[pollLoginStatus] 登录状态已确定:", res);
+            return res;
+          }
+        } catch (err) {
+          if (controller.signal.aborted) return;
+          console.error("[pollLoginStatus] 请求出错:", err);
+        }
+        await new Promise((r) => setTimeout(r, interval));
+      }
+    }
+
+    async function handleGoogleLogin() {
+      try {
+        const { session_id, redirect_url }: GoogleLoginResponse =
+          await googleLogin();
+        if (!redirect_url) return;
+        shell.open(redirect_url);
+
+        const result = await pollLoginStatus(session_id);
+        if (!result || controller.signal.aborted) return;
+
+        const status = result.status;
+        if (status === "completed" || status === "completed_signup") {
+          setLoginInfo(result);
+          appDataInit();
+          await appWindow.show();
+          await appWindow.setFocus();
+          localStorage.setItem("user-email", result.email);
+
+          navigate(status === "completed" ? Path.Chat : Path.Invite);
+        }
+      } catch (err) {
+        if (!controller.signal.aborted) {
+          console.error("[GoogleAuth] 登录流程出错:", err);
+        }
+      }
+    }
+
     handleGoogleLogin();
+
+    return () => {
+      console.log("[GoogleAuth] 组件卸载，终止轮询");
+      controller.abort();
+    };
   }, []);
 
   return (
