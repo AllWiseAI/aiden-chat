@@ -232,11 +232,13 @@ export const useAuthStore = createPersistStore(
             }
           })();
 
-          refreshingPromise = newRefreshingPromise;
+          refreshingPromise = newRefreshingPromise.catch((e) => {
+            window.location.href = "/#/login";
+            throw e;
+          });
           return newRefreshingPromise;
         } catch (e: any) {
           refreshingPromise = null;
-          window.location.href = "/#/login";
           throw new Error(`Refresh Token Failed: ${e.message}`);
         }
       },
