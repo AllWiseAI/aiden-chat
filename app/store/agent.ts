@@ -23,7 +23,7 @@ const DEFAULT_AGENT_STATE = {
 
 const BUILTIN_AGENTS: Agent[] = [
   {
-    id: "1",
+    id: "default-multi-agent",
     name: "Artist",
     avatar: "👩🏻‍💻",
     source: AgentSource.BuiltIn,
@@ -39,7 +39,7 @@ const BUILTIN_AGENTS: Agent[] = [
     },
   },
   {
-    id: "2",
+    id: "default-text-agent",
     name: "Executor",
     avatar: "👩🏻‍💼",
     source: AgentSource.BuiltIn,
@@ -196,6 +196,6 @@ export const useAgentStore = createPersistStore(
   },
   {
     name: StoreKey.Agent,
-    version: 0.3,
+    version: 0.4,
   },
 );

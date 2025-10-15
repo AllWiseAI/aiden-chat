@@ -333,6 +333,7 @@ function InnerChat() {
 
   // preview messages
   const renderMessages = useMemo(() => {
+    console.log(11111, session.messages);
     return context.concat(session.messages as RenderMessage[]).concat(
       isLoading
         ? [
@@ -616,21 +617,21 @@ function InnerChat() {
                                 message.content && "pb-7",
                               )}
                             >
-                              {/* {!isUser && (
+                              {!isUser && message.agent && (
                                 <div className="flex items-center gap-2">
                                   <div className="size-[38px] flex-center rounded-full bg-[#F3F5F7] dark:bg-[#6F6F6F]">
-                                    😝
+                                    {message.agent.avatar}
                                   </div>
                                   <div className="flex flex-col">
                                     <span className="text-[15px] font-medium">
-                                      Multimodal Agent
+                                      {message.agent.name}
                                     </span>
                                     <span className="text-[10px] font-extralight">
-                                      gpt-4o
+                                      {message.agent.model.name}
                                     </span>
                                   </div>
                                 </div>
-                              )} */}
+                              )}
 
                               <div
                                 className={clsx(

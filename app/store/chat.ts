@@ -9,6 +9,7 @@ import type {
   MultimodalContent,
   RequestMessage,
   ToolCallInfo,
+  AgentInfo,
 } from "../client/api";
 import { getClientApi } from "../client/api";
 import { ChatControllerPool } from "../client/controller";
@@ -44,6 +45,7 @@ export type ChatMessage = RequestMessage & {
   model?: string;
   tools?: ChatMessageTool[];
   audio_url?: string;
+  agent?: AgentInfo;
   isMcpResponse?: boolean;
   errorInfo?: string;
   content: string | MultimodalContent[];
@@ -404,6 +406,9 @@ export const useChatStore = createPersistStore(
           onToolCall: (toolCallInfo) => {
             get().onToolCall(toolCallInfo, session);
           },
+          onAgentCall: (agentInfo) => {
+            get().onAgentCall(agentInfo, session);
+          },
           onToolPeek: (toolPeekInfo: { name: string; type: string }) => {
             get().onToolPeek(toolPeekInfo, session);
           },
@@ -568,6 +573,20 @@ export const useChatStore = createPersistStore(
         });
       },
 
+      onAgentCall(agentInfo: AgentInfo, currentSession: ChatSession) {
+        console.log(agentInfo, 6, currentSession);
+        const session = currentSession;
+
+        get().updateTargetSession(session, (session: ChatSession) => {
+          const lastIndex = session.messages.length - 1;
+          if (lastIndex < 0) return;
+
+          session.messages[lastIndex] = {
+            ...session.messages[lastIndex],
+            agent: agentInfo,
+          };
+        });
+      },
       onToolCall(toolCallInfo: ToolCallInfo, currentSession: ChatSession) {
         const botMessage =
           currentSession!.messages[currentSession!.messages.length - 1]!;

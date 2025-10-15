@@ -10,11 +10,10 @@ import {
   showConfirm,
   ConfirmType,
 } from "@/app/components/confirm-modal/confirm";
-import { useSettingStore } from "@/app/store/setting";
+import { useSettingStore, useAgentStore } from "@/app/store";
+
 import { McpStepsAction, ProviderOption } from "../typing";
 import { uploadFileWithProgress } from "../services/file";
-
-const settingStore = useSettingStore.getState();
 
 type TMcpInfo = {
   id: string;
@@ -25,12 +24,16 @@ type TMcpInfo = {
 };
 
 type TParseSSEResult = {
-  isMcpInfo: boolean;
+  isMcpInfo?: boolean;
   content?: string;
   mcpInfo?: TMcpInfo;
   rawResp?: {
     msg?: string;
     code?: number | string;
+  };
+  agentInfo?: {
+    id: string;
+    model?: string;
   };
 };
 
@@ -125,7 +128,18 @@ export function parseSSE(text: string): TParseSSEResult {
   }
 
   if (!choices?.length) {
-    if (extra && extra.mcp && extra.mcp.type === McpStepsAction.ToolPeek) {
+    if (extra && extra.agent_info && extra.agent_info.from_agent_id) {
+      const id = extra.agent_info.from_agent_id;
+      return {
+        agentInfo: {
+          id,
+        },
+      };
+    } else if (
+      extra &&
+      extra.mcp &&
+      extra.mcp.type === McpStepsAction.ToolPeek
+    ) {
       console.log("tool_peek: ", extra.mcp);
       return {
         isMcpInfo: true,
@@ -533,22 +547,30 @@ export function streamWithThink(
 
         try {
           const chunk = parseSSE(text);
-
-          if (!chunk?.content || chunk.content.length === 0) {
+          if (
+            (!chunk?.content || chunk.content.length === 0) &&
+            !chunk.agentInfo
+          ) {
             const { msg, code } = chunk.rawResp || {};
             if (msg || code) options.onError?.(chunk.rawResp, true);
             return;
           }
-
+          if (chunk.agentInfo) {
+            const { id } = chunk.agentInfo;
+            const { avatar, model, name } = useAgentStore
+              .getState()
+              .getAgentById(id)!;
+            options.onAgentCall({ id, avatar, model, name });
+          }
           if (chunk.mcpInfo) {
             const { type } = chunk.mcpInfo;
             if (type === McpStepsAction.ToolPeek)
               options.onToolPeek?.(chunk.mcpInfo);
             if (type === McpStepsAction.ToolCallConfirm) {
               // should check if user has approved the MCP
-              const userHasApproved = settingStore.getUserMcpApproveStatus(
-                chunk.mcpInfo.tool,
-              );
+              const userHasApproved = useSettingStore
+                .getState()
+                .getUserMcpApproveStatus(chunk.mcpInfo.tool);
 
               let approved = false;
               const toolName = chunk.mcpInfo.tool;
@@ -576,10 +598,9 @@ export function streamWithThink(
                   console.log(
                     "[MCP confirm] User approved. Set user approval status to true.",
                   );
-                  settingStore.setUserMcpApproveStatus(
-                    chunk.mcpInfo.tool,
-                    true,
-                  );
+                  useSettingStore
+                    .getState()
+                    .setUserMcpApproveStatus(chunk.mcpInfo.tool, true);
                 }
                 if (result === ConfirmType.Decline) {
                   console.log("[MCP confirm] User rejected.");

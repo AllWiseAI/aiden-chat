@@ -46,6 +46,17 @@ export interface SpeechOptions {
   onController?: (controller: AbortController) => void;
 }
 
+export interface AgentInfo {
+  id: string;
+  name: string;
+  avatar: string;
+  model: {
+    name: string;
+    provider: string;
+    endpoint: string;
+    apiKey: string | undefined;
+  };
+}
 export interface ToolCallInfo {
   approved: boolean;
   tool_call_id: string;
@@ -61,6 +72,7 @@ export interface ChatOptions {
   messages?: RequestMessage[];
   config: LLMConfig;
   onToolCall?: (toolCallInfo: ToolCallInfo) => void;
+  onAgentCall?: (agentInfo: AgentInfo) => void;
   onToolPeek?: (toolPeeknfo: { name: string; type: string }) => void;
   toolCallInfo?: ToolCallInfo;
   onUpdate?: (
