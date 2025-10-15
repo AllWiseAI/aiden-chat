@@ -130,11 +130,12 @@ function connect() {
   socket.onmessage = (event) => {
     try {
       const data = JSON.parse(event.data) as TaskMessage | { type: string };
-      console.log("[Worker][WebSocket] Received message:", data.type);
+
       if (data.type === "pong") {
         resetPongTimeout();
         return;
       }
+      console.log("[Worker][WebSocket] Received message:", data.type);
 
       switch (data.type) {
         case "get_latest_refresh_token":

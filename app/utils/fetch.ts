@@ -106,25 +106,21 @@ export const getHeaders = async ({
 
   if (token.accessToken) {
     let latestToken = useAuthStore.getState().userToken.accessToken;
-    console.log("refresh token before:", token.accessToken);
+
     if (refresh && token.expires * 1000 - Date.now() <= FIVE_MINUTES) {
-      console.log("[refresh token] token is going to expired, refresh token.");
       try {
         const token = await refreshToken();
         if (token) {
           latestToken = token;
         }
-        console.log("refresh token after:", token);
       } catch (e) {
+        console.log("refresh token before:", token.refreshToken);
         console.log("[refresh token] refresh token error: ", e);
-        // window.location.href = "/#/login";
         toast.error(t("error.refreshToken"));
       } finally {
         console.log("[refresh token] refresh token done.");
       }
     }
-
-    console.log("[refresh token] latest token: ", latestToken);
     headers[`${aiden ? "Aiden-" : ""}Authorization`] = `Bearer ${latestToken}`;
   }
   if (aiden) {

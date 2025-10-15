@@ -26,9 +26,7 @@ const initWebsocketWorker = async () => {
   let shouldRefresh = true;
   async function doRefresh() {
     try {
-      console.log("[Main][Websocket] Refreshing access token...");
       const result = await refreshToken();
-      console.log("[Main][Websocket] Refresh token result:", result);
       if (result) {
         wsWorker.postMessage({
           type: "refreshToken",
