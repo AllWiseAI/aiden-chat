@@ -732,14 +732,6 @@ function InnerChat() {
                         </Fragment>
                       );
                     } else {
-                      console.log(13124, message.content);
-                      console.log(
-                        11111,
-                        Array.isArray(message.content) &&
-                          (message.content as RenderMessage[]).some(
-                            (item) => typeof item.content === "string",
-                          ),
-                      );
                       return (
                         <Fragment
                           key={(message.content[0] as RenderMessage).id}
@@ -891,7 +883,7 @@ function InnerChat() {
                                     (item) => typeof item.content === "string",
                                   ) && (
                                     <ChatMessageItemTab
-                                      content={""}
+                                      content={message.content}
                                       className="absolute bottom-0 invisible group-hover:visible left-2.5"
                                     />
                                   )}

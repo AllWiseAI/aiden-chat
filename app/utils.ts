@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "@/app/utils/toast";
 import { t } from "i18next";
-import { RequestMessage, MultimodalContent } from "./client/api";
+import { RequestMessage } from "./client/api";
 import {
   REQUEST_TIMEOUT_MS,
   REQUEST_TIMEOUT_MS_FOR_THINKING,
@@ -59,15 +59,40 @@ export async function copyToClipboard(text: string, toastStr?: string) {
   }
 }
 
-export async function copyContentsToClipboard(contents: MultimodalContent[]) {
+export async function copyContentsToClipboard(contents: any[]) {
   try {
-    const texts = contents
-      .filter((item) => item.type === "text" && item.text)
-      .map((item) => item.text)
-      .join("\n");
+    // 存储所有要复制的文本
+    const textsToCopy: string[] = [];
 
-    if (texts) {
-      await navigator.clipboard.writeText(texts);
+    // 遍历内容数组
+    for (const item of contents) {
+      // 如果是纯字符串，直接添加
+      if (typeof item === "string") {
+        textsToCopy.push(item);
+      }
+      // 如果是对象且有content属性
+      else if (item && item.content) {
+        // 如果content是字符串，直接添加
+        if (typeof item.content === "string") {
+          textsToCopy.push(item.content);
+        }
+        // 如果content是数组，需要遍历处理
+        else if (Array.isArray(item.content)) {
+          for (const contentItem of item.content) {
+            // 只处理文本类型，跳过图片
+            if (contentItem.type === "text" && contentItem.text) {
+              textsToCopy.push(contentItem.text);
+            }
+            // 跳过图片类型 (比如 image_url)
+          }
+        }
+      }
+    }
+
+    // 用换行符连接所有文本，并复制到剪贴板
+    if (textsToCopy.length > 0) {
+      const finalText = textsToCopy.join("\n");
+      await navigator.clipboard.writeText(finalText);
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

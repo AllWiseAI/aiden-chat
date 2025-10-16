@@ -23,7 +23,7 @@ const DEFAULT_AGENT_STATE = {
 
 const BUILTIN_AGENTS: Agent[] = [
   {
-    id: "default-multi-agent",
+    id: "default-multi-model-agent",
     name: "Artist",
     avatar: "👩🏻‍💻",
     source: AgentSource.BuiltIn,

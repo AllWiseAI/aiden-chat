@@ -412,7 +412,6 @@ export const useChatStore = createPersistStore(
           onUpdate(message, mcpInfo, agentInfo) {
             botMessage.streaming = true;
             if (message) {
-              console.log(botMessage, "bot");
               botMessage.content = message;
             }
             if (mcpInfo) {
@@ -454,7 +453,6 @@ export const useChatStore = createPersistStore(
             });
           },
           async onFinish(message, _, mcpInfo) {
-            console.log("finish", botMessage);
             botMessage.streaming = false;
             if (mcpInfo) {
               botMessage.isMcpResponse = true;

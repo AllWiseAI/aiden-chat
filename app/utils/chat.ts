@@ -635,9 +635,7 @@ export function streamWithThink(
             }
             options.onUpdateImage?.(formatContent);
           } else {
-            console.log(67677, remainText, chunk);
             remainText += chunk.content;
-            console.log(67678, remainText);
           }
         } catch (e) {
           console.error("[Request] parse error", text, msg, e);
