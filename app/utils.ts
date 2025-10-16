@@ -61,38 +61,28 @@ export async function copyToClipboard(text: string, toastStr?: string) {
 
 export async function copyContentsToClipboard(contents: any[]) {
   try {
-    // 存储所有要复制的文本
     const textsToCopy: string[] = [];
 
-    // 遍历内容数组
     for (const item of contents) {
-      // 如果是纯字符串，直接添加
       if (typeof item === "string") {
         textsToCopy.push(item);
-      }
-      // 如果是对象且有content属性
-      else if (item && item.content) {
-        // 如果content是字符串，直接添加
+      } else if (item && item.content) {
         if (typeof item.content === "string") {
           textsToCopy.push(item.content);
-        }
-        // 如果content是数组，需要遍历处理
-        else if (Array.isArray(item.content)) {
+        } else if (Array.isArray(item.content)) {
           for (const contentItem of item.content) {
-            // 只处理文本类型，跳过图片
             if (contentItem.type === "text" && contentItem.text) {
               textsToCopy.push(contentItem.text);
             }
-            // 跳过图片类型 (比如 image_url)
+            // 跳过图片类型 (比如 image_url) - 后续开发
           }
         }
       }
     }
 
-    // 用换行符连接所有文本，并复制到剪贴板
     if (textsToCopy.length > 0) {
       const finalText = textsToCopy.join("\n");
-      await navigator.clipboard.writeText(finalText);
+      await copyToClipboard(finalText);
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
