@@ -101,7 +101,7 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
           <div className="flex-center flex-1">
             <LoadingIcon className="size-6 animate-spin" />
           </div>
-        ) : !isVip ? (
+        ) : isVip ? (
           <div className="flex flex-col gap-8 flex-1">
             <div className="flex-center flex-col gap-5">
               <p className="text-main text-6xl">{vipItem?.code}</p>
