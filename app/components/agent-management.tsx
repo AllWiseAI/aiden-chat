@@ -440,23 +440,25 @@ export default function AgentManagement() {
   // };
 
   return (
-    <div className="h-full @container">
-      <div className="flex justify-between items-center mb-4">
-        <p className="font-medium">{t("agent.title")}</p>
-        {/* <Button
+    <>
+      <div className="h-full @container">
+        <div className="flex justify-between items-center mb-4">
+          <p className="font-medium">{t("agent.title")}</p>
+          {/* <Button
           onClick={handleAddAgent}
           className="flex items-center gap-2 h-7 bg-[#00AB66]/12 dark:bg-[#00D47E]/6 hover:bg-[#BEF0DD] dark:hover:bg-[#00D47E]/12 text-main text-sm font-normal rounded-sm"
         >
           <PlusIcon className="size-4" />
           <span>{t("agent.add")}</span>
         </Button> */}
+        </div>
+        <AgentList
+          onEdit={(agent) => {
+            setSelectedItem(agent);
+            setShowEdit(true);
+          }}
+        />
       </div>
-      <AgentList
-        onEdit={(agent) => {
-          setSelectedItem(agent);
-          setShowEdit(true);
-        }}
-      />
       {showEdit && (
         <AgentEditDialog
           open={showEdit}
@@ -472,6 +474,6 @@ export default function AgentManagement() {
           }}
         />
       )}
-    </div>
+    </>
   );
 }
