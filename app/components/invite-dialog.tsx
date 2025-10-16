@@ -64,7 +64,8 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
   const handleClick = (index?: number) => {
     copyToClipboard(
       t(`invite.${isVip ? "textVip" : "text"}`, {
-        inviteCode: index ? inviteArr.at(index)!.code : vipItem?.code,
+        inviteCode:
+          index !== undefined ? inviteArr.at(index)!.code : vipItem?.code,
       }),
       t("invite.copy"),
     );
@@ -100,7 +101,7 @@ export function InviteDialog({ open, onOpenChange }: InviteDialogProps) {
           <div className="flex-center flex-1">
             <LoadingIcon className="size-6 animate-spin" />
           </div>
-        ) : isVip ? (
+        ) : !isVip ? (
           <div className="flex flex-col gap-8 flex-1">
             <div className="flex-center flex-col gap-5">
               <p className="text-main text-6xl">{vipItem?.code}</p>
