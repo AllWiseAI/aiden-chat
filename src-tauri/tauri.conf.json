@@ -9,7 +9,7 @@
   },
   "package": {
     "productName": "Aiden",
-    "version": "0.1.58"
+    "version": "0.1.59"
   },
   "tauri": {
     "allowlist": {
