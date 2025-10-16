@@ -2,16 +2,19 @@ import { useState } from "react";
 import { copyToClipboard, copyContentsToClipboard } from "../utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./shadcn/tooltip";
 import { useTranslation } from "react-i18next";
+import { ChatMessage } from "../store";
 import { MultimodalContent } from "../client/api";
 import CopyIcon from "../icons/copy.svg";
 import SuccessIcon from "../icons/success.svg";
 import clsx from "clsx";
 
+type RenderMessage = ChatMessage & { preview?: boolean };
+
 export function ChatMessageItemTab({
   content,
   className,
 }: {
-  content: string | MultimodalContent[];
+  content: string | MultimodalContent[] | RenderMessage[];
   className: string;
 }) {
   const [copied, setCopied] = useState(false);

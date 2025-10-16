@@ -9,6 +9,7 @@ import type {
   MultimodalContent,
   RequestMessage,
   ToolCallInfo,
+  AgentInfo,
 } from "../client/api";
 import { getClientApi } from "../client/api";
 import { ChatControllerPool } from "../client/controller";
@@ -44,6 +45,7 @@ export type ChatMessage = RequestMessage & {
   model?: string;
   tools?: ChatMessageTool[];
   audio_url?: string;
+  agent?: AgentInfo;
   isMcpResponse?: boolean;
   errorInfo?: string;
   content: string | MultimodalContent[];
@@ -407,7 +409,7 @@ export const useChatStore = createPersistStore(
           onToolPeek: (toolPeekInfo: { name: string; type: string }) => {
             get().onToolPeek(toolPeekInfo, session);
           },
-          onUpdate(message, mcpInfo) {
+          onUpdate(message, mcpInfo, agentInfo) {
             botMessage.streaming = true;
             if (message) {
               botMessage.content = message;
@@ -431,6 +433,9 @@ export const useChatStore = createPersistStore(
                   botMessage.mcpInfo.response.push(mcpInfo.response);
                 }
               }
+            }
+            if (agentInfo) {
+              botMessage.agent = agentInfo;
             }
             get().updateTargetSession(session, (session) => {
               session.messages = session.messages.concat();
@@ -602,7 +607,7 @@ export const useChatStore = createPersistStore(
           toolCallInfo,
           chatId: session.id,
           config: { ...modelConfig, stream: true },
-          onUpdate(message, mcpInfo) {
+          onUpdate(message, mcpInfo, agentInfo) {
             botMessage.streaming = true;
             if (message) {
               botMessage.content = message;
@@ -612,6 +617,8 @@ export const useChatStore = createPersistStore(
               if (botMessage.mcpInfo) {
                 botMessage.mcpInfo.response.push(mcpInfo.response ?? "");
               }
+            }
+            if (agentInfo) {
             }
             get().updateTargetSession(session, (session: ChatSession) => {
               session.messages = session.messages.concat();
