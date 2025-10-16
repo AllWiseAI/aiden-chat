@@ -28,7 +28,6 @@ import LightMode from "../../icons/theme-light.svg";
 import DarkMode from "../../icons/theme-dark.svg";
 import SystemMode from "../../icons/theme-system.svg";
 import InfoIcon from "../../icons/info.svg";
-import { ChangePasswordModal, SuccessModal } from "./change-password-modal";
 import RestartDialog from "../restart-dialog";
 import { track, EVENTS } from "@/app/utils/analysis";
 import clsx from "clsx";
@@ -43,8 +42,6 @@ export default function General() {
   const email = useAuthStore((state) => state.user.email);
   const navigate = useNavigate();
   const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [currentRegion, setCurrentRegion] = useState<string>(region);
   const [theme, setTheme] = useState<Theme.Auto | Theme.Dark | Theme.Light>(
     config.theme,
@@ -96,12 +93,6 @@ export default function General() {
           <div className="w-full flex justify-between items-center gap-5 p-2.5 bg-[#F3F5F7]/30 dark:bg-[#232627]/30 border border-[#E8ECEF] dark:border-[#232627] rounded-sm text-base">
             <p className="text-sm">{email}</p>
             <div className="flex items-center gap-5">
-              <div
-                className="text-main underline cursor-pointer hover:opacity-70"
-                onClick={() => setShowPasswordModal(true)}
-              >
-                {t("general.password.change")}
-              </div>
               <div
                 className="text-[#EF466F] underline cursor-pointer hover:opacity-70"
                 onClick={logout}
@@ -252,22 +243,6 @@ export default function General() {
           isOpen={isAlertOpen}
         ></RestartDialog>
       </div>
-      {showPasswordModal && (
-        <ChangePasswordModal
-          open={showPasswordModal}
-          onOpenChange={setShowPasswordModal}
-          onSuccess={() => {
-            setShowPasswordModal(false);
-            setShowSuccessModal(true);
-          }}
-        />
-      )}
-      {showSuccessModal && (
-        <SuccessModal
-          open={showSuccessModal}
-          onOpenChange={setShowSuccessModal}
-        />
-      )}
     </>
   );
 }
