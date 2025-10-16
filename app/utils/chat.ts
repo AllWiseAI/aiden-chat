@@ -442,6 +442,7 @@ export function streamWithThink(
       pendingBuffer = "";
       remainText = "";
       if (controller.signal.aborted) {
+        console.log("[Response Animation] aborted");
         options.onError?.(new Error("User canceled"), true);
       }
       console.log("[Response Animation] finished");
@@ -540,7 +541,10 @@ export function streamWithThink(
       },
       async onmessage(msg) {
         if (finished) return;
-        if (msg.data === "[DONE]") return finish();
+        if (msg.data === "[DONE]") {
+          console.log("[Response] DONE");
+          return finish();
+        }
 
         const text = msg.data?.trim();
         if (!text) return;

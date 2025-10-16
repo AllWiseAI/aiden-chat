@@ -448,6 +448,7 @@ export const useChatStore = createPersistStore(
             });
             botMessage.content = content;
             botMessage.date = new Date().toLocaleString();
+            botMessage.streaming = false;
             get().updateTargetSession(session, (session) => {
               session.messages = session.messages.concat([botMessage]);
             });
@@ -481,6 +482,7 @@ export const useChatStore = createPersistStore(
               get().onNewMessage(botMessage, session);
             }
             ChatControllerPool.remove(session.id, botMessage.id);
+            console.log("[Chat] User input response finished");
           },
           onBeforeTool(tool: ChatMessageTool) {
             (botMessage.tools = botMessage?.tools || []).push(tool);
@@ -647,6 +649,7 @@ export const useChatStore = createPersistStore(
               get().onNewMessage(botMessage, session);
             }
             ChatControllerPool.remove(session.id, botMessage.id);
+            console.log("[Chat] tool call finished");
           },
           onBeforeTool(tool: ChatMessageTool) {
             (botMessage.tools = botMessage?.tools || []).push(tool);

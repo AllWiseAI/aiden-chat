@@ -157,11 +157,12 @@
       "title": "Pro ",
       "price": "$99",
       "content": "Ultimalt Solutions",
-      "feature1Text": "Access to all supported models",
+      "feature1Text": "All supported models",
       "feature2Text": "Up to ",
       "feature2Amount": "2,000  calls/day",
       "feature3Text": {
-        "1": "- Unlimited processing for very large tasks (long documents, research projects, full codebases, etc.)",
+        "0": "- Unlimited",
+        "1": " processing for very large tasks (long documents, research projects, full codebases, etc.)",
         "2": "- Dedicated fast channels with priority execution and lower latency",
         "3": "- Stable & reliable performance guarantees",
         "4": "- Dedicated customer service with priority response and issue tracking"

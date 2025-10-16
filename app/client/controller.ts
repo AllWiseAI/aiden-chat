@@ -22,6 +22,14 @@ export const ChatControllerPool = {
     Object.values(this.controllers).forEach((v) => v.abort());
   },
 
+  stopSession(sessionId: string) {
+    Object.keys(this.controllers).forEach((key) => {
+      if (key.startsWith(`${sessionId},`)) {
+        this.controllers[key].abort();
+      }
+    });
+  },
+
   hasPending() {
     return Object.values(this.controllers).length > 0;
   },

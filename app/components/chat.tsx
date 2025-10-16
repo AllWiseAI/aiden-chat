@@ -273,8 +273,7 @@ function InnerChat() {
   const doSubmit = (userInput: string) => {
     if (isChatting) {
       const sessionId = session.id;
-      const messageId = session.messages[session.messages.length - 1].id;
-      ChatControllerPool.stop(sessionId, messageId);
+      ChatControllerPool.stopSession(sessionId);
       return;
     }
     if (userInput.trim() === "" && isEmpty(files)) return;

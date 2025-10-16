@@ -466,7 +466,6 @@ export const useMcpStore = createPersistStore(
       },
 
       pollMcpStatus: async () => {
-        console.log("[Mcp store] pollMcpStatus");
         const { mcpStatusList, batchUpdateMcpStatusList, config } = _get();
         if (!config) return;
 

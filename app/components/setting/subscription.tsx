@@ -265,14 +265,14 @@ export default function Subscription() {
               </div>
               <div className="flex flex-col gap-2 text-sm text-[#FEFEFE]/80">
                 <div>
-                  <span className="text-[#744ADE] mr-1">
+                  <span className="text-[#B38FFF] mr-1">
                     {t("subscription.feature1")}
                   </span>
                   <span>{t("subscription.pro.feature1Text")}</span>
                 </div>
 
                 <div>
-                  <span className="text-[#744ADE] font-semibold mr-1">
+                  <span className="text-[#B38FFF] font-semibold mr-1">
                     {t("subscription.feature2")}
                   </span>
                   <span className="font-normal">
@@ -283,13 +283,19 @@ export default function Subscription() {
                   </span>
                 </div>
                 <div>
-                  <span className="text-[#744ADE] font-semibold mr-1">
+                  <span className="text-[#B38FFF] font-semibold mr-1">
                     {t("subscription.feature3")}
                   </span>
                   <div className="flex flex-col gap-1">
-                    <span className="font-normal">
-                      {t("subscription.pro.feature3Text.1")}
-                    </span>
+                    <div>
+                      <span className="font-normal text-[#B38FFF]">
+                        {t("subscription.pro.feature3Text.0")}
+                      </span>
+                      <span className="font-normal">
+                        {t("subscription.pro.feature3Text.1")}
+                      </span>
+                    </div>
+
                     <span className="font-normal">
                       {t("subscription.pro.feature3Text.2")}
                     </span>
@@ -302,7 +308,7 @@ export default function Subscription() {
                   </div>
                 </div>
                 <div>
-                  <span className="text-primary font-semibold mr-1">
+                  <span className="text-[#B38FFF] font-semibold mr-1">
                     {t("subscription.feature4")}
                   </span>
                   <span className="font-normal">
