@@ -12,6 +12,8 @@ const REFRESH_INTERVAL = 5 * 60 * 1000;
 const initWebsocketWorker = async () => {
   console.log("[Main][Websocket] init websocket worker");
   if (websocketInitialized) {
+    // need refresh token here，since the token may be expired
+    await doRefresh();
     console.warn("[Main][Websocket] WebSocket already initialized, skipping.");
     return;
   }
