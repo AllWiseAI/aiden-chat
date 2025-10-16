@@ -173,7 +173,7 @@ function connect() {
   };
 
   socket.onerror = (err) => {
-    console.error("[Worker][WebSocket] Error:", err);
+    console.error("[Worker][WebSocket] Error:", JSON.stringify(err));
     socket?.close();
   };
 }
