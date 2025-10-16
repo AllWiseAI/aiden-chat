@@ -40,7 +40,7 @@ import {
   safeLocalStorage,
   useMobileScreen,
 } from "../utils";
-
+import { AgentInfo } from "@/app/client/api";
 import dynamic from "next/dynamic";
 import { ChatControllerPool } from "../client/controller";
 import styles from "./chat.module.scss";
@@ -165,6 +165,12 @@ function useScrollToBottom(
 
 function InnerChat() {
   type RenderMessage = ChatMessage & { preview?: boolean };
+  interface CompositeMessage {
+    role: "assistant";
+    content: RenderMessage[];
+    agent: AgentInfo | undefined;
+  }
+  type MessageUnion = RenderMessage | CompositeMessage;
 
   const chatStore = useChatStore();
   const session = chatStore.currentSession();
@@ -332,8 +338,7 @@ function InnerChat() {
   }, [session.mask.context, session.mask.hideContext]);
 
   // preview messages
-  const renderMessages = useMemo(() => {
-    console.log(11111, session.messages);
+  const messages = useMemo(() => {
     return context.concat(session.messages as RenderMessage[]).concat(
       isLoading
         ? [
@@ -348,6 +353,34 @@ function InnerChat() {
         : [],
     );
   }, [context, isLoading, session.messages]);
+
+  const renderMessages: MessageUnion[] = useMemo(() => {
+    const merged = [];
+    let temp = [];
+    for (const item of messages) {
+      if (item.role === "assistant") {
+        temp.push(item);
+      } else {
+        if (temp.length) {
+          merged.push({
+            role: "assistant",
+            content: temp.map((i) => i),
+            agent: temp[0].agent,
+          } as const);
+          temp = [];
+        }
+        merged.push(item);
+      }
+    }
+    if (temp.length) {
+      merged.push({
+        role: "assistant",
+        content: temp.map((i) => i),
+        agent: temp[0].agent,
+      } as const);
+    }
+    return merged;
+  }, [messages]);
 
   // const [msgRenderIndex, _setMsgRenderIndex] = useState(
   //   Math.max(0, renderMessages.length - CHAT_PAGE_SIZE),
@@ -595,137 +628,279 @@ function InnerChat() {
                 <div className="flex flex-col gap-2.5 w-full h-max max-w-[776px]">
                   {renderMessages.map((message, i) => {
                     const isUser = message.role === "user";
-                    const isMcpMsg = message.mcpInfo !== undefined;
-                    const isDisplay =
-                      message.content.length !== 0 ||
-                      isMcpMsg ||
-                      ((message.preview || message.streaming) && !isUser);
-                    return (
-                      <Fragment key={message.id}>
-                        {isDisplay && (
-                          <div
-                            className={
-                              isUser
-                                ? styles["chat-message-user"]
-                                : styles["chat-message"]
-                            }
-                          >
-                            <div
-                              className={clsx(
-                                styles["chat-message-container"],
-                                "group relative flex flex-col gap-5",
-                                message.content && "pb-7",
-                              )}
-                            >
-                              {!isUser && message.agent && (
-                                <div className="flex items-center gap-2">
-                                  <div className="size-[38px] flex-center rounded-full bg-[#F3F5F7] dark:bg-[#6F6F6F]">
-                                    {message.agent.avatar}
-                                  </div>
-                                  <div className="flex flex-col">
-                                    <span className="text-[15px] font-medium">
-                                      {message.agent.name}
-                                    </span>
-                                    <span className="text-[10px] font-extralight">
-                                      {message.agent.model.name}
-                                    </span>
-                                  </div>
-                                </div>
-                              )}
-
+                    // 两种meesage分开处理
+                    if (isUser) {
+                      return (
+                        <Fragment key={message.id}>
+                          {
+                            <div className={styles["chat-message-user"]}>
                               <div
                                 className={clsx(
-                                  styles["chat-message-item"],
-                                  message.role === "user" && "p-3",
+                                  styles["chat-message-container"],
+                                  "group relative flex flex-col gap-5",
+                                  message.content && "pb-7",
                                 )}
                               >
-                                {isMcpMsg && renderMessageMcpInfo(message)}
-                                {getMessageImages(message).length == 1 && (
-                                  <img
-                                    className={
-                                      styles["chat-message-item-image"]
-                                    }
-                                    src={getMessageImages(message)[0]}
-                                    alt=""
-                                  />
+                                <div
+                                  className={clsx(
+                                    styles["chat-message-item"],
+                                    "p-3",
+                                  )}
+                                >
+                                  {getMessageImages(message).length == 1 && (
+                                    <img
+                                      className={
+                                        styles["chat-message-item-image"]
+                                      }
+                                      src={getMessageImages(message)[0]}
+                                      alt=""
+                                    />
+                                  )}
+                                  {getMessageImages(message).length > 1 && (
+                                    <div
+                                      className={
+                                        styles["chat-message-item-images"]
+                                      }
+                                      style={
+                                        {
+                                          "--image-count":
+                                            getMessageImages(message).length,
+                                        } as React.CSSProperties
+                                      }
+                                    >
+                                      {getMessageImages(message).map(
+                                        (image, index) => {
+                                          return (
+                                            <img
+                                              className={
+                                                styles[
+                                                  "chat-message-item-image-multi"
+                                                ]
+                                              }
+                                              key={index}
+                                              src={image}
+                                              alt=""
+                                            />
+                                          );
+                                        },
+                                      )}
+                                    </div>
+                                  )}
+                                  {message.isError ? (
+                                    renderErrorMsg(message)
+                                  ) : (
+                                    <>
+                                      <Markdown
+                                        key={
+                                          message.streaming ? "loading" : "done"
+                                        }
+                                        content={getMessageTextContent(message)}
+                                        loading={
+                                          (message.preview ||
+                                            message.streaming) &&
+                                          (message.content.length === 0 ||
+                                            /^\n*$/.test(
+                                              message.content as string,
+                                            )) &&
+                                          !isUser
+                                        }
+                                        onDoubleClickCapture={() => {
+                                          if (!isMobileScreen) return;
+                                          setUserInput(
+                                            getMessageTextContent(message),
+                                          );
+                                        }}
+                                        parentRef={scrollRef}
+                                        defaultShow={
+                                          i >= renderMessages.length - 6
+                                        }
+                                      />
+                                    </>
+                                  )}
+                                </div>
+
+                                {message.content.length !== 0 &&
+                                  !/^\n*$/.test(message.content as string) && (
+                                    <ChatMessageItemTab
+                                      content={message.content}
+                                      className="absolute bottom-0 invisible group-hover:visible"
+                                    />
+                                  )}
+                              </div>
+                            </div>
+                          }
+                        </Fragment>
+                      );
+                    } else {
+                      console.log(13124, message.content);
+                      console.log(
+                        11111,
+                        Array.isArray(message.content) &&
+                          (message.content as RenderMessage[]).some(
+                            (item) => typeof item.content === "string",
+                          ),
+                      );
+                      return (
+                        <Fragment
+                          key={(message.content[0] as RenderMessage).id}
+                        >
+                          {
+                            <div className={styles["chat-message"]}>
+                              <div
+                                className={clsx(
+                                  styles["chat-message-container"],
+                                  "group relative flex flex-col gap-5",
+                                  message.content && "pb-7",
                                 )}
-                                {getMessageImages(message).length > 1 && (
-                                  <div
-                                    className={
-                                      styles["chat-message-item-images"]
-                                    }
-                                    style={
-                                      {
-                                        "--image-count":
-                                          getMessageImages(message).length,
-                                      } as React.CSSProperties
-                                    }
-                                  >
-                                    {getMessageImages(message).map(
-                                      (image, index) => {
-                                        return (
-                                          <img
-                                            className={
-                                              styles[
-                                                "chat-message-item-image-multi"
-                                              ]
-                                            }
-                                            key={index}
-                                            src={image}
-                                            alt=""
-                                          />
-                                        );
-                                      },
-                                    )}
+                              >
+                                {message.agent && (
+                                  <div className="flex items-center gap-2">
+                                    <div className="size-[38px] flex-center rounded-full bg-[#F3F5F7] dark:bg-[#6F6F6F]">
+                                      {message.agent.avatar}
+                                    </div>
+                                    <div className="flex flex-col">
+                                      <span className="text-[15px] font-medium">
+                                        {message.agent.name}
+                                      </span>
+                                      <span className="text-[10px] font-extralight">
+                                        {message.agent.model.name}
+                                      </span>
+                                    </div>
                                   </div>
                                 )}
-                                {message.isError ? (
-                                  renderErrorMsg(message)
-                                ) : (
-                                  <>
-                                    <Markdown
-                                      key={
-                                        message.streaming ? "loading" : "done"
-                                      }
-                                      content={getMessageTextContent(message)}
-                                      loading={
-                                        (message.preview ||
-                                          message.streaming) &&
-                                        (message.content.length === 0 ||
-                                          /^\n*$/.test(
-                                            message.content as string,
-                                          )) &&
-                                        !isUser
-                                      }
-                                      onDoubleClickCapture={() => {
-                                        if (!isMobileScreen) return;
-                                        setUserInput(
-                                          getMessageTextContent(message),
+                                <div className="flex flex-col gap-2.5 w-full">
+                                  {(message as CompositeMessage).content.map(
+                                    (item) => {
+                                      const isMcpMsg =
+                                        item.mcpInfo !== undefined;
+                                      const isDisplay =
+                                        item.content.length !== 0 ||
+                                        isMcpMsg ||
+                                        item.preview ||
+                                        item.streaming;
+
+                                      if (isDisplay) {
+                                        return (
+                                          <div
+                                            key={item.id}
+                                            className={clsx(
+                                              styles["chat-message-item"],
+                                            )}
+                                          >
+                                            <div className="flex flex-col gap-2.5">
+                                              {isMcpMsg &&
+                                                renderMessageMcpInfo(item)}
+                                              {getMessageImages(item).length ==
+                                                1 && (
+                                                <img
+                                                  className={
+                                                    styles[
+                                                      "chat-message-item-image"
+                                                    ]
+                                                  }
+                                                  src={
+                                                    getMessageImages(item)[0]
+                                                  }
+                                                  alt=""
+                                                />
+                                              )}
+                                              {getMessageImages(item).length >
+                                                1 && (
+                                                <div
+                                                  className={
+                                                    styles[
+                                                      "chat-message-item-images"
+                                                    ]
+                                                  }
+                                                  style={
+                                                    {
+                                                      "--image-count":
+                                                        getMessageImages(item)
+                                                          .length,
+                                                    } as React.CSSProperties
+                                                  }
+                                                >
+                                                  {getMessageImages(item).map(
+                                                    (image, index) => {
+                                                      return (
+                                                        <img
+                                                          className={
+                                                            styles[
+                                                              "chat-message-item-image-multi"
+                                                            ]
+                                                          }
+                                                          key={index}
+                                                          src={image}
+                                                          alt=""
+                                                        />
+                                                      );
+                                                    },
+                                                  )}
+                                                </div>
+                                              )}
+                                              {item.isError ? (
+                                                renderErrorMsg(item)
+                                              ) : (
+                                                <>
+                                                  <Markdown
+                                                    key={
+                                                      item.streaming
+                                                        ? "loading"
+                                                        : "done"
+                                                    }
+                                                    content={getMessageTextContent(
+                                                      item,
+                                                    )}
+                                                    loading={
+                                                      (item.preview ||
+                                                        item.streaming) &&
+                                                      (item.content.length ===
+                                                        0 ||
+                                                        /^\n*$/.test(
+                                                          item.content as string,
+                                                        )) &&
+                                                      !isUser
+                                                    }
+                                                    onDoubleClickCapture={() => {
+                                                      if (!isMobileScreen)
+                                                        return;
+                                                      setUserInput(
+                                                        getMessageTextContent(
+                                                          item,
+                                                        ),
+                                                      );
+                                                    }}
+                                                    parentRef={scrollRef}
+                                                    defaultShow={
+                                                      i >=
+                                                      renderMessages.length - 6
+                                                    }
+                                                  />
+                                                </>
+                                              )}
+                                            </div>
+                                          </div>
                                         );
-                                      }}
-                                      parentRef={scrollRef}
-                                      defaultShow={
-                                        i >= renderMessages.length - 6
                                       }
+                                    },
+                                  )}
+                                </div>
+
+                                {Array.isArray(message.content) &&
+                                  (message.content as RenderMessage[]).some(
+                                    (item) => typeof item.content === "string",
+                                  ) && (
+                                    <ChatMessageItemTab
+                                      content={""}
+                                      className="absolute bottom-0 invisible group-hover:visible left-2.5"
                                     />
-                                  </>
-                                )}
+                                  )}
                               </div>
-                              {message.content.length !== 0 &&
-                                !/^\n*$/.test(message.content as string) && (
-                                  <ChatMessageItemTab
-                                    content={message.content}
-                                    className={clsx(
-                                      "absolute bottom-0 invisible group-hover:visible",
-                                      !isUser && "left-2.5",
-                                    )}
-                                  />
-                                )}
                             </div>
-                          </div>
-                        )}
-                      </Fragment>
-                    );
+                          }
+                        </Fragment>
+                      );
+                    }
                   })}
                 </div>
               </div>

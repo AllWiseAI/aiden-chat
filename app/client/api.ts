@@ -78,6 +78,17 @@ export interface ChatOptions {
   onUpdate?: (
     message: string,
     mcpInfo?: { title: string; request: string; response: string },
+    agentInfo?: {
+      id: string;
+      name: string;
+      avatar: string;
+      model: {
+        name: string;
+        provider: string;
+        endpoint: string;
+        apiKey: string | undefined;
+      };
+    },
   ) => void;
   onUpdateImage?: (content: []) => void;
   onFinish: (

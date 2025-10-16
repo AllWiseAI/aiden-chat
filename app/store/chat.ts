@@ -406,13 +406,10 @@ export const useChatStore = createPersistStore(
           onToolCall: (toolCallInfo) => {
             get().onToolCall(toolCallInfo, session);
           },
-          onAgentCall: (agentInfo) => {
-            get().onAgentCall(agentInfo, session);
-          },
           onToolPeek: (toolPeekInfo: { name: string; type: string }) => {
             get().onToolPeek(toolPeekInfo, session);
           },
-          onUpdate(message, mcpInfo) {
+          onUpdate(message, mcpInfo, agentInfo) {
             botMessage.streaming = true;
             if (message) {
               console.log(botMessage, "bot");
@@ -437,6 +434,9 @@ export const useChatStore = createPersistStore(
                   botMessage.mcpInfo.response.push(mcpInfo.response);
                 }
               }
+            }
+            if (agentInfo) {
+              botMessage.agent = agentInfo;
             }
             get().updateTargetSession(session, (session) => {
               session.messages = session.messages.concat();
@@ -575,20 +575,6 @@ export const useChatStore = createPersistStore(
         });
       },
 
-      onAgentCall(agentInfo: AgentInfo, currentSession: ChatSession) {
-        console.log(agentInfo, 6, currentSession);
-        const session = currentSession;
-
-        get().updateTargetSession(session, (session: ChatSession) => {
-          const lastIndex = session.messages.length - 1;
-          if (lastIndex < 0) return;
-
-          session.messages[lastIndex] = {
-            ...session.messages[lastIndex],
-            agent: agentInfo,
-          };
-        });
-      },
       onToolCall(toolCallInfo: ToolCallInfo, currentSession: ChatSession) {
         const botMessage =
           currentSession!.messages[currentSession!.messages.length - 1]!;
@@ -623,7 +609,7 @@ export const useChatStore = createPersistStore(
           toolCallInfo,
           chatId: session.id,
           config: { ...modelConfig, stream: true },
-          onUpdate(message, mcpInfo) {
+          onUpdate(message, mcpInfo, agentInfo) {
             botMessage.streaming = true;
             if (message) {
               botMessage.content = message;
@@ -633,6 +619,8 @@ export const useChatStore = createPersistStore(
               if (botMessage.mcpInfo) {
                 botMessage.mcpInfo.response.push(mcpInfo.response ?? "");
               }
+            }
+            if (agentInfo) {
             }
             get().updateTargetSession(session, (session: ChatSession) => {
               session.messages = session.messages.concat();

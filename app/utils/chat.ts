@@ -560,7 +560,7 @@ export function streamWithThink(
             const { avatar, model, name } = useAgentStore
               .getState()
               .getAgentById(id)!;
-            options.onAgentCall({ id, avatar, model, name });
+            options.onUpdate("", false, { id, avatar, model, name });
             return;
           }
           if (chunk.mcpInfo) {
