@@ -981,9 +981,11 @@ function InnerChat() {
               </div>
             </div>
 
-            <div className={styles["chat-input-panel"]}>
-              <ShowcaseList />
-            </div>
+            {isNewChat && (
+              <div className={styles["chat-input-panel"]}>
+                <ShowcaseList />
+              </div>
+            )}
           </div>
         </div>
       </div>
