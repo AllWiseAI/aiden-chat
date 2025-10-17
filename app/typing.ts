@@ -66,6 +66,18 @@ export type CustomMCPServer = {
   aiden_credential?: AidenCredential;
 };
 
+export type CustomAgents = {
+  agent_id: string;
+  agent_type: AgentType;
+  description: string;
+  prompt: string;
+  enabled: boolean;
+  model_name: string;
+  model_provider: string;
+  endpoint: string;
+  api_key: string;
+};
+
 export type TRemoteMcpInfo = {
   basic_config: Record<string, MCPServer>;
   description: string;
@@ -429,3 +441,8 @@ export enum PlanEnum {
   Pro = "pro",
 }
 export type Plan = PlanEnum.Free | PlanEnum.Standard | PlanEnum.Pro;
+
+export type AgentConfig = {
+  version: string;
+  agents: CustomAgents[];
+};
