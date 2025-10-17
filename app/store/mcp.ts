@@ -59,6 +59,7 @@ export const useMcpStore = createPersistStore(
         console.log("[Mcp store] init start");
         const { startPollingMcpStatus } = _get();
         const config = await readMcpConfig();
+        console.log(11212, config);
         const remoteMcpList = await getRemoteMcpList();
         const { renderMcpList, mcpRemoteInfoMap, mcpRenderedMap } =
           await getRenderMcpList(config, remoteMcpList);
@@ -146,7 +147,7 @@ export const useMcpStore = createPersistStore(
         const { config, remoteMcpList } = get();
         if (!config) return false;
         const updatedMcpServers = restoreServers(newServers, config);
-
+        console.log(11111, config);
         const newConfig = { ...config, mcpServers: { ...updatedMcpServers } };
         set({ config: newConfig });
         try {

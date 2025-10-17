@@ -1,6 +1,6 @@
 use semver::Version;
 use serde::{Deserialize, Serialize};
-use serde_json::{Map, Value};
+use serde_json::Value;
 
 use std::fs;
 use std::path::PathBuf;
@@ -25,6 +25,7 @@ pub struct MCPConfig {
 }
 
 /// 读取配置
+#[tauri::command]
 pub fn read_agent_config(app: AppHandle) -> Result<MCPConfig, String> {
   let path = get_user_config_path_from_app(&app).ok_or("配置路径不存在")?;
   let contents = fs::read_to_string(&path).map_err(|e| e.to_string())?;
@@ -128,10 +129,12 @@ pub fn init_agent_config(app: &tauri::App) -> Result<(), String> {
           default_version
       );
 
+      let empty_array: Vec<Value> = Vec::new();
       let default_agents = default_json
-          .get("agents")
-          .and_then(|v| v.as_array())
-          .unwrap_or(&Vec::new());
+            .get("agents")
+            .and_then(|v| v.as_array())
+            .unwrap_or(&empty_array);
+
       
       let mut user_agents = user_json
           .get("agents")
@@ -150,7 +153,7 @@ pub fn init_agent_config(app: &tauri::App) -> Result<(), String> {
           }
       }
 
-      user_json["agents"] = Value::Object(user_agents);
+      user_json["agents"] = Value::Array(user_agents);
       user_json["version"] = Value::String(default_version.to_string());
 
       fs::write(

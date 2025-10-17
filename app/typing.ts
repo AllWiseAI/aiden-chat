@@ -410,14 +410,15 @@ export enum AgentSource {
   Custom = "custom", // custom 为用户自添加项
 }
 export enum AgentTypeEnum {
-  Text = "Text",
-  Multimodal = "Multimodal",
+  Text = "text",
+  Multimodal = "multi-model",
 }
-export const AgentTypeArr = [
-  AgentTypeEnum.Text,
-  AgentTypeEnum.Multimodal,
-] as const;
-export type AgentType = (typeof AgentTypeArr)[number];
+export type AgentType = `${AgentTypeEnum}`;
+
+// 🔹 数组为 ["Text", "Multimodal"]
+export const AgentTypeArr = Object.keys(
+  AgentTypeEnum,
+) as (keyof typeof AgentTypeEnum)[];
 
 export interface Agent {
   id: string;
@@ -427,6 +428,7 @@ export interface Agent {
   description: string;
   prompt: string;
   type: AgentType;
+  enable: boolean;
   model: {
     name: string;
     provider: string;

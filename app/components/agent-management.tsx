@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import AgentList from "./agent-list";
-// import PlusIcon from "../icons/plus.svg";
+import PlusIcon from "../icons/plus.svg";
 import Image from "next/image";
 import Textarea from "./textarea";
 import { EmojiList } from "./emoji-list";
@@ -33,6 +33,7 @@ import {
   ModelOption,
   ProviderOption,
   AgentSource,
+  AgentTypeEnum,
 } from "../typing";
 import { Theme } from "@/app/store";
 import { useTheme } from "../hooks/use-theme";
@@ -93,7 +94,7 @@ function AgentEditDialog({
   );
   const modelList = useMemo(() => {
     if (newAgent.type === undefined) return [];
-    const isMulti = newAgent.type === "Multimodal";
+    const isMulti = newAgent.type === AgentTypeEnum.Multimodal;
     return [
       ...(isMulti
         ? models.filter((item) => item.multi_model === true)
@@ -108,8 +109,17 @@ function AgentEditDialog({
 
   useEffect(() => {
     if (item) {
-      const { id, name, avatar, source, description, prompt, type, model } =
-        item;
+      const {
+        id,
+        name,
+        avatar,
+        source,
+        description,
+        prompt,
+        type,
+        model,
+        enable,
+      } = item;
       setNewAgent({
         id,
         name,
@@ -119,6 +129,7 @@ function AgentEditDialog({
         description,
         prompt,
         model,
+        enable,
       });
     }
   }, [item]);
@@ -434,23 +445,23 @@ export default function AgentManagement() {
     }
   }, [id]);
 
-  // const handleAddAgent = () => {
-  //   setSelectedItem(null);
-  //   setShowEdit(true);
-  // };
+  const handleAddAgent = () => {
+    setSelectedItem(null);
+    setShowEdit(true);
+  };
 
   return (
     <>
       <div className="h-full @container">
         <div className="flex justify-between items-center mb-4">
           <p className="font-medium">{t("agent.title")}</p>
-          {/* <Button
-          onClick={handleAddAgent}
-          className="flex items-center gap-2 h-7 bg-[#00AB66]/12 dark:bg-[#00D47E]/6 hover:bg-[#BEF0DD] dark:hover:bg-[#00D47E]/12 text-main text-sm font-normal rounded-sm"
-        >
-          <PlusIcon className="size-4" />
-          <span>{t("agent.add")}</span>
-        </Button> */}
+          <Button
+            onClick={handleAddAgent}
+            className="flex items-center gap-2 h-7 bg-[#00AB66]/12 dark:bg-[#00D47E]/6 hover:bg-[#BEF0DD] dark:hover:bg-[#00D47E]/12 text-main text-sm font-normal rounded-sm"
+          >
+            <PlusIcon className="size-4" />
+            <span>{t("agent.add")}</span>
+          </Button>
         </div>
         <AgentList
           onEdit={(agent) => {

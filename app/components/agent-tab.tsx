@@ -12,7 +12,7 @@ import { Path } from "../constant";
 import { Agent } from "../typing";
 import { INNER_PROVIDER_NAME } from "@/app/constant";
 import { ProviderIcon } from "./setting/provider-icon";
-import { ModelOption, ProviderOption } from "@/app/typing";
+import { ModelOption, ProviderOption, AgentTypeEnum } from "@/app/typing";
 import AccessIcon from "../icons/access.svg";
 import RightIcon from "../icons/right-arrow.svg";
 import ArrowDownIcon from "../icons/arrow-down.svg";
@@ -128,7 +128,7 @@ function AgentModel({ show, item }: { show: boolean; item: Agent }) {
             {Object.entries(groupedLocalProviders).map(
               ([groupLabel, provider]) => {
                 const isOpen = openGroup === groupLabel;
-                const isMulti = item.type === "Multimodal";
+                const isMulti = item.type === AgentTypeEnum.Multimodal;
                 // @ts-ignore
                 const models: ModelOption[] = provider.apiKey
                   ? provider.models.map((model) => ({
