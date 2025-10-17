@@ -4,6 +4,7 @@ import {
   ModelSize,
   ModelOption,
   ProviderOption,
+  ShowcaseListOption,
 } from "../typing";
 import { getClientConfig } from "../config/client";
 import {
@@ -60,7 +61,7 @@ export const DEFAULT_CONFIG = {
   localProviders: [] as ProviderOption[],
   providerList: [] as ProviderOption[],
   groupedProviders: {} as Record<string, ProviderOption>,
-
+  showcaseList: [] as ShowcaseListOption[],
   modelConfig: {
     model: "gpt-4o",
     providerName: "OpenAI",
@@ -129,6 +130,11 @@ export const useAppConfig = createPersistStore(
             }));
           }
         }
+      },
+      setShowcaseList: (data: ShowcaseListOption[]) => {
+        set(() => ({
+          showcaseList: data,
+        }));
       },
       getModelInfo: (modelName: string): ProviderOption | undefined => {
         if (!modelName) {

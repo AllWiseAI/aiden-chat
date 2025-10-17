@@ -25,6 +25,7 @@ import { FileUploader } from "./file-uploader";
 import { useFileUploadStore } from "@/app/store/file-upload";
 import CircleProgress from "./circle-progress";
 import { relaunch } from "@tauri-apps/api/process";
+import ShowcaseList from "./showcase-list";
 import {
   ChatMessage,
   createMessage,
@@ -602,17 +603,12 @@ function InnerChat() {
         <div className={styles["chat-main"]}>
           <div className={styles["chat-body-container"]}>
             {isNewChat ? (
-              <>
-                <div
-                  className={clsx(
-                    styles["chat-main-welcome"],
-                    "flex gap-2.5 text-4xl",
-                  )}
-                >
+              <div className={styles["chat-main-welcome"]}>
+                <div className={"flex gap-2.5 text-4xl pt-10"}>
                   <LogoIcon className="size-10" />
                   {t("chat.title")} Aiden
                 </div>
-              </>
+              </div>
             ) : (
               <div
                 className={clsx(styles["chat-body"], "scroll-container")}
@@ -983,6 +979,10 @@ function InnerChat() {
                   </Button>
                 </label>
               </div>
+            </div>
+
+            <div className={styles["chat-input-panel"]}>
+              <ShowcaseList />
             </div>
           </div>
         </div>
