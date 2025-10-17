@@ -1,6 +1,7 @@
 "use client";
 import { useDebouncedCallback } from "use-debounce";
 import { Virtuoso } from "react-virtuoso";
+import { ImagePreview } from "@/app/components/image-preview";
 import React, {
   Fragment,
   RefObject,
@@ -647,7 +648,7 @@ function InnerChat() {
                                   )}
                                 >
                                   {getMessageImages(message).length == 1 && (
-                                    <img
+                                    <ImagePreview
                                       className={
                                         styles["chat-message-item-image"]
                                       }
@@ -670,7 +671,7 @@ function InnerChat() {
                                       {getMessageImages(message).map(
                                         (image, index) => {
                                           return (
-                                            <img
+                                            <ImagePreview
                                               className={
                                                 styles[
                                                   "chat-message-item-image-multi"
@@ -783,7 +784,7 @@ function InnerChat() {
                                                 renderMessageMcpInfo(item)}
                                               {getMessageImages(item).length ==
                                                 1 && (
-                                                <img
+                                                <ImagePreview
                                                   className={
                                                     styles[
                                                       "chat-message-item-image"
@@ -814,7 +815,7 @@ function InnerChat() {
                                                   {getMessageImages(item).map(
                                                     (image, index) => {
                                                       return (
-                                                        <img
+                                                        <ImagePreview
                                                           className={
                                                             styles[
                                                               "chat-message-item-image-multi"
