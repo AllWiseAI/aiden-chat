@@ -6,16 +6,16 @@ export function useFileUpload() {
 
   const uploadFile = async (file: File) => {
     const id = Math.random().toString(36).substring(2, 9);
-    const newFile = { id, file, url: "", progress: 0 };
+    const newFile = { id, file, url: "", progress: 0, type: "default" };
 
     addFile(newFile);
 
     try {
-      const url = await uploadFileWithProgress(file, (percent) => {
+      const { url, type } = await uploadFileWithProgress(file, (percent) => {
         updateFile(id, { progress: percent });
       });
-      if (url) {
-        updateFile(id, { url, progress: 100 });
+      if (url && type) {
+        updateFile(id, { url, type, progress: 100 });
       }
     } catch (err) {
       console.error("Upload failed:", err);

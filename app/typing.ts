@@ -429,3 +429,11 @@ export enum PlanEnum {
   Pro = "pro",
 }
 export type Plan = PlanEnum.Free | PlanEnum.Standard | PlanEnum.Pro;
+
+export interface UploadedFile {
+  id: string;
+  url: string;
+  progress: number;
+  file: File;
+  type: string;
+}

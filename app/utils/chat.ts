@@ -628,7 +628,7 @@ export function streamWithThink(
             const formatContent = [];
             for (const item of chunk.content) {
               if (item.type === "image_url") {
-                const url = await uploadFileWithProgress(
+                const { url } = await uploadFileWithProgress(
                   item.image_url?.url ?? "",
                   (percent) => console.log("upload progress", percent),
                 );

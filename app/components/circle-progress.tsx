@@ -47,10 +47,10 @@ const CircleProgress: React.FC<CircleProgressProps> = ({
         x="50%"
         y="50%"
         textAnchor="middle"
-        dy="0"
-        fontSize="12"
+        dominantBaseline="middle" // 垂直居中
+        fontSize="10"
         fill="#fff"
-        transform="rotate(90, 20, 20)"
+        transform={`rotate(90, ${size / 2}, ${size / 2})`}
       >
         {Math.round(progress)}%
       </text>

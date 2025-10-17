@@ -6,35 +6,49 @@ type UploadInput = File | string; // string 为 base64
 export async function uploadFileWithProgress(
   input: UploadInput,
   onProgress: (percent: number) => void,
-): Promise<string> {
+): Promise<{ url: string; type: string }> {
   const domain = await getBaseDomain();
   const headers = await getHeaders({});
 
   let file: Blob;
-  let fileTypeParam = "other";
+  let fileTypeParam = "default";
 
+  const detectFileType = (mime: string, fileName?: string): string => {
+    if (mime.startsWith("image/")) return "image";
+    if (mime === "application/pdf") return "pdf";
+    if (mime.startsWith("video/")) return "video";
+    if (mime.startsWith("audio/")) return "audio";
+    if (mime.startsWith("text/")) return "text";
+    if (mime.includes("zip")) return "zip";
+    if (mime.includes("word")) return "docx";
+    if (mime.includes("excel")) return "xlsx";
+    if (mime.includes("json")) return "json";
+
+    // fallback: 根据文件后缀名再判断一次
+    if (fileName) {
+      const ext = fileName.split(".").pop()?.toLowerCase();
+      if (ext) return ext;
+    }
+    return "default";
+  };
+
+  /**
+   * 🧩 处理 base64 输入
+   */
   if (typeof input === "string") {
-    // base64 string
     const arr = input.split(",");
     const mimeMatch = arr[0].match(/:(.*?);/);
     const mime = mimeMatch ? mimeMatch[1] : "application/octet-stream";
     const bstr = atob(arr[arr.length - 1]); // base64 decode
-    let n = bstr.length;
-    const u8arr = new Uint8Array(n);
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
+    const u8arr = new Uint8Array(bstr.length);
+    for (let i = 0; i < bstr.length; i++) {
+      u8arr[i] = bstr.charCodeAt(i);
     }
     file = new Blob([u8arr], { type: mime });
-
-    if (mime.startsWith("image/")) fileTypeParam = "png";
-    else if (mime === "application/pdf") fileTypeParam = "pdf";
-    else if (mime === "text/plain") fileTypeParam = "txt";
+    fileTypeParam = detectFileType(mime);
   } else {
-    // File 对象
     file = input;
-    if (file.type.startsWith("image/")) fileTypeParam = "png";
-    else if (file.type === "application/pdf") fileTypeParam = "pdf";
-    else if (file.type === "text/plain") fileTypeParam = "txt";
+    fileTypeParam = detectFileType(file.type, (file as File).name);
   }
 
   const BASE_URL = `${domain}/api/image/upload?file_type=${encodeURIComponent(
@@ -59,7 +73,8 @@ export async function uploadFileWithProgress(
         try {
           const result = JSON.parse(xhr.responseText);
           if (result.status === 0) {
-            resolve(result.data.target_uri);
+            console.log("upload success===", result);
+            resolve({ url: result.data.target_uri, type: fileTypeParam });
           } else {
             reject(result.message);
           }

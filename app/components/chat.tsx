@@ -24,7 +24,6 @@ import { ChatMessageItemTab } from "./chat-message-item-tab";
 import { useTranslation } from "react-i18next";
 import { FileUploader } from "./file-uploader";
 import { useFileUploadStore } from "@/app/store/file-upload";
-import CircleProgress from "./circle-progress";
 import { relaunch } from "@tauri-apps/api/process";
 import {
   ChatMessage,
@@ -55,6 +54,7 @@ import { prettyObject } from "../utils/format";
 import clsx from "clsx";
 import { Button } from "./shadcn/button";
 import { track, EVENTS } from "@/app/utils/analysis";
+import { FileResult } from "./file-result";
 
 import McpPopover from "./mcp-tooltip";
 import {
@@ -936,33 +936,7 @@ function InnerChat() {
                       fontFamily: config.fontFamily,
                     }}
                   />
-                  <div
-                    className={clsx(
-                      "absolute top-[1px] left-3 pt-3 flex items-center gap-2.5 w-[calc(100%-24px)] bg-white dark:bg-[#141416]",
-                      files.length > 0 && "pb-2",
-                    )}
-                  >
-                    {files.map((img) => (
-                      <div key={img.id} className="relative">
-                        {img.url ? (
-                          <img
-                            src={img.url}
-                            className={styles["input-img"]}
-                          ></img>
-                        ) : (
-                          <div className={styles["input-img-loading"]}>
-                            <CircleProgress progress={img.progress} />
-                          </div>
-                        )}
-                        <Button
-                          onClick={() => removeFile(img.id)}
-                          className="absolute -top-2 -right-2 bg-[#F3F5F7] text-[#343839] rounded-full w-4 h-4 flex-center p-0"
-                        >
-                          ×
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
+                  <FileResult files={files} removeFile={removeFile} />
                   <div className="absolute bottom-3 left-3 flex gap-2">
                     <FileUploader />
                     <McpPopover
