@@ -116,3 +116,19 @@ export async function updateRagEnabled(status: boolean) {
     return jsonResult;
   }
 }
+
+export async function updateAgentConfig() {
+  const baseURL = getLocalBaseDomain();
+
+  const headers = await getHeaders({ aiden: true });
+  const result = await fetchNoProxy(`${baseURL}/agent-config/notify-changed`, {
+    method: "POST",
+    headers: headers,
+  });
+  if (result.status !== 200) {
+    throw new Error("update failed: " + result.statusText);
+  } else {
+    const jsonResult = await result.json();
+    return jsonResult;
+  }
+}

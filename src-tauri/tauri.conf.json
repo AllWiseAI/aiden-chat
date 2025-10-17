@@ -99,6 +99,7 @@
       "resources": [
         "bin/*",
         "resources/mcp.config.json",
+        "resources/agent.config.json",
         "../node_modules/host_server_*/**/*"
       ],
       "shortDescription": "Aiden",

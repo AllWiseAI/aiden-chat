@@ -94,7 +94,12 @@ function AgentItem({ item, onEdit }: AgentItemProps) {
                 {t("agent.default")}
               </div>
             ) : (
-              <Switch />
+              <Switch
+                checked={item.enable}
+                onCheckedChange={async (checked) => {
+                  console.log(111, checked);
+                }}
+              />
             )}
           </div>
           <p className="min-h-[3lh] w-full text-xs text-[#6C7275] leading-4.5 break-words line-clamp-3">

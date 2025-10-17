@@ -8,6 +8,7 @@ mod cleanup;
 mod constants;
 mod logger;
 mod mcp;
+mod agent;
 mod request;
 mod stream;
 
@@ -122,8 +123,10 @@ fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProc
     let binary_path: PathBuf = get_host_server_path(app);
     let config = app.config();
     let mcp_config_path = mcp::get_user_config_path(&config).expect("Cannot get MCP config path");
+    let agent_config_path = agent::get_user_config_path(&config).expect("Cannot get Agent config path");
     log::info!("Starting host server from: {:?}", binary_path);
     log::info!("Using config file from: {:?}", mcp_config_path);
+    log::info!("Using agent config file from: {:?}", agent_config_path);
 
     let new_path = append_bin_to_path(app);
     log::info!("Setting PATH to host_server: {}", new_path);
@@ -143,6 +146,8 @@ fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProc
         cmd.args([
             "--config_file",
             &mcp_config_path.to_string_lossy(),
+            "--agent_config_file",
+            &agent_config_path.to_string_lossy(),
             "--disable_reload",
             "--enable_authorization",
             "--port",
@@ -314,6 +319,8 @@ async fn main() {
             request::fetch_no_proxy,
             mcp::read_mcp_config,
             mcp::write_mcp_config,
+            agent::read_agent_config,
+            agent::write_agent_config,
         ])
         // 监听窗口关闭事件
         .on_window_event(|event| {
@@ -388,6 +395,7 @@ async fn main() {
 
             log::info!("AidenAI started successfully!");
             mcp::init_mcp_config(app).expect("Failed to init MCP config");
+            agent::init_agent_config(app).expect("Failed to init Agent config");
             cleanup::cleanup_database(&config);
             kill_ports(PORTS_TO_KILL);
 
