@@ -16,6 +16,8 @@
     "chatItemCount": "{{count}} messages"
   },
   "chat": {
+    "more": "More",
+    "explore": "Explore",
     "title": "Hi, I'm",
     "subTitle": "{{count}} messages",
     "placeholder": "Ask anything...",
