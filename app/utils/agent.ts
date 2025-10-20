@@ -42,7 +42,7 @@ export const formatAgents = (agents: Agent[]) => {
     description: a.description,
     prompt: a.prompt,
     agent_type: a.type,
-    enabled: a.enable,
+    enabled: a.enabled,
     model_name: a.model.name,
     model_provider: a.model.provider,
     endpoint: a.model.endpoint,

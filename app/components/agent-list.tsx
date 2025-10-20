@@ -28,6 +28,7 @@ function AgentItem({ item, onEdit }: AgentItemProps) {
   const { t } = useTranslation("settings");
   const models = useAppConfig((s) => s.models);
   const localProviders = useAppConfig((s) => s.localProviders);
+  const updateAgent = useAgentStore((s) => s.updateAgent);
   const isBuiltIn = item.source === "builtIn";
   const formatLocalModels: UserModel[] = localProviders.flatMap((item) =>
     item.models.map((model) => ({
@@ -47,6 +48,15 @@ function AgentItem({ item, onEdit }: AgentItemProps) {
   const currentModel = useMemo(() => {
     return modelList.find((model) => model.model === item.model.name);
   }, [modelList, item.model.name]);
+
+  const handleSwitch = async (checked: boolean) => {
+    if (checked !== item.enabled) {
+      updateAgent({
+        ...item,
+        enabled: checked,
+      });
+    }
+  };
 
   const renderProviderIcon = useCallback(
     (size?: number) => {
@@ -95,9 +105,9 @@ function AgentItem({ item, onEdit }: AgentItemProps) {
               </div>
             ) : (
               <Switch
-                checked={item.enable}
+                checked={item.enabled}
                 onCheckedChange={async (checked) => {
-                  console.log(111, checked);
+                  await handleSwitch(checked);
                 }}
               />
             )}

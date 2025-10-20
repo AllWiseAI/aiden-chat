@@ -23,7 +23,7 @@ export function createAgent(): Agent {
     description: "",
     prompt: "",
     type: AgentTypeEnum.Multimodal,
-    enable: false,
+    enabled: false,
     model: {
       name: defaultModel,
       provider: defaultModelInfo!.provider,
@@ -61,7 +61,7 @@ export const useAgentStore = createPersistStore(
           description: a.description,
           prompt: a.prompt,
           type: a.agent_type,
-          enable: a.enabled,
+          enabled: a.enabled,
           model: {
             name: a.model_name,
             provider: a.model_provider,
@@ -81,8 +81,8 @@ export const useAgentStore = createPersistStore(
           )
             return 1;
 
-          if (a.enable && !b.enable) return -1;
-          if (!a.enable && b.enable) return 1;
+          if (a.enabled && !b.enabled) return -1;
+          if (!a.enabled && b.enabled) return 1;
 
           return 0;
         });

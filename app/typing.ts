@@ -428,7 +428,7 @@ export interface Agent {
   description: string;
   prompt: string;
   type: AgentType;
-  enable: boolean;
+  enabled: boolean;
   model: {
     name: string;
     provider: string;

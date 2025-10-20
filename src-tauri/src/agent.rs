@@ -19,23 +19,24 @@ pub fn get_user_config_path_from_app(app: &tauri::AppHandle) -> Option<PathBuf> 
   get_user_config_path(&config)
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct MCPConfig {
+pub struct AgentConfig {
     pub version: String,
     pub agents: Vec<serde_json::Value>,
 }
 
 /// 读取配置
 #[tauri::command]
-pub fn read_agent_config(app: AppHandle) -> Result<MCPConfig, String> {
+pub fn read_agent_config(app: AppHandle) -> Result<AgentConfig, String> {
   let path = get_user_config_path_from_app(&app).ok_or("配置路径不存在")?;
+  log::info!("测试, 读取的文件路径为={}", path.display());
   let contents = fs::read_to_string(&path).map_err(|e| e.to_string())?;
-  let config: MCPConfig = serde_json::from_str(&contents).map_err(|e| e.to_string())?;
+  let config: AgentConfig = serde_json::from_str(&contents).map_err(|e| e.to_string())?;
   Ok(config)
 }
 
 /// 写入配置
 #[tauri::command]
-pub fn write_agent_config(app: AppHandle, new_config: MCPConfig) -> Result<(), String> {
+pub fn write_agent_config(app: AppHandle, new_config: AgentConfig) -> Result<(), String> {
     let path = get_user_config_path_from_app(&app).ok_or("配置路径不存在")?;
     let json_str = serde_json::to_string_pretty(&new_config).map_err(|e| e.to_string())?;
     fs::write(&path, json_str).map_err(|e| e.to_string())?;

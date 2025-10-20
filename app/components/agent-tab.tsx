@@ -223,72 +223,75 @@ export default function AgentTab() {
 
   return (
     <div className="flex items-center">
-      {agents.map((item) => (
-        <HoverCard key={item.id} openDelay={200}>
-          <HoverCardTrigger asChild>
-            <div
-              className={clsx(
-                "cursor-default flex-center rounded-full backdrop-blur-lg border hover:border-[#00D47E] dark:hover:border-[#4ADE80] data-[state=open]:border-[#00D47E] dark:data-[state=open]:border-[#00D47E] size-8 hover:size-10 data-[state=open]:size-10 transition-all delay-100 -mr-2.5 group-hover:mr-2",
-              )}
-              style={{
-                boxShadow: `
+      {agents
+        .filter((item) => item.enabled)
+        .slice(0, 8)
+        .map((item) => (
+          <HoverCard key={item.id} openDelay={200}>
+            <HoverCardTrigger asChild>
+              <div
+                className={clsx(
+                  "cursor-default flex-center rounded-full backdrop-blur-lg border hover:border-[#00D47E] dark:hover:border-[#4ADE80] data-[state=open]:border-[#00D47E] dark:data-[state=open]:border-[#00D47E] size-8 hover:size-10 transition-all duration-500 ease-in-out data-[state=open]:size-10 -mr-2.5 group-hover:mr-2",
+                )}
+                style={{
+                  boxShadow: `
                       0px 4px 4px 0px rgba(0,0,0,0.11),
                       0px 4px 4px 2px rgba(0,0,0,0.11)
                     `,
-              }}
-            >
-              {item.avatar}
-            </div>
-          </HoverCardTrigger>
-          <HoverCardContent
-            sideOffset={7}
-            className="border border-[#E8ECEF] dark:border-[#505050] w-75"
-            style={{
-              boxShadow: `
+                }}
+              >
+                {item.avatar}
+              </div>
+            </HoverCardTrigger>
+            <HoverCardContent
+              sideOffset={7}
+              className="border border-[#E8ECEF] dark:border-[#505050] w-75"
+              style={{
+                boxShadow: `
                       0px 0px 24px 4px rgba(0,0,0,0.05),
                       0px 32px 48px -4px rgba(0,0,0,0.2)
                     `,
-            }}
-          >
-            <div className="flex flex-col gap-2">
-              <div className="flex gap-4">
-                <div className="size-8 cursor-default rounded-full border border-[#F2F2F2] dark:border-[#505050] flex-center">
-                  {item.avatar}
-                </div>
-                <div className="min-w-0 flex-1 flex flex-col gap-1">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">{item.name}</span>
-                    <BlockIcon
-                      onClick={() =>
-                        navigate(Path.Settings + `?tab=agent&id=${item.id}`)
-                      }
-                      className="size-4 text-[#000000]/86 dark:text-[#FFFFFF] hover:text-[#00D47E] dark:hover:text-[#4ADE80]"
-                    />
+              }}
+            >
+              <div className="flex flex-col gap-2">
+                <div className="flex gap-4">
+                  <div className="size-8 cursor-default rounded-full border border-[#F2F2F2] dark:border-[#505050] flex-center">
+                    {item.avatar}
                   </div>
-                  <Label
-                    onClick={() => setShowModel(!showModel)}
-                    className="text-xs text-[#101213] dark:text-[#E8ECEF]"
-                  >
-                    {getModelInfo(item.model.name)?.display}
-                    {showModel ? (
-                      <ArrowDownIcon className="size-4" />
-                    ) : (
-                      <ArrowRightIcon className="size-4" />
-                    )}
-                  </Label>
+                  <div className="min-w-0 flex-1 flex flex-col gap-1">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">{item.name}</span>
+                      <BlockIcon
+                        onClick={() =>
+                          navigate(Path.Settings + `?tab=agent&id=${item.id}`)
+                        }
+                        className="size-4 text-[#000000]/86 dark:text-[#FFFFFF] hover:text-[#00D47E] dark:hover:text-[#4ADE80]"
+                      />
+                    </div>
+                    <Label
+                      onClick={() => setShowModel(!showModel)}
+                      className="text-xs text-[#101213] dark:text-[#E8ECEF]"
+                    >
+                      {getModelInfo(item.model.name)?.display}
+                      {showModel ? (
+                        <ArrowDownIcon className="size-4" />
+                      ) : (
+                        <ArrowRightIcon className="size-4" />
+                      )}
+                    </Label>
 
-                  {!showModel && (
-                    <span className="text-xs text-[#000000]/85 dark:text-[#E8ECEF]/50 break-words line-clamp-3">
-                      {item.description}
-                    </span>
-                  )}
+                    {!showModel && (
+                      <span className="text-xs text-[#000000]/85 dark:text-[#E8ECEF]/50 break-words line-clamp-3">
+                        {item.description}
+                      </span>
+                    )}
+                  </div>
                 </div>
+                <AgentModel show={showModel} item={item} />
               </div>
-              <AgentModel show={showModel} item={item} />
-            </div>
-          </HoverCardContent>
-        </HoverCard>
-      ))}
+            </HoverCardContent>
+          </HoverCard>
+        ))}
       <div
         className="flex-center rounded-full backdrop-blur-lg size-8 border border-[#F2F2F2] dark:border-[#505050] hover:border-[#00D47E] dark:hover:border-[#4ADE80]"
         onClick={() => navigate(Path.Settings + "?tab=agent")}

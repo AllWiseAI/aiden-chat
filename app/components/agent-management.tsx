@@ -118,7 +118,7 @@ function AgentEditDialog({
         prompt,
         type,
         model,
-        enable,
+        enabled,
       } = item;
       setNewAgent({
         id,
@@ -129,7 +129,7 @@ function AgentEditDialog({
         description,
         prompt,
         model,
-        enable,
+        enabled,
       });
     }
   }, [item]);
