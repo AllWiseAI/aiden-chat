@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Label } from "../components/shadcn/label";
 
 import {
@@ -7,6 +8,7 @@ import {
   HoverCardTrigger,
   HoverCardContent,
 } from "./shadcn/hover-card";
+import { Tooltip, TooltipTrigger, TooltipContent } from "./shadcn/tooltip";
 import { useAppConfig, useAgentStore } from "../store";
 import { Path } from "../constant";
 import { Agent } from "../typing";
@@ -23,6 +25,7 @@ import clsx from "clsx";
 
 function AgentModel({ show, item }: { show: boolean; item: Agent }) {
   const navigate = useNavigate();
+  const { t } = useTranslation("general");
   const [modelList, getModelInfo, setGroupedProviders, localProviders] =
     useAppConfig((s) => [
       s.models,
@@ -204,7 +207,7 @@ function AgentModel({ show, item }: { show: boolean; item: Agent }) {
               onClick={() => navigate(Path.Settings + "?tab=model")}
             >
               <span className="text-sm font-medium group-hover:text-[#00AB66]">
-                Manage
+                {t("ui.manage")}
               </span>
               <RightIcon className="size-6 text-muted-foreground group-hover:text-[#00AB66]" />
             </div>
@@ -221,7 +224,7 @@ export default function AgentTab() {
   const getModelInfo = useAppConfig((s) => s.getModelInfo);
   const [showModel, setShowModel] = useState(false);
   const MAX_AGENT_COUNT = 10;
-
+  const { t } = useTranslation("settings");
   return (
     <div className="flex items-center">
       {agents
@@ -232,7 +235,7 @@ export default function AgentTab() {
             <HoverCardTrigger asChild>
               <div
                 className={clsx(
-                  "cursor-default flex-center rounded-full backdrop-blur-lg border hover:border-[#00D47E] dark:hover:border-[#4ADE80] data-[state=open]:border-[#00D47E] dark:data-[state=open]:border-[#00D47E] size-8 hover:size-10 transition-all duration-500 ease-in-out data-[state=open]:size-10 -mr-2.5 group-hover:mr-2",
+                  "group cursor-default flex-center rounded-full backdrop-blur-lg border hover:border-[#00D47E] dark:hover:border-[#4ADE80] data-[state=open]:border-[#00D47E] dark:data-[state=open]:border-[#00D47E] size-8 hover:size-10 transition-all duration-500 ease-in-out data-[state=open]:size-10 -mr-2 flex-center data-[state=open]:z-1",
                 )}
                 style={{
                   boxShadow: `
@@ -241,7 +244,9 @@ export default function AgentTab() {
                     `,
                 }}
               >
-                {item.avatar}
+                <span className="transition-all duration-700 ease-in-out group-data-[state=open]:text-lg flex-center">
+                  {item.avatar}
+                </span>
               </div>
             </HoverCardTrigger>
             <HoverCardContent
@@ -262,12 +267,21 @@ export default function AgentTab() {
                   <div className="min-w-0 flex-1 flex flex-col gap-1">
                     <div className="flex justify-between items-center">
                       <span className="text-sm">{item.name}</span>
-                      <BlockIcon
-                        onClick={() =>
-                          navigate(Path.Settings + `?tab=agent&id=${item.id}`)
-                        }
-                        className="size-4 text-[#000000]/86 dark:text-[#FFFFFF] hover:text-[#00D47E] dark:hover:text-[#4ADE80]"
-                      />
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <BlockIcon
+                            onClick={() =>
+                              navigate(
+                                Path.Settings + `?tab=agent&id=${item.id}`,
+                              )
+                            }
+                            className="size-4 text-[#000000]/86 dark:text-[#FFFFFF] hover:text-[#00D47E] dark:hover:text-[#4ADE80]"
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent className="cursor-default">
+                          {t("agent.manage")}
+                        </TooltipContent>
+                      </Tooltip>
                     </div>
                     <Label
                       onClick={() => setShowModel(!showModel)}

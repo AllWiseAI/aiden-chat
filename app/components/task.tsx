@@ -256,6 +256,7 @@ function TaskRecords({ currentTask }: { currentTask: TaskType }) {
       setLoading(true);
       const res = await getTaskExecutionRecords(id, 1, 5 * pageNum);
       const { code, data } = res;
+      console.log(11111, res);
       if (code === 0) {
         const { records, pagination } = data;
         if (pagination.total_pages > pageNum) {

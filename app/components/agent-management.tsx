@@ -198,7 +198,7 @@ function AgentEditDialog({
                   <Button
                     variant="outline"
                     className={clsx(
-                      "w-55 h-full dark:hover:bg-[#232627]/50",
+                      "w-55 h-full hover:bg-white dark:hover:bg-[#141718]/75",
                       openPop
                         ? "border-main dark:border-[#00D47E] text-main hover:text-[#00AB66] dark:hover:text-[#00D47E]"
                         : "dark:border-[#232627]",
@@ -386,11 +386,15 @@ function AgentEditDialog({
                 </SelectValue>
               </SelectTrigger>
               <SelectContent className="min-h-10 max-h-50 border-[#E8ECEF] dark:border-[#232627]">
-                <SelectGroup>
+                <SelectGroup className="space-y-1">
                   {modelList.map((item) => {
                     if (item.model)
                       return (
-                        <SelectItem key={item.model} value={item.model}>
+                        <SelectItem
+                          key={item.model}
+                          value={item.model}
+                          className="h-9 hover:bg-[#F3F5F7]/50 dark:hover:bg-[#232627]/50"
+                        >
                           {renderProviderIcon(item)}
                           {item.display}
                         </SelectItem>

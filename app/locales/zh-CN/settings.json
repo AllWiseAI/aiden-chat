@@ -114,7 +114,8 @@
     "default": "默认",
     "add": "添加智能体",
     "edit": "编辑",
-    "defaultName": "自定义智能体"
+    "defaultName": "自定义智能体",
+    "manage": "管理智能体"
   },
   "subscription": {
     "plan": "订阅计划",
