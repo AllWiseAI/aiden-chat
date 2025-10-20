@@ -21,6 +21,7 @@ pub fn get_user_config_path_from_app(app: &tauri::AppHandle) -> Option<PathBuf> 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AgentConfig {
     pub version: String,
+    pub syncVersion: String,
     pub agents: Vec<serde_json::Value>,
 }
 
