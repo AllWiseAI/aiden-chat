@@ -16,6 +16,13 @@ export interface MultimodalContent {
   file_url?: {
     url: string;
   };
+  raw_file_info: {
+    id: string;
+    file: File;
+    url: string;
+    progress: number;
+    type: string;
+  };
 }
 
 export interface MultimodalContentForAlibaba {

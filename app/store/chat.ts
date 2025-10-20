@@ -1,5 +1,4 @@
 import { getMessageTextContent, safeLocalStorage, trimTopic } from "../utils";
-import { UploadedFile } from "@/app/store/file-upload";
 import { DEFAULT_USER_DELINETED } from "../constant";
 import { prettyObject } from "@/app/utils/format";
 import { indexedDBStorage } from "@/app/utils/indexedDB-storage";
@@ -20,7 +19,7 @@ import { createPersistStore } from "../utils/store";
 import { estimateTokenLength } from "../utils/token";
 import { ModelConfig, useAppConfig } from "./config";
 import { createEmptyMask, Mask } from "./mask";
-import { taskSessionParams } from "@/app/typing";
+import { taskSessionParams, UploadedFile } from "@/app/typing";
 
 const localStorage = safeLocalStorage();
 
@@ -349,20 +348,36 @@ export const useChatStore = createPersistStore(
                   file: { type },
                   url,
                 } = fileItem;
-                if (type === "application/pdf") {
+
+                if (type.startsWith("image/")) {
+                  return {
+                    type: "image_url",
+                    image_url: { url },
+                    raw_file_info: {
+                      ...fileItem,
+                      file: {
+                        name: fileItem.file.name,
+                        size: fileItem.file.size,
+                        type: fileItem.file.type,
+                      },
+                    },
+                  };
+                } else {
+                  // This is important to decide which type of file
+                  // can be put into the request payload, this depends on host server's final decision.
                   return {
                     type: "file_url",
                     file_url: { url },
+                    raw_file_info: {
+                      ...fileItem,
+                      file: {
+                        name: fileItem.file.name,
+                        size: fileItem.file.size,
+                        type: fileItem.file.type,
+                      },
+                    },
                   };
                 }
-                if (type.startsWith("image/")) {
-                  return {
-                    type: "image_url" as const,
-                    image_url: { url },
-                  };
-                }
-
-                return undefined;
               })
               .filter((item) => item !== undefined),
           ];
@@ -845,6 +860,6 @@ export const useChatStore = createPersistStore(
   },
   {
     name: StoreKey.Chat,
-    version: 2.2,
+    version: 2.3,
   },
 );

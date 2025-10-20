@@ -1,7 +1,7 @@
 import { getBaseDomain, getHeaders } from "../utils/fetch";
 import { toast } from "@/app/utils/toast";
 
-type UploadInput = File | string; // string 为 base64
+type UploadInput = File | string;
 
 export async function uploadFileWithProgress(
   input: UploadInput,
@@ -24,7 +24,6 @@ export async function uploadFileWithProgress(
     if (mime.includes("excel")) return "xlsx";
     if (mime.includes("json")) return "json";
 
-    // fallback: 根据文件后缀名再判断一次
     if (fileName) {
       const ext = fileName.split(".").pop()?.toLowerCase();
       if (ext) return ext;
@@ -32,9 +31,6 @@ export async function uploadFileWithProgress(
     return "default";
   };
 
-  /**
-   * 🧩 处理 base64 输入
-   */
   if (typeof input === "string") {
     const arr = input.split(",");
     const mimeMatch = arr[0].match(/:(.*?);/);
@@ -73,7 +69,6 @@ export async function uploadFileWithProgress(
         try {
           const result = JSON.parse(xhr.responseText);
           if (result.status === 0) {
-            console.log("upload success===", result);
             resolve({ url: result.data.target_uri, type: fileTypeParam });
           } else {
             reject(result.message);

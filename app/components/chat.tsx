@@ -63,6 +63,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/app/components/shadcn/accordion";
+import { ChatMessageItemFile } from "./chat-message-item-file";
 
 const localStorage = safeLocalStorage();
 
@@ -190,6 +191,25 @@ function InnerChat() {
   const [isLoading, setIsLoading] = useState(false);
   const [isChatting, setIsChatting] = useState(false);
   const { t } = useTranslation("general");
+
+  const fileListRef = useRef<HTMLDivElement>(null);
+  const [fileListHeight, setFileListHeight] = useState(0);
+
+  // auto grow input
+  const [inputRows, setInputRows] = useState(2);
+
+  useEffect(() => {
+    if (!fileListRef.current) return;
+
+    const observer = new ResizeObserver(() => {
+      const fileHeight = fileListRef.current?.offsetHeight || 0;
+      setFileListHeight(fileHeight);
+    });
+    observer.observe(fileListRef.current);
+
+    return () => observer.disconnect();
+  }, [files]);
+
   useEffect(() => {
     setIsChatting(ChatControllerPool.hasPendingInSession(session.id));
   }, [session.id, session.messages]);
@@ -226,8 +246,6 @@ function InnerChat() {
   const [hitBottom, setHitBottom] = useState(true);
   const isMobileScreen = useMobileScreen();
 
-  // auto grow input
-  const [inputRows, setInputRows] = useState(2);
   const measure = useDebouncedCallback(
     () => {
       const rows = inputRef.current ? autoGrowTextArea(inputRef.current) : 1;
@@ -587,8 +605,13 @@ function InnerChat() {
   };
 
   const shouldDisabled = useMemo(() => {
+    // 1. has uploading files
+    // 2. no files && no input && no chatting
+    const haveUploadingFiles = files.some((file) => file.url === "");
     const haveFiles = files.filter((file) => file.url !== "").length;
-    return !(userInput.length || haveFiles) && !isChatting;
+    return (
+      haveUploadingFiles || (!userInput.length && !haveFiles && !isChatting)
+    );
   }, [userInput, files, isChatting]);
 
   return (
@@ -644,48 +667,10 @@ function InnerChat() {
                                 <div
                                   className={clsx(
                                     styles["chat-message-item"],
-                                    "p-3",
+                                    "p-3 flex flex-col gap-2",
                                   )}
                                 >
-                                  {getMessageImages(message).length == 1 && (
-                                    <ImagePreview
-                                      className={
-                                        styles["chat-message-item-image"]
-                                      }
-                                      src={getMessageImages(message)[0]}
-                                      alt=""
-                                    />
-                                  )}
-                                  {getMessageImages(message).length > 1 && (
-                                    <div
-                                      className={
-                                        styles["chat-message-item-images"]
-                                      }
-                                      style={
-                                        {
-                                          "--image-count":
-                                            getMessageImages(message).length,
-                                        } as React.CSSProperties
-                                      }
-                                    >
-                                      {getMessageImages(message).map(
-                                        (image, index) => {
-                                          return (
-                                            <ImagePreview
-                                              className={
-                                                styles[
-                                                  "chat-message-item-image-multi"
-                                                ]
-                                              }
-                                              key={index}
-                                              src={image}
-                                              alt=""
-                                            />
-                                          );
-                                        },
-                                      )}
-                                    </div>
-                                  )}
+                                  <ChatMessageItemFile message={message} />
                                   {message.isError ? (
                                     renderErrorMsg(message)
                                   ) : (
@@ -920,9 +905,7 @@ function InnerChat() {
                     ref={inputRef}
                     className={clsx(
                       styles["chat-input"],
-                      {
-                        [styles["chat-input-with-image"]]: files.length > 0,
-                      },
+
                       "placeholder:text-[#6C7275]",
                     )}
                     placeholder={t("chat.placeholder")}
@@ -934,9 +917,15 @@ function InnerChat() {
                     style={{
                       fontSize: config.fontSize,
                       fontFamily: config.fontFamily,
+                      paddingTop: fileListHeight + 8,
+                      height: fileListHeight + 78,
                     }}
                   />
-                  <FileResult files={files} removeFile={removeFile} />
+                  <FileResult
+                    ref={fileListRef}
+                    files={files}
+                    removeFile={removeFile}
+                  />
                   <div className="absolute bottom-3 left-3 flex gap-2">
                     <FileUploader />
                     <McpPopover

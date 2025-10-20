@@ -40,10 +40,10 @@
     "typing": "正在输入…",
     "send": "发送",
     "file": {
-      "upload": "上传图片或PDF",
+      "upload": "上传文件",
       "disabledTips1": "当前模型不支持",
       "disabledTips2": "图片和PDF文件识别",
-      "fileTypes": "不支持的文件格式，请选择图片或PDF文件"
+      "fileTypes": "不支持的文件格式"
     },
     "image": {
       "tip": "请选择图片文件进行上传",

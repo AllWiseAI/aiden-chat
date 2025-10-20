@@ -40,10 +40,10 @@
     "typing": "Typing…",
     "send": "Send",
     "file": {
-      "upload": "Upload Photo & PDF",
+      "upload": "Upload File",
       "disabledTips1": "The current model does not",
       "disabledTips2": "support image and pdf file recognition.",
-      "fileTypes": "The file type is not supported, please select an image or pdf file"
+      "fileTypes": "The file type is not supported"
     },
     "image": {
       "tip": "Please select an image file to upload",

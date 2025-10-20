@@ -8,6 +8,16 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/app/components/shadcn/tooltip";
+import { toast } from "@/app/utils/toast";
+
+const validExtensions = {
+  image: [".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp"],
+  pdf: [".pdf"],
+  excel: [".xls", ".xlsx"],
+  ppt: [".ppt", ".pptx"],
+  word: [".doc", ".docx"],
+  text: [".txt", ".md", ".markdown"],
+};
 
 export const FileUploader = () => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -16,6 +26,19 @@ export const FileUploader = () => {
 
   const validateAndUpload = (file: File) => {
     if (!file) return;
+
+    const fileName = file.name.toLowerCase();
+    const allValidExtensions = Object.values(validExtensions).flat();
+
+    const isFileValid = allValidExtensions.some((ext) =>
+      fileName.endsWith(ext),
+    );
+
+    if (!isFileValid) {
+      toast.error(t("chat.file.fileTypes"));
+      return;
+    }
+
     uploadFile(file);
   };
 
