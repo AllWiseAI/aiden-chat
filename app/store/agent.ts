@@ -45,7 +45,6 @@ export const useAgentStore = createPersistStore(
     const methods = {
       init: async () => {
         const config = await readAgentConfig();
-        console.log(11111, config);
         set({ config });
         // 后续加后端获取
       },

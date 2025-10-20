@@ -220,12 +220,13 @@ export default function AgentTab() {
   const agents = useAgentStore((state) => state.getAgents());
   const getModelInfo = useAppConfig((s) => s.getModelInfo);
   const [showModel, setShowModel] = useState(false);
+  const MAX_AGENT_COUNT = 10;
 
   return (
     <div className="flex items-center">
       {agents
         .filter((item) => item.enabled)
-        .slice(0, 8)
+        .slice(0, MAX_AGENT_COUNT)
         .map((item) => (
           <HoverCard key={item.id} openDelay={200}>
             <HoverCardTrigger asChild>

@@ -415,7 +415,6 @@ export enum AgentTypeEnum {
 }
 export type AgentType = `${AgentTypeEnum}`;
 
-// 🔹 数组为 ["Text", "Multimodal"]
 export const AgentTypeArr = Object.keys(
   AgentTypeEnum,
 ) as (keyof typeof AgentTypeEnum)[];

@@ -27,7 +27,6 @@ import { Button } from "./shadcn/button";
 import { useTranslation } from "react-i18next";
 import { createAgent, useAgentStore } from "../store";
 import {
-  AgentType,
   AgentTypeArr,
   Agent,
   ModelOption,
@@ -313,10 +312,17 @@ function AgentEditDialog({
               </div>
             ) : (
               <Select
-                value={newAgent.type}
+                value={AgentTypeArr.find(
+                  (key) =>
+                    AgentTypeEnum[key as keyof typeof AgentTypeEnum] ===
+                    newAgent.type,
+                )}
                 onValueChange={(value: string) =>
                   setNewAgent((agent) => {
-                    return { ...agent, type: value as AgentType };
+                    return {
+                      ...agent,
+                      type: AgentTypeEnum[value as keyof typeof AgentTypeEnum],
+                    };
                   })
                 }
               >
