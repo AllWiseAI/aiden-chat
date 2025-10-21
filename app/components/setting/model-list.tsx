@@ -32,7 +32,7 @@ export default function ModelList() {
     (state) => state.updateLocalProviders,
   );
   const setProviderList = useAppConfig((state) => state.setProviderList);
-
+  const initModelList = useAppConfig((state) => state.initModelList);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const deleteLocalProvider = useAppConfig(
     (state) => state.deleteLocalProviders,
@@ -54,6 +54,7 @@ export default function ModelList() {
       }
     }
     getProviderData();
+    initModelList();
   }, []);
 
   const renderModelList = useMemo(() => {
