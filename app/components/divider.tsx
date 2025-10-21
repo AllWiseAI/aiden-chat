@@ -1,4 +1,5 @@
 import React from "react";
+import { cn } from "@/app/libs/shadcn/utils";
 
 interface DividerProps {
   label?: string;
@@ -24,7 +25,12 @@ export const Divider: React.FC<DividerProps> = ({
     >
       <div className="flex-grow w-full border-t border-[#E8ECEF]  dark:border-[#343839]  dark:border-opacity-50" />
       {label && (
-        <span className="mx-3 text-[#6C7275]/50 text-sm whitespace-nowrap">
+        <span
+          className={cn(
+            "mx-3 text-[#6C7275]/50 text-sm whitespace-nowrap",
+            className,
+          )}
+        >
           {label}
         </span>
       )}

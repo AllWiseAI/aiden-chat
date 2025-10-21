@@ -16,6 +16,8 @@
     "schedule": "定时器"
   },
   "chat": {
+    "more": "更多",
+    "explore": "探索",
     "title": "嗨，我是",
     "subTitle": "共 {{count}} 条对话",
     "placeholder": "请输入问题...",

@@ -257,6 +257,7 @@ function TaskRecords({ currentTask }: { currentTask: TaskType }) {
       const { code, data } = res;
       if (code === 0) {
         const { records, pagination } = data;
+        console.log("records===", records);
         if (pagination.total_pages > pageNum) {
           setViewMore(true);
         } else {
