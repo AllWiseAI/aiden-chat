@@ -1,17 +1,20 @@
 import { useState, useEffect } from "react";
-import { useAuthStore, useSettingStore } from "../../store";
+import {
+  useAuthStore,
+  // useSettingStore
+} from "../../store";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/app/utils/toast";
 import { Path } from "../../constant";
 import { Theme, useAppConfig } from "@/app/store";
 import { useTranslation } from "react-i18next";
-import { relaunch } from "@tauri-apps/api/process";
+// import { relaunch } from "@tauri-apps/api/process";
 import {
   getLang,
   changeLanguage,
   localeOptions,
   Locales,
-  countryList,
+  // countryList,
 } from "../../locales";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../shadcn/tooltip";
 import { Switch } from "../shadcn/switch";
@@ -28,21 +31,21 @@ import LightMode from "../../icons/theme-light.svg";
 import DarkMode from "../../icons/theme-dark.svg";
 import SystemMode from "../../icons/theme-system.svg";
 import InfoIcon from "../../icons/info.svg";
-import RestartDialog from "../restart-dialog";
+// import RestartDialog from "../restart-dialog";
 import { track, EVENTS } from "@/app/utils/analysis";
 import clsx from "clsx";
 
 export default function General() {
   const authStore = useAuthStore();
-  const setRegion = useSettingStore((state) => state.setRegion);
-  const region = useSettingStore((state) => state.region);
+  // const setRegion = useSettingStore((state) => state.setRegion);
+  // const region = useSettingStore((state) => state.region);
   const config = useAppConfig();
   const { t } = useTranslation("settings");
   const updateConfig = config.update;
   const email = useAuthStore((state) => state.user.email);
   const navigate = useNavigate();
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [currentRegion, setCurrentRegion] = useState<string>(region);
+  // const [isAlertOpen, setIsAlertOpen] = useState(false);
+  // const [currentRegion, setCurrentRegion] = useState<string>(region);
   const [theme, setTheme] = useState<Theme.Auto | Theme.Dark | Theme.Light>(
     config.theme,
   );
@@ -70,21 +73,21 @@ export default function General() {
       toast.error(e.message);
     }
   };
-  const handleRegionChange = async (value: string) => {
-    setCurrentRegion(value);
-    setIsAlertOpen(true);
-  };
+  // const handleRegionChange = async (value: string) => {
+  //   setCurrentRegion(value);
+  //   setIsAlertOpen(true);
+  // };
   const handleChangeTheme = (value: Theme) => {
     setTheme(value);
     updateConfig((config) => {
       config.theme = value as Theme;
     });
   };
-  const sortedCountryList = [...countryList].sort((a, b) => {
-    const nameA = t(`common:region.${a}`);
-    const nameB = t(`common:region.${b}`);
-    return nameA.localeCompare(nameB, "zh-CN", { sensitivity: "base" });
-  });
+  // const sortedCountryList = [...countryList].sort((a, b) => {
+  //   const nameA = t(`common:region.${a}`);
+  //   const nameB = t(`common:region.${b}`);
+  //   return nameA.localeCompare(nameB, "zh-CN", { sensitivity: "base" });
+  // });
   return (
     <>
       <div className="w-max h-full pr-8 flex flex-col gap-10 justify-start items-start text-black dark:text-white">
@@ -102,7 +105,7 @@ export default function General() {
             </div>
           </div>
         </div>
-        <div className="w-full flex flex-col gap-3 justify-between px-2.5">
+        {/* <div className="w-full flex flex-col gap-3 justify-between px-2.5">
           <div className="font-medium">{t("general.country.title")}</div>
           <Select
             defaultValue={region || "US"}
@@ -126,7 +129,7 @@ export default function General() {
               </SelectGroup>
             </SelectContent>
           </Select>
-        </div>
+        </div> */}
         <div className="w-full flex flex-col justify-between gap-3 px-2.5">
           <div className="font-medium">{t("general.language")}</div>
           <Select
@@ -225,7 +228,7 @@ export default function General() {
             }}
           />
         </div>
-        <RestartDialog
+        {/* <RestartDialog
           title={t("general.relaunch.title")}
           description={t("general.relaunch.description")}
           onConfirm={async () => {
@@ -241,7 +244,7 @@ export default function General() {
             setIsAlertOpen(value);
           }}
           isOpen={isAlertOpen}
-        ></RestartDialog>
+        ></RestartDialog> */}
       </div>
     </>
   );
