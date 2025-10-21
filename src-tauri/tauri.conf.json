@@ -116,7 +116,7 @@
     "updater": {
       "active": true,
       "endpoints": [
-        "https://static.aidenai.info/chat/releases/latest.json"
+        "https://static.aidenai.io/chat/releases/latest.json"
       ],
       "dialog": false,
       "windows": {
