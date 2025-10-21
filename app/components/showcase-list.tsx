@@ -55,9 +55,11 @@ export default function ShowcaseList() {
   }, [containerWidth]);
 
   useEffect(() => {
-    getShowcaseList().then((res) => {
-      setShowcaseList([...res]);
-      setConfigShowcaseList([...res]);
+    getShowcaseList().then((res: ShowcaseListOption[]) => {
+      const sortedList = res.sort((a, b) => a.order - b.order);
+
+      setShowcaseList(sortedList);
+      setConfigShowcaseList(sortedList);
     });
   }, []);
 
