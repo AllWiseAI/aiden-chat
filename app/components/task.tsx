@@ -114,6 +114,7 @@ export function TaskItem({ title, taskInfo }: TaskItemProps) {
     id,
     task_id,
     execution_type,
+    agent_info,
   } = taskInfo;
   const singleKey = task_id + "-" + id;
   const chatStore = useChatStore();
@@ -153,6 +154,7 @@ export function TaskItem({ title, taskInfo }: TaskItemProps) {
         requestData: request_messages,
         // @ts-ignore
         responseData,
+        agentId: agent_info?.from_agent_id,
       });
     } else {
       chatStore.selectTaskSession(singleKey);
@@ -255,6 +257,7 @@ function TaskRecords({ currentTask }: { currentTask: TaskType }) {
       setLoading(true);
       const res = await getTaskExecutionRecords(id, 1, 5 * pageNum);
       const { code, data } = res;
+
       if (code === 0) {
         const { records, pagination } = data;
         console.log("records===", records);

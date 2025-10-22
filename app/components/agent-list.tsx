@@ -1,11 +1,11 @@
 import { useAgentStore } from "../store";
 import Image from "next/image";
 import { Theme } from "@/app/store";
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useState, useEffect } from "react";
 import { useTheme } from "../hooks/use-theme";
 import { ProviderIcon } from "./setting/provider-icon";
 import { useAppConfig } from "../store";
-import { Agent } from "../typing";
+import { Agent, AgentSource } from "../typing";
 import { Switch } from "./shadcn/switch";
 import { Button } from "./shadcn/button";
 import { useTranslation } from "react-i18next";
@@ -28,7 +28,8 @@ function AgentItem({ item, onEdit }: AgentItemProps) {
   const { t } = useTranslation("settings");
   const models = useAppConfig((s) => s.models);
   const localProviders = useAppConfig((s) => s.localProviders);
-  const isBuiltIn = item.source === "builtIn";
+  const updateAgent = useAgentStore((s) => s.updateAgent);
+  const isBuiltIn = item.source === AgentSource.BuiltIn;
   const formatLocalModels: UserModel[] = localProviders.flatMap((item) =>
     item.models.map((model) => ({
       model: model.value,
@@ -47,6 +48,15 @@ function AgentItem({ item, onEdit }: AgentItemProps) {
   const currentModel = useMemo(() => {
     return modelList.find((model) => model.model === item.model.name);
   }, [modelList, item.model.name]);
+
+  const handleSwitch = async (checked: boolean) => {
+    if (checked !== item.enabled) {
+      updateAgent({
+        ...item,
+        enabled: checked,
+      });
+    }
+  };
 
   const renderProviderIcon = useCallback(
     (size?: number) => {
@@ -94,7 +104,12 @@ function AgentItem({ item, onEdit }: AgentItemProps) {
                 {t("agent.default")}
               </div>
             ) : (
-              <Switch />
+              <Switch
+                checked={item.enabled}
+                onCheckedChange={async (checked) => {
+                  await handleSwitch(checked);
+                }}
+              />
             )}
           </div>
           <p className="min-h-[3lh] w-full text-xs text-[#6C7275] leading-4.5 break-words line-clamp-3">
@@ -123,13 +138,44 @@ export default function AgentList({
 }: {
   onEdit: (agent: AgentItemProps["item"]) => void;
 }) {
-  const agents = useAgentStore((state) => state.getAgents());
-
+  const getAgents = useAgentStore((state) => state.getAgents);
+  const [sortedAgentIds, setSortedAgentIds] = useState<string[]>([]);
+  const sortAgents = (agents: Agent[]) => {
+    return [...agents].sort((a, b) => {
+      if (a.source === AgentSource.BuiltIn && b.source !== AgentSource.BuiltIn)
+        return -1;
+      if (a.source !== AgentSource.BuiltIn && b.source === AgentSource.BuiltIn)
+        return 1;
+      if (a.enabled && !b.enabled) return -1;
+      if (!a.enabled && b.enabled) return 1;
+      if (a.source === AgentSource.Default && b.source === AgentSource.Custom)
+        return -1;
+      if (a.source === AgentSource.Custom && b.source === AgentSource.Default)
+        return 1;
+      return 0;
+    });
+  };
+  // 在组件挂载时确定排序顺序
+  useEffect(() => {
+    if (sortedAgentIds.length === 0) {
+      const currentAgents = getAgents();
+      const sortedAgents = sortAgents(currentAgents);
+      setSortedAgentIds(sortedAgents.map((agent) => agent.id));
+    }
+  }, []);
+  const currentAgents = getAgents();
+  const renderAgents = useMemo(() => {
+    if (sortedAgentIds.length === 0) return currentAgents;
+    const agentMap = Object.fromEntries(
+      currentAgents.map((agent) => [agent.id, agent]),
+    );
+    return sortedAgentIds.map((id) => agentMap[id]).filter(Boolean);
+  }, [currentAgents, sortedAgentIds]);
   return (
     <>
       <div className="-mr-2 scroll-container h-full">
         <div className="grid grid-cols-1 @xss:grid-cols-2 @headerMd:grid-cols-3 gap-3.5">
-          {agents.map((item) => (
+          {renderAgents.map((item) => (
             <AgentItem item={item} key={item.id} onEdit={onEdit} />
           ))}
         </div>

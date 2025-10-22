@@ -114,7 +114,8 @@
     "default": "Default",
     "add": "Add Agent",
     "edit": "Edit",
-    "defaultName": "User Agent"
+    "defaultName": "User Agent",
+    "manage": "Manage agent"
   },
   "subscription": {
     "plan": "Plan",

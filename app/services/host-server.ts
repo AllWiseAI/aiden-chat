@@ -4,6 +4,7 @@ import { fetchNoProxy } from "@/app/utils/fetch-no-proxy";
 import { getHeaders } from "@/app/utils/fetch";
 
 const remoteMcpURL = "/api/config/mcp";
+const remoteAgentURL = "/api/agent_prompt";
 const localTokenURL = "/authorization/token";
 
 export async function getLocalToken() {
@@ -115,4 +116,27 @@ export async function updateRagEnabled(status: boolean) {
     const jsonResult = await result.json();
     return jsonResult;
   }
+}
+
+export async function updateAgentConfig() {
+  const baseURL = getLocalBaseDomain();
+
+  const headers = await getHeaders({ aiden: true });
+  const result = await fetchNoProxy(`${baseURL}/agent-config/notify-changed`, {
+    method: "POST",
+    headers: headers,
+  });
+  if (result.status !== 200) {
+    throw new Error("update failed: " + result.statusText);
+  } else {
+    const jsonResult = await result.json();
+    return jsonResult;
+  }
+}
+
+export async function getRemoteAgentItems() {
+  const result = await fetch(remoteAgentURL, {
+    method: "GET",
+  });
+  return result.data;
 }

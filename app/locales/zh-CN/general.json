@@ -59,7 +59,8 @@
       "tip": "配置工具扩展 Aiden 的能力",
       "call": "调用",
       "called": "调用",
-      "tool": "工具"
+      "tool": "工具",
+      "noServers": "未开启工具"
     }
   },
   "task": {
@@ -173,7 +174,8 @@
     "export": "导出",
     "import": "导入",
     "sync": "同步",
-    "config": "配置"
+    "config": "配置",
+    "manage": "管理"
   },
   "invite": {
     "btn": "邀请",
@@ -226,7 +228,11 @@
       "description": "描述",
       "prompt": "提示词",
       "type": "类型",
-      "model": "模型"
+      "model": "模型",
+      "delete": {
+        "title": "删除智能体",
+        "content": "确认删除这个智能体吗？"
+      }
     }
   }
 }

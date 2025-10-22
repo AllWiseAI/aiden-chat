@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Label } from "../components/shadcn/label";
 
 import {
@@ -7,12 +8,13 @@ import {
   HoverCardTrigger,
   HoverCardContent,
 } from "./shadcn/hover-card";
+import { Tooltip, TooltipTrigger, TooltipContent } from "./shadcn/tooltip";
 import { useAppConfig, useAgentStore } from "../store";
 import { Path } from "../constant";
 import { Agent } from "../typing";
 import { INNER_PROVIDER_NAME } from "@/app/constant";
 import { ProviderIcon } from "./setting/provider-icon";
-import { ModelOption, ProviderOption } from "@/app/typing";
+import { ModelOption, ProviderOption, AgentTypeEnum } from "@/app/typing";
 import AccessIcon from "../icons/access.svg";
 import RightIcon from "../icons/right-arrow.svg";
 import ArrowDownIcon from "../icons/arrow-down.svg";
@@ -23,6 +25,7 @@ import clsx from "clsx";
 
 function AgentModel({ show, item }: { show: boolean; item: Agent }) {
   const navigate = useNavigate();
+  const { t } = useTranslation("general");
   const [modelList, getModelInfo, setGroupedProviders, localProviders] =
     useAppConfig((s) => [
       s.models,
@@ -125,10 +128,16 @@ function AgentModel({ show, item }: { show: boolean; item: Agent }) {
       {show && (
         <div className="max-w-60 mx-auto border light:border-[#E8ECEF] rounded-sm overflow-hidden">
           <div className="w-full bg-[#FEFEFE] dark:bg-[#141718] overflow-y-auto max-h-[260px] px-1 py-2 space-y-1.5">
+            <style>
+              {`div::-webkit-scrollbar {
+                  width: 5px;
+                }
+              `}
+            </style>
             {Object.entries(groupedLocalProviders).map(
               ([groupLabel, provider]) => {
                 const isOpen = openGroup === groupLabel;
-                const isMulti = item.type === "Multimodal";
+                const isMulti = item.type === AgentTypeEnum.Multimodal;
                 // @ts-ignore
                 const models: ModelOption[] = provider.apiKey
                   ? provider.models.map((model) => ({
@@ -204,7 +213,7 @@ function AgentModel({ show, item }: { show: boolean; item: Agent }) {
               onClick={() => navigate(Path.Settings + "?tab=model")}
             >
               <span className="text-sm font-medium group-hover:text-[#00AB66]">
-                Manage
+                {t("ui.manage")}
               </span>
               <RightIcon className="size-6 text-muted-foreground group-hover:text-[#00AB66]" />
             </div>
@@ -217,78 +226,104 @@ function AgentModel({ show, item }: { show: boolean; item: Agent }) {
 
 export default function AgentTab() {
   const navigate = useNavigate();
-  const agents = useAgentStore((state) => state.getAgents());
-  const getModelInfo = useAppConfig((s) => s.getModelInfo);
+  const [agents, handleModel] = useAgentStore((state) => [
+    state.getAgents(),
+    state.handleModel,
+  ]);
+  const [getModelInfo, initModelList] = useAppConfig((s) => [
+    s.getModelInfo,
+    s.initModelList,
+  ]);
   const [showModel, setShowModel] = useState(false);
+  const MAX_AGENT_COUNT = 10;
+  const { t } = useTranslation("settings");
+
+  useEffect(() => {
+    // always request new model data
+    initModelList();
+    handleModel();
+  }, []);
 
   return (
     <div className="flex items-center">
-      {agents.map((item) => (
-        <HoverCard key={item.id} openDelay={200}>
-          <HoverCardTrigger asChild>
-            <div
-              className={clsx(
-                "cursor-default flex-center rounded-full backdrop-blur-lg border hover:border-[#00D47E] dark:hover:border-[#4ADE80] data-[state=open]:border-[#00D47E] dark:data-[state=open]:border-[#00D47E] size-8 hover:size-10 data-[state=open]:size-10 transition-all delay-100 -mr-2.5 group-hover:mr-2",
-              )}
-              style={{
-                boxShadow: `
+      {agents
+        .filter((item) => item.enabled)
+        .slice(0, MAX_AGENT_COUNT)
+        .map((item) => (
+          <HoverCard key={item.id} openDelay={200}>
+            <HoverCardTrigger asChild>
+              <div
+                className={clsx(
+                  "group cursor-default flex-center rounded-full backdrop-blur-lg border hover:border-[#00D47E] dark:hover:border-[#4ADE80] data-[state=open]:border-[#00D47E] dark:data-[state=open]:border-[#00D47E] size-8 transform hover:scale-125 transition-all duration-500 ease-in-out data-[state=open]:scale-125 -mr-2 hover:ml-1 hover:-mr-1 data-[state=open]:ml-1 data-[state=open]:-mr-1 flex-center data-[state=open]:z-1",
+                )}
+                style={{
+                  boxShadow: `
                       0px 4px 4px 0px rgba(0,0,0,0.11),
                       0px 4px 4px 2px rgba(0,0,0,0.11)
                     `,
-              }}
-            >
-              {item.avatar}
-            </div>
-          </HoverCardTrigger>
-          <HoverCardContent
-            sideOffset={7}
-            className="border border-[#E8ECEF] dark:border-[#505050] w-75"
-            style={{
-              boxShadow: `
+                }}
+              >
+                {item.avatar}
+              </div>
+            </HoverCardTrigger>
+            <HoverCardContent
+              sideOffset={7}
+              className="border border-[#E8ECEF] dark:border-[#505050] w-75 mr-5"
+              style={{
+                boxShadow: `
                       0px 0px 24px 4px rgba(0,0,0,0.05),
                       0px 32px 48px -4px rgba(0,0,0,0.2)
                     `,
-            }}
-          >
-            <div className="flex flex-col gap-2">
-              <div className="flex gap-4">
-                <div className="size-8 cursor-default rounded-full border border-[#F2F2F2] dark:border-[#505050] flex-center">
-                  {item.avatar}
-                </div>
-                <div className="min-w-0 flex-1 flex flex-col gap-1">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">{item.name}</span>
-                    <BlockIcon
-                      onClick={() =>
-                        navigate(Path.Settings + `?tab=agent&id=${item.id}`)
-                      }
-                      className="size-4 text-[#000000]/86 dark:text-[#FFFFFF] hover:text-[#00D47E] dark:hover:text-[#4ADE80]"
-                    />
+              }}
+            >
+              <div className="flex flex-col gap-2">
+                <div className="flex gap-4">
+                  <div className="size-8 cursor-default rounded-full border border-[#F2F2F2] dark:border-[#505050] flex-center">
+                    {item.avatar}
                   </div>
-                  <Label
-                    onClick={() => setShowModel(!showModel)}
-                    className="text-xs text-[#101213] dark:text-[#E8ECEF]"
-                  >
-                    {getModelInfo(item.model.name)?.display}
-                    {showModel ? (
-                      <ArrowDownIcon className="size-4" />
-                    ) : (
-                      <ArrowRightIcon className="size-4" />
-                    )}
-                  </Label>
+                  <div className="min-w-0 flex-1 flex flex-col gap-1">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">{item.name}</span>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <BlockIcon
+                            onClick={() =>
+                              navigate(
+                                Path.Settings + `?tab=agent&id=${item.id}`,
+                              )
+                            }
+                            className="size-4 text-[#000000]/86 dark:text-[#FFFFFF] hover:text-[#00D47E] dark:hover:text-[#4ADE80]"
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent className="cursor-default">
+                          {t("agent.manage")}
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                    <Label
+                      onClick={() => setShowModel(!showModel)}
+                      className="min-h-[18px] text-xs text-[#101213] dark:text-[#E8ECEF] min-w-0 max-w-50 flex items-center"
+                    >
+                      {getModelInfo(item.model.name)?.display}
+                      {showModel ? (
+                        <ArrowDownIcon className="size-4 shrink-0" />
+                      ) : (
+                        <ArrowRightIcon className="size-4 shrink-0" />
+                      )}
+                    </Label>
 
-                  {!showModel && (
-                    <span className="text-xs text-[#000000]/85 dark:text-[#E8ECEF]/50 break-words line-clamp-3">
-                      {item.description}
-                    </span>
-                  )}
+                    {!showModel && (
+                      <span className="text-xs text-[#000000]/85 dark:text-[#E8ECEF]/50 break-words line-clamp-3">
+                        {item.description}
+                      </span>
+                    )}
+                  </div>
                 </div>
+                <AgentModel show={showModel} item={item} />
               </div>
-              <AgentModel show={showModel} item={item} />
-            </div>
-          </HoverCardContent>
-        </HoverCard>
-      ))}
+            </HoverCardContent>
+          </HoverCard>
+        ))}
       <div
         className="flex-center rounded-full backdrop-blur-lg size-8 border border-[#F2F2F2] dark:border-[#505050] hover:border-[#00D47E] dark:hover:border-[#4ADE80]"
         onClick={() => navigate(Path.Settings + "?tab=agent")}

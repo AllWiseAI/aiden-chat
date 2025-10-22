@@ -59,7 +59,8 @@
       "tip": "Use tools to extend Aiden's capabilities",
       "call": "Call",
       "called": "Called",
-      "tool": "Tool"
+      "tool": "Tool",
+      "noServers": "No tools"
     }
   },
   "task": {
@@ -173,7 +174,8 @@
     "export": "Export",
     "import": "Import",
     "sync": "Sync",
-    "config": "Config"
+    "config": "Config",
+    "manage": "Manage"
   },
   "invite": {
     "btn": "Invite",
@@ -226,7 +228,11 @@
       "description": "Description",
       "prompt": "Prompt",
       "type": "Type",
-      "model": "Model"
+      "model": "Model",
+      "delete": {
+        "title": "Delete Agent",
+        "content": "Are you sure you want to delete agent?"
+      }
     }
   }
 }

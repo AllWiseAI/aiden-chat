@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import AgentList from "./agent-list";
-// import PlusIcon from "../icons/plus.svg";
+import PlusIcon from "../icons/plus.svg";
 import Image from "next/image";
 import Textarea from "./textarea";
 import { EmojiList } from "./emoji-list";
@@ -21,18 +21,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./shadcn/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/app/components/shadcn/alert-dialog";
 import { ProviderIcon } from "./setting/provider-icon";
 import { Input } from "./shadcn/input";
 import { Button } from "./shadcn/button";
 import { useTranslation } from "react-i18next";
 import { createAgent, useAgentStore } from "../store";
 import {
-  AgentType,
   AgentTypeArr,
   Agent,
   ModelOption,
   ProviderOption,
   AgentSource,
+  AgentTypeEnum,
 } from "../typing";
 import { Theme } from "@/app/store";
 import { useTheme } from "../hooks/use-theme";
@@ -57,10 +67,12 @@ function AgentEditDialog({
   open,
   item,
   onOpenChange,
+  onDelete,
 }: {
   open: boolean;
   item: AgentItemProps["item"] | null;
   onOpenChange: (open: boolean) => void;
+  onDelete: (id: string) => void;
 }) {
   const { t } = useTranslation("general");
   const theme = useTheme();
@@ -73,11 +85,22 @@ function AgentEditDialog({
   ]);
 
   const initModelList = useAppConfig((s) => s.initModelList);
+  const [addAgent, updateAgent, handleModel] = useAgentStore((state) => [
+    state.addAgent,
+    state.updateAgent,
+    state.handleModel,
+  ]);
 
   useEffect(() => {
     // always request new model data
     initModelList();
+    handleModel();
   }, []);
+
+  const isCustom = useMemo(() => {
+    if (!item) return false;
+    return item.source === AgentSource.Custom;
+  }, [item]);
 
   const formatLocalModels: UserModel[] = localProviders.flatMap((item) =>
     item.models.map((model) => ({
@@ -91,16 +114,13 @@ function AgentEditDialog({
   );
 
   const [openPop, setOpenPop] = useState(false);
-  const [addAgent, updateAgent] = useAgentStore((state) => [
-    state.addAgent,
-    state.updateAgent,
-  ]);
+
   const [newAgent, setNewAgent] = useState<AgentItemProps["item"]>(
     createAgent(),
   );
   const modelList = useMemo(() => {
     if (newAgent.type === undefined) return [];
-    const isMulti = newAgent.type === "Multimodal";
+    const isMulti = newAgent.type === AgentTypeEnum.Multimodal;
     return [
       ...(isMulti
         ? models.filter((item) => item.multi_model === true)
@@ -115,8 +135,17 @@ function AgentEditDialog({
 
   useEffect(() => {
     if (item) {
-      const { id, name, avatar, source, description, prompt, type, model } =
-        item;
+      const {
+        id,
+        name,
+        avatar,
+        source,
+        description,
+        prompt,
+        type,
+        model,
+        enabled,
+      } = item;
       setNewAgent({
         id,
         name,
@@ -126,6 +155,7 @@ function AgentEditDialog({
         description,
         prompt,
         model,
+        enabled,
       });
     }
   }, [item]);
@@ -183,7 +213,10 @@ function AgentEditDialog({
         <DialogTitle className="px-6">{t("dialog.agent.title")}</DialogTitle>
         <div className="flex-1 flex flex-col gap-4 w-full text-sm font-normal scroll-container pl-6 pr-4">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="avatar" className="text-[#6C7275] w-max">
+            <Label
+              htmlFor="avatar"
+              className="text-[#6C7275] w-max text-sm font-normal"
+            >
               {t("dialog.agent.avatar.title")}
             </Label>
             <div className="flex gap-1.5 h-9">
@@ -195,7 +228,7 @@ function AgentEditDialog({
                   <Button
                     variant="outline"
                     className={clsx(
-                      "w-55 h-full dark:hover:bg-[#232627]/50",
+                      "w-55 h-full hover:bg-white dark:hover:bg-[#141718]/75",
                       openPop
                         ? "border-main dark:border-[#00D47E] text-main hover:text-[#00AB66] dark:hover:text-[#00D47E]"
                         : "dark:border-[#232627]",
@@ -223,7 +256,7 @@ function AgentEditDialog({
           <div className="flex flex-col gap-1.5">
             <Label
               htmlFor="name"
-              className="text-[#6C7275] dark:text-[#E8ECEF] w-max"
+              className="text-[#6C7275] dark:text-[#E8ECEF] w-max text-sm font-normal"
             >
               {t("dialog.agent.name")}
             </Label>
@@ -247,7 +280,7 @@ function AgentEditDialog({
           <div className="flex flex-col gap-1.5">
             <Label
               htmlFor="description"
-              className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500"
+              className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500 text-sm font-normal"
             >
               {t("dialog.agent.description")}
             </Label>
@@ -273,7 +306,7 @@ function AgentEditDialog({
             <div className="flex flex-col gap-1.5">
               <Label
                 htmlFor="prompt"
-                className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500"
+                className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500 text-sm font-normal"
               >
                 {t("dialog.agent.prompt")}
               </Label>
@@ -299,7 +332,7 @@ function AgentEditDialog({
           <div className="flex flex-col gap-1.5">
             <Label
               htmlFor="type"
-              className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500"
+              className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500 text-sm font-normal"
             >
               {t("dialog.agent.type")}
             </Label>
@@ -309,10 +342,17 @@ function AgentEditDialog({
               </div>
             ) : (
               <Select
-                value={newAgent.type}
+                value={AgentTypeArr.find(
+                  (key) =>
+                    AgentTypeEnum[key as keyof typeof AgentTypeEnum] ===
+                    newAgent.type,
+                )}
                 onValueChange={(value: string) =>
                   setNewAgent((agent) => {
-                    return { ...agent, type: value as AgentType };
+                    return {
+                      ...agent,
+                      type: AgentTypeEnum[value as keyof typeof AgentTypeEnum],
+                    };
                   })
                 }
               >
@@ -340,7 +380,7 @@ function AgentEditDialog({
           <div className="flex flex-col gap-1.5">
             <Label
               htmlFor="model"
-              className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500"
+              className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500 text-sm font-normal"
             >
               {t("dialog.agent.model")}
             </Label>
@@ -376,11 +416,15 @@ function AgentEditDialog({
                 </SelectValue>
               </SelectTrigger>
               <SelectContent className="min-h-10 max-h-50 border-[#E8ECEF] dark:border-[#232627]">
-                <SelectGroup>
+                <SelectGroup className="space-y-1">
                   {modelList.map((item) => {
                     if (item.model)
                       return (
-                        <SelectItem key={item.model} value={item.model}>
+                        <SelectItem
+                          key={item.model}
+                          value={item.model}
+                          className="h-9 hover:bg-[#F3F5F7]/50 dark:hover:bg-[#232627]/50"
+                        >
                           {renderProviderIcon(item)}
                           {item.display}
                         </SelectItem>
@@ -391,27 +435,40 @@ function AgentEditDialog({
             </Select>
           </div>
         </div>
-        <DialogFooter className="mt-auto ml-auto gap-2.5 w-full max-w-75 h-9 px-6">
-          <Button
-            className="flex-1 bg-white rounded-sm hover:bg-[#F3F5F74D] dark:bg-[#141718] dark:border-[#343839] dark:hover:bg-[#141718]/8 text-[#6C7275] dark:text-[#FEFEFE] border border-[#6C7275]/10 px-2.5 py-2 mr-0"
-            type="button"
-            onClick={() => onOpenChange(false)}
-          >
-            {t("dialog.cancel")}
-          </Button>
+        <DialogFooter className="!justify-between items-center mt-auto w-full h-9 px-6">
+          {item && isCustom && (
+            <Button
+              className="h-full px-2.5 border border-[#EF466F] text-[#EF466F] hover:text-[#EF466F] rounded-sm"
+              variant="outline"
+              onClick={() => {
+                onDelete(item.id);
+              }}
+            >
+              {t("dialog.delete")}
+            </Button>
+          )}
+          <div className="flex-1 min-w-0 flex justify-end gap-2.5 ml-auto max-w-75">
+            <Button
+              className="flex-1 bg-white rounded-sm hover:bg-[#F3F5F74D] dark:bg-[#141718] dark:border-[#343839] dark:hover:bg-[#141718]/8 text-[#6C7275] dark:text-[#FEFEFE] border border-[#6C7275]/10 px-2.5 py-2 mr-0"
+              type="button"
+              onClick={() => onOpenChange(false)}
+            >
+              {t("dialog.cancel")}
+            </Button>
 
-          <Button
-            className="flex-1 rounded-sm"
-            disabled={
-              !newAgent.description ||
-              (newAgent.source !== AgentSource.BuiltIn && !newAgent.prompt) ||
-              !newAgent.type ||
-              !newAgent.model
-            }
-            onClick={() => handleConfirm()}
-          >
-            {t("dialog.confirm")}
-          </Button>
+            <Button
+              className="flex-1 rounded-sm"
+              disabled={
+                !newAgent.description ||
+                (newAgent.source !== AgentSource.BuiltIn && !newAgent.prompt) ||
+                !newAgent.type ||
+                !newAgent.model.name
+              }
+              onClick={() => handleConfirm()}
+            >
+              {t("dialog.confirm")}
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -429,8 +486,12 @@ export default function AgentManagement() {
   const [searchParams] = params;
   const id = searchParams.get("id");
 
-  const agents = useAgentStore((state) => state.getAgents());
-
+  const [agents, deleteAgent] = useAgentStore((state) => [
+    state.getAgents(),
+    state.deleteAgent,
+  ]);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deletedId, setDeletedId] = useState("");
   useEffect(() => {
     if (id) {
       const found = agents.find((item) => item.id === id);
@@ -441,23 +502,23 @@ export default function AgentManagement() {
     }
   }, [id]);
 
-  // const handleAddAgent = () => {
-  //   setSelectedItem(null);
-  //   setShowEdit(true);
-  // };
+  const handleAddAgent = () => {
+    setSelectedItem(null);
+    setShowEdit(true);
+  };
 
   return (
     <>
       <div className="h-full @container">
         <div className="flex justify-between items-center mb-4">
           <p className="font-medium">{t("agent.title")}</p>
-          {/* <Button
-          onClick={handleAddAgent}
-          className="flex items-center gap-2 h-7 bg-[#00AB66]/12 dark:bg-[#00D47E]/6 hover:bg-[#BEF0DD] dark:hover:bg-[#00D47E]/12 text-main text-sm font-normal rounded-sm"
-        >
-          <PlusIcon className="size-4" />
-          <span>{t("agent.add")}</span>
-        </Button> */}
+          <Button
+            onClick={handleAddAgent}
+            className="flex items-center gap-2 h-7 bg-[#00AB66]/12 dark:bg-[#00D47E]/6 hover:bg-[#BEF0DD] dark:hover:bg-[#00D47E]/12 text-main text-sm font-normal rounded-sm"
+          >
+            <PlusIcon className="size-4" />
+            <span>{t("agent.add")}</span>
+          </Button>
         </div>
         <AgentList
           onEdit={(agent) => {
@@ -479,8 +540,46 @@ export default function AgentManagement() {
               navigate({ search: params.toString() }, { replace: true });
             }
           }}
+          onDelete={(id: string) => {
+            setShowDeleteDialog(true);
+            setDeletedId(id);
+          }}
         />
       )}
+      {
+        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <AlertDialogContent className="rounded-sm w-80 dark:text-white gap-5">
+            <div className="flex justify-center">
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-[18px]">
+                  {t("general:dialog.agent.delete.title")}
+                </AlertDialogTitle>
+              </AlertDialogHeader>
+            </div>
+            <AlertDialogDescription className="text-sm text-center font-normal text-[#141718] dark:text-white">
+              {t("general:dialog.agent.delete.content")}
+            </AlertDialogDescription>
+            <AlertDialogFooter>
+              <AlertDialogCancel
+                onClick={() => setDeletedId("")}
+                className="flex-1 rounded-sm hover:bg-[#F3F5F74D] border border-[#E8ECEF] dark:border-[#343839] font-medium"
+              >
+                {t("general:dialog.cancel")}
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  deleteAgent(deletedId);
+                  setDeletedId("");
+                  setShowEdit(false);
+                }}
+                className="flex-1 bg-[#EF466F] hover:bg-[#EF466F]/75 rounded-sm font-medium"
+              >
+                {t("general:dialog.delete")}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      }
     </>
   );
 }

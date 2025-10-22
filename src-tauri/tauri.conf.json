@@ -9,7 +9,7 @@
   },
   "package": {
     "productName": "Aiden",
-    "version": "0.1.59"
+    "version": "0.1.60"
   },
   "tauri": {
     "allowlist": {
@@ -99,6 +99,7 @@
       "resources": [
         "bin/*",
         "resources/mcp.config.json",
+        "resources/agent.config.json",
         "../node_modules/host_server_*/**/*"
       ],
       "shortDescription": "Aiden",

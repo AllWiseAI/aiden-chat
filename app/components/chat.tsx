@@ -31,6 +31,7 @@ import {
   ChatMessage,
   createMessage,
   SubmitKey,
+  useAgentStore,
   useAppConfig,
   useChatStore,
 } from "../store";
@@ -728,6 +729,9 @@ function InnerChat() {
                         </Fragment>
                       );
                     } else {
+                      const getAgentById =
+                        useAgentStore.getState().getAgentById;
+
                       return (
                         <Fragment
                           key={(message.content[0] as RenderMessage).id}
@@ -744,11 +748,11 @@ function InnerChat() {
                                 {message.agent && (
                                   <div className="flex items-center gap-2">
                                     <div className="size-[38px] flex-center rounded-full bg-[#F3F5F7] dark:bg-[#6F6F6F]">
-                                      {message.agent.avatar}
+                                      {getAgentById(message.agent.id)?.avatar}
                                     </div>
                                     <div className="flex flex-col">
                                       <span className="text-[15px] font-medium">
-                                        {message.agent.name}
+                                        {getAgentById(message.agent.id)?.name}
                                       </span>
                                       <span className="text-[10px] font-extralight">
                                         {message.agent.model.name}

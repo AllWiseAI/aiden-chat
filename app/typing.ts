@@ -66,6 +66,21 @@ export type CustomMCPServer = {
   aiden_credential?: AidenCredential;
 };
 
+export type CustomAgents = {
+  agent_id: string;
+  agent_name: string;
+  avatar: Emoji;
+  source: AgentSource.BuiltIn | AgentSource.Default | AgentSource.Custom;
+  description: string;
+  prompt: string;
+  enabled: boolean;
+  agent_type: AgentType;
+  model_name: string;
+  model_provider: string;
+  endpoint: string;
+  api_key: string;
+};
+
 export type TRemoteMcpInfo = {
   basic_config: Record<string, MCPServer>;
   description: string;
@@ -355,6 +370,9 @@ export type TaskExecutionRecord = {
   id: number;
   error_message: string | null;
   execution_type: "test" | "scheduled";
+  agent_info?: {
+    from_agent_id: string;
+  };
 };
 
 export type taskSessionParams = {
@@ -369,6 +387,7 @@ export type taskSessionParams = {
     role: MessageRole;
     content: string;
   }[];
+  agentId?: string;
 };
 
 export interface TaskPayload {
@@ -408,14 +427,14 @@ export enum AgentSource {
   Custom = "custom", // custom 为用户自添加项
 }
 export enum AgentTypeEnum {
-  Text = "Text",
-  Multimodal = "Multimodal",
+  Text = "text",
+  Multimodal = "multi-model",
 }
-export const AgentTypeArr = [
-  AgentTypeEnum.Text,
-  AgentTypeEnum.Multimodal,
-] as const;
-export type AgentType = (typeof AgentTypeArr)[number];
+export type AgentType = `${AgentTypeEnum}`;
+
+export const AgentTypeArr = Object.keys(
+  AgentTypeEnum,
+) as (keyof typeof AgentTypeEnum)[];
 
 export interface Agent {
   id: string;
@@ -425,6 +444,7 @@ export interface Agent {
   description: string;
   prompt: string;
   type: AgentType;
+  enabled: boolean;
   model: {
     name: string;
     provider: string;
@@ -439,3 +459,23 @@ export enum PlanEnum {
   Pro = "pro",
 }
 export type Plan = PlanEnum.Free | PlanEnum.Standard | PlanEnum.Pro;
+
+export type AgentConfig = {
+  version: string;
+  agents: CustomAgents[];
+};
+
+export type DefaultAgent = {
+  avatar: Emoji;
+  created_at: number;
+  description_en: string;
+  description_zh: string;
+  id: string;
+  model: string;
+  name_en: string;
+  name_zh: string;
+  prompt_en: string;
+  prompt_zh: string;
+  type: string;
+  updated_at: number;
+};
