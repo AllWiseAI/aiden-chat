@@ -226,11 +226,24 @@ function AgentModel({ show, item }: { show: boolean; item: Agent }) {
 
 export default function AgentTab() {
   const navigate = useNavigate();
-  const agents = useAgentStore((state) => state.getAgents());
-  const getModelInfo = useAppConfig((s) => s.getModelInfo);
+  const [agents, handleModel] = useAgentStore((state) => [
+    state.getAgents(),
+    state.handleModel,
+  ]);
+  const [getModelInfo, initModelList] = useAppConfig((s) => [
+    s.getModelInfo,
+    s.initModelList,
+  ]);
   const [showModel, setShowModel] = useState(false);
   const MAX_AGENT_COUNT = 10;
   const { t } = useTranslation("settings");
+
+  useEffect(() => {
+    // always request new model data
+    initModelList();
+    handleModel();
+  }, []);
+
   return (
     <div className="flex items-center">
       {agents

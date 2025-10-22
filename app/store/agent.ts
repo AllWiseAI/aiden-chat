@@ -6,7 +6,13 @@ import {
   getRemoteAgentList,
   handleRemoteAgentList,
 } from "../utils/agent";
-import { Agent, AgentTypeEnum, AgentSource, AgentConfig } from "../typing";
+import {
+  Agent,
+  AgentTypeEnum,
+  AgentSource,
+  AgentConfig,
+  ModelOption,
+} from "../typing";
 import { createPersistStore } from "../utils/store";
 import { readAgentConfig } from "@/app/utils/agent";
 import { nanoid } from "nanoid";
@@ -134,6 +140,27 @@ export const useAgentStore = createPersistStore(
         };
         set({ config: newConfig });
         updateConfig(newConfig);
+      },
+      handleModel: () => {
+        // 针对后端删除了 agent 所绑定的模型
+        const models: ModelOption[] = useAppConfig.getState().models;
+        const { getAgents, updateAgent } = get();
+        const agents: Agent[] = getAgents();
+        agents.forEach((agent) => {
+          if (models.every((m) => m.model !== agent.model.name)) {
+            const defaultModel = useAppConfig.getState().defaultModel;
+            const defaultModelInfo = useAppConfig
+              .getState()
+              .getModelInfo(defaultModel);
+            agent.model = {
+              name: defaultModel,
+              provider: defaultModelInfo!.provider,
+              endpoint: defaultModelInfo!.endpoint!,
+              apiKey: undefined,
+            };
+            updateAgent(agent);
+          }
+        });
       },
     };
     return methods;
