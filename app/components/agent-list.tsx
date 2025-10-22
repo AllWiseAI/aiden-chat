@@ -1,7 +1,7 @@
 import { useAgentStore } from "../store";
 import Image from "next/image";
 import { Theme } from "@/app/store";
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useState, useEffect } from "react";
 import { useTheme } from "../hooks/use-theme";
 import { ProviderIcon } from "./setting/provider-icon";
 import { useAppConfig } from "../store";
@@ -139,25 +139,43 @@ export default function AgentList({
   onEdit: (agent: AgentItemProps["item"]) => void;
 }) {
   const getAgents = useAgentStore((state) => state.getAgents);
-  const agents = [...getAgents()].sort((a, b) => {
-    if (a.source === AgentSource.BuiltIn && b.source !== AgentSource.BuiltIn)
-      return -1;
-    if (a.source !== AgentSource.BuiltIn && b.source === AgentSource.BuiltIn)
-      return 1;
-    if (a.enabled && !b.enabled) return -1;
-    if (!a.enabled && b.enabled) return 1;
-    if (a.source === AgentSource.Default && b.source === AgentSource.Custom)
-      return -1;
-    if (a.source === AgentSource.Custom && b.source === AgentSource.Default)
-      return 1;
-    return 0;
-  });
-
+  const [sortedAgentIds, setSortedAgentIds] = useState<string[]>([]);
+  const sortAgents = (agents: Agent[]) => {
+    return [...agents].sort((a, b) => {
+      if (a.source === AgentSource.BuiltIn && b.source !== AgentSource.BuiltIn)
+        return -1;
+      if (a.source !== AgentSource.BuiltIn && b.source === AgentSource.BuiltIn)
+        return 1;
+      if (a.enabled && !b.enabled) return -1;
+      if (!a.enabled && b.enabled) return 1;
+      if (a.source === AgentSource.Default && b.source === AgentSource.Custom)
+        return -1;
+      if (a.source === AgentSource.Custom && b.source === AgentSource.Default)
+        return 1;
+      return 0;
+    });
+  };
+  // 在组件挂载时确定排序顺序
+  useEffect(() => {
+    if (sortedAgentIds.length === 0) {
+      const currentAgents = getAgents();
+      const sortedAgents = sortAgents(currentAgents);
+      setSortedAgentIds(sortedAgents.map((agent) => agent.id));
+    }
+  }, []);
+  const currentAgents = getAgents();
+  const renderAgents = useMemo(() => {
+    if (sortedAgentIds.length === 0) return currentAgents;
+    const agentMap = Object.fromEntries(
+      currentAgents.map((agent) => [agent.id, agent]),
+    );
+    return sortedAgentIds.map((id) => agentMap[id]).filter(Boolean);
+  }, [currentAgents, sortedAgentIds]);
   return (
     <>
       <div className="-mr-2 scroll-container h-full">
         <div className="grid grid-cols-1 @xss:grid-cols-2 @headerMd:grid-cols-3 gap-3.5">
-          {agents.map((item) => (
+          {renderAgents.map((item) => (
             <AgentItem item={item} key={item.id} onEdit={onEdit} />
           ))}
         </div>
