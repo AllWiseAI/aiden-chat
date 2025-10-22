@@ -255,7 +255,7 @@ export default function AgentTab() {
             </HoverCardTrigger>
             <HoverCardContent
               sideOffset={7}
-              className="border border-[#E8ECEF] dark:border-[#505050] w-75"
+              className="border border-[#E8ECEF] dark:border-[#505050] w-75 mr-5"
               style={{
                 boxShadow: `
                       0px 0px 24px 4px rgba(0,0,0,0.05),
