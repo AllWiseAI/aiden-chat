@@ -186,7 +186,10 @@ function AgentEditDialog({
         <DialogTitle className="px-6">{t("dialog.agent.title")}</DialogTitle>
         <div className="flex-1 flex flex-col gap-4 w-full text-sm font-normal scroll-container pl-6 pr-4">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="avatar" className="text-[#6C7275] w-max">
+            <Label
+              htmlFor="avatar"
+              className="text-[#6C7275] w-max text-sm font-normal"
+            >
               {t("dialog.agent.avatar.title")}
             </Label>
             <div className="flex gap-1.5 h-9">
@@ -226,7 +229,7 @@ function AgentEditDialog({
           <div className="flex flex-col gap-1.5">
             <Label
               htmlFor="name"
-              className="text-[#6C7275] dark:text-[#E8ECEF] w-max"
+              className="text-[#6C7275] dark:text-[#E8ECEF] w-max text-sm font-normal"
             >
               {t("dialog.agent.name")}
             </Label>
@@ -250,7 +253,7 @@ function AgentEditDialog({
           <div className="flex flex-col gap-1.5">
             <Label
               htmlFor="description"
-              className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500"
+              className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500 text-sm font-normal"
             >
               {t("dialog.agent.description")}
             </Label>
@@ -276,7 +279,7 @@ function AgentEditDialog({
             <div className="flex flex-col gap-1.5">
               <Label
                 htmlFor="prompt"
-                className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500"
+                className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500 text-sm font-normal"
               >
                 {t("dialog.agent.prompt")}
               </Label>
@@ -302,7 +305,7 @@ function AgentEditDialog({
           <div className="flex flex-col gap-1.5">
             <Label
               htmlFor="type"
-              className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500"
+              className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500 text-sm font-normal"
             >
               {t("dialog.agent.type")}
             </Label>
@@ -350,7 +353,7 @@ function AgentEditDialog({
           <div className="flex flex-col gap-1.5">
             <Label
               htmlFor="model"
-              className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500"
+              className="text-[#6C7275] dark:text-[#E8ECEF] w-max gap-1 after:content-['*'] after:text-red-500 text-sm font-normal"
             >
               {t("dialog.agent.model")}
             </Label>

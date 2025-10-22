@@ -226,7 +226,11 @@
       "description": "描述",
       "prompt": "提示词",
       "type": "类型",
-      "model": "模型"
+      "model": "模型",
+      "delete": {
+        "title": "删除智能体",
+        "content": "确认删除这个智能体吗？"
+      }
     }
   }
 }

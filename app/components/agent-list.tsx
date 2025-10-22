@@ -1,18 +1,30 @@
 import { useAgentStore } from "../store";
 import Image from "next/image";
 import { Theme } from "@/app/store";
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useState } from "react";
 import { useTheme } from "../hooks/use-theme";
 import { ProviderIcon } from "./setting/provider-icon";
 import { useAppConfig } from "../store";
-import { Agent } from "../typing";
+import { Agent, AgentSource } from "../typing";
 import { Switch } from "./shadcn/switch";
 import { Button } from "./shadcn/button";
 import { useTranslation } from "react-i18next";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/app/components/shadcn/alert-dialog";
+import DeleteIcon from "../icons/delete.svg";
 
 interface AgentItemProps {
   item: Agent;
   onEdit: (item: AgentItemProps["item"]) => void;
+  onDelete: (id: string) => void;
 }
 interface UserModel {
   model: string;
@@ -23,13 +35,14 @@ interface UserModel {
   display: string;
 }
 
-function AgentItem({ item, onEdit }: AgentItemProps) {
+function AgentItem({ item, onEdit, onDelete }: AgentItemProps) {
   const theme = useTheme();
   const { t } = useTranslation("settings");
   const models = useAppConfig((s) => s.models);
   const localProviders = useAppConfig((s) => s.localProviders);
   const updateAgent = useAgentStore((s) => s.updateAgent);
-  const isBuiltIn = item.source === "builtIn";
+  const isBuiltIn = item.source === AgentSource.BuiltIn;
+  const isDefault = item.source === AgentSource.Default;
   const formatLocalModels: UserModel[] = localProviders.flatMap((item) =>
     item.models.map((model) => ({
       model: model.value,
@@ -104,12 +117,20 @@ function AgentItem({ item, onEdit }: AgentItemProps) {
                 {t("agent.default")}
               </div>
             ) : (
-              <Switch
-                checked={item.enabled}
-                onCheckedChange={async (checked) => {
-                  await handleSwitch(checked);
-                }}
-              />
+              <div className="flex items-center gap-3.5">
+                <Switch
+                  checked={item.enabled}
+                  onCheckedChange={async (checked) => {
+                    await handleSwitch(checked);
+                  }}
+                />
+                {!isDefault && (
+                  <DeleteIcon
+                    className="size-[18px] text-[#EF466F] hover:opacity-80"
+                    onClick={() => onDelete(item.id)}
+                  />
+                )}
+              </div>
             )}
           </div>
           <p className="min-h-[3lh] w-full text-xs text-[#6C7275] leading-4.5 break-words line-clamp-3">
@@ -138,17 +159,74 @@ export default function AgentList({
 }: {
   onEdit: (agent: AgentItemProps["item"]) => void;
 }) {
-  const agents = useAgentStore((state) => state.getAgents());
+  const [getAgents, deleteAgent] = useAgentStore((state) => [
+    state.getAgents,
+    state.deleteAgent,
+  ]);
+  const agents = [...getAgents()];
+  // .sort((a, b) => {
+  //   if (a.source === AgentSource.BuiltIn && b.source !== AgentSource.BuiltIn)
+  //     return -1;
+  //   if (a.source !== AgentSource.BuiltIn && b.source === AgentSource.BuiltIn)
+  //     return 1;
+  //   if (a.enabled && !b.enabled) return -1;
+  //   if (!a.enabled && b.enabled) return 1;
+  //   if (a.source === AgentSource.Default && b.source === AgentSource.Custom)
+  //     return -1;
+  //   if (a.source === AgentSource.Custom && b.source === AgentSource.Default)
+  //     return 1;
+  //   return 0;
+  // });
 
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deletedId, setDeletedId] = useState("");
+  const { t } = useTranslation("general");
   return (
     <>
       <div className="-mr-2 scroll-container h-full">
         <div className="grid grid-cols-1 @xss:grid-cols-2 @headerMd:grid-cols-3 gap-3.5">
           {agents.map((item) => (
-            <AgentItem item={item} key={item.id} onEdit={onEdit} />
+            <AgentItem
+              item={item}
+              key={item.id}
+              onEdit={onEdit}
+              onDelete={(id: string) => {
+                setShowDeleteDialog(true);
+                setDeletedId(id);
+              }}
+            />
           ))}
         </div>
       </div>
+      {
+        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <AlertDialogContent className="rounded-sm w-80 dark:text-white gap-5">
+            <div className="flex justify-center">
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-[18px]">
+                  {t("dialog.agent.delete.title")}
+                </AlertDialogTitle>
+              </AlertDialogHeader>
+            </div>
+            <AlertDialogDescription className="text-sm text-center font-normal text-[#141718] dark:text-white">
+              {t("dialog.agent.delete.content")}
+            </AlertDialogDescription>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="flex-1 rounded-sm hover:bg-[#F3F5F74D] border border-[#E8ECEF] dark:border-[#343839] font-medium">
+                {t("dialog.cancel")}
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  deleteAgent(deletedId);
+                }}
+                className="flex-1 bg-[#EF466F] hover:bg-[#EF466F]/75 rounded-sm font-medium"
+              >
+                {t("dialog.delete")}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      }
     </>
   );
 }

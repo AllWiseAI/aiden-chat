@@ -38,9 +38,9 @@ export function ChatMessageItemTab({
       ) : (
         <Tooltip>
           <TooltipTrigger asChild>
-            <div>
+            <div className="flex-center size-5 rounded-sm hover:bg-[#F3F5F7] dark:hover:bg-[#232627]">
               <CopyIcon
-                className="text-[#6C7275] size-5 hover:opacity-70"
+                className="text-[#6C7275] size-[18px] hover:opacity-70"
                 onClick={handleCopy}
               />
             </div>

@@ -4,6 +4,7 @@ import { fetchNoProxy } from "@/app/utils/fetch-no-proxy";
 import { getHeaders } from "@/app/utils/fetch";
 
 const remoteMcpURL = "/api/config/mcp";
+const remoteAgentURL = "/api/agent_prompt";
 const localTokenURL = "/authorization/token";
 
 export async function getLocalToken() {
@@ -131,4 +132,11 @@ export async function updateAgentConfig() {
     const jsonResult = await result.json();
     return jsonResult;
   }
+}
+
+export async function getRemoteAgentItems() {
+  const result = await fetch(remoteAgentURL, {
+    method: "GET",
+  });
+  return result.data;
 }

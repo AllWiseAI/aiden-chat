@@ -5,7 +5,7 @@
     {
       "agent_id": "default-text-agent",
       "agent_name": "Executor",
-      "avatar": "👩🏻‍💼",
+      "avatar": "👩🏻‍💻",
       "source": "builtIn",
       "description": "Specialized text agent for processing text conversations, answering questions, providing information, and handling text-based tasks. Capabilities include: text analysis, Q&A, writing assistance, code generation, general conversation, file processing, and document understanding.",
       "prompt": "",
@@ -19,7 +19,7 @@
     {
       "agent_id": "default-multi-model-agent",
       "agent_name": "Artist",
-      "avatar": "👩🏻‍💻",
+      "avatar": "🧑‍🎨",
       "source": "builtIn",
       "description": "Specialized image agent for processing and generating visual content. Capabilities include: image analysis, image generation, visual content creation, and any task involving image processing.",
       "prompt": "",

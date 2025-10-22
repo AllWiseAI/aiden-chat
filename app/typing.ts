@@ -68,10 +68,13 @@ export type CustomMCPServer = {
 
 export type CustomAgents = {
   agent_id: string;
-  agent_type: AgentType;
+  agent_name: string;
+  avatar: Emoji;
+  source: AgentSource.BuiltIn | AgentSource.Default | AgentSource.Custom;
   description: string;
   prompt: string;
   enabled: boolean;
+  agent_type: AgentType;
   model_name: string;
   model_provider: string;
   endpoint: string;
@@ -357,6 +360,9 @@ export type TaskExecutionRecord = {
   id: number;
   error_message: string | null;
   execution_type: "test" | "scheduled";
+  agent_info?: {
+    from_agent_id: string;
+  };
 };
 
 export type taskSessionParams = {
@@ -371,6 +377,7 @@ export type taskSessionParams = {
     role: MessageRole;
     content: string;
   }[];
+  agentId?: string;
 };
 
 export interface TaskPayload {
@@ -446,4 +453,19 @@ export type Plan = PlanEnum.Free | PlanEnum.Standard | PlanEnum.Pro;
 export type AgentConfig = {
   version: string;
   agents: CustomAgents[];
+};
+
+export type DefaultAgent = {
+  avatar: Emoji;
+  created_at: number;
+  description_en: string;
+  description_zh: string;
+  id: string;
+  model: string;
+  name_en: string;
+  name_zh: string;
+  prompt_en: string;
+  prompt_zh: string;
+  type: string;
+  updated_at: number;
 };

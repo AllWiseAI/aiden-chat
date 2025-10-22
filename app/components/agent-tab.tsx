@@ -128,6 +128,12 @@ function AgentModel({ show, item }: { show: boolean; item: Agent }) {
       {show && (
         <div className="max-w-60 mx-auto border light:border-[#E8ECEF] rounded-sm overflow-hidden">
           <div className="w-full bg-[#FEFEFE] dark:bg-[#141718] overflow-y-auto max-h-[260px] px-1 py-2 space-y-1.5">
+            <style>
+              {`div::-webkit-scrollbar {
+                  width: 5px;
+                }
+              `}
+            </style>
             {Object.entries(groupedLocalProviders).map(
               ([groupLabel, provider]) => {
                 const isOpen = openGroup === groupLabel;
@@ -235,7 +241,7 @@ export default function AgentTab() {
             <HoverCardTrigger asChild>
               <div
                 className={clsx(
-                  "group cursor-default flex-center rounded-full backdrop-blur-lg border hover:border-[#00D47E] dark:hover:border-[#4ADE80] data-[state=open]:border-[#00D47E] dark:data-[state=open]:border-[#00D47E] size-8 hover:size-10 transition-all duration-500 ease-in-out data-[state=open]:size-10 -mr-2 flex-center data-[state=open]:z-1",
+                  "group cursor-default flex-center rounded-full backdrop-blur-lg border hover:border-[#00D47E] dark:hover:border-[#4ADE80] data-[state=open]:border-[#00D47E] dark:data-[state=open]:border-[#00D47E] size-8 transform hover:scale-125 transition-all duration-500 ease-in-out data-[state=open]:scale-125 -mr-2 hover:ml-1 hover:-mr-1 data-[state=open]:ml-1 data-[state=open]:-mr-1 flex-center data-[state=open]:z-1",
                 )}
                 style={{
                   boxShadow: `
@@ -244,9 +250,7 @@ export default function AgentTab() {
                     `,
                 }}
               >
-                <span className="transition-all duration-700 ease-in-out group-data-[state=open]:text-lg flex-center">
-                  {item.avatar}
-                </span>
+                {item.avatar}
               </div>
             </HoverCardTrigger>
             <HoverCardContent
@@ -285,13 +289,13 @@ export default function AgentTab() {
                     </div>
                     <Label
                       onClick={() => setShowModel(!showModel)}
-                      className="text-xs text-[#101213] dark:text-[#E8ECEF]"
+                      className="min-h-[18px] text-xs text-[#101213] dark:text-[#E8ECEF] min-w-0 max-w-50 flex items-center"
                     >
                       {getModelInfo(item.model.name)?.display}
                       {showModel ? (
-                        <ArrowDownIcon className="size-4" />
+                        <ArrowDownIcon className="size-4 shrink-0" />
                       ) : (
-                        <ArrowRightIcon className="size-4" />
+                        <ArrowRightIcon className="size-4 shrink-0" />
                       )}
                     </Label>
 

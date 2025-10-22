@@ -1,6 +1,11 @@
 import { StoreKey } from "../constant";
 import { useAppConfig } from "../store";
-import { updateConfig, formatAgents } from "../utils/agent";
+import {
+  updateConfig,
+  formatAgents,
+  getRemoteAgentList,
+  handleRemoteAgentList,
+} from "../utils/agent";
 import { Agent, AgentTypeEnum, AgentSource, AgentConfig } from "../typing";
 import { createPersistStore } from "../utils/store";
 import { readAgentConfig } from "@/app/utils/agent";
@@ -45,8 +50,14 @@ export const useAgentStore = createPersistStore(
     const methods = {
       init: async () => {
         const config = await readAgentConfig();
-        set({ config });
-        // 后续加后端获取
+        const remoteAgents = await getRemoteAgentList();
+        const newAgents = handleRemoteAgentList(config.agents, remoteAgents);
+        set({
+          config: {
+            ...config,
+            agents: newAgents,
+          },
+        });
       },
 
       getAgents: (): Agent[] => {
@@ -68,23 +79,7 @@ export const useAgentStore = createPersistStore(
             apiKey: a.api_key || undefined,
           },
         }));
-        return agents.sort((a, b) => {
-          if (
-            a.source === AgentSource.BuiltIn &&
-            b.source !== AgentSource.BuiltIn
-          )
-            return -1;
-          if (
-            a.source !== AgentSource.BuiltIn &&
-            b.source === AgentSource.BuiltIn
-          )
-            return 1;
-
-          if (a.enabled && !b.enabled) return -1;
-          if (!a.enabled && b.enabled) return 1;
-
-          return 0;
-        });
+        return agents;
       },
       addAgent: (agent: Agent) => {
         const config = get().config;
@@ -145,6 +140,6 @@ export const useAgentStore = createPersistStore(
   },
   {
     name: StoreKey.Agent,
-    version: 0.4,
+    version: 0.5,
   },
 );
