@@ -21,6 +21,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./shadcn/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/app/components/shadcn/alert-dialog";
 import { ProviderIcon } from "./setting/provider-icon";
 import { Input } from "./shadcn/input";
 import { Button } from "./shadcn/button";
@@ -57,10 +67,12 @@ function AgentEditDialog({
   open,
   item,
   onOpenChange,
+  onDelete,
 }: {
   open: boolean;
   item: AgentItemProps["item"] | null;
   onOpenChange: (open: boolean) => void;
+  onDelete: (id: string) => void;
 }) {
   const { t } = useTranslation("general");
   const theme = useTheme();
@@ -73,11 +85,22 @@ function AgentEditDialog({
   ]);
 
   const initModelList = useAppConfig((s) => s.initModelList);
+  const [addAgent, updateAgent, handleModel] = useAgentStore((state) => [
+    state.addAgent,
+    state.updateAgent,
+    state.handleModel,
+  ]);
 
   useEffect(() => {
     // always request new model data
     initModelList();
+    handleModel();
   }, []);
+
+  const isCustom = useMemo(() => {
+    if (!item) return false;
+    return item.source === AgentSource.Custom;
+  }, [item]);
 
   const formatLocalModels: UserModel[] = localProviders.flatMap((item) =>
     item.models.map((model) => ({
@@ -91,10 +114,7 @@ function AgentEditDialog({
   );
 
   const [openPop, setOpenPop] = useState(false);
-  const [addAgent, updateAgent] = useAgentStore((state) => [
-    state.addAgent,
-    state.updateAgent,
-  ]);
+
   const [newAgent, setNewAgent] = useState<AgentItemProps["item"]>(
     createAgent(),
   );
@@ -415,27 +435,40 @@ function AgentEditDialog({
             </Select>
           </div>
         </div>
-        <DialogFooter className="mt-auto ml-auto gap-2.5 w-full max-w-75 h-9 px-6">
-          <Button
-            className="flex-1 bg-white rounded-sm hover:bg-[#F3F5F74D] dark:bg-[#141718] dark:border-[#343839] dark:hover:bg-[#141718]/8 text-[#6C7275] dark:text-[#FEFEFE] border border-[#6C7275]/10 px-2.5 py-2 mr-0"
-            type="button"
-            onClick={() => onOpenChange(false)}
-          >
-            {t("dialog.cancel")}
-          </Button>
+        <DialogFooter className="!justify-between items-center mt-auto w-full h-9 px-6">
+          {item && isCustom && (
+            <Button
+              className="h-full px-2.5 border border-[#EF466F] text-[#EF466F] hover:text-[#EF466F] rounded-sm"
+              variant="outline"
+              onClick={() => {
+                onDelete(item.id);
+              }}
+            >
+              {t("dialog.delete")}
+            </Button>
+          )}
+          <div className="flex-1 min-w-0 flex justify-end gap-2.5 ml-auto max-w-75">
+            <Button
+              className="flex-1 bg-white rounded-sm hover:bg-[#F3F5F74D] dark:bg-[#141718] dark:border-[#343839] dark:hover:bg-[#141718]/8 text-[#6C7275] dark:text-[#FEFEFE] border border-[#6C7275]/10 px-2.5 py-2 mr-0"
+              type="button"
+              onClick={() => onOpenChange(false)}
+            >
+              {t("dialog.cancel")}
+            </Button>
 
-          <Button
-            className="flex-1 rounded-sm"
-            disabled={
-              !newAgent.description ||
-              (newAgent.source !== AgentSource.BuiltIn && !newAgent.prompt) ||
-              !newAgent.type ||
-              !newAgent.model
-            }
-            onClick={() => handleConfirm()}
-          >
-            {t("dialog.confirm")}
-          </Button>
+            <Button
+              className="flex-1 rounded-sm"
+              disabled={
+                !newAgent.description ||
+                (newAgent.source !== AgentSource.BuiltIn && !newAgent.prompt) ||
+                !newAgent.type ||
+                !newAgent.model.name
+              }
+              onClick={() => handleConfirm()}
+            >
+              {t("dialog.confirm")}
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -453,8 +486,12 @@ export default function AgentManagement() {
   const [searchParams] = params;
   const id = searchParams.get("id");
 
-  const agents = useAgentStore((state) => state.getAgents());
-
+  const [agents, deleteAgent] = useAgentStore((state) => [
+    state.getAgents(),
+    state.deleteAgent,
+  ]);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deletedId, setDeletedId] = useState("");
   useEffect(() => {
     if (id) {
       const found = agents.find((item) => item.id === id);
@@ -503,8 +540,46 @@ export default function AgentManagement() {
               navigate({ search: params.toString() }, { replace: true });
             }
           }}
+          onDelete={(id: string) => {
+            setShowDeleteDialog(true);
+            setDeletedId(id);
+          }}
         />
       )}
+      {
+        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <AlertDialogContent className="rounded-sm w-80 dark:text-white gap-5">
+            <div className="flex justify-center">
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-[18px]">
+                  {t("general:dialog.agent.delete.title")}
+                </AlertDialogTitle>
+              </AlertDialogHeader>
+            </div>
+            <AlertDialogDescription className="text-sm text-center font-normal text-[#141718] dark:text-white">
+              {t("general:dialog.agent.delete.content")}
+            </AlertDialogDescription>
+            <AlertDialogFooter>
+              <AlertDialogCancel
+                onClick={() => setDeletedId("")}
+                className="flex-1 rounded-sm hover:bg-[#F3F5F74D] border border-[#E8ECEF] dark:border-[#343839] font-medium"
+              >
+                {t("general:dialog.cancel")}
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  deleteAgent(deletedId);
+                  setDeletedId("");
+                  setShowEdit(false);
+                }}
+                className="flex-1 bg-[#EF466F] hover:bg-[#EF466F]/75 rounded-sm font-medium"
+              >
+                {t("general:dialog.delete")}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      }
     </>
   );
 }
