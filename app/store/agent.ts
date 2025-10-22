@@ -158,8 +158,8 @@ export const useAgentStore = createPersistStore(
               endpoint: defaultModelInfo!.endpoint!,
               apiKey: undefined,
             };
+            updateAgent(agent);
           }
-          updateAgent(agent);
         });
       },
     };
