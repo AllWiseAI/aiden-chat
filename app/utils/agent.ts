@@ -23,7 +23,7 @@ export const updateLocalConfig = async (config: any) => {
 };
 
 export const getRemoteAgentList = async () => {
-  console.log("[Mcp store] getRemoteMcpList");
+  console.log("[Agent store] getRemoteAgentList");
   const remoteMcpItems = await getRemoteAgentItems();
   return remoteMcpItems || [];
 };

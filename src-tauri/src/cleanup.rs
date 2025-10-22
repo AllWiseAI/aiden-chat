@@ -6,7 +6,7 @@ pub fn cleanup_database(config: &Config) {
     if let Some(mut base_dir) = app_data_dir(config) {
         // 标记文件
         let mut flag_file = base_dir.clone();
-        flag_file.push("cleanup_done_v2.flag");
+        flag_file.push("cleanup_done_v3.flag");
 
         if flag_file.exists() {
             log::info!("Database cleanup already done, skipping.");
