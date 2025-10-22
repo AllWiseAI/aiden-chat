@@ -72,6 +72,13 @@ function AgentEditDialog({
     s.localProviders,
   ]);
 
+  const initModelList = useAppConfig((s) => s.initModelList);
+
+  useEffect(() => {
+    // always request new model data
+    initModelList();
+  }, []);
+
   const formatLocalModels: UserModel[] = localProviders.flatMap((item) =>
     item.models.map((model) => ({
       model: model.value,

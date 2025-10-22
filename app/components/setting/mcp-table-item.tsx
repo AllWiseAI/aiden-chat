@@ -264,7 +264,7 @@ export function McpTableItem({
             <div className="font-medium mb-1 w-full max-w-8/10">
               {Highlight({ text: mcp_name, keyword })}
             </div>
-            {(showSetting || showUpdate || showDelete || showOauth) && (
+            {(showSetting || showDelete || showOauth) && (
               <DropdownMenu
                 open={openMenu}
                 onOpenChange={setOpenMenu}
@@ -304,16 +304,6 @@ export function McpTableItem({
                         {t("mcp.oauth")}
                       </DropdownMenuRadioItem>
                     )}
-                    {showUpdate && (
-                      <DropdownMenuRadioItem
-                        value="update"
-                        className="rounded-sm text-sm text-[#00AB66] px-1.5 py-2 h-9 gap-1.5"
-                        onClick={handleUpdateMcpVersion}
-                      >
-                        <UpdateIcon className="size-[18px]" />
-                        {t("mcp.btnUpdate")}
-                      </DropdownMenuRadioItem>
-                    )}
                     {showDelete && (
                       <DropdownMenuRadioItem
                         value="remove"
@@ -347,7 +337,15 @@ export function McpTableItem({
           </div>
         </div>
       </div>
-      <div className="flex mt-auto justify-end items-center">
+      <div className="flex mt-auto gap-1.5 justify-end items-center">
+        {showUpdate && (
+          <div
+            className="text-xs text-[#00AB66] font-medium cursor-pointer"
+            onClick={handleUpdateMcpVersion}
+          >
+            <UpdateIcon className="size-[18px]" />
+          </div>
+        )}
         <Switch
           className="scale-80"
           id={mcp_id}

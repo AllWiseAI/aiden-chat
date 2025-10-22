@@ -312,7 +312,7 @@ export default function Subscription() {
                     {t("subscription.feature4")}
                   </span>
                   <span className="font-normal">
-                    {t("subscription.standard.feature4Text")}
+                    {t("subscription.pro.feature4Text")}
                   </span>
                 </div>
               </div>

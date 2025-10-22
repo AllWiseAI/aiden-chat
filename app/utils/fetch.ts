@@ -56,11 +56,7 @@ export const getSecondChatUrl = () => {
 
 export const getBaseDomain = async () => {
   const debugMode = useAppConfig.getState().debugMode;
-  const region = await useSettingStore.getState().region;
   const isDev = debugMode || process.env.NODE_ENV === "development";
-  if (region === "CN") {
-    return isDev ? "https://dev.aidenai.io" : "https://prod.aidenai.info";
-  }
   return isDev ? "https://dev.aidenai.io" : "https://prod.aidenai.io";
 };
 

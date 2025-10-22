@@ -224,6 +224,16 @@ type RefreshErrorResponse = {
 export type LoginResponse = LoginSuccessResponse | LoginErrorResponse;
 export type RefreshResponse = RefreshSuccessResponse | RefreshErrorResponse;
 
+export type ShowcaseListOption = {
+  id: number;
+  created_at: number;
+  updated_at: number;
+  lang: string;
+  banner: string;
+  url: string;
+  order: number;
+};
+
 export type ModelOption = {
   display: string;
   model: string;

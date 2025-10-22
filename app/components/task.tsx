@@ -1,6 +1,6 @@
 import { useTranslation, Trans } from "react-i18next";
 import { useTaskStore } from "../store";
-import { useMemo, useEffect, useState, useRef } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { Button } from "./shadcn/button";
 import {
   Task as TaskType,
@@ -239,7 +239,6 @@ export function formatDateToReadableString(isoString: string) {
 
 function TaskRecords({ currentTask }: { currentTask: TaskType }) {
   const [recordList, setRecordList] = useState<TaskExecutionRecord[]>([]);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [activeKey, setActiveKey] = useState("");
   const [pageNum, setPageNum] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -261,6 +260,7 @@ function TaskRecords({ currentTask }: { currentTask: TaskType }) {
 
       if (code === 0) {
         const { records, pagination } = data;
+        console.log("records===", records);
         if (pagination.total_pages > pageNum) {
           setViewMore(true);
         } else {
@@ -268,14 +268,6 @@ function TaskRecords({ currentTask }: { currentTask: TaskType }) {
         }
         if (records && records.length) {
           setRecordList(records);
-          const shouldPoll = records.some(
-            (r: TaskExecutionRecord) => r.status === TaskAction.Idle,
-          );
-          if (shouldPoll) {
-            timerRef.current = setTimeout(getRecord, 5000);
-          } else {
-            timerRef.current = null;
-          }
         } else {
           setRecordList([]);
         }
@@ -285,11 +277,6 @@ function TaskRecords({ currentTask }: { currentTask: TaskType }) {
       setLoading(false);
     };
     getRecord();
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-    };
   }, [currentTask, pageNum]);
 
   return (
