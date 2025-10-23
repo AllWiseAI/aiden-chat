@@ -15,8 +15,6 @@ export default function ShowcaseList() {
   const [showcaseList, setShowcaseList] = useState<ShowcaseListOption[]>([
     ...configShowcaseList,
   ]);
-  const [showAll, setShowAll] = useState(false);
-  const [maxShow, setMaxShow] = useState(3);
 
   const { t } = useTranslation("general");
 
@@ -44,13 +42,10 @@ export default function ShowcaseList() {
   useEffect(() => {
     if (containerWidth < 504) {
       setLayoutWidth(243);
-      setMaxShow(3);
     } else if (containerWidth < 776) {
       setLayoutWidth(509);
-      setMaxShow(2);
     } else {
       setLayoutWidth(776);
-      setMaxShow(3);
     }
   }, [containerWidth]);
 
@@ -63,8 +58,6 @@ export default function ShowcaseList() {
     });
   }, []);
 
-  const visibleList = showAll ? showcaseList : showcaseList.slice(0, maxShow);
-
   return (
     <>
       <div className="w-80 mx-auto mt-1 mb-4">
@@ -76,7 +69,7 @@ export default function ShowcaseList() {
           className="flex flex-wrap justify-start gap-[23px] mx-auto"
           style={{ width: layoutWidth }}
         >
-          {visibleList.map((item) => (
+          {showcaseList.map((item) => (
             <div
               key={item.id}
               onClick={() => shell.open(item.url)}
@@ -90,17 +83,6 @@ export default function ShowcaseList() {
             </div>
           ))}
         </div>
-
-        {showcaseList.length > 3 && !showAll && (
-          <div className="w-full text-center mt-4">
-            <button
-              onClick={() => setShowAll(true)}
-              className="border-[#00D47E] border text-lg text-[#6F6F6F] px-4 rounded-2xl cursor-pointer"
-            >
-              {t("chat.more")}
-            </button>
-          </div>
-        )}
       </div>
     </>
   );
