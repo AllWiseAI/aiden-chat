@@ -146,7 +146,6 @@
     "error": "Something went wrong, please try again later.",
     "prompt": {
       "history": "This is a summary of the chat history as a recap: {{content}}",
-      "topic": "Please generate a four to five word title summarizing our conversation without any lead-in, punctuation, quotation marks, periods, symbols, bold text, or additional text. Remove enclosing quotation marks.",
       "summarize": "Summarize the discussion briefly in 200 words or less to use as a prompt for future context."
     }
   },
