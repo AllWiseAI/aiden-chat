@@ -18,6 +18,7 @@ export function ChatMessageItemTab({
   className: string;
 }) {
   const [copied, setCopied] = useState(false);
+  const [hovering, setHovering] = useState(false);
   const { t } = useTranslation();
   const handleCopy = () => {
     if (typeof content == "string") {
@@ -32,7 +33,7 @@ export function ChatMessageItemTab({
   };
 
   return (
-    <div className={clsx("flex gap-2.5", className)}>
+    <div className={clsx("flex gap-2.5", className, hovering && "!visible")}>
       {copied ? (
         <SuccessIcon className="text-[#6C7275] size-5" />
       ) : (
@@ -45,7 +46,10 @@ export function ChatMessageItemTab({
               />
             </div>
           </TooltipTrigger>
-          <TooltipContent>
+          <TooltipContent
+            onMouseEnter={() => setHovering(true)}
+            onMouseLeave={() => setHovering(false)}
+          >
             <p>{t("chat.actions.copy")}</p>
           </TooltipContent>
         </Tooltip>

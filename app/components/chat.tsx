@@ -1,5 +1,4 @@
 "use client";
-import { useDebouncedCallback } from "use-debounce";
 import { Virtuoso } from "react-virtuoso";
 import { ImagePreview } from "@/app/components/image-preview";
 import React, {
@@ -36,7 +35,6 @@ import {
 } from "../store";
 
 import {
-  autoGrowTextArea,
   getMessageImages,
   getMessageTextContent,
   safeLocalStorage,
@@ -66,6 +64,7 @@ import {
   AccordionTrigger,
 } from "@/app/components/shadcn/accordion";
 import { ChatMessageItemFile } from "./chat-message-item-file";
+import Textarea from "./textarea";
 
 const localStorage = safeLocalStorage();
 
@@ -196,9 +195,6 @@ function InnerChat() {
   const fileListRef = useRef<HTMLDivElement>(null);
   const [fileListHeight, setFileListHeight] = useState(0);
 
-  // auto grow input
-  const [inputRows, setInputRows] = useState(2);
-
   useEffect(() => {
     if (!fileListRef.current) return;
 
@@ -247,24 +243,6 @@ function InnerChat() {
   const [hitBottom, setHitBottom] = useState(true);
   const isMobileScreen = useMobileScreen();
 
-  const measure = useDebouncedCallback(
-    () => {
-      const rows = inputRef.current ? autoGrowTextArea(inputRef.current) : 1;
-      const inputRows = Math.min(
-        20,
-        Math.max(2 + Number(!isMobileScreen), rows),
-      );
-      setInputRows(inputRows);
-    },
-    100,
-    {
-      leading: true,
-      trailing: true,
-    },
-  );
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(measure, [userInput]);
   // id 切换时要重新判断滚动行为
   useEffect(() => {
     setAutoScroll(false);
@@ -401,48 +379,15 @@ function InnerChat() {
     return merged;
   }, [messages]);
 
-  // const [msgRenderIndex, _setMsgRenderIndex] = useState(
-  //   Math.max(0, renderMessages.length - CHAT_PAGE_SIZE),
-  // );
-
-  // function setMsgRenderIndex(newIndex: number) {
-  //   newIndex = Math.min(renderMessages.length - CHAT_PAGE_SIZE, newIndex);
-  //   newIndex = Math.max(0, newIndex);
-  //   _setMsgRenderIndex(newIndex);
-  // }
-
-  // const messages = useMemo(() => {
-  //   const endRenderIndex = Math.min(
-  //     msgRenderIndex + 3 * CHAT_PAGE_SIZE,
-  //     renderMessages.length,
-  //   );
-  //   return renderMessages.slice(msgRenderIndex, endRenderIndex);
-  // }, [msgRenderIndex, renderMessages]);
-
   const onChatBodyScroll = (e: HTMLElement) => {
     const bottomHeight = e.scrollTop + e.clientHeight;
-    // const edgeThreshold = e.clientHeight;
-
-    // const isTouchTopEdge = e.scrollTop <= edgeThreshold;
-    // const isTouchBottomEdge = bottomHeight >= e.scrollHeight - edgeThreshold;
     const isHitBottom =
       bottomHeight >= e.scrollHeight - (isMobileScreen ? 4 : 10);
-
-    // const prevPageMsgIndex = msgRenderIndex - CHAT_PAGE_SIZE;
-    // const nextPageMsgIndex = msgRenderIndex + CHAT_PAGE_SIZE;
-
-    // if (isTouchTopEdge && !isTouchBottomEdge) {
-    //   setMsgRenderIndex(prevPageMsgIndex);
-    // } else if (isTouchBottomEdge) {
-    //   setMsgRenderIndex(nextPageMsgIndex);
-    // }
-
     setHitBottom(isHitBottom);
     setAutoScroll(isHitBottom);
   };
 
   function scrollToBottom(smooth: boolean = false) {
-    // setMsgRenderIndex(renderMessages.length - CHAT_PAGE_SIZE);
     scrollDomToBottom(smooth);
   }
 
@@ -627,7 +572,9 @@ function InnerChat() {
         <div className={styles["chat-main"]}>
           <div className={styles["chat-body-container"]}>
             {isNewChat ? (
-              <div className={styles["chat-main-welcome"]}>
+              <div
+                className={clsx(styles["chat-main-welcome"], "flex-1 pb-10")}
+              >
                 <div className={"flex gap-2.5 text-4xl pt-10"}>
                   <LogoIcon className="size-10" />
                   {t("chat.title")} Aiden
@@ -895,23 +842,31 @@ function InnerChat() {
                 <label
                   className={clsx(
                     styles["chat-input-panel-inner"],
-                    "overflow-hidden",
+                    "overflow-hidden flex flex-col ",
                   )}
                   htmlFor="chat-input"
                 >
-                  <textarea
+                  <FileResult
+                    ref={fileListRef}
+                    files={files}
+                    removeFile={removeFile}
+                  />
+
+                  <Textarea
                     id="chat-input"
                     ref={inputRef}
                     className={clsx(
                       styles["chat-input"],
-
-                      "placeholder:text-[#6C7275]",
+                      "placeholder:text-[#6C7275] h-max max-h-55",
                     )}
                     placeholder={t("chat.placeholder")}
-                    onInput={(e) => onInput(e.currentTarget.value)}
+                    onInput={(e) => {
+                      const value = e.currentTarget.value;
+                      onInput(value);
+                    }}
                     value={userInput}
                     onKeyDown={onInputKeyDown}
-                    rows={inputRows}
+                    rows={2.9}
                     autoFocus={true}
                     style={{
                       fontSize: config.fontSize,
@@ -920,11 +875,7 @@ function InnerChat() {
                       height: fileListHeight + 78,
                     }}
                   />
-                  <FileResult
-                    ref={fileListRef}
-                    files={files}
-                    removeFile={removeFile}
-                  />
+
                   <div className="absolute bottom-3 left-3 flex gap-2">
                     <FileUploader />
                     <McpPopover

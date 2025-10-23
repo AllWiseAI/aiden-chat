@@ -1,14 +1,11 @@
 import { fetch, Response } from "@tauri-apps/api/http";
 import { useSettingStore } from "../store/setting";
 import { useAuthStore } from "../store/auth";
-import { isRefreshRequest, getLocalToken } from "../services";
-import { toast } from "@/app/utils/toast";
+import { getLocalToken } from "../services";
 import { t } from "i18next";
 import { useAppConfig } from "../store";
 import { getOSInfo } from "../utils";
 import { getLang } from "../locales";
-
-const FIVE_MINUTES = 5 * 60 * 1000;
 
 export interface FetchBody {
   method: "POST" | "GET" | "PUT" | "DELETE" | "OPTIONS";
@@ -64,18 +61,15 @@ type HeadersProps = {
   aiden?: boolean;
   isSummary?: boolean;
   ignoreHeaders?: boolean;
-  refresh?: boolean;
   agent?: boolean;
 };
 
 let osString = "";
 
 // aiden - header add Aiden-
-// refresh - should refresh token detect
 export const getHeaders = async ({
   aiden = false,
   ignoreHeaders = false,
-  refresh = true,
 }: HeadersProps) => {
   let headers: Record<string, string> = {};
   const lang = getLang();
@@ -84,7 +78,6 @@ export const getHeaders = async ({
   }
 
   const token = useAuthStore.getState().userToken;
-  const refreshToken = useAuthStore.getState().refreshToken;
   const device_id = useSettingStore.getState().getDeviceId();
 
   if (!ignoreHeaders) {
@@ -98,23 +91,11 @@ export const getHeaders = async ({
   }
 
   if (token.accessToken) {
-    let latestToken = useAuthStore.getState().userToken.accessToken;
-
-    if (refresh && token.expires * 1000 - Date.now() <= FIVE_MINUTES) {
-      try {
-        const token = await refreshToken();
-        if (token) {
-          latestToken = token;
-        }
-      } catch (e) {
-        console.log("refresh token before:", token.refreshToken);
-        console.log("[refresh token] refresh token error: ", e);
-        toast.error(t("error.refreshToken"));
-      } finally {
-        console.log("[refresh token] refresh token done.");
-      }
-    }
-    headers[`${aiden ? "Aiden-" : ""}Authorization`] = `Bearer ${latestToken}`;
+    headers[
+      `${aiden ? "Aiden-" : ""}Authorization`
+    ] = `Bearer ${token.accessToken}`;
+  } else {
+    console.log("[Request] no access token");
   }
   if (aiden) {
     headers["Aiden-User-Lang"] = lang;
@@ -128,12 +109,12 @@ export const getHeaders = async ({
 
 export async function aidenFetch<T = unknown>(
   url: string,
-  options: FetchBody & { _isRefreshToken?: boolean },
+  options: FetchBody,
 ): Promise<Response<T>> {
   let res: Response<T>;
   const domain = await getBaseDomain();
   console.log("[request] current domain: ", domain);
-  const headers = await getHeaders({ refresh: false });
+  const headers = await getHeaders({});
   let finnalUrl = url;
   if (url.startsWith("/")) {
     finnalUrl = `${domain}${url}`;
@@ -146,34 +127,11 @@ export async function aidenFetch<T = unknown>(
       body: options.body ? options.body : undefined,
     });
   } catch (err: any) {
-    // 网络错误
     console.log("[Request] fetch error occured.", err);
     if (err.includes("Network Error")) {
       throw t("error.netErr");
     }
     throw err;
-  }
-
-  // 刷新 token 重新请求
-  if (
-    (res.status === 401 || (res.data as any)?.expire_at * 1000 < Date.now()) &&
-    !isRefreshRequest(options)
-  ) {
-    try {
-      await useAuthStore.getState().refreshToken();
-    } catch (err) {
-      console.error("Token refresh failed", err);
-      throw err; // 抛错避免死循环
-    }
-    try {
-      const retryRes = await aidenFetch<T>(url, {
-        ...options,
-        _isRefreshToken: true, // 标记避免循环
-      });
-      return retryRes;
-    } catch (err) {
-      throw err;
-    }
   }
   return res;
 }

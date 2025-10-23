@@ -225,11 +225,6 @@ onmessage = (e: MessageEvent) => {
       send(payload);
       break;
 
-    case "refreshToken":
-      console.log("[Worker][WebSocket] refreshToken:", payload.accessToken);
-      accessToken = payload.accessToken;
-      break;
-
     case "disconnect":
       stopPing();
       socket?.close();
