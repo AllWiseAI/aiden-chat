@@ -810,17 +810,10 @@ export const useChatStore = createPersistStore(
             0,
             messages.length - modelConfig.historyMessageCount,
           );
-          const topicMessages = messages
-            .slice(
-              startIndex < messages.length ? startIndex : messages.length - 1,
-              messages.length,
-            )
-            .concat(
-              createMessage({
-                role: "user",
-                content: t("store.prompt.topic"),
-              }),
-            );
+          const topicMessages = messages.slice(
+            startIndex < messages.length ? startIndex : messages.length - 1,
+            messages.length,
+          );
           api.llm.chat({
             chatId: session.id,
             isSummary: true,
