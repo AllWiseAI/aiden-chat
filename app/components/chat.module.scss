@@ -789,9 +789,8 @@
 .chat-main-welcome {
   font-weight: 500;
   color: var(--black-1);
-  padding-bottom: 80px;
   margin: 0 auto;
-  height: 45%;
+  max-height: 40%;
   display: flex;
   align-items: end;
 }

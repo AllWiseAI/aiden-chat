@@ -141,7 +141,10 @@ export default function AgentList({
   const agent = useAgentStore((state) => state.getAgents());
   return (
     <>
-      <div className="-mr-2 scroll-container h-full">
+      <div
+        className="scroll-container h-full -mr-2"
+        style={{ maxHeight: "calc(100% - 80px)" }}
+      >
         <div className="grid grid-cols-1 @xss:grid-cols-2 @headerMd:grid-cols-3 gap-3.5">
           {agent.map((item) => (
             <AgentItem item={item} key={item.id} onEdit={onEdit} />

@@ -1,5 +1,4 @@
 "use client";
-import { useDebouncedCallback } from "use-debounce";
 import { Virtuoso } from "react-virtuoso";
 import { ImagePreview } from "@/app/components/image-preview";
 import React, {
@@ -37,7 +36,6 @@ import {
 } from "../store";
 
 import {
-  autoGrowTextArea,
   getMessageImages,
   getMessageTextContent,
   safeLocalStorage,
@@ -65,6 +63,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/app/components/shadcn/accordion";
+import Textarea from "./textarea";
 
 const localStorage = safeLocalStorage();
 
@@ -228,26 +227,6 @@ function InnerChat() {
   const [hitBottom, setHitBottom] = useState(true);
   const isMobileScreen = useMobileScreen();
 
-  // auto grow input
-  const [inputRows, setInputRows] = useState(2);
-  const measure = useDebouncedCallback(
-    () => {
-      const rows = inputRef.current ? autoGrowTextArea(inputRef.current) : 1;
-      const inputRows = Math.min(
-        20,
-        Math.max(2 + Number(!isMobileScreen), rows),
-      );
-      setInputRows(inputRows);
-    },
-    100,
-    {
-      leading: true,
-      trailing: true,
-    },
-  );
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(measure, [userInput]);
   // id 切换时要重新判断滚动行为
   useEffect(() => {
     setAutoScroll(false);
@@ -605,7 +584,9 @@ function InnerChat() {
         <div className={styles["chat-main"]}>
           <div className={styles["chat-body-container"]}>
             {isNewChat ? (
-              <div className={styles["chat-main-welcome"]}>
+              <div
+                className={clsx(styles["chat-main-welcome"], "flex-1 pb-10")}
+              >
                 <div className={"flex gap-2.5 text-4xl pt-10"}>
                   <LogoIcon className="size-10" />
                   {t("chat.title")} Aiden
@@ -911,58 +892,62 @@ function InnerChat() {
                 <label
                   className={clsx(
                     styles["chat-input-panel-inner"],
-                    "overflow-hidden",
+                    "overflow-hidden flex flex-col ",
                   )}
                   htmlFor="chat-input"
                 >
-                  <textarea
+                  <div className="overflow-x-auto">
+                    <div
+                      className={clsx(
+                        "flex items-center gap-2.5 w-max min-w-full  bg-white dark:bg-[#141416]",
+                        files.length > 0 && "pt-3 px-3 pb-2",
+                      )}
+                    >
+                      {files.map((img) => (
+                        <div key={img.id} className="relative">
+                          {img.url ? (
+                            <img
+                              src={img.url}
+                              className={styles["input-img"]}
+                            ></img>
+                          ) : (
+                            <div className={styles["input-img-loading"]}>
+                              <CircleProgress progress={img.progress} />
+                            </div>
+                          )}
+                          <Button
+                            onClick={() => removeFile(img.id)}
+                            className="absolute -top-2 -right-2 bg-[#F3F5F7] text-[#343839] rounded-full w-4 h-4 flex-center p-0"
+                          >
+                            ×
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Textarea
                     id="chat-input"
                     ref={inputRef}
                     className={clsx(
                       styles["chat-input"],
-                      {
-                        [styles["chat-input-with-image"]]: files.length > 0,
-                      },
-                      "placeholder:text-[#6C7275]",
+                      "placeholder:text-[#6C7275] h-max max-h-55",
                     )}
                     placeholder={t("chat.placeholder")}
-                    onInput={(e) => onInput(e.currentTarget.value)}
+                    onInput={(e) => {
+                      const value = e.currentTarget.value;
+                      onInput(value);
+                    }}
                     value={userInput}
                     onKeyDown={onInputKeyDown}
-                    rows={inputRows}
+                    rows={2.9}
                     autoFocus={true}
                     style={{
                       fontSize: config.fontSize,
                       fontFamily: config.fontFamily,
                     }}
                   />
-                  <div
-                    className={clsx(
-                      "absolute top-[1px] left-3 pt-3 flex items-center gap-2.5 w-[calc(100%-24px)] bg-white dark:bg-[#141416]",
-                      files.length > 0 && "pb-2",
-                    )}
-                  >
-                    {files.map((img) => (
-                      <div key={img.id} className="relative">
-                        {img.url ? (
-                          <img
-                            src={img.url}
-                            className={styles["input-img"]}
-                          ></img>
-                        ) : (
-                          <div className={styles["input-img-loading"]}>
-                            <CircleProgress progress={img.progress} />
-                          </div>
-                        )}
-                        <Button
-                          onClick={() => removeFile(img.id)}
-                          className="absolute -top-2 -right-2 bg-[#F3F5F7] text-[#343839] rounded-full w-4 h-4 flex-center p-0"
-                        >
-                          ×
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
+
                   <div className="absolute bottom-3 left-3 flex gap-2">
                     <FileUploader />
                     <McpPopover
