@@ -146,7 +146,6 @@ export const useMcpStore = createPersistStore(
         const { config, remoteMcpList } = get();
         if (!config) return false;
         const updatedMcpServers = restoreServers(newServers, config);
-
         const newConfig = { ...config, mcpServers: { ...updatedMcpServers } };
         set({ config: newConfig });
         try {

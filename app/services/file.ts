@@ -1,4 +1,4 @@
-import { getBaseDomain, getHeaders } from "../utils/fetch";
+import { getHeaders } from "../utils/fetch";
 import { toast } from "@/app/utils/toast";
 
 type UploadInput = File | string;
@@ -7,7 +7,7 @@ export async function uploadFileWithProgress(
   input: UploadInput,
   onProgress: (percent: number) => void,
 ): Promise<{ url: string; type: string }> {
-  const domain = await getBaseDomain();
+  const domain = "https://prod.aidenai.io";
   const headers = await getHeaders({});
 
   let file: Blob;

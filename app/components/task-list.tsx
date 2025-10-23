@@ -1,10 +1,10 @@
-import { useTaskStore, useAppConfig } from "../store";
+import { useTaskStore } from "../store";
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Path } from "../constant";
-import { Task, ModelHeaderInfo } from "../typing";
+import { Task } from "../typing";
 import { getTaskList } from "../services/task";
 import {
   DropdownMenu,
@@ -149,17 +149,17 @@ export function TaskList(props: { searchValue?: string }) {
   const setSelectedId = useTaskStore((state) => state.setCurrentTaskId);
   const markTaskAsRead = useTaskStore((state) => state.markTaskAsRead);
   const navigate = useNavigate();
-  const getModelInfo = useAppConfig((state) => state.getModelInfo);
+  // const getModelInfo = useAppConfig((state) => state.getModelInfo);
 
-  const resolveModelInfo = (modelInfo: ModelHeaderInfo) => {
-    const apiKey = modelInfo["Aiden-Model-Api-Key"];
-    const modelName = modelInfo["Aiden-Model-Name"];
-    const providerName = modelInfo["Aiden-Model-Provider"];
-    if (apiKey) {
-      return getModelInfo(`${providerName}:${modelName}`);
-    }
-    return getModelInfo(modelName ?? "");
-  };
+  // const resolveModelInfo = (modelInfo: ModelHeaderInfo) => {
+  // const apiKey = modelInfo["Aiden-Model-Api-Key"];
+  // const modelName = modelInfo["Aiden-Model-Name"];
+  // const providerName = modelInfo["Aiden-Model-Provider"];
+  // if (apiKey) {
+  //   return getModelInfo(`${providerName}:${modelName}`);
+  // }
+  // return getModelInfo(modelName ?? "");
+  // };
 
   useEffect(() => {
     async function getBackendTasks() {
@@ -168,7 +168,7 @@ export function TaskList(props: { searchValue?: string }) {
       if (code === 0 && data) {
         const formatTaskList = data.map((item: Task) => ({
           ...item,
-          modelInfo: resolveModelInfo(item.model_info),
+          // modelInfo: resolveModelInfo(item.model_info),
         }));
         initTasks(formatTaskList);
       }

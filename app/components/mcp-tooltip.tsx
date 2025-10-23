@@ -119,14 +119,14 @@ function McpPopover({ icon }: { icon: ReactElement }) {
               </div>
             ) : (
               <div className="p-5 text-gray-500 whitespace-nowrap">
-                No Mcp Servers
+                {t("chat.mcp.noServers")}
               </div>
             )}
             <div
               className="group h-[30px] text-xs flex justify-between items-center w-full bg-[#E8ECEF]/50 dark:bg-[#232627]/50 hover:text-[#00AB66] text-center hover:opacity-80 cursor-pointer rounded-sm px-2.5"
               onClick={() => navigate(Path.Settings + "?tab=mcp")}
             >
-              Manage
+              {t("ui.manage")}
               <RightIcon className="size-4 dark:text-[#6C7275] dark:group-hover:text-[#00AB66]" />
             </div>
           </PopoverContent>

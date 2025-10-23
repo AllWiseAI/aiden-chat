@@ -4,8 +4,7 @@ import { useAuthStore } from "../store/auth";
 import { isRefreshRequest, getLocalToken } from "../services";
 import { toast } from "@/app/utils/toast";
 import { t } from "i18next";
-import { useAgentStore, useAppConfig } from "../store";
-import { ProviderOption } from "../typing";
+import { useAppConfig } from "../store";
 import { getOSInfo } from "../utils";
 import { getLang } from "../locales";
 
@@ -57,11 +56,7 @@ export const getSecondChatUrl = () => {
 
 export const getBaseDomain = async () => {
   const debugMode = useAppConfig.getState().debugMode;
-  const region = await useSettingStore.getState().region;
   const isDev = debugMode || process.env.NODE_ENV === "development";
-  if (region === "CN") {
-    return isDev ? "https://dev.aidenai.io" : "https://prod.aidenai.info";
-  }
   return isDev ? "https://dev.aidenai.io" : "https://prod.aidenai.io";
 };
 
@@ -79,10 +74,8 @@ let osString = "";
 // refresh - should refresh token detect
 export const getHeaders = async ({
   aiden = false,
-  isSummary = false,
   ignoreHeaders = false,
   refresh = true,
-  agent = false,
 }: HeadersProps) => {
   let headers: Record<string, string> = {};
   const lang = getLang();
@@ -129,18 +122,6 @@ export const getHeaders = async ({
     const localToken = useAppConfig.getState().localToken;
 
     headers["Host-Authorization"] = localToken;
-    if (agent) {
-      const agentHeaders = useAgentStore.getState().getAgentsHeader();
-      headers = { ...headers, ...agentHeaders };
-    }
-
-    if (isSummary) {
-      const summaryModel = useAppConfig
-        .getState()
-        .getSummaryModel() as unknown as ProviderOption;
-      const { model, provider, endpoint } = summaryModel;
-      headers["Aiden-Text-Model"] = `${model}$${provider}$${endpoint}`;
-    }
   }
   return headers;
 };

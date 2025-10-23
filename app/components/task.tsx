@@ -1,6 +1,6 @@
 import { useTranslation, Trans } from "react-i18next";
 import { useTaskStore } from "../store";
-import { useMemo, useEffect, useState, useRef } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { Button } from "./shadcn/button";
 import {
   Task as TaskType,
@@ -114,6 +114,7 @@ export function TaskItem({ title, taskInfo }: TaskItemProps) {
     id,
     task_id,
     execution_type,
+    agent_info,
   } = taskInfo;
   const singleKey = task_id + "-" + id;
   const chatStore = useChatStore();
@@ -153,6 +154,7 @@ export function TaskItem({ title, taskInfo }: TaskItemProps) {
         requestData: request_messages,
         // @ts-ignore
         responseData,
+        agentId: agent_info?.from_agent_id,
       });
     } else {
       chatStore.selectTaskSession(singleKey);
@@ -237,7 +239,6 @@ export function formatDateToReadableString(isoString: string) {
 
 function TaskRecords({ currentTask }: { currentTask: TaskType }) {
   const [recordList, setRecordList] = useState<TaskExecutionRecord[]>([]);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [activeKey, setActiveKey] = useState("");
   const [pageNum, setPageNum] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -256,8 +257,10 @@ function TaskRecords({ currentTask }: { currentTask: TaskType }) {
       setLoading(true);
       const res = await getTaskExecutionRecords(id, 1, 5 * pageNum);
       const { code, data } = res;
+
       if (code === 0) {
         const { records, pagination } = data;
+        console.log("records===", records);
         if (pagination.total_pages > pageNum) {
           setViewMore(true);
         } else {
@@ -265,14 +268,6 @@ function TaskRecords({ currentTask }: { currentTask: TaskType }) {
         }
         if (records && records.length) {
           setRecordList(records);
-          const shouldPoll = records.some(
-            (r: TaskExecutionRecord) => r.status === TaskAction.Idle,
-          );
-          if (shouldPoll) {
-            timerRef.current = setTimeout(getRecord, 5000);
-          } else {
-            timerRef.current = null;
-          }
         } else {
           setRecordList([]);
         }
@@ -282,11 +277,6 @@ function TaskRecords({ currentTask }: { currentTask: TaskType }) {
       setLoading(false);
     };
     getRecord();
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-    };
   }, [currentTask, pageNum]);
 
   return (

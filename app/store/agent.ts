@@ -1,60 +1,25 @@
 import { StoreKey } from "../constant";
 import { useAppConfig } from "../store";
-import { Agent, AgentTypeEnum, AgentSource } from "../typing";
+import {
+  updateConfig,
+  formatAgents,
+  getRemoteAgentList,
+  handleRemoteAgentList,
+} from "../utils/agent";
+import {
+  Agent,
+  AgentTypeEnum,
+  AgentSource,
+  AgentConfig,
+  ModelOption,
+} from "../typing";
 import { createPersistStore } from "../utils/store";
+import { readAgentConfig } from "@/app/utils/agent";
 import { nanoid } from "nanoid";
 
 const DEFAULT_AGENT_STATE = {
-  defaultAgents: [] as Agent[], // 后端提供的built-in与default agent
-  userOverride: {} as Record<
-    string,
-    {
-      model?: {
-        name: string;
-        provider: string;
-        endpoint: string;
-        apiKey: string | undefined;
-      };
-      avatar?: string;
-    }
-  >, // 用户修改过的的个性化模型配置，用id映射
-  customAgents: [] as Agent[],
+  config: null as AgentConfig | null,
 };
-
-const BUILTIN_AGENTS: Agent[] = [
-  {
-    id: "default-multi-model-agent",
-    name: "Artist",
-    avatar: "👩🏻‍💻",
-    source: AgentSource.BuiltIn,
-    description:
-      "Specialized image agent for processing and generating visual content. Capabilities include: image analysis, image generation, visual content creation, and any task involving image processing.",
-    prompt: "",
-    type: AgentTypeEnum.Multimodal,
-    model: {
-      name: "google/gemini-2.5-flash-image-preview",
-      provider: "openai",
-      endpoint: "https://prod.aidenai.io/llm/openai",
-      apiKey: undefined,
-    },
-  },
-  {
-    id: "default-text-agent",
-    name: "Executor",
-    avatar: "👩🏻‍💼",
-    source: AgentSource.BuiltIn,
-    description:
-      "Specialized text agent for processing text conversations, answering questions, providing information, and handling text-based tasks. Capabilities include: text analysis, Q&A, writing assistance, code generation, general conversation, file processing, and document understanding.",
-    prompt: "",
-    type: AgentTypeEnum.Text,
-    model: {
-      name: "anthropic/claude-3.7-sonnet",
-      provider: "openai",
-      endpoint: "https://prod.aidenai.info/llm/openai",
-      apiKey: undefined,
-    },
-  },
-];
 
 export function createAgent(): Agent {
   const { defaultModel } = useAppConfig.getState();
@@ -69,6 +34,7 @@ export function createAgent(): Agent {
     description: "",
     prompt: "",
     type: AgentTypeEnum.Multimodal,
+    enabled: false,
     model: {
       name: defaultModel,
       provider: defaultModelInfo!.provider,
@@ -88,114 +54,119 @@ export const useAgentStore = createPersistStore(
       };
     }
     const methods = {
-      init: () => {
-        const defaultAgents = BUILTIN_AGENTS;
+      init: async () => {
+        const config = await readAgentConfig();
+        const remoteAgents = await getRemoteAgentList();
+        const newAgents = handleRemoteAgentList(config.agents, remoteAgents);
         set({
-          defaultAgents,
+          config: {
+            ...config,
+            agents: newAgents,
+          },
         });
       },
 
       getAgents: (): Agent[] => {
-        const { defaultAgents, userOverride, customAgents } = get();
-        const handleDefaultAgents = defaultAgents.map((agent) => {
-          const override = userOverride[agent.id];
-          return override ? { ...agent, ...override } : agent;
-        });
-        return [...handleDefaultAgents, ...customAgents];
+        const { config } = get();
+        if (!config) return [];
+        const agents = config.agents.map((a: any) => ({
+          id: a.agent_id,
+          name: a.agent_name,
+          avatar: a.avatar,
+          source: a.source,
+          description: a.description,
+          prompt: a.prompt,
+          type: a.agent_type,
+          enabled: a.enabled,
+          model: {
+            name: a.model_name,
+            provider: a.model_provider,
+            endpoint: a.endpoint,
+            apiKey: a.api_key || undefined,
+          },
+        }));
+        return agents;
       },
       addAgent: (agent: Agent) => {
-        set({ customAgents: [...get().customAgents, agent] });
+        const config = get().config;
+        const newAgents = [...get().getAgents(), agent];
+        if (!config) return;
+        const newConfig = {
+          ...config,
+          agents: formatAgents(newAgents),
+        };
+        set({
+          config: newConfig,
+        });
+        updateConfig(newConfig);
       },
       getAgentById: (id: string) => {
         const agents = get().getAgents();
         return agents.find((agent) => agent.id === id);
       },
-      getAgentsHeader: () => {
-        const headers = {} as {
-          "Aiden-Text-Model": string;
-          "Aiden-Multi-Model": string;
-        };
-        const agents = get().getAgents();
-        // 后续要传用户开启的所有 agent
-        const builtInAgent = agents.filter(
-          (agent) => agent.source === AgentSource.BuiltIn,
-        );
-        const textAgent = builtInAgent.find(
-          (agent) => agent.type === AgentTypeEnum.Text,
-        )!;
-        const multiAgent = builtInAgent.find(
-          (agent) => agent.type === AgentTypeEnum.Multimodal,
-        )!;
-        headers["Aiden-Text-Model"] = `${textAgent.model.name}$${
-          textAgent.model.provider
-        }$${textAgent.model.endpoint}${
-          textAgent.model.apiKey ? "$" + textAgent.model.apiKey : ""
-        }`;
-        headers["Aiden-Multi-Model"] = `${multiAgent.model.name}$${
-          multiAgent.model.provider
-        }$${multiAgent.model.endpoint}${
-          multiAgent.model.apiKey ? "$" + multiAgent.model.apiKey : ""
-        }`;
-        return headers;
-      },
       updateAgent: (updatedAgent: Agent) => {
-        if (updatedAgent.source === AgentSource.Custom) {
-          const agents = get()
-            .getAgents()
-            .filter((item) => item.source === AgentSource.Custom);
-          set({
-            customAgents: agents.map((a) =>
-              a.id === updatedAgent.id ? updatedAgent : a,
-            ),
-          });
-        } else {
-          const hasDefaultAgent = get().defaultAgents.find(
-            (agent) => agent.id === updatedAgent.id,
-          );
-          if (hasDefaultAgent) {
-            const { userOverride } = get();
-            const override = {} as {
-              avatar?: string;
-              model: {
-                name: string;
-                provider: string;
-                endpoint: string;
-                apiKey: string | undefined;
-              };
-            };
-            if (updatedAgent.avatar) {
-              override.avatar = updatedAgent.avatar;
-            }
-            if (updatedAgent.model) {
-              override.model = {
-                name: updatedAgent.model.name,
-                provider: updatedAgent.model.provider,
-                endpoint: updatedAgent.model.endpoint,
-                apiKey: updatedAgent.model.apiKey,
-              };
-            }
-            set({
-              userOverride: {
-                ...userOverride,
-                [updatedAgent.id]: {
-                  ...get().userOverride[updatedAgent.id],
-                  ...override,
-                },
-              },
-            });
-          }
-        }
+        const config = get().config;
+        if (!config) return;
+        const agents = get().getAgents();
+
+        const index = get()
+          .getAgents()
+          .findIndex((item) => item.id === updatedAgent.id);
+
+        const newAgents = agents;
+        newAgents[index] = updatedAgent;
+        const newConfig = {
+          ...config,
+          agents: formatAgents(newAgents),
+        };
+        set({
+          config: newConfig,
+        });
+        updateConfig(newConfig);
       },
       deleteAgent: (id: string) => {
-        const currentAgents = get().customAgents;
-        const newAgents = currentAgents.filter((t) => t.id !== id);
-        set({ customAgents: newAgents });
+        const config = get().config;
+        if (!config) return;
+        const agents = get().getAgents();
+        if (
+          agents.find((item) => item.id === id)?.source !== AgentSource.Custom
+        ) {
+          return;
+        }
+        const newAgents = agents.filter((t) => t.id !== id);
+        const newConfig = {
+          ...config,
+          agents: formatAgents(newAgents),
+        };
+        set({ config: newConfig });
+        updateConfig(newConfig);
+      },
+      handleModel: () => {
+        // 针对后端删除了 agent 所绑定的模型
+        const models: ModelOption[] = useAppConfig.getState().models;
+        const { getAgents, updateAgent } = get();
+        const agents: Agent[] = getAgents();
+        agents.forEach((agent) => {
+          if (models.every((m) => m.model !== agent.model.name)) {
+            const defaultModel = useAppConfig.getState().defaultModel;
+            const defaultModelInfo = useAppConfig
+              .getState()
+              .getModelInfo(defaultModel);
+            agent.model = {
+              name: defaultModel,
+              provider: defaultModelInfo!.provider,
+              endpoint: defaultModelInfo!.endpoint!,
+              apiKey: undefined,
+            };
+            updateAgent(agent);
+          }
+        });
       },
     };
     return methods;
   },
   {
     name: StoreKey.Agent,
-    version: 0.4,
+    version: 0.5,
   },
 );

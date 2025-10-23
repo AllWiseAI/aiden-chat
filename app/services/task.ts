@@ -11,7 +11,6 @@ async function getLocalFetchOptions() {
   const baseURL = getLocalBaseDomain();
   const headers = await getHeaders({
     aiden: true,
-    agent: true,
   });
   return { baseURL, headers };
 }

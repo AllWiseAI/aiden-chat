@@ -12,6 +12,7 @@ import { track, EVENTS } from "@/app/utils/analysis";
 import { Button } from "@/app/components/shadcn/button";
 import { Input } from "@/app/components/shadcn/input";
 import SearchIcon from "../icons/search.svg";
+import ScrollContainer from "../components/scroll-container";
 import CollapseIcon from "../icons/collapse.svg";
 import PlusIcon from "../icons/plus.svg";
 import { useTranslation } from "react-i18next";
@@ -268,9 +269,9 @@ export function SideBarBody(props: {
               </span>
             </Button>
           </div>
-          <div className="scroll-container flex-1 min-h-0">
+          <ScrollContainer className="flex-1 min-h-0">
             <div className="flex flex-col gap-2.5 pl-3 pr-2">{children}</div>
-          </div>
+          </ScrollContainer>
         </>
       )}
     </>

@@ -25,10 +25,12 @@ import { useTranslation } from "react-i18next";
 import { FileUploader } from "./file-uploader";
 import { useFileUploadStore } from "@/app/store/file-upload";
 import { relaunch } from "@tauri-apps/api/process";
+import ShowcaseList from "./showcase-list";
 import {
   ChatMessage,
   createMessage,
   SubmitKey,
+  useAgentStore,
   useAppConfig,
   useChatStore,
 } from "../store";
@@ -626,17 +628,12 @@ function InnerChat() {
         <div className={styles["chat-main"]}>
           <div className={styles["chat-body-container"]}>
             {isNewChat ? (
-              <>
-                <div
-                  className={clsx(
-                    styles["chat-main-welcome"],
-                    "flex gap-2.5 text-4xl",
-                  )}
-                >
+              <div className={styles["chat-main-welcome"]}>
+                <div className={"flex gap-2.5 text-4xl pt-10"}>
                   <LogoIcon className="size-10" />
                   {t("chat.title")} Aiden
                 </div>
-              </>
+              </div>
             ) : (
               <div
                 className={clsx(styles["chat-body"], "scroll-container")}
@@ -717,6 +714,9 @@ function InnerChat() {
                         </Fragment>
                       );
                     } else {
+                      const getAgentById =
+                        useAgentStore.getState().getAgentById;
+
                       return (
                         <Fragment
                           key={(message.content[0] as RenderMessage).id}
@@ -733,11 +733,11 @@ function InnerChat() {
                                 {message.agent && (
                                   <div className="flex items-center gap-2">
                                     <div className="size-[38px] flex-center rounded-full bg-[#F3F5F7] dark:bg-[#6F6F6F]">
-                                      {message.agent.avatar}
+                                      {getAgentById(message.agent.id)?.avatar}
                                     </div>
                                     <div className="flex flex-col">
                                       <span className="text-[15px] font-medium">
-                                        {message.agent.name}
+                                        {getAgentById(message.agent.id)?.name}
                                       </span>
                                       <span className="text-[10px] font-extralight">
                                         {message.agent.model.name}
@@ -948,6 +948,14 @@ function InnerChat() {
                 </label>
               </div>
             </div>
+
+            {isNewChat && (
+              <div className="px-15">
+                <div className={styles["chat-input-panel"]}>
+                  <ShowcaseList />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

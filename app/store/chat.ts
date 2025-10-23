@@ -20,6 +20,7 @@ import { estimateTokenLength } from "../utils/token";
 import { ModelConfig, useAppConfig } from "./config";
 import { createEmptyMask, Mask } from "./mask";
 import { taskSessionParams, UploadedFile } from "@/app/typing";
+import { useAgentStore } from "./agent";
 
 const localStorage = safeLocalStorage();
 
@@ -250,7 +251,12 @@ export const useChatStore = createPersistStore(
           sessions: [session].concat(state.sessions),
         }));
       },
-      newTaskSession({ taskId, requestData, responseData }: taskSessionParams) {
+      newTaskSession({
+        taskId,
+        requestData,
+        responseData,
+        agentId,
+      }: taskSessionParams) {
         const session = createEmptySession(taskId);
         session.messages = [
           ...requestData.map((msg: any) => ({
@@ -262,6 +268,29 @@ export const useChatStore = createPersistStore(
             ...msg,
           })),
         ];
+        if (agentId) {
+          const agentInfo = useAgentStore.getState().getAgentById(agentId);
+
+          if (agentInfo) {
+            const index = session.messages.findIndex(
+              (item) => item.role === "assistant",
+            );
+            if (index) {
+              session.messages[index].agent = {
+                name: agentInfo.name,
+                id: agentInfo.id,
+                avatar: agentInfo.avatar,
+                model: {
+                  name: agentInfo.model.name,
+                  provider: agentInfo.model.name,
+                  endpoint: agentInfo.model.name,
+                  apiKey: agentInfo.model.name,
+                },
+              };
+            }
+          }
+        }
+
         set((state) => ({
           currentSessionIndex: 0,
           sessions: [session].concat(state.sessions),
@@ -796,17 +825,10 @@ export const useChatStore = createPersistStore(
             0,
             messages.length - modelConfig.historyMessageCount,
           );
-          const topicMessages = messages
-            .slice(
-              startIndex < messages.length ? startIndex : messages.length - 1,
-              messages.length,
-            )
-            .concat(
-              createMessage({
-                role: "user",
-                content: t("store.prompt.topic"),
-              }),
-            );
+          const topicMessages = messages.slice(
+            startIndex < messages.length ? startIndex : messages.length - 1,
+            messages.length,
+          );
           api.llm.chat({
             chatId: session.id,
             isSummary: true,

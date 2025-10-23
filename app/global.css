@@ -139,9 +139,25 @@
   .disable-select {
     @apply select-none cursor-default;
   }
+  /* 滚动容器 需要手动配合padding-right */
   .scroll-container {
     overflow-y: scroll;
     scrollbar-gutter: stable;
+  }
+  /* 鼠标滚动显示滚动条，配合 ScrollContainer 组件使用 */
+  .scroll-wrap {
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+  }
+  .scroll-wrap::-webkit-scrollbar {
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .scroll-wrap.scrolling::-webkit-scrollbar,
+  .scroll-wrap:hover::-webkit-scrollbar {
+    opacity: 1;
   }
 }
 
