@@ -181,7 +181,6 @@ function InnerChat() {
   const config = useAppConfig();
 
   const files = useFileUploadStore((state) => state.files);
-
   const removeFile = useFileUploadStore((state) => state.removeFile);
 
   const isNewChat = useMemo(() => {

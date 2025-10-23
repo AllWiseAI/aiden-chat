@@ -2,6 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import { UploadedFile } from "@/app/typing";
 import { FileItem } from "./file-item";
+import { open } from "@tauri-apps/api/shell";
 
 interface FileResultProps {
   files: UploadedFile[];
@@ -19,7 +20,16 @@ export const FileResult = React.forwardRef<HTMLDivElement, FileResultProps>(
         )}
       >
         {files.map((file) => (
-          <FileItem key={file.id} file={file} removeFile={removeFile} />
+          <FileItem
+            key={file.id}
+            file={file}
+            removeFile={removeFile}
+            onClick={() => {
+              if (file.url) {
+                open(file.url);
+              }
+            }}
+          />
         ))}
       </div>
     );

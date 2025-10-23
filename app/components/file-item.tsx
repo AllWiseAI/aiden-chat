@@ -39,9 +39,11 @@ const fileIconMap: Record<string, SvgComponent> = {
 export function FileItem({
   file,
   removeFile,
+  onClick,
 }: {
   file: UploadedFile;
   removeFile?: (id: string) => void;
+  onClick?: () => void;
 }) {
   const inferTypeFromName = (file?: UploadedFile) => {
     const name = file?.file.name ?? file?.url ?? "";
@@ -51,9 +53,7 @@ export function FileItem({
 
   const renderFileIcon = (file: UploadedFile) => {
     const t = (file.type ?? "").toLowerCase();
-
     const ext = inferTypeFromName(file);
-
     const isImage =
       t.startsWith("image") ||
       t === "png" ||
@@ -72,8 +72,11 @@ export function FileItem({
       fileIconMap.default;
 
     return (
-      <div className="flex items-center gap-1.5">
-        {isImage ? (
+      <div
+        className="flex items-center gap-1.5 cursor-pointer"
+        onClick={onClick}
+      >
+        {isImage && file.url ? (
           <div className="w-[35px] h-[35px]">
             <img
               src={file.url}

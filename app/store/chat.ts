@@ -3,6 +3,7 @@ import { DEFAULT_USER_DELINETED } from "../constant";
 import { prettyObject } from "@/app/utils/format";
 import { indexedDBStorage } from "@/app/utils/indexedDB-storage";
 import { nanoid } from "nanoid";
+import { getFinalFileType, isImage, isPdf } from "@/app/utils/file";
 import type {
   ClientApi,
   MultimodalContent,
@@ -373,12 +374,9 @@ export const useChatStore = createPersistStore(
             ...(content ? [{ type: "text" as const, text: content }] : []),
             ...attachFiles
               .map((fileItem) => {
-                const {
-                  file: { type },
-                  url,
-                } = fileItem;
-
-                if (type.startsWith("image/")) {
+                const { url, type: fileType } = fileItem;
+                console.log("fileType===", fileType);
+                if (isImage(fileType)) {
                   return {
                     type: "image_url",
                     image_url: { url },
@@ -391,12 +389,26 @@ export const useChatStore = createPersistStore(
                       },
                     },
                   };
-                } else {
-                  // This is important to decide which type of file
-                  // can be put into the request payload, this depends on host server's final decision.
+                } else if (isPdf(fileType)) {
                   return {
                     type: "file_url",
                     file_url: { url },
+                    raw_file_info: {
+                      ...fileItem,
+                      file: {
+                        name: fileItem.file.name,
+                        size: fileItem.file.size,
+                        type: fileItem.file.type,
+                      },
+                    },
+                  };
+                } else {
+                  return {
+                    type: "file",
+                    file: {
+                      local_path: url,
+                      file_type: getFinalFileType(fileType),
+                    },
                     raw_file_info: {
                       ...fileItem,
                       file: {

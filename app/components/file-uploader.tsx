@@ -1,8 +1,20 @@
-import React, { useRef, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useFileUpload } from "@/app/hooks/use-file-upload";
 import { Button } from "@/app/components/shadcn/button";
 import FileIcon from "../icons/file.svg";
 import { useTranslation } from "react-i18next";
+import { useFileUploadStore } from "@/app/store/file-upload";
+import {
+  allValidExtensions,
+  validExtensions,
+  isImage,
+  isPdf,
+} from "@/app/utils/file";
+
+import { open } from "@tauri-apps/api/dialog";
+import { readBinaryFile } from "@tauri-apps/api/fs";
+import { basename, extname } from "@tauri-apps/api/path";
+
 import {
   Tooltip,
   TooltipContent,
@@ -10,17 +22,9 @@ import {
 } from "@/app/components/shadcn/tooltip";
 import { toast } from "@/app/utils/toast";
 
-const validExtensions = {
-  image: [".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp"],
-  pdf: [".pdf"],
-  excel: [".xls", ".xlsx"],
-  ppt: [".ppt", ".pptx"],
-  word: [".doc", ".docx"],
-  text: [".txt", ".md", ".markdown"],
-};
-
 export const FileUploader = () => {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const { addFile } = useFileUploadStore();
+
   const { t } = useTranslation("general");
   const { uploadFile } = useFileUpload();
 
@@ -42,16 +46,34 @@ export const FileUploader = () => {
     uploadFile(file);
   };
 
-  const handleSelectFile = () => {
-    if (inputRef.current) {
-      inputRef.current.value = "";
-    }
-    inputRef.current?.click();
-  };
+  const handleSelectFile = async () => {
+    const selected = await open({
+      multiple: false,
+      filters: [{ name: "Documents", extensions: allValidExtensions }],
+    });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) validateAndUpload(file);
+    if (!selected) return;
+
+    const filePath = Array.isArray(selected) ? selected[0] : selected;
+    const fileData = await readBinaryFile(filePath);
+    const fileName = await basename(filePath);
+
+    const ext = await extname(filePath);
+    const blob = new Blob([fileData]);
+    const newFile = new File([blob], fileName);
+    if (isPdf(ext) || isImage(ext)) {
+      uploadFile(newFile);
+    } else {
+      const id = Math.random().toString(36).substring(2, 9);
+      const file = {
+        id,
+        file: newFile,
+        url: filePath,
+        progress: 100,
+        type: ext,
+      };
+      addFile(file);
+    }
   };
 
   useEffect(() => {
@@ -90,13 +112,6 @@ export const FileUploader = () => {
         >
           <FileIcon className="size-[18px] text-[#141718] dark:text-white" />
         </Button>
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/*,application/pdf"
-          hidden
-          onChange={handleFileChange}
-        />
       </div>
     );
   };

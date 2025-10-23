@@ -14,7 +14,11 @@ export async function uploadFileWithProgress(
   let fileTypeParam = "default";
 
   const detectFileType = (mime: string, fileName?: string): string => {
-    if (mime.startsWith("image/")) return "image";
+    if (fileName) {
+      const ext = fileName.split(".").pop()?.toLowerCase();
+      if (ext) return ext;
+    }
+    if (mime.startsWith("image/")) return "png";
     if (mime === "application/pdf") return "pdf";
     if (mime.startsWith("video/")) return "video";
     if (mime.startsWith("audio/")) return "audio";
@@ -23,11 +27,6 @@ export async function uploadFileWithProgress(
     if (mime.includes("word")) return "docx";
     if (mime.includes("excel")) return "xlsx";
     if (mime.includes("json")) return "json";
-
-    if (fileName) {
-      const ext = fileName.split(".").pop()?.toLowerCase();
-      if (ext) return ext;
-    }
     return "default";
   };
 
@@ -46,6 +45,8 @@ export async function uploadFileWithProgress(
     file = input;
     fileTypeParam = detectFileType(file.type, (file as File).name);
   }
+
+  console.log("fileTypeParam===", fileTypeParam);
 
   const BASE_URL = `${domain}/api/image/upload?file_type=${encodeURIComponent(
     fileTypeParam,
