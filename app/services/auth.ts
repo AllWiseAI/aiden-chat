@@ -1,4 +1,4 @@
-import { aidenFetch as fetch, FetchBody } from "@/app/utils/fetch";
+import { aidenFetch as fetch } from "@/app/utils/fetch";
 import { useSettingStore } from "@/app/store/setting";
 import { GoogleLoginResponse, GoogleStatusResponse } from "../typing";
 
@@ -97,27 +97,6 @@ export async function googleLoginStatus({
     },
   );
   return result.data as GoogleStatusResponse;
-}
-
-export async function apiRefreshToken(refreshToken: string) {
-  const params = {
-    refresh_token: refreshToken,
-  };
-  const result = await fetch("/auth/refresh_token", {
-    method: "POST",
-    body: {
-      type: "Json",
-      payload: params,
-    },
-    _isRefreshToken: true,
-  });
-  return result.data;
-}
-
-export function isRefreshRequest(
-  config: FetchBody & { _isRefreshToken?: boolean },
-) {
-  return !!config._isRefreshToken;
 }
 
 export async function apiResetPasswordCode(email: string) {
