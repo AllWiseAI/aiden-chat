@@ -127,13 +127,7 @@ function AgentModel({ show, item }: { show: boolean; item: Agent }) {
     <div>
       {show && (
         <div className="max-w-60 mx-auto border light:border-[#E8ECEF] rounded-sm overflow-hidden">
-          <div className="w-full bg-[#FEFEFE] dark:bg-[#141718] overflow-y-auto max-h-[260px] px-1 py-2 space-y-1.5">
-            <style>
-              {`div::-webkit-scrollbar {
-                  width: 5px;
-                }
-              `}
-            </style>
+          <div className="scrollbar-thin w-full bg-[#FEFEFE] dark:bg-[#141718] overflow-y-auto max-h-[260px] px-1 py-2 space-y-1.5">
             {Object.entries(groupedLocalProviders).map(
               ([groupLabel, provider]) => {
                 const isOpen = openGroup === groupLabel;

@@ -159,6 +159,9 @@
   .scroll-wrap:hover::-webkit-scrollbar {
     opacity: 1;
   }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 5px !important;
+  }
 }
 
 @theme {
