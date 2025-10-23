@@ -7,13 +7,10 @@ import { useAgentStore } from "../store";
 import { track } from "../utils/analysis";
 
 let websocketInitialized = false;
-const REFRESH_INTERVAL = 5 * 60 * 1000;
 
 const initWebsocketWorker = async () => {
   console.log("[Main][Websocket] init websocket worker");
   if (websocketInitialized) {
-    // need refresh token here，since the token may be expired
-    await doRefresh();
     console.warn("[Main][Websocket] WebSocket already initialized, skipping.");
     return;
   }
@@ -24,40 +21,6 @@ const initWebsocketWorker = async () => {
   const port = useAppConfig.getState().hostServerPort;
   const localToken = useAppConfig.getState().localToken;
   const userToken = useAuthStore.getState().userToken;
-  const refreshToken = useAuthStore.getState().refreshToken;
-  let shouldRefresh = true;
-  async function doRefresh() {
-    try {
-      const result = await refreshToken();
-      if (result) {
-        wsWorker.postMessage({
-          type: "refreshToken",
-          payload: {
-            accessToken: result,
-          },
-        });
-
-        console.log("[Main][Websocket] Token refreshed successfully");
-      } else {
-        console.warn("[Main][Websocket] Invalid refresh result:", result);
-        shouldRefresh = false;
-      }
-    } catch (err) {
-      shouldRefresh = false;
-      console.error("[Main][Websocket] Failed to refresh token:", err);
-    }
-  }
-
-  doRefresh();
-
-  const refreshTimer = setInterval(() => {
-    if (!shouldRefresh) {
-      clearInterval(refreshTimer);
-      console.log("[Main][Websocket] Stopped token refresh loop.");
-      return;
-    }
-    doRefresh();
-  }, REFRESH_INTERVAL);
 
   wsWorker.postMessage({
     type: "connect",

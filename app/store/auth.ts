@@ -4,7 +4,6 @@ import {
   apiCompleteSignUp,
   apiLogin,
   apiLogout,
-  apiRefreshToken,
   apiGetUserPlan,
 } from "@/app/services";
 import {
@@ -14,7 +13,6 @@ import {
   LoginResponseInfo,
   Plan,
   PlanEnum,
-  RefreshResponse,
 } from "../typing";
 import { t } from "i18next";
 
@@ -23,8 +21,6 @@ const DEFAULT_AUTH_STATE = {
   user: {} as User,
   userToken: {} as TokenType,
 };
-
-let refreshingPromise: Promise<string> | null = null;
 
 export const useAuthStore = createPersistStore(
   {
@@ -104,19 +100,10 @@ export const useAuthStore = createPersistStore(
 
       initialize: async () => {
         if (!get()._hasHydrated) return false;
-        const { userToken, refreshToken, setDefaultState } = _get();
+        const { userToken, setDefaultState } = _get();
         if (userToken.accessToken && userToken.expires * 1000 > Date.now()) {
           // setAuth
           return true;
-        }
-        if (userToken.refreshToken) {
-          try {
-            await refreshToken();
-            // setAuth
-            return true;
-          } catch (e: any) {
-            console.error("refresh token err:", JSON.stringify(e.message));
-          }
         }
         setDefaultState();
         return false;
@@ -196,52 +183,6 @@ export const useAuthStore = createPersistStore(
         }
       },
 
-      refreshToken: async () => {
-        try {
-          const { userToken } = get();
-          if (!userToken.refreshToken) throw new Error("No refresh token");
-          if (refreshingPromise) {
-            return refreshingPromise;
-          }
-
-          const newRefreshingPromise = (async () => {
-            try {
-              const response = (await apiRefreshToken(
-                userToken.refreshToken,
-              )) as RefreshResponse;
-              console.log("refreshToken_Res", response);
-              if ("access_token" in response) {
-                const { access_token, refresh_token, expires_at } = response;
-                set({
-                  isLogin: true,
-                  user: get().user,
-                  userToken: {
-                    accessToken: access_token,
-                    refreshToken: refresh_token,
-                    expires: expires_at,
-                  },
-                });
-                return access_token;
-              } else if ("error" in response) {
-                throw new Error(response.error);
-              } else {
-                throw new Error("Token not found in response");
-              }
-            } finally {
-              refreshingPromise = null;
-            }
-          })();
-
-          refreshingPromise = newRefreshingPromise.catch((e) => {
-            window.location.href = "/#/login";
-            throw e;
-          });
-          return newRefreshingPromise;
-        } catch (e: any) {
-          refreshingPromise = null;
-          throw new Error(`Refresh Token Failed: ${e.message}`);
-        }
-      },
       setUserPlan: async () => {
         const res = (await apiGetUserPlan()) as { subscription_level: Plan };
         const { userPlan } = get();
