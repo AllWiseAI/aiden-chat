@@ -61,12 +61,23 @@ export class ChatGPTApi implements LLMApi {
     const DEFAULT_CHAT_URL = getBaseChatUrl();
     const messages: ChatOptions["messages"] = [];
     for (const v of options.messages || []) {
-      messages.push({
-        role: v.role,
-        content: v.content,
-        mcpInfo: v.mcpInfo ?? undefined,
-      });
+      if (Array.isArray(v.content)) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const res = v.content.map(({ raw_file_info, ...rest }) => rest);
+        messages.push({
+          role: v.role,
+          content: res as MultimodalContent[],
+          mcpInfo: v.mcpInfo ?? undefined,
+        });
+      } else {
+        messages.push({
+          role: v.role,
+          content: v.content,
+          mcpInfo: v.mcpInfo ?? undefined,
+        });
+      }
     }
+
     console.log("[Chat]context messages", messages);
     const requestPayload: RequestPayload = {
       messages,

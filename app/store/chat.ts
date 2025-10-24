@@ -1,9 +1,9 @@
 import { getMessageTextContent, safeLocalStorage, trimTopic } from "../utils";
-import { UploadedFile } from "@/app/store/file-upload";
 import { DEFAULT_USER_DELINETED } from "../constant";
 import { prettyObject } from "@/app/utils/format";
 import { indexedDBStorage } from "@/app/utils/indexedDB-storage";
 import { nanoid } from "nanoid";
+import { getFinalFileType, isImage, isPdf } from "@/app/utils/file";
 import type {
   ClientApi,
   MultimodalContent,
@@ -20,7 +20,7 @@ import { createPersistStore } from "../utils/store";
 import { estimateTokenLength } from "../utils/token";
 import { ModelConfig, useAppConfig } from "./config";
 import { createEmptyMask, Mask } from "./mask";
-import { taskSessionParams } from "@/app/typing";
+import { taskSessionParams, UploadedFile } from "@/app/typing";
 import { useAgentStore } from "./agent";
 
 const localStorage = safeLocalStorage();
@@ -374,24 +374,51 @@ export const useChatStore = createPersistStore(
             ...(content ? [{ type: "text" as const, text: content }] : []),
             ...attachFiles
               .map((fileItem) => {
-                const {
-                  file: { type },
-                  url,
-                } = fileItem;
-                if (type === "application/pdf") {
+                const { url, type: fileType } = fileItem;
+                console.log("fileType===", fileType);
+                if (isImage(fileType)) {
+                  return {
+                    type: "image_url",
+                    image_url: { url },
+                    raw_file_info: {
+                      ...fileItem,
+                      file: {
+                        name: fileItem.file.name,
+                        size: fileItem.file.size,
+                        type: fileItem.file.type,
+                      },
+                    },
+                  };
+                } else if (isPdf(fileType)) {
                   return {
                     type: "file_url",
                     file_url: { url },
+                    raw_file_info: {
+                      ...fileItem,
+                      file: {
+                        name: fileItem.file.name,
+                        size: fileItem.file.size,
+                        type: fileItem.file.type,
+                      },
+                    },
                   };
-                }
-                if (type.startsWith("image/")) {
+                } else {
                   return {
-                    type: "image_url" as const,
-                    image_url: { url },
+                    type: "file",
+                    file: {
+                      local_path: url,
+                      file_type: getFinalFileType(fileType),
+                    },
+                    raw_file_info: {
+                      ...fileItem,
+                      file: {
+                        name: fileItem.file.name,
+                        size: fileItem.file.size,
+                        type: fileItem.file.type,
+                      },
+                    },
                   };
                 }
-
-                return undefined;
               })
               .filter((item) => item !== undefined),
           ];
@@ -867,6 +894,6 @@ export const useChatStore = createPersistStore(
   },
   {
     name: StoreKey.Chat,
-    version: 2.2,
+    version: 2.3,
   },
 );

@@ -23,7 +23,6 @@ import { ChatMessageItemTab } from "./chat-message-item-tab";
 import { useTranslation } from "react-i18next";
 import { FileUploader } from "./file-uploader";
 import { useFileUploadStore } from "@/app/store/file-upload";
-import CircleProgress from "./circle-progress";
 import { relaunch } from "@tauri-apps/api/process";
 import ShowcaseList from "./showcase-list";
 import {
@@ -55,6 +54,7 @@ import { prettyObject } from "../utils/format";
 import clsx from "clsx";
 import { Button } from "./shadcn/button";
 import { track, EVENTS } from "@/app/utils/analysis";
+import { FileResult } from "./file-result";
 
 import McpPopover from "./mcp-tooltip";
 import {
@@ -63,6 +63,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/app/components/shadcn/accordion";
+import { ChatMessageItemFile } from "./chat-message-item-file";
 import Textarea from "./textarea";
 
 const localStorage = safeLocalStorage();
@@ -179,7 +180,6 @@ function InnerChat() {
   const config = useAppConfig();
 
   const files = useFileUploadStore((state) => state.files);
-
   const removeFile = useFileUploadStore((state) => state.removeFile);
 
   const isNewChat = useMemo(() => {
@@ -191,6 +191,22 @@ function InnerChat() {
   const [isLoading, setIsLoading] = useState(false);
   const [isChatting, setIsChatting] = useState(false);
   const { t } = useTranslation("general");
+
+  const fileListRef = useRef<HTMLDivElement>(null);
+  const [fileListHeight, setFileListHeight] = useState(0);
+
+  useEffect(() => {
+    if (!fileListRef.current) return;
+
+    const observer = new ResizeObserver(() => {
+      const fileHeight = fileListRef.current?.offsetHeight || 0;
+      setFileListHeight(fileHeight);
+    });
+    observer.observe(fileListRef.current);
+
+    return () => observer.disconnect();
+  }, [files]);
+
   useEffect(() => {
     setIsChatting(ChatControllerPool.hasPendingInSession(session.id));
   }, [session.id, session.messages]);
@@ -363,48 +379,15 @@ function InnerChat() {
     return merged;
   }, [messages]);
 
-  // const [msgRenderIndex, _setMsgRenderIndex] = useState(
-  //   Math.max(0, renderMessages.length - CHAT_PAGE_SIZE),
-  // );
-
-  // function setMsgRenderIndex(newIndex: number) {
-  //   newIndex = Math.min(renderMessages.length - CHAT_PAGE_SIZE, newIndex);
-  //   newIndex = Math.max(0, newIndex);
-  //   _setMsgRenderIndex(newIndex);
-  // }
-
-  // const messages = useMemo(() => {
-  //   const endRenderIndex = Math.min(
-  //     msgRenderIndex + 3 * CHAT_PAGE_SIZE,
-  //     renderMessages.length,
-  //   );
-  //   return renderMessages.slice(msgRenderIndex, endRenderIndex);
-  // }, [msgRenderIndex, renderMessages]);
-
   const onChatBodyScroll = (e: HTMLElement) => {
     const bottomHeight = e.scrollTop + e.clientHeight;
-    // const edgeThreshold = e.clientHeight;
-
-    // const isTouchTopEdge = e.scrollTop <= edgeThreshold;
-    // const isTouchBottomEdge = bottomHeight >= e.scrollHeight - edgeThreshold;
     const isHitBottom =
       bottomHeight >= e.scrollHeight - (isMobileScreen ? 4 : 10);
-
-    // const prevPageMsgIndex = msgRenderIndex - CHAT_PAGE_SIZE;
-    // const nextPageMsgIndex = msgRenderIndex + CHAT_PAGE_SIZE;
-
-    // if (isTouchTopEdge && !isTouchBottomEdge) {
-    //   setMsgRenderIndex(prevPageMsgIndex);
-    // } else if (isTouchBottomEdge) {
-    //   setMsgRenderIndex(nextPageMsgIndex);
-    // }
-
     setHitBottom(isHitBottom);
     setAutoScroll(isHitBottom);
   };
 
   function scrollToBottom(smooth: boolean = false) {
-    // setMsgRenderIndex(renderMessages.length - CHAT_PAGE_SIZE);
     scrollDomToBottom(smooth);
   }
 
@@ -568,8 +551,13 @@ function InnerChat() {
   };
 
   const shouldDisabled = useMemo(() => {
+    // 1. has uploading files
+    // 2. no files && no input && no chatting
+    const haveUploadingFiles = files.some((file) => file.url === "");
     const haveFiles = files.filter((file) => file.url !== "").length;
-    return !(userInput.length || haveFiles) && !isChatting;
+    return (
+      haveUploadingFiles || (!userInput.length && !haveFiles && !isChatting)
+    );
   }, [userInput, files, isChatting]);
 
   return (
@@ -622,48 +610,10 @@ function InnerChat() {
                                 <div
                                   className={clsx(
                                     styles["chat-message-item"],
-                                    "p-3",
+                                    "p-3 flex flex-col gap-2",
                                   )}
                                 >
-                                  {getMessageImages(message).length == 1 && (
-                                    <ImagePreview
-                                      className={
-                                        styles["chat-message-item-image"]
-                                      }
-                                      src={getMessageImages(message)[0]}
-                                      alt=""
-                                    />
-                                  )}
-                                  {getMessageImages(message).length > 1 && (
-                                    <div
-                                      className={
-                                        styles["chat-message-item-images"]
-                                      }
-                                      style={
-                                        {
-                                          "--image-count":
-                                            getMessageImages(message).length,
-                                        } as React.CSSProperties
-                                      }
-                                    >
-                                      {getMessageImages(message).map(
-                                        (image, index) => {
-                                          return (
-                                            <ImagePreview
-                                              className={
-                                                styles[
-                                                  "chat-message-item-image-multi"
-                                                ]
-                                              }
-                                              key={index}
-                                              src={image}
-                                              alt=""
-                                            />
-                                          );
-                                        },
-                                      )}
-                                    </div>
-                                  )}
+                                  <ChatMessageItemFile message={message} />
                                   {message.isError ? (
                                     renderErrorMsg(message)
                                   ) : (
@@ -896,35 +846,11 @@ function InnerChat() {
                   )}
                   htmlFor="chat-input"
                 >
-                  <div className="overflow-x-auto">
-                    <div
-                      className={clsx(
-                        "flex items-center gap-2.5 w-max min-w-full  bg-white dark:bg-[#141416]",
-                        files.length > 0 && "pt-3 px-3 pb-2",
-                      )}
-                    >
-                      {files.map((img) => (
-                        <div key={img.id} className="relative">
-                          {img.url ? (
-                            <img
-                              src={img.url}
-                              className={styles["input-img"]}
-                            ></img>
-                          ) : (
-                            <div className={styles["input-img-loading"]}>
-                              <CircleProgress progress={img.progress} />
-                            </div>
-                          )}
-                          <Button
-                            onClick={() => removeFile(img.id)}
-                            className="absolute -top-2 -right-2 bg-[#F3F5F7] text-[#343839] rounded-full w-4 h-4 flex-center p-0"
-                          >
-                            ×
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  <FileResult
+                    ref={fileListRef}
+                    files={files}
+                    removeFile={removeFile}
+                  />
 
                   <Textarea
                     id="chat-input"
@@ -945,6 +871,8 @@ function InnerChat() {
                     style={{
                       fontSize: config.fontSize,
                       fontFamily: config.fontFamily,
+                      paddingTop: fileListHeight + 8,
+                      height: fileListHeight + 78,
                     }}
                   />
 

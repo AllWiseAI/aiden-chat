@@ -460,6 +460,14 @@ export enum PlanEnum {
 }
 export type Plan = PlanEnum.Free | PlanEnum.Standard | PlanEnum.Pro;
 
+export interface UploadedFile {
+  id: string;
+  url: string;
+  progress: number;
+  file: File;
+  type: string;
+}
+
 export type AgentConfig = {
   version: string;
   agents: CustomAgents[];

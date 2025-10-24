@@ -1,11 +1,5 @@
 import { create } from "zustand";
-
-export interface UploadedFile {
-  id: string;
-  url: string;
-  progress: number;
-  file: File;
-}
+import { UploadedFile } from "@/app/typing";
 
 interface FileUploadState {
   files: UploadedFile[];

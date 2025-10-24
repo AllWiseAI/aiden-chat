@@ -37,7 +37,6 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     },
     ref,
   ) => {
-    console.log(11111, rows);
     const innerRef = useRef<HTMLTextAreaElement>(null);
     useImperativeHandle(ref, () => innerRef.current as HTMLTextAreaElement);
 
