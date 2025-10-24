@@ -857,7 +857,7 @@ function InnerChat() {
                     ref={inputRef}
                     className={clsx(
                       styles["chat-input"],
-                      "placeholder:text-[#6C7275] h-max max-h-55",
+                      "placeholder:text-[#6C7275] max-h-55",
                     )}
                     placeholder={t("chat.placeholder")}
                     onInput={(e) => {
