@@ -48,7 +48,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     const adjustHeight = () => {
       const el = innerRef.current;
       if (!el) return;
-
+      console.log(22222, el.style.height);
       el.style.height = "auto";
       el.style.height = el.scrollHeight + 2 + "px";
     };
