@@ -56,7 +56,7 @@ export default function Subscription() {
                     "radial-gradient(circle at top right, rgba(0, 212, 126, 1) 0%, rgba(0, 212, 126, 0) 70%)",
                 }}
               ></div>
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1 z-1">
                 <p className="text-[32px] font-light z-1">
                   {t("subscription.free.title") + t("subscription.planT")}
                 </p>
@@ -83,7 +83,7 @@ export default function Subscription() {
                 </span>
                 <div className="flex-1 h-[1px] bg-[#C1C7D0] -mr-6"></div>
               </div>
-              <div className="flex flex-col gap-3 text-sm">
+              <div className="flex flex-col gap-3 text-sm z-1">
                 <div>
                   <span className="text-primary font-semibold mr-1">
                     {t("subscription.feature1")}
@@ -138,14 +138,14 @@ export default function Subscription() {
                     "radial-gradient(circle at top right, rgba(0, 212, 126, 1) 0%, rgba(0, 212, 126, 0) 70%)",
                 }}
               ></div>
-              <div className="flex flex-col gap-1">
-                <p className="text-[32px] font-light z-1">
+              <div className="flex flex-col gap-1 z-1">
+                <p className="text-[32px] font-light">
                   <span className="text-[#C8FF85]">
                     {t("subscription.standard.title")}
                   </span>
                   {t("subscription.planT")}
                 </p>
-                <div className="flex items-end gap-3 z-1">
+                <div className="flex items-end gap-3">
                   <span className="text-[64px] leading-[77px] font-extralight">
                     {t("subscription.standard.price")}
                   </span>
@@ -168,7 +168,7 @@ export default function Subscription() {
                 </span>
                 <div className="flex-1 h-[1px] bg-[#C1C7D0] -mr-6"></div>
               </div>
-              <div className="flex flex-col gap-3 text-sm text-[#FEFEFE]/80">
+              <div className="flex flex-col gap-3 text-sm text-[#FEFEFE]/80 z-1">
                 <div>
                   <span className="text-primary font-semibold mr-1">
                     {t("subscription.feature1")}
@@ -233,7 +233,7 @@ export default function Subscription() {
                     "radial-gradient(circle at left bottom, rgba(99, 0, 212, 1) 0%, rgba(99, 0, 212, 0) 70%)",
                 }}
               ></div>
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1 z-1">
                 <p className="text-[32px] font-light">
                   <span className="text-[#C89CFF]">
                     {t("subscription.pro.title")}
@@ -263,7 +263,7 @@ export default function Subscription() {
                 </span>
                 <div className="flex-1 h-[1px] bg-[#C1C7D0] -mr-6"></div>
               </div>
-              <div className="flex flex-col gap-2 text-sm text-[#FEFEFE]/80">
+              <div className="flex flex-col gap-2 text-sm text-[#FEFEFE]/80 z-1">
                 <div>
                   <span className="text-[#B38FFF] mr-1">
                     {t("subscription.feature1")}

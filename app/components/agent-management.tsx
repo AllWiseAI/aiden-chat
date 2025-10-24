@@ -84,18 +84,10 @@ function AgentEditDialog({
     s.localProviders,
   ]);
 
-  const initModelList = useAppConfig((s) => s.initModelList);
-  const [addAgent, updateAgent, handleModel] = useAgentStore((state) => [
+  const [addAgent, updateAgent] = useAgentStore((state) => [
     state.addAgent,
     state.updateAgent,
-    state.handleModel,
   ]);
-
-  useEffect(() => {
-    // always request new model data
-    initModelList();
-    handleModel();
-  }, []);
 
   const isCustom = useMemo(() => {
     if (!item) return false;
@@ -485,11 +477,18 @@ export default function AgentManagement() {
   const params = useSearchParams();
   const [searchParams] = params;
   const id = searchParams.get("id");
-
-  const [agents, deleteAgent] = useAgentStore((state) => [
+  const initModelList = useAppConfig((s) => s.initModelList);
+  const [agents, deleteAgent, handleModel] = useAgentStore((state) => [
     state.getAgents(),
     state.deleteAgent,
+    state.handleModel,
   ]);
+
+  useEffect(() => {
+    // always request new model data
+    initModelList();
+    handleModel();
+  }, []);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deletedId, setDeletedId] = useState("");
   useEffect(() => {
