@@ -61,8 +61,13 @@ export class ChatGPTApi implements LLMApi {
     const DEFAULT_CHAT_URL = getBaseChatUrl();
     const messages: ChatOptions["messages"] = [];
     for (const v of options.messages || []) {
-      messages.push({ role: v.role, content: v.content });
+      messages.push({
+        role: v.role,
+        content: v.content,
+        mcpInfo: v.mcpInfo ?? undefined,
+      });
     }
+    console.log("[Chat]context messages", messages);
     const requestPayload: RequestPayload = {
       messages,
       chat_id: options.chatId,
