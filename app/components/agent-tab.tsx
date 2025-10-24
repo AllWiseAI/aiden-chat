@@ -247,6 +247,7 @@ export default function AgentTab() {
           <HoverCard key={item.id} openDelay={200}>
             <HoverCardTrigger asChild>
               <div
+                onPointerDownCapture={(e) => e.stopPropagation()}
                 className={clsx(
                   "group cursor-default flex-center rounded-full backdrop-blur-lg border hover:border-[#00D47E] dark:hover:border-[#4ADE80] data-[state=open]:border-[#00D47E] dark:data-[state=open]:border-[#00D47E] size-8 transform hover:scale-125 transition-all duration-500 ease-in-out data-[state=open]:scale-125 -mr-2 hover:ml-1 hover:-mr-1 data-[state=open]:ml-1 data-[state=open]:-mr-1 flex-center data-[state=open]:z-1",
                 )}
@@ -307,7 +308,7 @@ export default function AgentTab() {
                     </Label>
 
                     {!showModel && (
-                      <span className="text-xs text-[#000000]/85 dark:text-[#E8ECEF]/50 break-words line-clamp-3">
+                      <span className="max-w-50 text-xs text-[#000000]/85 dark:text-[#E8ECEF]/50 break-words line-clamp-3">
                         {item.description}
                       </span>
                     )}
