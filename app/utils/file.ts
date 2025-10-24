@@ -8,10 +8,8 @@ export const validExtensions = {
 };
 
 export const getFinalFileType = (fileType: string) => {
+  // only text type file need return 'text', others return original file type
   const formatFileType = fileType.toLowerCase();
-  if (validExtensions.excel.some((excelExt) => formatFileType === excelExt)) {
-    return "excel";
-  }
   if (validExtensions.word.some((wordExt) => formatFileType === wordExt)) {
     return "text";
   }
