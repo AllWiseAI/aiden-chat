@@ -221,7 +221,7 @@ function AgentModel({ show, item }: { show: boolean; item: Agent }) {
 export default function AgentTab() {
   const navigate = useNavigate();
   const [agents, handleModel] = useAgentStore((state) => [
-    state.getAgents(),
+    state.renderAgents,
     state.handleModel,
   ]);
   const [getModelInfo, initModelList] = useAppConfig((s) => [

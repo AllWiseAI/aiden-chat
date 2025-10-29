@@ -60,8 +60,37 @@ export const handleRemoteAgentList = (
       api_key: userDefaultAgent?.api_key ?? (modelInfo ? modelInfo.apiKey : ""),
     };
   });
+  const newAgents = [...agents, ...defaultAgents];
+  const formatAgents: Agent[] = newAgents.map((a: any) => ({
+    id: a.agent_id,
+    name: a.agent_name,
+    avatar: a.avatar,
+    source: a.source,
+    description: a.description,
+    prompt: a.prompt,
+    type: a.agent_type,
+    enabled: a.enabled,
+    model: {
+      name: a.model_name,
+      provider: a.model_provider,
+      endpoint: a.endpoint,
+      apiKey: a.api_key || undefined,
+    },
+  }));
+  const renderAgents = formatAgents.sort((a, b) => {
+    if (a.enabled !== b.enabled) return a.enabled ? -1 : 1;
+    const order = {
+      [AgentSource.BuiltIn]: 0,
+      [AgentSource.Default]: 1,
+      [AgentSource.Custom]: 2,
+    };
 
-  return [...agents, ...defaultAgents];
+    return order[a.source] - order[b.source];
+  });
+  return {
+    agents: [...agents, ...defaultAgents],
+    renderAgents,
+  };
 };
 
 export const updateConfig = async (config: any) => {
