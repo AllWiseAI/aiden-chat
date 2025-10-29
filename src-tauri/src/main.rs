@@ -151,6 +151,8 @@ fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProc
             "--enable_authorization",
             "--port",
             &port.to_string(),
+            "--is_dev",
+            &cfg!(debug_assertions).to_string(),
         ])
         .envs(env::vars())
         .env("PATH", &new_path)
@@ -174,6 +176,8 @@ fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProc
                 "--enable_authorization".into(),
                 "--port".into(),
                 port.to_string(),
+                "--is_dev".into(),
+                cfg!(debug_assertions).to_string(),
             ])
             .envs(env::vars())
             .env("PATH", new_path)
