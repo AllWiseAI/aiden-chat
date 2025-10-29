@@ -134,11 +134,12 @@ function AgentItem({ item, onEdit }: AgentItemProps) {
 }
 
 export default function AgentList({
+  agents,
   onEdit,
 }: {
+  agents: Agent[];
   onEdit: (agent: AgentItemProps["item"]) => void;
 }) {
-  const agent = useAgentStore((state) => state.getAgents());
   return (
     <>
       <div
@@ -146,7 +147,7 @@ export default function AgentList({
         style={{ maxHeight: "calc(100% - 80px)" }}
       >
         <div className="grid grid-cols-1 @xss:grid-cols-2 @headerMd:grid-cols-3 gap-3.5">
-          {agent.map((item) => (
+          {agents.map((item) => (
             <AgentItem item={item} key={item.id} onEdit={onEdit} />
           ))}
         </div>

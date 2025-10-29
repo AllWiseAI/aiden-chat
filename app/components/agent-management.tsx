@@ -478,17 +478,22 @@ export default function AgentManagement() {
   const [searchParams] = params;
   const id = searchParams.get("id");
   const initModelList = useAppConfig((s) => s.initModelList);
-  const [agents, deleteAgent, handleModel] = useAgentStore((state) => [
-    state.getAgents(),
-    state.deleteAgent,
-    state.handleModel,
-  ]);
+  const [agents, deleteAgent, handleModel, reRenderAgentList] = useAgentStore(
+    (state) => [
+      state.renderAgents,
+      state.deleteAgent,
+      state.handleModel,
+      state.reRenderAgentList,
+    ],
+  );
 
   useEffect(() => {
     // always request new model data
     initModelList();
     handleModel();
+    reRenderAgentList();
   }, []);
+
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deletedId, setDeletedId] = useState("");
   useEffect(() => {
@@ -520,6 +525,7 @@ export default function AgentManagement() {
           </Button>
         </div>
         <AgentList
+          agents={agents}
           onEdit={(agent) => {
             setSelectedItem(agent);
             setShowEdit(true);

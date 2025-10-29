@@ -19,6 +19,7 @@ import { nanoid } from "nanoid";
 
 const DEFAULT_AGENT_STATE = {
   config: null as AgentConfig | null,
+  renderAgents: [] as Agent[],
 };
 
 export function createAgent(): Agent {
@@ -57,39 +58,32 @@ export const useAgentStore = createPersistStore(
       init: async () => {
         const config = await readAgentConfig();
         const remoteAgents = await getRemoteAgentList();
-        const newAgents = handleRemoteAgentList(config.agents, remoteAgents);
+        const { agents, renderAgents } = handleRemoteAgentList(
+          config.agents,
+          remoteAgents,
+        );
         set({
           config: {
             ...config,
-            agents: newAgents,
+            agents,
           },
+          renderAgents,
         });
       },
-
-      getAgents: (): Agent[] => {
+      reRenderAgentList: async () => {
+        console.log("[Agent store] reRenderMcpList");
         const { config } = get();
-        if (!config) return [];
-        const agents = config.agents.map((a: any) => ({
-          id: a.agent_id,
-          name: a.agent_name,
-          avatar: a.avatar,
-          source: a.source,
-          description: a.description,
-          prompt: a.prompt,
-          type: a.agent_type,
-          enabled: a.enabled,
-          model: {
-            name: a.model_name,
-            provider: a.model_provider,
-            endpoint: a.endpoint,
-            apiKey: a.api_key || undefined,
-          },
-        }));
-        return agents;
+        if (!config) return;
+        const remoteAgents = await getRemoteAgentList();
+        const { renderAgents: sortedAgents } = handleRemoteAgentList(
+          config.agents,
+          remoteAgents,
+        );
+        set({ renderAgents: sortedAgents });
       },
       addAgent: (agent: Agent) => {
         const config = get().config;
-        const newAgents = [...get().getAgents(), agent];
+        const newAgents = [...get().renderAgents, agent];
         if (!config) return;
         const newConfig = {
           ...config,
@@ -101,17 +95,17 @@ export const useAgentStore = createPersistStore(
         updateConfig(newConfig);
       },
       getAgentById: (id: string) => {
-        const agents = get().getAgents();
+        const agents = get().renderAgents;
         return agents.find((agent) => agent.id === id);
       },
       updateAgent: (updatedAgent: Agent) => {
         const config = get().config;
         if (!config) return;
-        const agents = get().getAgents();
+        const agents = get().renderAgents;
 
-        const index = get()
-          .getAgents()
-          .findIndex((item) => item.id === updatedAgent.id);
+        const index = get().renderAgents.findIndex(
+          (item) => item.id === updatedAgent.id,
+        );
 
         const newAgents = agents;
         newAgents[index] = updatedAgent;
@@ -127,7 +121,7 @@ export const useAgentStore = createPersistStore(
       deleteAgent: (id: string) => {
         const config = get().config;
         if (!config) return;
-        const agents = get().getAgents();
+        const agents = get().renderAgents;
         if (
           agents.find((item) => item.id === id)?.source !== AgentSource.Custom
         ) {
@@ -144,8 +138,8 @@ export const useAgentStore = createPersistStore(
       handleModel: () => {
         // 针对后端删除了 agent 所绑定的模型
         const models: ModelOption[] = useAppConfig.getState().models;
-        const { getAgents, updateAgent } = get();
-        const agents: Agent[] = getAgents();
+        const { renderAgents, updateAgent } = get();
+        const agents: Agent[] = renderAgents;
         agents.forEach((agent) => {
           if (models.every((m) => m.model !== agent.model.name)) {
             const defaultModel = useAppConfig.getState().defaultModel;
@@ -167,6 +161,6 @@ export const useAgentStore = createPersistStore(
   },
   {
     name: StoreKey.Agent,
-    version: 0.5,
+    version: 0.6,
   },
 );
