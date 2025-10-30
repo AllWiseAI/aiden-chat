@@ -18,6 +18,7 @@ import { readAgentConfig } from "@/app/utils/agent";
 import { nanoid } from "nanoid";
 
 const DEFAULT_AGENT_STATE = {
+  _hasInitialized: false,
   config: null as AgentConfig | null,
   renderAgents: [] as Agent[],
 };
@@ -55,6 +56,9 @@ export const useAgentStore = createPersistStore(
       };
     }
     const methods = {
+      setInit: () => {
+        set({ _hasInitialized: true });
+      },
       init: async () => {
         const config = await readAgentConfig();
         const remoteAgents = await getRemoteAgentList();
@@ -69,6 +73,12 @@ export const useAgentStore = createPersistStore(
           },
           renderAgents,
         });
+        updateConfig({
+          ...config,
+          agents,
+        });
+        get().setInit();
+        console.log("[Agent store] init completed");
       },
       reRenderAgentList: async () => {
         console.log("[Agent store] reRenderMcpList");
@@ -137,11 +147,13 @@ export const useAgentStore = createPersistStore(
       },
       handleModel: () => {
         // 针对后端删除了 agent 所绑定的模型
+        if (!get()._hasInitialized) return;
         const models: ModelOption[] = useAppConfig.getState().models;
         const { renderAgents, updateAgent } = get();
         const agents: Agent[] = renderAgents;
         agents.forEach((agent) => {
           if (models.every((m) => m.model !== agent.model.name)) {
+            console.log("[agent handle default model]", agent.model);
             const defaultModel = useAppConfig.getState().defaultModel;
             const defaultModelInfo = useAppConfig
               .getState()
