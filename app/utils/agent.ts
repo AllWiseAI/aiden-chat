@@ -41,7 +41,22 @@ export const handleRemoteAgentList = (
     const userDefaultAgent = configAgents.find(
       (agent: CustomAgents) => agent.agent_id === item.id,
     );
-
+    const debugMode = useAppConfig.getState().debugMode;
+    const isDev = debugMode || process.env.NODE_ENV === "development";
+    const devUrl = "https://dev.aidenai.io";
+    // 处理dev环境与prod环境下agent config冲突
+    if (
+      !isDev &&
+      userDefaultAgent &&
+      userDefaultAgent.endpoint.includes(devUrl)
+    ) {
+      userDefaultAgent.model_name = item.model;
+      userDefaultAgent.model_provider = modelInfo?.provider
+        ? modelInfo.provider
+        : "";
+      userDefaultAgent.endpoint = modelInfo?.endpoint ? modelInfo.endpoint : "";
+      userDefaultAgent.api_key = modelInfo?.apiKey ? modelInfo.apiKey : "";
+    }
     return {
       agent_id: item.id,
       agent_name: item.name_en,
@@ -51,7 +66,7 @@ export const handleRemoteAgentList = (
       prompt: item.prompt_en,
       enabled: userDefaultAgent?.enabled ?? false,
       agent_type: item.type,
-      model_name: item.model,
+      model_name: userDefaultAgent?.model_name ?? item.model,
       model_provider:
         userDefaultAgent?.model_provider ??
         (modelInfo ? modelInfo.provider : ""),
