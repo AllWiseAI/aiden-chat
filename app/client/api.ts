@@ -8,14 +8,9 @@ export const Models = ["gpt-3.5-turbo", "gpt-4"] as const;
 export const TTSModels = ["tts-1", "tts-1-hd"] as const;
 
 export interface MultimodalContent {
-  type: "text" | "image_url" | "file_url" | "file";
+  type: "text" | "image" | "file";
   text?: string;
-  image_url?: {
-    url: string;
-  };
-  file_url?: {
-    url: string;
-  };
+  url?: string;
   raw_file_info: {
     id: string;
     file: File;

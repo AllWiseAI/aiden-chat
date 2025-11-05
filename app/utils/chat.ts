@@ -611,12 +611,12 @@ export function streamWithThink(
           } else if (Array.isArray(chunk.content)) {
             const formatContent = [];
             for (const item of chunk.content) {
-              if (item.type === "image_url") {
+              if (item.type === "image") {
                 const { url } = await uploadFileWithProgress(
-                  item.image_url?.url ?? "",
+                  item.url ?? "",
                   (percent) => console.log("upload progress", percent),
                 );
-                formatContent.push({ type: "image_url", image_url: { url } });
+                formatContent.push({ type: "image", url: url });
               } else {
                 formatContent.push(item);
               }
