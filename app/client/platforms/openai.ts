@@ -61,7 +61,6 @@ export class ChatGPTApi implements LLMApi {
     const DEFAULT_CHAT_URL = getBaseChatUrl();
     const messages: ChatOptions["messages"] = [];
     for (const v of options.messages || []) {
-      console.log(111111, v.content);
       if (Array.isArray(v.content)) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const res = v.content.map(({ raw_file_info, ...rest }) => rest);
