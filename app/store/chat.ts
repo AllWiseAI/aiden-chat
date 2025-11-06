@@ -378,8 +378,8 @@ export const useChatStore = createPersistStore(
                 console.log("fileType===", fileType);
                 if (isImage(fileType)) {
                   return {
-                    type: "image_url",
-                    image_url: { url },
+                    type: "image",
+                    url,
                     raw_file_info: {
                       ...fileItem,
                       file: {
@@ -391,8 +391,8 @@ export const useChatStore = createPersistStore(
                   };
                 } else if (isPdf(fileType)) {
                   return {
-                    type: "file_url",
-                    file_url: { url },
+                    type: "file",
+                    url,
                     raw_file_info: {
                       ...fileItem,
                       file: {

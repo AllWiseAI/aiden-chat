@@ -9,9 +9,7 @@ export function ChatMessageItemFile(message: any) {
   const files = message.message.content
     .filter(
       (item: MultimodalContent) =>
-        item.type === "file" ||
-        item.type === "file_url" ||
-        item.type === "image_url",
+        item.type === "file" || item.type === "image",
     )
     .map((item: MultimodalContent) => item.raw_file_info);
 

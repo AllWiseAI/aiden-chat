@@ -322,14 +322,14 @@ export function getMessageImages(message: RequestMessage): string[] {
   }
   const urls: string[] = [];
   for (const c of message.content) {
-    if (c.type === "image_url") {
-      const url = c.image_url?.url;
+    if (c.type === "image") {
+      const url = c.url;
       if (url) {
         urls.push(url);
       }
     }
-    if (c.type === "file_url") {
-      urls.push(c.file_url?.url ?? "");
+    if (c.type === "file") {
+      urls.push(c.url ?? "");
     }
   }
   return urls;
