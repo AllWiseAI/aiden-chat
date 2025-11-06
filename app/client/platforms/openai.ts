@@ -4,11 +4,11 @@ import { ModelSize, DalleQuality, DalleStyle } from "@/app/typing";
 import { ChatOptions, LLMApi, MultimodalContent } from "../api";
 import {
   getBaseChatUrl,
-  getBaseSummaryUrl,
   getHeaders,
   getSecondChatUrl,
 } from "@/app/utils/fetch";
 import { tauriFetchWithSignal } from "@/app/utils/stream";
+import { apiGetLLMProcess } from "@/app/services";
 import { streamWithThink, parseSSE } from "@/app/utils/chat";
 
 export interface OpenAIListModelResponse {
@@ -88,7 +88,22 @@ export class ChatGPTApi implements LLMApi {
     const controller = new AbortController();
     options.onController?.(controller);
     const isSummary = options.isSummary ?? false;
-    const url = isSummary ? getBaseSummaryUrl() : DEFAULT_CHAT_URL;
+    const url = DEFAULT_CHAT_URL;
+    if (isSummary) {
+      try {
+        const res = (await apiGetLLMProcess({
+          template: "summary",
+          args: JSON.stringify(messages),
+        })) as any;
+        if (!res.data)
+          throw new Error(`get summary error: ${JSON.stringify(res)}`);
+        const { summary } = res.data;
+        options.onFinish(summary, res);
+      } catch (e: any) {
+        console.error(e);
+      }
+      return;
+    }
     const headers = await getHeaders({
       aiden: true,
       isSummary,
