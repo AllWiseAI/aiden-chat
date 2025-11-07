@@ -142,7 +142,8 @@ fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProc
     #[cfg(target_os = "windows")]
     let mut child: tokio::process::Child = {
         let mut cmd = std::process::Command::new(binary_path.clone());
-        cmd.args([
+
+        let mut args = vec![
             "--config_file",
             &mcp_config_path.to_string_lossy(),
             "--agent_config_file",
@@ -151,9 +152,14 @@ fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProc
             "--enable_authorization",
             "--port",
             &port.to_string(),
-            "--is_dev",
-            &cfg!(debug_assertions).to_string(),
-        ])
+        ];
+
+        if cfg!(debug_assertions) {
+            args.push("--is_dev".into());
+            args.push("true".into());
+        }
+        
+        cmd.args(&args)
         .envs(env::vars())
         .env("PATH", &new_path)
         .stdout(StdStdio::piped())
@@ -165,26 +171,32 @@ fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProc
     };
 
     #[cfg(not(target_os = "windows"))]
-    let mut child: tokio::process::Child =
-        TokioCommand::new(binary_path.to_string_lossy().to_string())
-            .args([
-                "--config_file".into(),
-                mcp_config_path.to_string_lossy().to_string(),
-                "--agent_config_file".into(),
-                agent_config_path.to_string_lossy().to_string(),
-                "--disable_reload".into(),
-                "--enable_authorization".into(),
-                "--port".into(),
-                port.to_string(),
-                "--is_dev".into(),
-                cfg!(debug_assertions).to_string(),
-            ])
+    let mut child: tokio::process::Child = {
+        let mut cmd = TokioCommand::new(binary_path.to_string_lossy().to_string());
+        let mut args = vec![
+            "--config_file".into(),
+            mcp_config_path.to_string_lossy().to_string(),
+            "--agent_config_file".into(),
+            agent_config_path.to_string_lossy().to_string(),
+            "--disable_reload".into(),
+            "--enable_authorization".into(),
+            "--port".into(),
+            port.to_string(),
+        ];
+
+        if cfg!(debug_assertions) {
+            args.push("--is_dev".into());
+            args.push("true".into());
+        }
+
+        cmd.args(args)
             .envs(env::vars())
             .env("PATH", new_path)
             .stdout(StdStdio::piped())
             .stderr(StdStdio::piped())
             .spawn()
-            .expect("Failed to start host_server");
+            .expect("Failed to start host_server")
+    };
 
     let stdout = child.stdout.take().expect("Failed to capture stdout");
     let stderr = child.stderr.take().expect("Failed to capture stderr");
