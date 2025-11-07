@@ -142,16 +142,19 @@ fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProc
     #[cfg(target_os = "windows")]
     let mut child: tokio::process::Child = {
         let mut cmd = std::process::Command::new(binary_path.clone());
+        let mcp_config_str = mcp_config_path.to_string_lossy().to_string();
+        let agent_config_str = agent_config_path.to_string_lossy().to_string();
+        let port_str = port.to_string();
 
         let mut args = vec![
             "--config_file",
-            &mcp_config_path.to_string_lossy(),
+            mcp_config_str.clone(),
             "--agent_config_file",
-            &agent_config_path.to_string_lossy(),
+            agent_config_str.clone(),
             "--disable_reload",
             "--enable_authorization",
             "--port",
-            &port.to_string(),
+            port_str.clone(),
         ];
 
         if cfg!(debug_assertions) {
