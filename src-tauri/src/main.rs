@@ -148,13 +148,13 @@ fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProc
 
         let mut args = vec![
             "--config_file",
-            mcp_config_str.clone(),
+            mcp_config_str.clone().into(),
             "--agent_config_file",
-            agent_config_str.clone(),
+            agent_config_str.clone().into(),
             "--disable_reload",
             "--enable_authorization",
             "--port",
-            port_str.clone(),
+            port_str.clone().into(),
         ];
 
         if cfg!(debug_assertions) {
