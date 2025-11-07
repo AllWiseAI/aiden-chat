@@ -226,10 +226,10 @@ fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProc
         let mut lines = reader.lines();
         while let Ok(Some(line)) = lines.next_line().await {
             log::error!("host_server stderr: {}", line);
-            sentry::capture_message(
-                &format!("host_server stderr: {}", line),
-                sentry::Level::Error,
-            );
+            // sentry::capture_message(
+            //     &format!("host_server stderr: {}", line),
+            //     sentry::Level::Error,
+            // );
         }
     });
 }
