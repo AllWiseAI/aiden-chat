@@ -156,7 +156,6 @@ fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProc
 
         if cfg!(debug_assertions) {
             args.push("--is_dev".into());
-            args.push("true".into());
         }
         
         cmd.args(&args)
@@ -186,7 +185,6 @@ fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProc
 
         if cfg!(debug_assertions) {
             args.push("--is_dev".into());
-            args.push("true".into());
         }
 
         cmd.args(args)
