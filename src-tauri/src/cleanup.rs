@@ -1,9 +1,9 @@
 use std::fs;
-use tauri::api::path::app_data_dir;
-use tauri::Config;
+use tauri::Manager;
+use tauri::App;
 
-pub fn cleanup_database(config: &Config) {
-    if let Some(mut base_dir) = app_data_dir(config) {
+pub fn cleanup_database(app: &App) {
+    if let Some(mut base_dir) = app.path().app_data_dir() {
         // 标记文件
         let mut flag_file = base_dir.clone();
         flag_file.push("cleanup_done_v3.flag");

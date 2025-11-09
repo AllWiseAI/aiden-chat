@@ -11,8 +11,8 @@ import {
   isPdf,
 } from "@/app/utils/file";
 
-import { open } from "@tauri-apps/api/dialog";
-import { readBinaryFile } from "@tauri-apps/api/fs";
+import { open } from "@tauri-apps/plugin-dialog";
+import { readFile } from "@tauri-apps/plugin-fs";
 import { basename, extname } from "@tauri-apps/api/path";
 
 import {
@@ -55,7 +55,7 @@ export const FileUploader = () => {
     if (!selected) return;
 
     const filePath = Array.isArray(selected) ? selected[0] : selected;
-    const fileData = await readBinaryFile(filePath);
+    const fileData = await readFile(filePath);
     const fileName = await basename(filePath);
 
     const ext = await extname(filePath);

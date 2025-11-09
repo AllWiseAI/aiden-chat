@@ -23,7 +23,7 @@ import { ChatMessageItemTab } from "./chat-message-item-tab";
 import { useTranslation } from "react-i18next";
 import { FileUploader } from "./file-uploader";
 import { useFileUploadStore } from "@/app/store/file-upload";
-import { relaunch } from "@tauri-apps/api/process";
+import { relaunch } from "@tauri-apps/plugin-process";
 import ShowcaseList from "./showcase-list";
 import {
   ChatMessage,

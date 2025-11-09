@@ -8,7 +8,7 @@ import {
 import { useAppConfig } from "../store";
 import { updateAgentConfig, getRemoteAgentItems } from "@/app/services";
 import { toast } from "@/app/utils/toast";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 
 export const readAgentConfig = async () => {
   console.log("[Agent store] readAgentConfig");

@@ -10,7 +10,9 @@ import {
 import { fetch as tauriStreamFetch } from "./utils/stream";
 
 export async function getOSInfo() {
-  const { platform, version, type, arch } = await import("@tauri-apps/api/os");
+  const { platform, version, type, arch } = await import(
+    "@tauri-apps/plugin-os"
+  );
   const osPlatform = await platform();
   const osVersion = await version();
   const osType = await type();
@@ -34,7 +36,9 @@ export function trimTopic(topic: string) {
 export async function copyToClipboard(text: string, toastStr?: string) {
   try {
     if (window.__TAURI__) {
-      const { writeText } = await import("@tauri-apps/api/clipboard");
+      const { writeText } = await import(
+        "@tauri-apps/plugin-clipboard-manager"
+      );
       await writeText(text);
     } else {
       await navigator.clipboard.writeText(text);

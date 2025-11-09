@@ -25,7 +25,7 @@ import {
   OpenAIModelOptions,
   AnthropicModelOptions,
 } from "@/app/typing";
-import { fetch } from "@tauri-apps/api/http";
+import { fetch } from "@tauri-apps/plugin-http";
 import { useAppConfig } from "@/app/store";
 import { toast } from "@/app/utils/toast";
 

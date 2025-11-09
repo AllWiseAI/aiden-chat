@@ -2,7 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import { UploadedFile } from "@/app/typing";
 import { FileItem } from "./file-item";
-import { open } from "@tauri-apps/api/shell";
+import { open } from "@tauri-apps/plugin-shell";
 
 interface FileResultProps {
   files: UploadedFile[];

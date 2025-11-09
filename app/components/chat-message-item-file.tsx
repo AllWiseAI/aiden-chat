@@ -1,7 +1,7 @@
 import { FileItem } from "./file-item";
 import { UploadedFile } from "@/app/typing";
 import { MultimodalContent } from "@/app/client/api";
-import { open } from "@tauri-apps/api/shell";
+import { open } from "@tauri-apps/plugin-shell";
 
 export function ChatMessageItemFile(message: any) {
   if (!Array.isArray(message.message.content)) return null;

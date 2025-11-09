@@ -9,15 +9,18 @@ default-run = "aiden"
 edition = "2021"
 rust-version = "1.60"
 
+[lib]
+crate-type = ["staticlib", "cdylib", "rlib"]
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "1.5.1", features = [] }
+tauri-build = { version = "2.5.1", features = [] }
 
 [dependencies]
 chrono = { version = "0.4", features = ["clock"] }
 semver = "1.0"
-zip = "2.5.0"
+zip = "6.0.0"
 time = "0.3.37"
 nix = { version = "0.28", features = ["signal", "process"] }
 sentry = "0.31.7"
@@ -31,25 +34,16 @@ tracing-subscriber = { version = "0.3", features = ["fmt", "time", "std", "env-f
 dotenvy = "0.15"
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.5.4", features = [ "window-set-always-on-top", "window-set-focus", "os-all", "http-all", "updater", "window-set-position", "process-relaunch", "window-center", "window-set-size", "path-all",
-    "notification-all",
-    "fs-all",
-    "clipboard-all",
-    "dialog-all",
-    "shell-open",
-    "window-close",
-    "window-hide",
-    "window-maximize",
-    "window-minimize",
-    "window-set-icon",
-    "window-set-ignore-cursor-events",
-    "window-set-resizable",
-    "window-show",
-    "window-start-dragging",
-    "window-unmaximize",
-    "window-unminimize",
-] }
-tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", rev = "0fdb85df8ae3ac445822b8c177caecf4532d258e" }
+tauri = { version = "2.5.1", features = [] }
+tauri-plugin-window-state = { version = "2" } 
+tauri-plugin-clipboard-manager = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-http = "2"
+tauri-plugin-notification = "2"
+tauri-plugin-os = "2"
+tauri-plugin-process = "2"
+tauri-plugin-shell = "2"
 percent-encoding = "2.3.1"
 reqwest = "0.11.18"
 futures-util = "0.3.30"

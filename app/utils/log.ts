@@ -1,7 +1,7 @@
 export async function exportAndDownloadLog() {
   try {
     const { invoke } = await import("@tauri-apps/api");
-    const { open } = await import("@tauri-apps/api/shell");
+    const { open } = await import("@tauri-apps/plugin-shell");
     const { downloadDir } = await import("@tauri-apps/api/path");
     const zipPath: string = await invoke("export_log_zip_cmd");
     const downloadsPath = await downloadDir();

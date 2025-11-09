@@ -1,11 +1,10 @@
 use std::{fs::File, io::Write, path::PathBuf};
-use tauri::api::path::{app_data_dir, download_dir};
-use tauri::{AppHandle, Config};
+use tauri::{AppHandle, Manager};
 use time::OffsetDateTime;
 
 /// 获取日志文件路径: ~/Library/Application Support/[AppName]/Logs/aiden.log
-pub fn get_log_file_path(config: &Config) -> Option<PathBuf> {
-    let mut path = app_data_dir(config)?;
+pub fn get_log_file_path<R: tauri::Runtime>(app: &AppHandle<R>) -> Option<PathBuf> {
+    let mut path = app.path_resolver().app_data_dir()?;
     path.push("Logs");
     std::fs::create_dir_all(&path).ok()?;
     path.push("aiden.log");
@@ -15,7 +14,7 @@ pub fn get_log_file_path(config: &Config) -> Option<PathBuf> {
 /// 导出日志为 zip 文件，返回 zip 文件的路径
 pub fn export_log_zip(app: AppHandle) -> Result<String, String> {
     let config = app.config();
-    let log_file: PathBuf = get_log_file_path(&config).ok_or("无法获取日志文件路径")?;
+    let log_file: PathBuf = get_log_file_path(app).ok_or("无法获取日志文件路径")?;
     let log_path = log_file.parent().unwrap();
     println!("log_path: {:?}", log_path);
     if !log_path.exists() {

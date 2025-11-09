@@ -2,7 +2,7 @@
 // see src-tauri/src/stream.rs, and src-tauri/src/main.rs
 // 1. invoke('stream_fetch', {url, method, headers, body}), get response with headers.
 // 2. listen event: `stream-response` multi times to get body
-import { FetchOptions } from "@tauri-apps/api/http";
+import { FetchOptions } from "@tauri-apps/plugin-http";
 import { fetchNoProxy as tauriFetch } from "./fetch-no-proxy";
 
 type ResponseEvent = {

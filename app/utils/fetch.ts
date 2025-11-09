@@ -1,4 +1,4 @@
-import { fetch, Response } from "@tauri-apps/api/http";
+import { fetch, Response } from "@tauri-apps/plugin-http";
 import { useSettingStore } from "../store/setting";
 import { useAuthStore } from "../store/auth";
 import { getLocalToken } from "../services";

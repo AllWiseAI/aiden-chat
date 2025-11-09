@@ -4,7 +4,7 @@ import { useHostServerReady } from "../hooks/use-server-ready";
 import { useEffect } from "react";
 import { Path } from "../constant";
 import { Button } from "./shadcn/button";
-import { relaunch } from "@tauri-apps/api/process";
+import { relaunch } from "@tauri-apps/plugin-process";
 import ReturnIcon from "../icons/return.svg";
 import LogoIcon from "@/app/icons/logo.svg";
 import LogoTextIcon from "../icons/logo-text.svg";

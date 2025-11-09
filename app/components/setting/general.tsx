@@ -8,7 +8,7 @@ import { toast } from "@/app/utils/toast";
 import { Path } from "../../constant";
 import { Theme, useAppConfig } from "@/app/store";
 import { useTranslation } from "react-i18next";
-// import { relaunch } from "@tauri-apps/api/process";
+// import { relaunch } from "@tauri-apps/plugin-process";
 import {
   getLang,
   changeLanguage,

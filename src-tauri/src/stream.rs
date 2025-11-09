@@ -33,7 +33,7 @@ pub struct ChunkPayload {
 
 #[tauri::command]
 pub async fn stream_fetch(
-    window: tauri::Window,
+    window: tauri::WebviewWindow,
     method: String,
     url: String,
     headers: HashMap<String, String>,
