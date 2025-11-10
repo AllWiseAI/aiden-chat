@@ -13,7 +13,7 @@
       "agent_type": "text",
       "model_name": "anthropic/claude-3.7-sonnet",
       "model_provider": "openai",
-      "endpoint": "https://prod.aidenai.info/llm/openai",
+      "endpoint": "https://prod.aidenai.io/llm/openai",
       "api_key": ""
     },
     {
