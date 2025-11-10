@@ -117,7 +117,7 @@ export function McpTableItem({
 
   const showOauth = useMemo(() => {
     const { mcp_key } = item;
-    return ["aiden-mail", "aiden-outlook"].includes(mcp_key);
+    return ["aiden-mail", "aiden-outlook", "aiden-gsuite"].includes(mcp_key);
   }, [item]);
 
   const showUpdate = useMemo(() => {

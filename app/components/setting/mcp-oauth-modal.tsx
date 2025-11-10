@@ -38,6 +38,7 @@ import QQIcon from "@/app/icons/qq.png";
 import NeteaseIcon from "@/app/icons/163.png";
 import icloudIcon from "@/app/icons/icloud.png";
 import gmailIcon from "@/app/icons/gmail.png";
+import googleIcon from "@/app/icons/google.png";
 import DeleteIcon from "@/app/icons/delete.svg";
 import AddOutlineIcon from "@/app/icons/add-outline.svg";
 import { AccountItem, McpItemInfo, AidenCredential } from "@/app/typing";
@@ -52,6 +53,7 @@ const mailIconMap = {
   iCloud: icloudIcon,
   Gmail: gmailIcon,
   microsoft: OutlookIcon,
+  google: googleIcon,
 };
 
 interface McpOauthModalProps {

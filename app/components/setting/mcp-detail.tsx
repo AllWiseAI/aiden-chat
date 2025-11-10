@@ -76,7 +76,10 @@ const McpDetail: React.FC<Props> = ({ setMode, detailInfo }) => {
   );
 
   const showOauth = useMemo(
-    () => ["aiden-mail", "aiden-outlook"].includes(detailInfo.mcp_key),
+    () =>
+      ["aiden-mail", "aiden-outlook", "aiden-gsuite"].includes(
+        detailInfo.mcp_key,
+      ),
     [detailInfo],
   );
 
