@@ -194,8 +194,8 @@
     "used": "已使用",
     "unused": "未使用",
     "tip": "每邀 1 位好友得 100 次额外调用 ，好友享 1 个月标准版使用权",
-    "text": "注册Aiden立享火爆大模型 1 个月标准计划免费使用权！下载：https://aidenai.info/ 输入邀请码{{inviteCode}} 开启您的Aiden之旅！",
-    "textVip": "注册Aiden立享火爆大模型 2 个月标准计划免费使用权！下载：https://aidenai.info/ 输入专属邀请码{{inviteCode}} 开启您的Aiden之旅！"
+    "text": "注册Aiden立享火爆大模型 1 个月标准计划免费使用权！下载：https://aidenai.io/ 输入邀请码{{inviteCode}} 开启您的Aiden之旅！",
+    "textVip": "注册Aiden立享火爆大模型 2 个月标准计划免费使用权！下载：https://aidenai.io/ 输入专属邀请码{{inviteCode}} 开启您的Aiden之旅！"
   },
   "dialog": {
     "tutorial": "教程",
