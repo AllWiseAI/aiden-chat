@@ -5,7 +5,7 @@ name: PR Review with Progress Tracking
 
 on:
   pull_request:
-    branches: [beta]
+    branches: [main]
     types: [opened, synchronize, ready_for_review, reopened]
 
 jobs:
