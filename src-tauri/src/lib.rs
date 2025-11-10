@@ -26,10 +26,12 @@ use tauri_plugin_notification::init as notification_init;
 use tauri_plugin_os::init as os_init;
 use tauri_plugin_process::init as process_init;
 use tauri_plugin_shell::init as shell_init;
+use tauri_plugin_clipboard_manager::init as clipboard_init;
+use tauri_plugin_dialog::init as dialog_init;
 use tauri_plugin_updater;
 use tauri::{AppHandle, Manager, Runtime, State};
 #[cfg(target_os = "macos")]
-use tauri::menu::{MenuBuilder, SubmenuBuilder, MenuItemBuilder, PredefinedMenuItem, MenuId},
+use tauri::menu::{MenuBuilder, SubmenuBuilder, MenuItemBuilder, PredefinedMenuItem, MenuId};
 use tokio::io::AsyncBufReadExt;
 use tokio::process::{Child, Command as TokioCommand};
 use tokio::task;
@@ -316,13 +318,15 @@ async fn run() {
 
     // ---- Tauri Builder ----
     let mut builder = tauri::Builder::default()
-        .plugin(fs_init)
-        .plugin(http_init)
-        .plugin(notification_init)
-        .plugin(os_init)
-        .plugin(process_init)
-        .plugin(shell_init)
-        .plugin(tauri_plugin_updater::Builder::new().build());
+        .plugin(fs_init())
+        .plugin(http_init())
+        .plugin(notification_init())
+        .plugin(os_init())
+        .plugin(process_init())
+        .plugin(shell_init())
+        .plugin(clipboard_init())
+        .plugin(dialog_init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(HostServerProcess(Mutex::new(None)))
         .invoke_handler(tauri::generate_handler![
             log_from_frontend,

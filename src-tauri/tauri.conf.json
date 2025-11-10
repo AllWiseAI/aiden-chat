@@ -1,0 +1,78 @@
+{
+  "productName": "Aiden",
+  "version": "0.1.61",
+  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
+  "identifier": "com.aiden.chat",
+  "build": {
+    "beforeBuildCommand": "yarn export",
+    "beforeDevCommand": "yarn export:dev",
+    "frontendDist": "../out",
+    "devUrl": "http://127.0.0.1:3001"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "security": {
+      "csp": null
+    },
+    "windows": [
+      {
+        "fullscreen": false,
+        "height": 750,
+        "resizable": true,
+        "title": "Aiden",
+        "width": 426,
+        "hiddenTitle": true,
+        "titleBarStyle": "Overlay"
+      }
+    ]
+  },
+  "bundle": {
+    "active": true,
+    "category": "DeveloperTool",
+    "copyright": "@2025 Aidenchat All Rights Reserved.",
+    "linux": {
+      "deb": {
+        "depends": []
+      }
+    },
+    "externalBin": [],
+    "icon": [
+      "icons/logo.icns",
+      "icons/icon.ico",
+      "icons/icon.png"
+    ],
+    "longDescription": "Aiden is an adaptive, user-centric assistant that turns complex tasks into simple, actionable results.",
+    "macOS": {
+      "entitlements": null,
+      "exceptionDomain": "",
+      "frameworks": [],
+      "providerShortName": null,
+      "signingIdentity": null
+    },
+    "resources": [
+      "bin/*",
+      "resources/mcp.config.json",
+      "resources/agent.config.json",
+      "../node_modules/host_server_*/**/*"
+    ],
+    "shortDescription": "Aiden",
+    "targets": "all",
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": ""
+    },
+    "createUpdaterArtifacts": "v1Compatible"
+  },
+  "plugins": {
+    "updater": {
+      "endpoints": [
+        "https://static.aidenai.io/chat/releases/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      },
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEQ1MkQ3RERCOUU0RUYwOTMKUldTVDhFNmUyMzB0MVE4MjE0SStVWlVpNXN4dTR0REdDQlV2eHBDUzNJUzNsa1pPNTB3TVV5RU4K"
+    }
+  }
+}

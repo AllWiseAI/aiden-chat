@@ -16,7 +16,7 @@ export async function fetchNoProxy(
   options: FetchNoProxyOptions = {},
 ) {
   const { method = "GET", headers = {}, body } = options;
-  const { invoke } = await import("@tauri-apps/api");
+  const { invoke } = await import("@tauri-apps/api/core");
   const response = await invoke<FetchNoProxyResponse>("fetch_no_proxy", {
     options: {
       url,

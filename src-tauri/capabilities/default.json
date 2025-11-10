@@ -1,0 +1,29 @@
+{
+  "identifier": "default",
+  "permissions": [
+    "core:default",
+    "shell:allow-open",
+    "dialog:default",
+    "clipboard-manager:allow-write-image",
+    "clipboard-manager:allow-write-text",
+    "fs:default",
+    {
+      "identifier": "http:default",
+      "allow": [
+        {
+          "url": "https://*"
+        },
+        {
+          "url": "http://*"
+        },
+        {
+          "url": "https://dev.aidenai.io/auth/:*"
+        }
+      ]
+    },
+    "notification:default",
+    "os:default",
+    "process:default",
+    "updater:default"
+  ]
+}

@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from "react";
-import { check, downloadAndInstall } from "@tauri-apps/plugin-updater";
+import { check } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { useUpdateStore } from "@/app/store/app-update";
 
@@ -38,7 +38,10 @@ export function useAppUpdate() {
   const handleUpdate = useCallback(async () => {
     setUpdating(true);
     try {
-      await downloadAndInstall();
+      const update = await check();
+      if (update) {
+        await update.downloadAndInstall();
+      }
       setUpdating(false);
       relaunch();
     } catch (err) {
