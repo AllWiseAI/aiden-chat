@@ -4,10 +4,10 @@ use serde_json::Value;
 
 use std::fs;
 use std::path::PathBuf;
-use tauri::{api::path::app_data_dir, AppHandle, Config};
+use tauri::{AppHandle, Manager};
 
-pub fn get_user_config_path(config: &Config) -> Option<PathBuf> {
-  let mut path: PathBuf = app_data_dir(config)?;
+pub fn get_user_config_path<R: tauri::Runtime>(app_handle: &AppHandle<R>) -> Option<PathBuf> {
+  let mut path: PathBuf = app_handle.path().app_data_dir().ok()?;
   path.push("Config");
   std::fs::create_dir_all(&path).ok()?;
   path.push("agent.config.json");
@@ -15,8 +15,7 @@ pub fn get_user_config_path(config: &Config) -> Option<PathBuf> {
 }
 
 pub fn get_user_config_path_from_app(app: &tauri::AppHandle) -> Option<PathBuf> {
-  let config = app.config();
-  get_user_config_path(&config)
+  get_user_config_path(app)
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AgentConfig {
@@ -45,14 +44,15 @@ pub fn write_agent_config(app: AppHandle, new_config: AgentConfig) -> Result<(),
 }
 
 pub fn init_agent_config(app: &tauri::App) -> Result<(), String> {
-  let config = app.config();
+  let app_handle = app.handle();
   let user_config_path =
-      get_user_config_path(&config).ok_or("Failed to get Agent config file path.")?;
+      get_user_config_path(&app_handle).ok_or("Failed to get Agent config file path.")?;
 
-  let default_path: PathBuf = app
-      .path_resolver()
-      .resolve_resource("resources/agent.config.json")
-      .ok_or("Cannot find default Agent config in resources.")?;
+  let resource_dir = app_handle
+      .path()
+      .resource_dir()
+      .map_err(|e| format!("Cannot get resource dir: {}", e))?;
+  let default_path: PathBuf = resource_dir.join("resources/agent.config.json");
 
   // 首次安装，用户 config 不存在
   if !user_config_path.exists() {

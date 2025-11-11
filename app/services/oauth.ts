@@ -1,4 +1,3 @@
-import { Body } from "@tauri-apps/plugin-http";
 import { getLocalBaseDomain } from "@/app/utils/fetch";
 import { fetchNoProxy } from "@/app/utils/fetch-no-proxy";
 import { getHeaders } from "@/app/utils/fetch";
@@ -22,7 +21,7 @@ export async function addOAuthCredential(
     {
       method: "POST",
       headers,
-      body: Body.json({ server_name, credential }),
+      body: JSON.stringify({ server_name, credential }),
     },
   );
   return res.json();
@@ -40,7 +39,7 @@ export async function addPasswordCredential(params: {
     {
       method: "POST",
       headers,
-      body: Body.json(params),
+      body: JSON.stringify(params),
     },
   );
   return res.json();
@@ -51,7 +50,7 @@ export async function queryCredentials(server_name: string) {
   const res = await fetchNoProxy(`${baseURL}${CREDENTIAL_API_PREFIX}/query`, {
     method: "POST",
     headers,
-    body: Body.json({ server_name }),
+    body: JSON.stringify({ server_name }),
   });
   return res.json();
 }
@@ -65,7 +64,7 @@ export async function revokeCredential(params: {
   const res = await fetchNoProxy(`${baseURL}${CREDENTIAL_API_PREFIX}/revoke`, {
     method: "POST",
     headers,
-    body: Body.json(params),
+    body: JSON.stringify(params),
   });
   return res.json();
 }

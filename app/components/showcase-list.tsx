@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { getShowcaseList } from "@/app/services/showcase";
 import { ShowcaseListOption } from "@/app/typing";
-import { shell } from "@tauri-apps/api";
+import { open } from "@tauri-apps/plugin-shell";
 import { Divider } from "@/app/components/divider";
 import { useTranslation } from "react-i18next";
 import { useAppConfig } from "@/app/store/config";
@@ -72,7 +72,7 @@ export default function ShowcaseList() {
           {showcaseList.map((item) => (
             <div
               key={item.id}
-              onClick={() => shell.open(item.url)}
+              onClick={() => open(item.url)}
               className="cursor-pointer h-[154px] aspect-[16/9] w-[243px] bg-white rounded-lg shadow-md transition hover:shadow-lg"
             >
               <img

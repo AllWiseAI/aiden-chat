@@ -1,4 +1,3 @@
-import { Body } from "@tauri-apps/plugin-http";
 import { getLocalBaseDomain } from "@/app/utils/fetch";
 import { fetchNoProxy } from "@/app/utils/fetch-no-proxy";
 import { getHeaders } from "@/app/utils/fetch";
@@ -21,7 +20,7 @@ export async function testTask(task: object) {
   const res = await fetchNoProxy(`${baseURL}${TASK_API_PREFIX}/test_task`, {
     method: "POST",
     headers,
-    body: Body.json(task),
+    body: JSON.stringify(task),
   });
   return res.json();
 }
@@ -32,7 +31,7 @@ export async function createTask(task: TaskPayload) {
   const res = await fetchNoProxy(`${baseURL}${TASK_API_PREFIX}/add_task`, {
     method: "POST",
     headers,
-    body: Body.json(task),
+    body: JSON.stringify(task),
   });
   return res.json();
 }
@@ -43,7 +42,7 @@ export async function updateTask(task: TaskPayload) {
   const res = await fetchNoProxy(`${baseURL}${TASK_API_PREFIX}/update_task`, {
     method: "PUT",
     headers,
-    body: Body.json(task),
+    body: JSON.stringify(task),
   });
   return res.json();
 }
@@ -54,7 +53,7 @@ export async function deleteTask(task_id: string) {
   const res = await fetchNoProxy(`${baseURL}${TASK_API_PREFIX}/remove_task`, {
     method: "DELETE",
     headers,
-    body: Body.json({ task_id }),
+    body: JSON.stringify({ task_id }),
   });
   return res.json();
 }
@@ -113,7 +112,7 @@ export async function switchTaskModel(
         ...chatHeaders,
         "Host-Authorization": headers["Host-Authorization"],
       },
-      body: Body.json({ task_id }),
+      body: JSON.stringify({ task_id }),
     },
   );
   return res.json();

@@ -52,3 +52,9 @@ app/mcp/mcp_config.json
 
 # python files
 /src-tauri/resources/host_server_*/
+
+# tauri auto-generated files
+/src-tauri/gen/
+
+# claude code
+.claude

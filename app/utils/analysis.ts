@@ -45,7 +45,7 @@ function saveEvents(events: TrackEvent[]) {
 
 let osInfo = "";
 const lang = getLang();
-const appVersion = config.package.version;
+const appVersion = config.version;
 
 function appendEvent(newEvent: TrackEvent) {
   const events = loadEvents();
@@ -100,8 +100,7 @@ async function flush() {
         payload: events,
       },
     });
-
-    if (res.ok) {
+    if (res) {
       console.log(`[analysis] 成功上报 ${events.length} 条事件`);
       const current = loadEvents();
       const remaining = current.slice(events.length);

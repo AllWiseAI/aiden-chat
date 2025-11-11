@@ -258,13 +258,17 @@ export const batchFetchMcpStatus = async (
   try {
     const res = (await getMcpStatuses(names)) as any;
     if (!res || !res?.data) {
-      throw new Error("No data");
+      throw new Error("No data in response");
     }
     const { data } = res;
-    if (data?.length) return data;
-    else throw new Error("No status");
+    if (data?.length) {
+      return data;
+    } else {
+      throw new Error("No status in data");
+    }
   } catch (e) {
-    console.error("[batchFetchMcpStatus]", e);
+    console.error("[batchFetchMcpStatus] Error:", e);
+    // Return empty array on error to prevent UI crashes
     return [];
   }
 };

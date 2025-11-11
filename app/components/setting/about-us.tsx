@@ -1,4 +1,4 @@
-import { shell } from "@tauri-apps/api";
+import { open } from "@tauri-apps/plugin-shell";
 import { exportAndDownloadLog } from "../../utils/log";
 import Logo from "../../icons/aiden-logo.svg";
 import config from "@/src-tauri/tauri.conf.json";
@@ -24,7 +24,7 @@ import {
 function Community() {
   const { t } = useTranslation("settings");
   const handleClick = (url: string) => {
-    shell.open(url);
+    open(url);
   };
   return (
     <Accordion
@@ -100,7 +100,7 @@ export default function AboutUs() {
         if (isLatest || !isShowUpdate) {
           showConfirm({
             title: "",
-            description: `The current v${config.package.version} is already the latest version.`,
+            description: `The current v${config.version} is already the latest version.`,
             type: "latestVersion",
             noClose: true,
             withLogo: true,
@@ -114,11 +114,11 @@ export default function AboutUs() {
     {
       name: t("aboutUs.terms"),
       onClick: () =>
-        shell.open(`https://docs.aidenai.io/${lang}terms-of-service.html`),
+        open(`https://docs.aidenai.io/${lang}terms-of-service.html`),
     },
     {
       name: t("aboutUs.privacy"),
-      onClick: () => shell.open(`https://docs.aidenai.io/${lang}privacy.html`),
+      onClick: () => open(`https://docs.aidenai.io/${lang}privacy.html`),
     },
   ];
 
@@ -127,7 +127,7 @@ export default function AboutUs() {
       <div className="flex gap-4">
         <Logo className="size-11" />
         <div className="flex flex-col justify-center font-medium">
-          <div className="text-lg">{"v" + config.package.version}</div>
+          <div className="text-lg">{"v" + config.version}</div>
           <div className="text-xs text-[#6C7275] font-light">
             {t("aboutUs.contact")} contact@aidenai.io
           </div>

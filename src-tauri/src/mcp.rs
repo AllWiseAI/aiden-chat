@@ -3,12 +3,12 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 
 use std::fs;
-use std::path::PathBuf;
-use tauri::{api::path::app_data_dir, AppHandle, Config};
+use std::path::{PathBuf};
+use tauri::{AppHandle, Manager};
 
 /// eg: ~/Library/Application Support/com.aiden.chat/Config/mcp.config.json
-pub fn get_user_config_path(config: &Config) -> Option<PathBuf> {
-    let mut path: PathBuf = app_data_dir(config)?;
+pub fn get_user_config_path<R: tauri::Runtime>(app_handle: &AppHandle<R>) -> Option<PathBuf> {
+    let mut path: PathBuf = app_handle.path().app_data_dir().ok()?;
     path.push("Config");
     std::fs::create_dir_all(&path).ok()?;
     path.push("mcp.config.json");
@@ -16,8 +16,7 @@ pub fn get_user_config_path(config: &Config) -> Option<PathBuf> {
 }
 
 pub fn get_user_config_path_from_app(app: &tauri::AppHandle) -> Option<PathBuf> {
-    let config = app.config();
-    get_user_config_path(&config)
+    get_user_config_path(app)
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MCPConfig {
@@ -29,7 +28,7 @@ pub struct MCPConfig {
 
 /// 读取配置
 #[tauri::command]
-pub fn read_mcp_config(app: AppHandle) -> Result<MCPConfig, String> {
+pub async fn read_mcp_config(app: AppHandle) -> Result<MCPConfig, String> {
     let path = get_user_config_path_from_app(&app).ok_or("配置路径不存在")?;
     let contents = fs::read_to_string(&path).map_err(|e| e.to_string())?;
     let config: MCPConfig = serde_json::from_str(&contents).map_err(|e| e.to_string())?;
@@ -38,7 +37,7 @@ pub fn read_mcp_config(app: AppHandle) -> Result<MCPConfig, String> {
 
 /// 写入配置
 #[tauri::command]
-pub fn write_mcp_config(app: AppHandle, new_config: MCPConfig) -> Result<(), String> {
+pub async fn write_mcp_config(app: AppHandle, new_config: MCPConfig) -> Result<(), String> {
     let path = get_user_config_path_from_app(&app).ok_or("配置路径不存在")?;
     let json_str = serde_json::to_string_pretty(&new_config).map_err(|e| e.to_string())?;
     fs::write(&path, json_str).map_err(|e| e.to_string())?;
@@ -46,14 +45,15 @@ pub fn write_mcp_config(app: AppHandle, new_config: MCPConfig) -> Result<(), Str
 }
 
 pub fn init_mcp_config(app: &tauri::App) -> Result<(), String> {
-    let config = app.config();
+    let app_handle = app.handle();
     let user_config_path =
-        get_user_config_path(&config).ok_or("Failed to get MCP config file path.")?;
+        get_user_config_path(&app_handle).ok_or("Failed to get MCP config file path.")?;
 
-    let default_path: PathBuf = app
-        .path_resolver()
-        .resolve_resource("resources/mcp.config.json")
-        .ok_or("Cannot find default MCP config in resources.")?;
+    let resource_dir = app_handle
+        .path()
+        .resource_dir()
+        .map_err(|e| format!("Cannot get resource dir: {}", e))?;
+    let default_path: PathBuf = resource_dir.join("resources/mcp.config.json");
 
     // 首次安装，用户 config 不存在
     if !user_config_path.exists() {

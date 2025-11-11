@@ -29,7 +29,7 @@ use tauri_plugin_shell::init as shell_init;
 use tauri_plugin_clipboard_manager::init as clipboard_init;
 use tauri_plugin_dialog::init as dialog_init;
 use tauri_plugin_updater;
-use tauri::{AppHandle, Manager, Runtime, State};
+use tauri::{AppHandle, Manager, Runtime, State, Emitter};
 #[cfg(target_os = "macos")]
 use tauri::menu::{MenuBuilder, SubmenuBuilder, MenuItemBuilder, PredefinedMenuItem, MenuId};
 use tokio::io::AsyncBufReadExt;
@@ -59,7 +59,7 @@ fn get_env_path<R: Runtime>(app: &AppHandle<R>) -> Option<PathBuf> {
                 .map(|dir: PathBuf| dir.join("../.env"))?,
         )
     } else {
-        app.path().resource_dir().map(|dir: PathBuf| dir.join("bin/.env"))
+        app.path().resource_dir().ok().map(|dir: PathBuf| dir.join("bin/.env"))
     }
 }
 
@@ -126,9 +126,8 @@ fn find_free_port() -> Option<u16> {
 
 fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProcess>) {
     let binary_path: PathBuf = get_host_server_path(app);
-    let config = app.config();
-    let mcp_config_path = mcp::get_user_config_path(&config).expect("Cannot get MCP config path");
-    let agent_config_path = agent::get_user_config_path(&config).expect("Cannot get Agent config path");
+    let mcp_config_path = mcp::get_user_config_path(app).expect("Cannot get MCP config path");
+    let agent_config_path = agent::get_user_config_path(app).expect("Cannot get Agent config path");
     log::info!("Starting host server from: {:?}", binary_path);
     log::info!("Using config file from: {:?}", mcp_config_path);
     log::info!("Using agent config file from: {:?}", agent_config_path);
@@ -202,7 +201,7 @@ fn start_host_server<R: Runtime>(app: &AppHandle<R>, state: State<HostServerProc
             log::info!("host_server stdout: {}", line);
             let expected_ready_text = format!("{}{}", HOST_SERVER_READY_TEXT, port);
             if line.contains(&expected_ready_text) {
-                if let Err(e) = app_clone.emit_all(HOST_SERVER_EVENT_NAME, port) {
+                if let Err(e) = app_clone.emit(HOST_SERVER_EVENT_NAME, port) {
                     log::error!("Failed to emit event to frontend: {}", e);
                 }
             }
@@ -299,8 +298,13 @@ fn export_log_zip_cmd(app: tauri::AppHandle) -> Result<String, String> {
     logger::export_log_zip(app)
 }
 
+#[tauri::command]
+fn open_folder_cmd(path: String) -> Result<(), String> {
+    logger::open_folder(&path)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
-async fn run() {
+pub async fn run() {
     let is_prod = !cfg!(debug_assertions);
 
     let _sentry_guard = if is_prod {
@@ -331,6 +335,7 @@ async fn run() {
         .invoke_handler(tauri::generate_handler![
             log_from_frontend,
             export_log_zip_cmd,
+            open_folder_cmd,
             stream::stream_fetch,
             request::fetch_no_proxy,
             mcp::read_mcp_config,
@@ -339,54 +344,55 @@ async fn run() {
             agent::write_agent_config,
         ])
         // 监听窗口关闭事件
-        .on_window_event(|event| {
-            if let tauri::WindowEvent::CloseRequested { api, .. } = event.event() {
+        .on_window_event(|window, event| {
+            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
                 #[cfg(target_os = "macos")]
                 {
                     api.prevent_close();
-                    let _ = event.window().minimize();
+                    let _ = window.hide();
                 }
             }
         });
 
-    // ---- macOS 独占菜单 ----
-    #[cfg(target_os = "macos")]
-    {
-        let setting = MenuItemBuilder::new("Setting").id(MenuId::new("open_setting")).build();
-
-        let app_submenu = SubmenuBuilder::new("App").items([
-            &setting,
-            &PredefinedMenuItem::quit(None),
-        ])
-        .build();
-
-        let edit_submenu = SubmenuBuilder::new("Edit").items([
-            &PredefinedMenuItem::undo(None),
-            &PredefinedMenuItem::redo(None),
-            &PredefinedMenuItem::separator(),
-            &PredefinedMenuItem::cut(None),
-            &PredefinedMenuItem::copy(None),
-            &PredefinedMenuItem::paste(None),
-            &PredefinedMenuItem::select_all(None),
-        ])
-        .build();
-
-        let menu = MenuBuilder::new()
-        .items([
-            &app_submenu,
-            &edit_submenu,
-        ])
-        .build();
-
-        builder = builder.menu(menu);
-    }
-
     // ---- Setup + Build ----
     let app = builder
         .setup(|app: &mut tauri::App| {
-            // ✅ macOS 菜单事件监听
+            // ---- macOS 独占菜单 ----
             #[cfg(target_os = "macos")]
             {
+                let setting = MenuItemBuilder::new("Setting")
+                    .id(MenuId::new("open_setting"))
+                    .build(app)?;
+
+                let app_submenu = SubmenuBuilder::new(app, "App")
+                    .items(&[
+                        &setting,
+                        &PredefinedMenuItem::quit(app, Some("Quit"))?,
+                    ])
+                    .build()?;
+
+                let edit_submenu = SubmenuBuilder::new(app, "Edit")
+                    .items(&[
+                        &PredefinedMenuItem::undo(app, Some("Undo"))?,
+                        &PredefinedMenuItem::redo(app, Some("Redo"))?,
+                        &PredefinedMenuItem::separator(app)?,
+                        &PredefinedMenuItem::cut(app, Some("Cut"))?,
+                        &PredefinedMenuItem::copy(app, Some("Copy"))?,
+                        &PredefinedMenuItem::paste(app, Some("Paste"))?,
+                        &PredefinedMenuItem::select_all(app, Some("Select All"))?,
+                    ])
+                    .build()?;
+
+                let menu = MenuBuilder::new(app)
+                    .items(&[
+                        &app_submenu,
+                        &edit_submenu,
+                    ])
+                    .build()?;
+
+                app.set_menu(menu)?;
+
+                // ✅ macOS 菜单事件监听
                 let app_handle = app.handle();
                 app_handle.on_menu_event(|app, event| {
                     if event.id().as_ref() == "open_setting" {
@@ -396,8 +402,8 @@ async fn run() {
                     }
                 });
             }
-            let config: std::sync::Arc<tauri::Config> = app.config();
-            let log_file = logger::get_log_file_path(&config).expect("Failed to get log file path");
+            let app_handle = app.handle();
+            let log_file = logger::get_log_file_path(&app_handle).expect("Failed to get log file path");
             let log_dir = log_file.parent().unwrap();
             let log_basename = log_file.file_stem().unwrap().to_str().unwrap();
             let log_suffix = log_file.extension().unwrap().to_str().unwrap();
@@ -420,7 +426,7 @@ async fn run() {
             agent::init_agent_config(app).expect("Failed to init Agent config");
             cleanup::cleanup_database(app);
             kill_ports(PORTS_TO_KILL);
-            let app_handle: AppHandle = app.handle();
+            let app_handle = app.handle().clone();
             let state: State<'_, HostServerProcess> = app.state::<HostServerProcess>();
             start_host_server(&app_handle, state);
             Ok(())
@@ -429,10 +435,21 @@ async fn run() {
         .expect("error while running tauri application");
 
     app.run(|app_handle, event| {
-        if let tauri::RunEvent::Exit { .. } = event {
-            log::info!("App is exiting — now cleaning processes");
-            let state: State<'_, HostServerProcess> = app_handle.state::<HostServerProcess>();
-            cleanup_processes(&app_handle, state);
+        match event {
+            tauri::RunEvent::Exit { .. } => {
+                log::info!("App is exiting — now cleaning processes");
+                let state: State<'_, HostServerProcess> = app_handle.state::<HostServerProcess>();
+                cleanup_processes(&app_handle, state);
+            }
+            #[cfg(target_os = "macos")]
+            tauri::RunEvent::Reopen { .. } => {
+                // 当用户点击 Dock 图标时，重新显示窗口
+                if let Some(window) = app_handle.get_webview_window("main") {
+                    let _ = window.show();
+                    let _ = window.set_focus();
+                }
+            }
+            _ => {}
         }
     });
 

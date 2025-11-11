@@ -2,8 +2,15 @@
 // see src-tauri/src/stream.rs, and src-tauri/src/main.rs
 // 1. invoke('stream_fetch', {url, method, headers, body}), get response with headers.
 // 2. listen event: `stream-response` multi times to get body
-import { FetchOptions } from "@tauri-apps/plugin-http";
 import { fetchNoProxy as tauriFetch } from "./fetch-no-proxy";
+import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
+
+interface FetchOptions {
+  method?: string;
+  headers?: Record<string, string>;
+  body?: any;
+}
 
 type ResponseEvent = {
   id: number;
@@ -48,25 +55,23 @@ export function fetch(url: string, options?: RequestInit): Promise<Response> {
     if (signal) {
       signal.addEventListener("abort", () => close());
     }
-    // @ts-expect-error 2. listen response multi times, and write to Response.body
-    window.__TAURI__.event
-      .listen("stream-response", (e: ResponseEvent) =>
-        requestIdPromise.then((request_id) => {
-          const { request_id: rid, chunk, status } = e?.payload || {};
-          if (request_id != rid) {
-            return;
-          }
-          if (chunk) {
-            writer.ready.then(() => {
-              writer.write(new Uint8Array(chunk));
-            });
-          } else if (status === 0) {
-            // end of body
-            close();
-          }
-        }),
-      )
-      .then((u: Function) => (unlisten = u));
+    // listen response multi times, and write to Response.body
+    listen<ResponseEvent["payload"]>("stream-response", (e) =>
+      requestIdPromise.then((request_id) => {
+        const { request_id: rid, chunk, status } = e?.payload || {};
+        if (request_id != rid) {
+          return;
+        }
+        if (chunk) {
+          writer.ready.then(() => {
+            writer.write(new Uint8Array(chunk));
+          });
+        } else if (status === 0) {
+          // end of body
+          close();
+        }
+      }),
+    ).then((u) => (unlisten = u));
 
     const headers: Record<string, string> = {
       Accept: "application/json, text/plain, */*",
@@ -76,18 +81,17 @@ export function fetch(url: string, options?: RequestInit): Promise<Response> {
     for (const item of new Headers(_headers || {})) {
       headers[item[0]] = item[1];
     }
-    return window.__TAURI__
-      .invoke("stream_fetch", {
-        method: method.toUpperCase(),
-        url,
-        headers,
-        // TODO FormData
-        body:
-          typeof body === "string"
-            ? Array.from(new TextEncoder().encode(body))
-            : [],
-      })
-      .then((res: StreamResponse) => {
+    return invoke<StreamResponse>("stream_fetch", {
+      method: method.toUpperCase(),
+      url,
+      headers,
+      // TODO FormData
+      body:
+        typeof body === "string"
+          ? Array.from(new TextEncoder().encode(body))
+          : [],
+    })
+      .then((res) => {
         const { request_id, status, status_text: statusText, headers } = res;
         setRequestId?.(request_id);
         const response = new Response(ts.readable, {

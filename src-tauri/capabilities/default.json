@@ -1,5 +1,8 @@
 {
   "identifier": "default",
+  "windows": [
+    "main"
+  ],
   "permissions": [
     "core:default",
     "shell:allow-open",
@@ -17,13 +20,31 @@
           "url": "http://*"
         },
         {
-          "url": "https://dev.aidenai.io/auth/:*"
+          "url": "https://dev.aidenai.io/auth/*"
         }
       ]
     },
     "notification:default",
+    "notification:allow-is-permission-granted",
+    "notification:allow-request-permission",
+    "notification:allow-show",
     "os:default",
     "process:default",
-    "updater:default"
+    "updater:default",
+    "updater:allow-check",
+    "core:window:allow-set-size",
+    "core:window:allow-set-position",
+    "core:window:allow-set-resizable",
+    "core:window:allow-unminimize",
+    "core:window:allow-center",
+    "core:window:allow-inner-size",
+    "core:window:allow-outer-position",
+    "core:window:allow-scale-factor",
+    "core:window:allow-set-focus",
+    "core:window:allow-show",
+    "core:window:allow-hide",
+    "core:window:allow-start-dragging",
+    "core:event:allow-listen",
+    "core:event:allow-unlisten"
   ]
 }

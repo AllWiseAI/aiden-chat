@@ -204,7 +204,8 @@ function MainLayout() {
     loadAsyncGoogleFont();
     (async () => {
       try {
-        const { appWindow } = await import("@tauri-apps/api/window");
+        const { getCurrentWindow } = await import("@tauri-apps/api/window");
+        const appWindow = getCurrentWindow();
         await appWindow.show();
         await appWindow.unminimize();
         await appWindow.setFocus();

@@ -1,4 +1,4 @@
-import { fetch, Response } from "@tauri-apps/plugin-http";
+import { fetch } from "@tauri-apps/plugin-http";
 import { useSettingStore } from "../store/setting";
 import { useAuthStore } from "../store/auth";
 import { getLocalToken } from "../services";
@@ -107,11 +107,11 @@ export const getHeaders = async ({
   return headers;
 };
 
-export async function aidenFetch<T = unknown>(
+export async function aidenFetch(
   url: string,
   options: FetchBody,
-): Promise<Response<T>> {
-  let res: Response<T>;
+): Promise<{ data: any }> {
+  let res: Response;
   const domain = await getBaseDomain();
   console.log("[request] current domain: ", domain);
   const headers = await getHeaders({});
@@ -121,17 +121,28 @@ export async function aidenFetch<T = unknown>(
   }
   console.log("[Request] fetching", finnalUrl);
   try {
-    res = await fetch<T>(finnalUrl, {
+    const fetchOptions: RequestInit = {
       method: options.method,
       headers,
-      body: options.body ? options.body : undefined,
-    });
+    };
+
+    // Only add body for non-GET requests
+    if (options.method !== "GET" && options.body) {
+      fetchOptions.body = JSON.stringify(options.body.payload);
+    }
+
+    res = await fetch(finnalUrl, fetchOptions);
+
+    // Parse JSON response
+    const data = await res.json();
+    return { data };
   } catch (err: any) {
     console.log("[Request] fetch error occured.", err);
-    if (err.includes("Network Error")) {
+    const errorMessage =
+      typeof err === "string" ? err : err?.message || String(err);
+    if (errorMessage.includes("Network Error")) {
       throw t("error.netErr");
     }
     throw err;
   }
-  return res;
 }

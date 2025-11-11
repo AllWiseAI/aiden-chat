@@ -3,7 +3,7 @@ import { useAuthStore } from "../store";
 import { useTranslation } from "react-i18next";
 import { appDataInit } from "../utils/init";
 import { useNavigate } from "react-router-dom";
-import { shell } from "@tauri-apps/api";
+import { open } from "@tauri-apps/plugin-shell";
 import { Path } from "../constant";
 import { GoogleLoginResponse, GoogleStatusResponse } from "../typing";
 import LogoIcon from "@/app/icons/logo.svg";
@@ -12,7 +12,7 @@ import { Button } from "@/app/components/shadcn/button";
 import LoadingIcon from "@/app/icons/loading-spinner.svg";
 import ReturnIcon from "@/app/icons/return.svg";
 import { useEffect } from "react";
-import { appWindow } from "@tauri-apps/api/window";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 
 export function GoogleAuth() {
   const { t } = useTranslation("auth");
@@ -48,7 +48,7 @@ export function GoogleAuth() {
         const { session_id, redirect_url }: GoogleLoginResponse =
           await googleLogin();
         if (!redirect_url) return;
-        shell.open(redirect_url);
+        open(redirect_url);
 
         const result = await pollLoginStatus(session_id);
         if (!result || controller.signal.aborted) return;
@@ -57,6 +57,7 @@ export function GoogleAuth() {
         if (status === "completed" || status === "completed_signup") {
           setLoginInfo(result);
           appDataInit();
+          const appWindow = getCurrentWindow();
           await appWindow.show();
           await appWindow.setFocus();
           localStorage.setItem("user-email", result.email);

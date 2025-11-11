@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import {
-  appWindow,
+  getCurrentWindow,
   LogicalSize,
   LogicalPosition,
 } from "@tauri-apps/api/window";
@@ -30,6 +30,7 @@ export default function WindowSize() {
     if (isInitPage) {
       return;
     }
+    const appWindow = getCurrentWindow();
     const physicalSize = await appWindow.innerSize();
     const scaleFactor = await appWindow.scaleFactor();
     const logicalWidth = physicalSize.width / scaleFactor;
@@ -51,6 +52,7 @@ export default function WindowSize() {
 
   useEffect(() => {
     async function adjustWindow() {
+      const appWindow = getCurrentWindow();
       if (isInitPage) {
         await appWindow.setSize(new LogicalSize(426, 750));
         await appWindow.setResizable(false);

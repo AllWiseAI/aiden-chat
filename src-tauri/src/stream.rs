@@ -1,6 +1,3 @@
-//
-//
-
 use futures_util::StreamExt;
 use reqwest::header::{HeaderMap, HeaderName};
 use reqwest::Client;
@@ -8,6 +5,7 @@ use std::collections::HashMap;
 use std::error::Error;
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::time::Duration;
+use tauri::Emitter;
 
 static REQUEST_COUNTER: AtomicU32 = AtomicU32::new(0);
 
@@ -28,7 +26,7 @@ pub struct EndPayload {
 #[derive(Clone, serde::Serialize)]
 pub struct ChunkPayload {
     request_id: u32,
-    chunk: bytes::Bytes,
+    chunk: Vec<u8>,
 }
 
 #[tauri::command]
@@ -107,7 +105,7 @@ pub async fn stream_fetch(
                                 event_name,
                                 ChunkPayload {
                                     request_id,
-                                    chunk: bytes,
+                                    chunk: bytes.to_vec(),
                                 },
                             ) {
                                 println!("Failed to emit chunk payload: {:?}", e);
@@ -147,7 +145,7 @@ pub async fn stream_fetch(
                     event_name,
                     ChunkPayload {
                         request_id,
-                        chunk: error.into(),
+                        chunk: error.into_bytes(),
                     },
                 ) {
                     println!("Failed to emit chunk payload: {:?}", e);

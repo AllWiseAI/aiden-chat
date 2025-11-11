@@ -13,7 +13,7 @@ import { apiGetSignUpCode } from "@/app/services";
 import { Path } from "../constant";
 import { toast } from "@/app/utils/toast";
 import clsx from "clsx";
-import { shell } from "@tauri-apps/api";
+import { open } from "@tauri-apps/plugin-shell";
 import { getLang } from "../locales";
 import { useTranslation } from "react-i18next";
 import { appDataInit } from "../utils/init";
@@ -179,9 +179,7 @@ const SignUpForm = ({
             <span
               className="cursor-pointer text-main underline"
               onClick={() =>
-                shell.open(
-                  `https://docs.aidenai.io/${lang}terms-of-service.html`,
-                )
+                open(`https://docs.aidenai.io/${lang}terms-of-service.html`)
               }
             >
               {t("terms")}
@@ -190,7 +188,7 @@ const SignUpForm = ({
             <span
               className="cursor-pointer text-main underline"
               onClick={() =>
-                shell.open(`https://docs.aidenai.io/${lang}privacy.html`)
+                open(`https://docs.aidenai.io/${lang}privacy.html`)
               }
             >
               {t("privacy")}

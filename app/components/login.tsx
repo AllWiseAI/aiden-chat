@@ -12,7 +12,7 @@ import { useAuthStore } from "../store";
 import { GoogleAuthButton } from "../components/google-oauth-button";
 import { toast } from "@/app/utils/toast";
 import clsx from "clsx";
-import { shell } from "@tauri-apps/api";
+import { open } from "@tauri-apps/plugin-shell";
 import LoadingIcon from "../icons/loading-spinner.svg";
 import { getLang } from "../locales";
 import { useTranslation } from "react-i18next";
@@ -275,9 +275,7 @@ export function LoginPage() {
             <span
               className="cursor-pointer text-main underline"
               onClick={() =>
-                shell.open(
-                  `https://docs.aidenai.io/${lang}terms-of-service.html`,
-                )
+                open(`https://docs.aidenai.io/${lang}terms-of-service.html`)
               }
             >
               {t("terms")}
@@ -286,7 +284,7 @@ export function LoginPage() {
             <span
               className="cursor-pointer text-main underline"
               onClick={() =>
-                shell.open(`https://docs.aidenai.io/${lang}privacy.html`)
+                open(`https://docs.aidenai.io/${lang}privacy.html`)
               }
             >
               {t("privacy")}

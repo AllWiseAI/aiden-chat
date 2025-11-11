@@ -4,7 +4,7 @@ use time::OffsetDateTime;
 
 /// 获取日志文件路径: ~/Library/Application Support/[AppName]/Logs/aiden.log
 pub fn get_log_file_path<R: tauri::Runtime>(app: &AppHandle<R>) -> Option<PathBuf> {
-    let mut path = app.path_resolver().app_data_dir()?;
+    let mut path = app.path().app_data_dir().ok()?;
     path.push("Logs");
     std::fs::create_dir_all(&path).ok()?;
     path.push("aiden.log");
@@ -13,8 +13,7 @@ pub fn get_log_file_path<R: tauri::Runtime>(app: &AppHandle<R>) -> Option<PathBu
 
 /// 导出日志为 zip 文件，返回 zip 文件的路径
 pub fn export_log_zip(app: AppHandle) -> Result<String, String> {
-    let config = app.config();
-    let log_file: PathBuf = get_log_file_path(app).ok_or("无法获取日志文件路径")?;
+    let log_file: PathBuf = get_log_file_path(&app).ok_or("无法获取日志文件路径")?;
     let log_path = log_file.parent().unwrap();
     println!("log_path: {:?}", log_path);
     if !log_path.exists() {
@@ -44,7 +43,7 @@ pub fn export_log_zip(app: AppHandle) -> Result<String, String> {
 
     let latest_logs = log_files.into_iter().take(3).collect::<Vec<_>>();
 
-    let downloads: PathBuf = download_dir().ok_or("无法获取下载目录")?;
+    let downloads: PathBuf = app.path().download_dir().map_err(|e| e.to_string())?;
     let timestamp = OffsetDateTime::now_utc()
         .format(&time::format_description::well_known::Rfc3339)
         .unwrap_or_else(|_| "log".into());
@@ -72,4 +71,33 @@ pub fn export_log_zip(app: AppHandle) -> Result<String, String> {
         .map_err(|e: zip::result::ZipError| e.to_string())?;
 
     Ok(zip_path.to_string_lossy().to_string())
+}
+
+/// 打开文件夹
+pub fn open_folder(path: &str) -> Result<(), String> {
+    #[cfg(target_os = "windows")]
+    {
+        std::process::Command::new("explorer")
+            .arg(path)
+            .spawn()
+            .map_err(|e| e.to_string())?;
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        std::process::Command::new("open")
+            .arg(path)
+            .spawn()
+            .map_err(|e| e.to_string())?;
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        std::process::Command::new("xdg-open")
+            .arg(path)
+            .spawn()
+            .map_err(|e| e.to_string())?;
+    }
+
+    Ok(())
 }

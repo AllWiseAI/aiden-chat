@@ -1,4 +1,3 @@
-import { Body } from "@tauri-apps/plugin-http";
 import { aidenFetch as fetch, getLocalBaseDomain } from "@/app/utils/fetch";
 import { fetchNoProxy } from "@/app/utils/fetch-no-proxy";
 import { getHeaders } from "@/app/utils/fetch";
@@ -37,7 +36,7 @@ export async function updateMcpConfig(configJson: object) {
   const result = await fetchNoProxy(`${baseURL}/config/update`, {
     method: "POST",
     headers: headers,
-    body: Body.json(configJson),
+    body: { payload: configJson },
   });
   if (result.status !== 200) {
     throw new Error("update failed: " + result.statusText);
@@ -51,14 +50,23 @@ export async function getMcpStatuses(serverNames: string[]) {
   const baseURL = getLocalBaseDomain();
   const headers = await getHeaders({ aiden: true });
 
+  const requestBody = { payload: { server_names: serverNames } };
+
   const result = await fetchNoProxy(`${baseURL}/mcp_servers/get_statuses`, {
     method: "POST",
     headers: headers,
-    body: Body.json({ server_names: serverNames }),
+    body: requestBody,
   });
 
   if (result.status !== 200) {
-    throw new Error("get statuses failed: " + result.statusText);
+    let errorDetail = result.statusText;
+    try {
+      const errorBody = await result.text();
+      errorDetail = errorBody || result.statusText;
+    } catch (e) {
+      console.error("[getMcpStatuses] Could not read error body:", e);
+    }
+    throw new Error("get statuses failed: " + errorDetail);
   } else {
     const jsonResult = await result.json();
     return jsonResult;
@@ -107,7 +115,7 @@ export async function updateRagEnabled(status: boolean) {
   const result = await fetchNoProxy(`${baseURL}/rag/config`, {
     method: "POST",
     headers: headers,
-    body: Body.json({ mcp_rag_enabled: status }),
+    body: { payload: { mcp_rag_enabled: status } },
   });
   console.log(result);
   if (result.status !== 200) {
