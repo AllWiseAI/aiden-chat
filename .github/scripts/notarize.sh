@@ -85,8 +85,8 @@ mv "$TAURI_RAW_ZIP_PATH" "$RENAMED_ZIP_PATH"
 
 # 使用 tauri signer
 npx tauri signer sign \
-  --password "$TAURI_KEY_PASSWORD" \
-  --private-key "$TAURI_PRIVATE_KEY"\
+  --password "$TAURI_SIGNING_PRIVATE_KEY_PASSWORD" \
+  --private-key "$TAURI_SIGNING_PRIVATE_KEY"\
   "$RENAMED_ZIP_PATH" \
 
 echo "📦 重命名产物为:"
