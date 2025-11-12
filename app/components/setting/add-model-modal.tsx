@@ -218,13 +218,14 @@ export function AddModelModal({
     setIsGettingModelLoading(true);
     setIsModelsError(false);
     try {
-      const modelsReturn = await fetch(requestUrl, {
+      const response = await fetch(requestUrl, {
         method: "GET",
         headers: replacedHeaders,
       });
       setIsGettingModelLoading(false);
-      const { data, status } = modelsReturn;
-      if (status === 200) {
+
+      if (response.ok) {
+        const data = await response.json();
         const models = formatProviderModels(
           // @ts-ignore
           providerInfo,
@@ -235,7 +236,7 @@ export function AddModelModal({
           setModelList(models);
         }
       } else {
-        toast.error("Failed to get models, status code is " + status);
+        toast.error("Failed to get models, status code is " + response.status);
       }
     } catch (error) {
       setModelList([]);
